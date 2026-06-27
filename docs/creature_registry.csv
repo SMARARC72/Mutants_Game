@@ -1,0 +1,408 @@
+id,name,batch,rank,class,art_ref,tier,line,stage,force_primary,force_secondary,role,acquisition,tags,description,status
+AD01,Ruinmaw,adult,wild,organic,adult#1,T2,Ruin Wolf,adult,Chaos,Thanatos,striker,trap,,Feral runed wolf; bleeds what it bites.,confirmed
+AD02,Worldback,adult,wild,organic,adult#2,T3,World Tortoise,apex,Gaia,Eros,fortress,befriend,apex,A mountain that walks and grows orchards on its back.,confirmed
+AD03,Emberwyrm,adult,wild,organic,adult#3,T3,Ember Drake,apex,Chaos,Ouranos,nuker,trap,apex,Volatile winged furnace.,confirmed
+AD04,Palehart,adult,wild,organic,adult#4,T2,Pale Hart,adult,Cosmos,Eros,support,befriend,,Serene stag wreathed in ordered sigils.,confirmed
+AD05,Tidecoil,adult,wild,organic,adult#5,T2,Tide Serpent,adult,Ouranos,Cosmos,controller,summon,,Sinuous tide-caller of the deep.,confirmed
+AD06,Gravetusk,adult,wild,organic,adult#6,T2,Grave Boar,adult,Gaia,Chaos,charger,trap,,Reckless tusked battering-ram.,confirmed
+AD07,Augurwing,adult,wild,organic,adult#7,T2,Augur Bird,adult,Ouranos,Eros,seer,befriend,,Plumed diviner; reads the next turn.,confirmed
+AD08,Rimewarden,adult,wild,organic,adult#8,T2,Rime Bear,adult,Cosmos,Gaia,control-tank,trap,,Ice-armored bulwark.,confirmed
+AD09,Gloamcat,adult,wild,organic,adult#9,T2,Gloam Cat,adult,Thanatos,Ouranos,assassin,trap,,Soul-flame panther; drains as it strikes.,confirmed
+AD10,Thornmane,adult,wild,organic,adult#10,T2,Thorn Lion,adult,Eros,Gaia,regenerator,befriend,,Bark-maned beast that roots and heals.,confirmed
+DM01,Shade-wraith,demon,legendary,organic,demon#1,,,apex,Thanatos,Chaos,boss,summon,taboo-fusion;boss,A grief that grew tentacles.,confirmed
+DM02,Ogre-brute,demon,legendary,organic,demon#2,,,apex,Gaia,Chaos,bruiser,trap,boss,"All fists, no patience.",confirmed
+DM03,Bone-weaver,demon,legendary,organic,demon#3,,,apex,Thanatos,Chaos,boss,summon,undead;boss,A spider knit from someone else's skeleton.,confirmed
+DM04,Eye-tyrant,demon,legendary,organic,demon#4,,,apex,Chaos,Ouranos,boss,summon,secret-boss;eldritch,"Sees too much, forgives nothing.",confirmed
+DM05,Phoenix,demon,god,organic,demon#5,,,apex,Ouranos,Chaos,god-seed,summon,ascension-candidate,"Dies on schedule, comes back annoyed.",confirmed
+DM06,Core-golem,demon,legendary,organic,demon#6,,,apex,Gaia,Cosmos,tank,summon,boss,A boulder with a glowing grudge.,confirmed
+DM07,Ash-fiend,demon,legendary,organic,demon#7,,,apex,Thanatos,Chaos,boss,summon,taboo-fusion;boss,Brought a sword to a soul fight.,confirmed
+DM08,Spectral-kelpie,demon,god,organic,demon#8,,,apex,Thanatos,Ouranos,god-seed,summon,ascension-candidate,A drowned horse still looking for a rider.,confirmed
+DM09,Abyssal-leviathan,demon,legendary,organic,demon#9,,,apex,Thanatos,Ouranos,boss,summon,boss,"The deep, with teeth.",confirmed
+DM10,Elder-treant,demon,god,organic,demon#10,,,apex,Eros,Gaia,god-seed,befriend,ascension-candidate,Older than the forest's first apology.,confirmed
+SB04,Ember-kit (fox),storybook,wild,organic,SB#4,T1,Ember Fox,baby,Chaos,Ouranos,striker,trap,new-species,Tiny arsonist.,confirmed
+SB05,Sprout-shell,storybook,wild,organic,SB#5,T1,World Tortoise,baby,Gaia,Eros,tank,befriend,,"Worldback, before the mountain.",confirmed
+SB06,Fin-otter,storybook,wild,organic,SB#6,T1,Fin Otter,baby,Ouranos,Eros,support,befriend,new-species,Slippery optimist.,confirmed
+SB07,Leaf-hare,storybook,wild,organic,SB#7,T1,Leaf Hare,baby,Eros,Gaia,support,befriend,new-species,,confirmed
+SB08,Delver-pup,storybook,wild,organic,SB#8,T1,Delver,baby,Gaia,Thanatos,tank,trap,new-species,,confirmed
+SB09,Sprite-blob,storybook,wild,organic,SB#9,T1,Sprite,baby,Eros,Ouranos,support,summon,new-species,,confirmed
+SB10,Gloam-kitten,storybook,wild,organic,SB#10,T1,Gloam Cat,baby,Thanatos,Ouranos,assassin,trap,,Gloamcat kitten; already plotting.,confirmed
+SB11,Holy-lamb,storybook,wild,organic,SB#11,T1,Holy Lamb,baby,Cosmos,Eros,support,befriend,new-species,,confirmed
+SB12,Grave-piglet,storybook,wild,organic,SB#12,T1,Grave Boar,baby,Gaia,Chaos,charger,trap,,,confirmed
+SB13,Finned-hatchling,storybook,wild,organic,SB#13,T1,Drake/Serpent (TBD),baby,Ouranos,Chaos,striker,trap,line-tbd,,draft
+SB14,Quill-hog,storybook,wild,organic,SB#14,T1,Quill,baby,Gaia,,tank,trap,new-species,,confirmed
+SB15,Sky-chick,storybook,wild,organic,SB#15,T1,Augur Bird,baby,Ouranos,Cosmos,seer,befriend,,,confirmed
+SB16,Armor-dino,storybook,wild,organic,SB#16,T1,Armor Reptile,baby,Gaia,Chaos,tank,trap,new-species,,confirmed
+SB17,Leaf-fae,storybook,wild,organic,SB#17,T1,Leaf Fae,baby,Eros,Cosmos,support,befriend,new-species,,confirmed
+SB18,Leaf-gecko,storybook,wild,organic,SB#18,T1,Frill,baby,Eros,Ouranos,striker,befriend,new-species,,confirmed
+SB19,Ring-tail,storybook,wild,organic,SB#19,T1,Trickster Coon,baby,Chaos,Gaia,striker,befriend,new-species,,confirmed
+SB20,Azure-kit,storybook,wild,organic,SB#20,T1,Sky Cat,baby,Ouranos,,striker,befriend,new-species,,confirmed
+SB21,Lion-cub,storybook,wild,organic,SB#21,T1,Lion,baby,Cosmos,Gaia,bruiser,befriend,new-species,,confirmed
+SB22,Fawn,storybook,wild,organic,SB#22,T1,Pale Hart,baby,Cosmos,Eros,support,befriend,,,confirmed
+SB23,Fennec,storybook,wild,organic,SB#23,T1,Fennec,baby,Ouranos,Chaos,striker,befriend,new-species,,confirmed
+SB24,Quill-badger,storybook,wild,organic,SB#24,T1,Quill,mid,Gaia,Thanatos,tank,trap,evo-of-SB14?,,draft
+SB25,Spirit-fox,storybook,wild,organic,SB#25,T1,Spirit Fox,baby,Chaos,Ouranos,striker,befriend,new-species,,confirmed
+SB26,Spiked-tortoise,storybook,wild,organic,SB#26,T1,World Tortoise,mid,Gaia,,tank,befriend,,"Worldback, mid-shell.",draft
+SB27,Kitsune-kit,storybook,wild,organic,SB#27,T1,Kitsune,baby,Eros,Ouranos,support,befriend,new-species,,confirmed
+SB28,Frilled-gecko,storybook,wild,organic,SB#28,T1,Frill,mid,Ouranos,Eros,striker,befriend,evo-of-SB18?,,draft
+SB29,Griffin-cub,storybook,wild,organic,SB#29,T1,Griffin,baby,Ouranos,Cosmos,seer,befriend,new-species,,confirmed
+SB30,Ruin-pup,storybook,wild,organic,SB#30,T1,Ruin Wolf,baby,Chaos,Thanatos,striker,trap,,Ruinmaw pup; chews everything.,confirmed
+SB31,Frost-kit,storybook,wild,organic,SB#31,T1,Frost Cat,baby,Ouranos,Cosmos,striker,befriend,new-species,,confirmed
+SB32,Spore-cub,storybook,wild,organic,SB#32,T1,Spore Bear,baby,Gaia,Eros,tank,befriend,new-species,,confirmed
+SB33,Wild-stag-calf,storybook,wild,organic,SB#33,T1,Wild Stag,baby,Eros,Gaia,support,befriend,new-species,,confirmed
+S2-01,S2-1,set2A,wild,organic,montage_set2_A #S2-1,T2,,mid,Thanatos,,assassin,,draft,,reviewed
+S2-02,S2-2,set2A,wild,organic,montage_set2_A #S2-2,T2,,mid,Thanatos,,assassin,,draft,,reviewed
+S2-03,S2-3,set2A,wild,organic,montage_set2_A #S2-3,T2,,mid,Chaos,,nuker,,draft,,reviewed
+S2-04,S2-4,set2A,wild,organic,montage_set2_A #S2-4,T2,,mid,Cosmos,,control,,draft,,reviewed
+S2-05,S2-5,set2A,wild,organic,montage_set2_A #S2-5,T2,,mid,Thanatos,,assassin,,draft,,reviewed
+S2-06,S2-6,set2A,wild,organic,montage_set2_A #S2-6,T2,,mid,Chaos,,nuker,,draft,,reviewed
+S2-07,S2-7,set2A,wild,organic,montage_set2_A #S2-7,T2,,mid,Eros,,support,,draft,,reviewed
+S2-08,S2-8,set2A,wild,organic,montage_set2_A #S2-8,T2,,mid,Thanatos,,assassin,,draft,,reviewed
+S2-09,S2-9,set2A,wild,organic,montage_set2_A #S2-9,T2,,mid,Thanatos,,assassin,,draft,,reviewed
+S2-10,S2-10,set2A,wild,organic,montage_set2_A #S2-10,T2,,mid,Gaia,,tank,,draft,,reviewed
+S2-11,S2-11,set2A,wild,organic,montage_set2_A #S2-11,T2,,mid,Ouranos,,striker,,draft,,reviewed
+S2-12,S2-12,set2A,wild,organic,montage_set2_A #S2-12,T2,,mid,Thanatos,,assassin,,draft,,reviewed
+S2-13,S2-13,set2A,wild,organic,montage_set2_A #S2-13,T2,,mid,Gaia,,tank,,draft,,reviewed
+S2-14,S2-14,set2A,wild,organic,montage_set2_A #S2-14,T2,,mid,Ouranos,,striker,,draft,,reviewed
+S2-15,S2-15,set2A,wild,organic,montage_set2_A #S2-15,T2,,mid,Ouranos,,striker,,draft,,reviewed
+S2-16,S2-16,set2A,wild,organic,montage_set2_A #S2-16,T2,,mid,Gaia,,tank,,draft,,reviewed
+S2-17,S2-17,set2A,wild,organic,montage_set2_A #S2-17,T2,,mid,Eros,,support,,draft,,reviewed
+S2-18,S2-18,set2A,wild,organic,montage_set2_A #S2-18,T2,,mid,Cosmos,,control,,draft,,reviewed
+S2-19,S2-19,set2A,wild,organic,montage_set2_A #S2-19,T2,,mid,Cosmos,,control,,draft,,reviewed
+S2-20,S2-20,set2A,wild,organic,montage_set2_A #S2-20,T2,,mid,Gaia,,tank,,draft,,reviewed
+S2-21,S2-21,set2A,wild,organic,montage_set2_A #S2-21,T2,,mid,Chaos,,nuker,,draft,,reviewed
+S2-22,S2-22,set2A,wild,organic,montage_set2_A #S2-22,T2,,mid,Gaia,,tank,,draft,,reviewed
+S2-23,S2-23,set2A,wild,organic,montage_set2_A #S2-23,T2,,mid,Ouranos,,striker,,draft,,reviewed
+S2-24,S2-24,set2A,wild,organic,montage_set2_A #S2-24,T2,,mid,Cosmos,,control,,draft,,reviewed
+S2-25,S2-25,set2A,wild,organic,montage_set2_A #S2-25,T2,,mid,Gaia,,tank,,draft,,reviewed
+S2-26,S2-26,set2A,wild,organic,montage_set2_A #S2-26,T2,,mid,Gaia,,tank,,draft,,reviewed
+S2-27,S2-27,set2A,wild,organic,montage_set2_A #S2-27,T2,,mid,Ouranos,,striker,,draft,,reviewed
+S2-28,S2-28,set2A,wild,organic,montage_set2_A #S2-28,T2,,mid,Gaia,,tank,,draft,,reviewed
+S2-29,S2-29,set2A,wild,organic,montage_set2_A #S2-29,T2,,mid,Gaia,,tank,,draft,,reviewed
+S2-30,S2-30,set2A,wild,organic,montage_set2_A #S2-30,T2,,mid,Chaos,,nuker,,draft,,reviewed
+S2-31,S2-31,set2B,wild,organic,montage_set2_B #S2-31,T3,,apex,Gaia,,tank,,draft,,reviewed
+S2-32,S2-32,set2B,wild,organic,montage_set2_B #S2-32,T3,,apex,Gaia,,tank,,draft,,reviewed
+S2-33,S2-33,set2B,wild,organic,montage_set2_B #S2-33,T3,,apex,Gaia,,tank,,draft,,reviewed
+S2-34,S2-34,set2B,wild,organic,montage_set2_B #S2-34,T3,,apex,Thanatos,,assassin,,draft,,reviewed
+S2-35,S2-35,set2B,wild,organic,montage_set2_B #S2-35,T3,,apex,Gaia,,tank,,draft,,reviewed
+S2-36,S2-36,set2B,wild,organic,montage_set2_B #S2-36,T3,,apex,Ouranos,,striker,,draft,,reviewed
+S2-37,S2-37,set2B,wild,organic,montage_set2_B #S2-37,T3,,apex,Gaia,,tank,,draft,,reviewed
+S2-38,S2-38,set2B,wild,organic,montage_set2_B #S2-38,T3,,apex,Eros,,support,,draft,,reviewed
+S2-39,S2-39,set2B,wild,organic,montage_set2_B #S2-39,T3,,apex,Gaia,,tank,,draft,,reviewed
+S2-40,S2-40,set2B,wild,organic,montage_set2_B #S2-40,T3,,apex,Thanatos,,assassin,,draft,,reviewed
+S2-41,S2-41,set2B,wild,organic,montage_set2_B #S2-41,T3,,apex,Ouranos,,striker,,draft,,reviewed
+S2-42,S2-42,set2B,wild,organic,montage_set2_B #S2-42,T3,,apex,Ouranos,,striker,,draft,,reviewed
+S2-43,S2-43,set2B,wild,organic,montage_set2_B #S2-43,T3,,apex,Ouranos,,striker,,draft,,reviewed
+S2-44,S2-44,set2B,wild,organic,montage_set2_B #S2-44,T3,,apex,Ouranos,,striker,,draft,,reviewed
+S2-45,S2-45,set2B,wild,organic,montage_set2_B #S2-45,T3,,apex,Eros,,support,,draft,,reviewed
+S2-46,S2-46,set2B,wild,organic,montage_set2_B #S2-46,T3,,apex,Cosmos,,control,,draft,,reviewed
+S2-47,S2-47,set2B,wild,organic,montage_set2_B #S2-47,T3,,apex,Eros,,support,,draft,,reviewed
+S2-48,S2-48,set2B,wild,organic,montage_set2_B #S2-48,T3,,apex,Ouranos,,striker,,draft,,reviewed
+S2-49,S2-49,set2B,wild,organic,montage_set2_B #S2-49,T3,,apex,Thanatos,,assassin,,draft,,reviewed
+S2-50,S2-50,set2B,wild,organic,montage_set2_B #S2-50,T3,,apex,Cosmos,,control,,draft,,reviewed
+S2-51,S2-51,set2B,wild,organic,montage_set2_B #S2-51,T3,,apex,Chaos,,nuker,,draft,,reviewed
+S2-52,S2-52,set2B,wild,organic,montage_set2_B #S2-52,T3,,apex,Thanatos,,assassin,,draft,,reviewed
+S2-53,S2-53,set2B,wild,organic,montage_set2_B #S2-53,T3,,apex,Cosmos,,control,,draft,,reviewed
+S2-54,S2-54,set2B,wild,organic,montage_set2_B #S2-54,T3,,apex,Thanatos,,assassin,,draft,,reviewed
+S2-55,S2-55,set2B,wild,organic,montage_set2_B #S2-55,T3,,apex,Chaos,,nuker,,draft,,reviewed
+S2-56,S2-56,set2B,wild,organic,montage_set2_B #S2-56,T3,,apex,Gaia,,tank,,draft,,reviewed
+S2-57,S2-57,set2B,wild,organic,montage_set2_B #S2-57,T3,,apex,Eros,,support,,draft,,reviewed
+S2-58,S2-58,set2B,wild,organic,montage_set2_B #S2-58,T3,,apex,Cosmos,,control,,draft,,reviewed
+S2-59,S2-59,set2B,wild,organic,montage_set2_B #S2-59,T3,,apex,Gaia,,tank,,draft,,reviewed
+S2-60,S2-60,set2B,wild,organic,montage_set2_B #S2-60,T3,,apex,Thanatos,,assassin,,draft,,reviewed
+batch3-001,,batch3,god,organic,"art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_10_56 AM (1).png",,,,Chaos,Thanatos,nuker,,demon-lord;boss,,reviewed
+batch3-002,,batch3,god,organic,"art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_10_56 AM (2).png",,,,Chaos,,nuker,,demon-lord;boss,,reviewed
+batch3-003,,batch3,god,organic,"art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_10_56 AM (3).png",,,,Eros,Thanatos,support,,demon-lord;boss,,reviewed
+batch3-004,,batch3,god,organic,"art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_10_56 AM (4).png",,,,Thanatos,Ouranos,assassin,,demon-lord;boss,,reviewed
+batch3-005,,batch3,god,organic,"art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_10_57 AM (5).png",,,,Cosmos,Gaia,control,,demon-lord;boss,,reviewed
+batch3-006,,batch3,god,organic,"art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_10_57 AM (6).png",,,,Chaos,Eros,nuker,,demon-lord;boss,,reviewed
+batch3-007,,batch3,god,organic,"art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_10_57 AM (7).png",,,,Cosmos,Ouranos,control,,demon-lord;boss,,reviewed
+batch3-008,,batch3,god,organic,"art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_10_57 AM (8).png",,,,Thanatos,Ouranos,assassin,,demon-lord;boss,,reviewed
+batch3-009,,batch3,god,organic,"art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_10_57 AM (9).png",,,,Eros,Ouranos,support,,demon-lord;boss,,reviewed
+batch3-010,,batch3,god,organic,"art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_10_58 AM (10).png",,,,Chaos,Thanatos,nuker,,demon-lord;boss,,reviewed
+batch3-011,,batch3,god,organic,"art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_14_00 AM (1).png",,,,Chaos,Thanatos,nuker,,demon-lord;boss,,reviewed
+batch3-012,,batch3,god,organic,"art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_14_01 AM (2).png",,,,Thanatos,Cosmos,assassin,,demon-lord;boss,,reviewed
+batch3-013,,batch3,god,organic,"art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_14_01 AM (3).png",,,,Thanatos,Chaos,assassin,,demon-lord;boss,,reviewed
+batch3-014,,batch3,god,organic,"art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_14_01 AM (4).png",,,,Chaos,Thanatos,nuker,,demon-lord;boss,,reviewed
+batch3-015,,batch3,god,organic,"art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_14_01 AM (5).png",,,,Cosmos,Ouranos,control,,demon-lord;boss,,reviewed
+batch3-016,,batch3,god,organic,"art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_14_02 AM (6).png",,,,Cosmos,Ouranos,control,,demon-lord;boss,,reviewed
+batch3-017,,batch3,god,organic,"art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_14_02 AM (7).png",,,,Eros,Gaia,support,,demon-lord;boss,,reviewed
+batch3-018,,batch3,god,organic,"art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_14_02 AM (8).png",,,,Chaos,Ouranos,nuker,,demon-lord;boss,,reviewed
+batch3-019,,batch3,god,organic,"art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_14_02 AM (9).png",,,,Thanatos,Eros,assassin,,demon-lord;boss,,reviewed
+batch3-020,,batch3,god,organic,"art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_14_03 AM (10).png",,,,Gaia,Thanatos,tank,,demon-lord;boss,,reviewed
+batch3-021,,batch3,god,organic,"art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_16_08 AM (1).png",,,,Thanatos,Chaos,assassin,,demon-lord;boss,,reviewed
+batch3-022,,batch3,god,organic,"art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_16_09 AM (2).png",,,,Thanatos,,assassin,,demon-lord;boss,,reviewed
+batch3-023,,batch3,god,organic,"art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_16_09 AM (3).png",,,,Eros,Gaia,support,,demon-lord;boss,,reviewed
+batch3-024,,batch3,god,organic,"art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_16_09 AM (4).png",,,,Ouranos,Cosmos,striker,,demon-lord;boss,,reviewed
+batch3-025,,batch3,god,organic,"art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_16_09 AM (5).png",,,,Thanatos,Chaos,assassin,,demon-lord;boss,,reviewed
+batch3-026,,batch3,god,organic,"art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_16_10 AM (6).png",,,,Cosmos,Ouranos,control,,demon-lord;boss,,reviewed
+batch3-027,,batch3,god,organic,"art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_16_10 AM (7).png",,,,Thanatos,Gaia,assassin,,demon-lord;boss,,reviewed
+batch3-028,,batch3,god,organic,"art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_16_10 AM (8).png",,,,Chaos,Ouranos,nuker,,demon-lord;boss,,reviewed
+batch3-029,,batch3,god,organic,"art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_16_10 AM (9).png",,,,Cosmos,Gaia,control,,demon-lord;boss,,reviewed
+batch3-030,,batch3,god,organic,"art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_16_11 AM (10).png",,,,Thanatos,Chaos,assassin,,demon-lord;boss,,reviewed
+batch3-031,,batch3,wild,construct,"art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_18_34 AM (1).png",T3,,,Cosmos,Gaia,control,,construct;clockwork,,reviewed
+batch3-032,,batch3,wild,construct,"art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_18_34 AM (2).png",T3,,,Cosmos,Gaia,control,,construct;clockwork,,reviewed
+batch3-033,,batch3,wild,construct,"art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_18_35 AM (3).png",T3,,,Cosmos,Gaia,control,,construct;clockwork,,reviewed
+batch3-034,,batch3,wild,construct,"art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_18_35 AM (4).png",T3,,,Cosmos,Gaia,control,,construct;clockwork,,reviewed
+batch3-035,,batch3,wild,construct,"art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_18_35 AM (5).png",T3,,,Cosmos,Gaia,control,,construct;clockwork,,reviewed
+batch3-036,,batch3,wild,construct,"art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_18_35 AM (6).png",T3,,,Cosmos,Gaia,control,,construct;clockwork,,reviewed
+batch3-037,,batch3,wild,construct,"art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_18_36 AM (10).png",T3,,,Cosmos,Gaia,control,,construct;clockwork,,reviewed
+batch3-038,,batch3,wild,construct,"art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_18_36 AM (7).png",T3,,,Cosmos,Gaia,control,,construct;clockwork,,reviewed
+batch3-039,,batch3,wild,construct,"art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_18_36 AM (8).png",T3,,,Cosmos,Gaia,control,,construct;clockwork,,reviewed
+batch3-040,,batch3,wild,construct,"art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_18_36 AM (9).png",T3,,,Cosmos,Gaia,control,,construct;clockwork,,reviewed
+batch3-041,,batch3,legendary,organic,"art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_24_08 AM (1).png",,,,Thanatos,Eros,assassin,,eldritch;abomination,,reviewed
+batch3-042,,batch3,legendary,organic,"art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_24_08 AM (2).png",,,,Ouranos,Cosmos,striker,,eldritch;abomination,,reviewed
+batch3-043,,batch3,legendary,organic,"art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_24_08 AM (3).png",,,,Thanatos,,assassin,,eldritch;abomination,,reviewed
+batch3-044,,batch3,legendary,organic,"art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_24_08 AM (4).png",,,,Eros,Ouranos,support,,eldritch;abomination,,reviewed
+batch3-045,,batch3,legendary,organic,"art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_24_09 AM (5).png",,,,Eros,Chaos,support,,eldritch;abomination,,reviewed
+batch3-046,,batch3,legendary,organic,"art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_24_09 AM (6).png",,,,Thanatos,Chaos,assassin,,eldritch;abomination,,reviewed
+batch3-047,,batch3,legendary,organic,"art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_24_09 AM (7).png",,,,Thanatos,Ouranos,assassin,,eldritch;abomination,,reviewed
+batch3-048,,batch3,legendary,organic,"art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_24_09 AM (8).png",,,,Chaos,Thanatos,nuker,,eldritch;abomination,,reviewed
+batch3-049,,batch3,legendary,organic,"art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_24_09 AM (9).png",,,,Thanatos,Chaos,assassin,,eldritch;abomination,,reviewed
+batch3-050,,batch3,legendary,organic,"art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_24_10 AM (10).png",,,,Thanatos,Chaos,assassin,,eldritch;abomination,,reviewed
+batch3-051,,batch3,legendary,organic,"art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_27_26 AM (1).png",,,,Gaia,Ouranos,tank,,kaiju;apex,,reviewed
+batch3-052,,batch3,legendary,organic,"art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_27_26 AM (2).png",,,,Gaia,Chaos,tank,,kaiju;apex,,reviewed
+batch3-053,,batch3,legendary,organic,"art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_27_26 AM (3).png",,,,Gaia,Thanatos,tank,,kaiju;apex,,reviewed
+batch3-054,,batch3,legendary,organic,"art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_27_26 AM (4).png",,,,Ouranos,Chaos,striker,,kaiju;apex,,reviewed
+batch3-055,,batch3,legendary,organic,"art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_27_27 AM (5).png",,,,Gaia,Thanatos,tank,,kaiju;apex,,reviewed
+batch3-056,,batch3,wild,construct,"art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_27_27 AM (6).png",T3,,,Cosmos,Gaia,control,,construct;mecha,,reviewed
+batch3-057,,batch3,wild,construct,"art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_27_27 AM (7).png",T3,,,Cosmos,Gaia,control,,construct;mecha,,reviewed
+batch3-058,,batch3,wild,construct,"art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_27_27 AM (8).png",T3,,,Cosmos,Gaia,control,,construct;mecha,,reviewed
+batch3-059,,batch3,wild,construct,"art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_27_27 AM (9).png",T3,,,Cosmos,Gaia,control,,construct;mecha,,reviewed
+batch3-060,,batch3,wild,construct,"art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_27_28 AM (10).png",T3,,,Cosmos,Gaia,control,,construct;mecha,,reviewed
+batch3-061,,batch3,legendary,organic,"art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_29_44 AM (1).png",,,,Gaia,Chaos,tank,,kaiju;apex,,reviewed
+batch3-062,,batch3,legendary,organic,"art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_29_44 AM (2).png",,,,Gaia,,tank,,kaiju;apex,,reviewed
+batch3-063,,batch3,legendary,organic,"art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_29_45 AM (3).png",,,,Ouranos,Cosmos,striker,,kaiju;apex,,reviewed
+batch3-064,,batch3,legendary,organic,"art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_29_45 AM (4).png",,,,Ouranos,Gaia,striker,,kaiju;apex,,reviewed
+batch3-065,,batch3,legendary,organic,"art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_29_45 AM (5).png",,,,Ouranos,Chaos,striker,,kaiju;apex,,reviewed
+batch3-066,,batch3,legendary,organic,"art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_29_46 AM (6).png",,,,Gaia,Cosmos,tank,,kaiju;apex,,reviewed
+batch3-067,,batch3,wild,construct,"art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_29_46 AM (7).png",T3,,,Cosmos,Gaia,control,,construct;mecha,,reviewed
+batch3-068,,batch3,wild,construct,"art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_29_46 AM (8).png",T3,,,Cosmos,Gaia,control,,construct;mecha,,reviewed
+batch3-069,,batch3,wild,construct,"art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_29_46 AM (9).png",T3,,,Cosmos,Gaia,control,,construct;mecha,,reviewed
+batch3-070,,batch3,wild,construct,"art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_29_47 AM (10).png",T3,,,Cosmos,Gaia,control,,construct;mecha,,reviewed
+batch3-071,,batch3,wild,organic,"art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_32_19 AM (1).png",T2,,,Cosmos,Gaia,control,,beast,,reviewed
+batch3-072,,batch3,legendary,organic,"art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_32_19 AM (2).png",,,,Thanatos,Ouranos,assassin,,dragon;apex,,reviewed
+batch3-073,,batch3,legendary,organic,"art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_32_19 AM (3).png",,,,Gaia,Chaos,tank,,greek-myth;champion,,reviewed
+batch3-074,,batch3,legendary,organic,"art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_32_20 AM (4).png",,,,Thanatos,Chaos,assassin,,greek-myth;champion,,reviewed
+batch3-075,,batch3,legendary,organic,"art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_32_20 AM (5).png",,,,Ouranos,Thanatos,striker,,greek-myth;champion,,reviewed
+batch3-076,,batch3,legendary,organic,"art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_32_20 AM (6).png",,,,Thanatos,Chaos,assassin,,greek-myth;champion,,reviewed
+batch3-077,,batch3,legendary,organic,"art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_32_20 AM (7).png",,,,Cosmos,Gaia,control,,greek-myth;champion,,reviewed
+batch3-078,,batch3,,,"art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_32_20 AM (8).png",,,,,,,,blank-render,,void
+batch4-001,,batch4,wild,organic,,T2,,,Eros,Cosmos,support,,radiant;holy,,reviewed
+batch4-002,,batch4,wild,organic,,T2,,,Eros,Cosmos,support,,radiant;holy,,reviewed
+batch4-003,,batch4,wild,organic,,T2,,,Eros,Cosmos,support,,radiant;holy,,reviewed
+batch4-004,,batch4,wild,organic,,T2,,,Eros,Cosmos,support,,radiant;holy,,reviewed
+batch4-005,,batch4,wild,organic,,T2,,,Eros,Cosmos,support,,radiant;holy,,reviewed
+batch4-006,,batch4,wild,organic,,T2,,,Eros,Cosmos,support,,radiant;holy,,reviewed
+batch4-007,,batch4,wild,organic,,T2,,,Eros,Cosmos,support,,radiant;holy,,reviewed
+batch4-008,,batch4,wild,organic,,T2,,,Eros,Cosmos,support,,radiant;holy,,reviewed
+batch4-009,,batch4,wild,organic,,T2,,,Eros,Cosmos,support,,radiant;holy,,reviewed
+batch4-010,,batch4,wild,organic,,T2,,,Eros,Cosmos,support,,radiant;holy,,reviewed
+batch4-011,,batch4,wild,organic,,T2,,,Eros,Cosmos,support,,radiant;holy,,reviewed
+batch4-012,,batch4,wild,organic,,T2,,,Eros,Cosmos,support,,radiant;holy,,reviewed
+batch4-013,,batch4,wild,organic,,T2,,,Eros,Cosmos,support,,radiant;holy,,reviewed
+batch4-014,,batch4,wild,organic,,T2,,,Eros,Cosmos,support,,radiant;holy,,reviewed
+batch4-015,,batch4,wild,organic,,T2,,,Eros,Cosmos,support,,radiant;holy,,reviewed
+batch4-016,,batch4,wild,organic,,T2,,,Eros,Cosmos,support,,radiant;holy,,reviewed
+batch4-017,,batch4,wild,organic,,T2,,,Eros,Cosmos,support,,radiant;holy,,reviewed
+batch4-018,,batch4,wild,organic,,T2,,,Eros,Cosmos,support,,radiant;holy,,reviewed
+batch4-019,,batch4,wild,organic,,T2,,,Eros,Cosmos,support,,radiant;holy,,reviewed
+batch4-020,,batch4,wild,organic,,T2,,,Eros,Cosmos,support,,radiant;holy,,reviewed
+batch4-021,,batch4,wild,organic,,T2,,,Eros,Cosmos,support,,radiant;holy,,reviewed
+batch4-022,,batch4,wild,organic,,T2,,,Eros,Cosmos,support,,radiant;holy,,reviewed
+batch4-023,,batch4,wild,organic,,T2,,,Eros,Cosmos,support,,radiant;holy,,reviewed
+batch4-024,,batch4,wild,organic,,T2,,,Eros,Cosmos,support,,radiant;holy,,reviewed
+batch4-025,,batch4,wild,organic,,T2,,,Thanatos,Chaos,assassin,,dark,,reviewed
+batch4-026,,batch4,wild,organic,,T2,,,Thanatos,Chaos,assassin,,dark,,reviewed
+batch4-027,,batch4,wild,organic,,T2,,,Thanatos,Chaos,assassin,,dark,,reviewed
+batch4-028,,batch4,wild,organic,,T2,,,Thanatos,Chaos,assassin,,dark,,reviewed
+batch4-029,,batch4,wild,organic,,T2,,,Thanatos,Chaos,assassin,,dark,,reviewed
+batch4-030,,batch4,wild,organic,,T2,,,Thanatos,Chaos,assassin,,dark,,reviewed
+batch4-031,,batch4,wild,organic,,T2,,,Ouranos,Cosmos,striker,,frost;sky,,reviewed
+batch4-032,,batch4,wild,organic,,T2,,,Ouranos,Cosmos,striker,,frost;sky,,reviewed
+batch4-033,,batch4,wild,organic,,T2,,,Ouranos,Cosmos,striker,,frost;sky,,reviewed
+batch4-034,,batch4,wild,organic,,T2,,,Ouranos,Cosmos,striker,,frost;sky,,reviewed
+batch4-035,,batch4,wild,organic,,T2,,,Ouranos,Cosmos,striker,,frost;sky,,reviewed
+batch4-036,,batch4,wild,organic,,T2,,,Ouranos,Cosmos,striker,,frost;sky,,reviewed
+batch4-037,,batch4,wild,organic,,T2,,,Ouranos,Cosmos,striker,,frost;sky,,reviewed
+batch4-038,,batch4,wild,organic,,T2,,,Ouranos,Cosmos,striker,,frost;sky,,reviewed
+batch4-039,,batch4,wild,organic,,T2,,,Ouranos,Cosmos,striker,,frost;sky,,reviewed
+batch4-040,,batch4,wild,organic,,T2,,,Ouranos,Cosmos,striker,,frost;sky,,reviewed
+batch4-041,,batch4,wild,organic,,T2,,,Ouranos,Cosmos,striker,,frost;sky,,reviewed
+batch4-042,,batch4,wild,organic,,T2,,,Ouranos,Cosmos,striker,,frost;sky,,reviewed
+batch4-043,,batch4,wild,organic,,T2,,,Ouranos,Cosmos,striker,,frost;sky,,reviewed
+batch4-044,,batch4,wild,organic,,T2,,,Ouranos,Cosmos,striker,,frost;sky,,reviewed
+batch4-045,,batch4,wild,organic,,T2,,,Ouranos,Cosmos,striker,,frost;sky,,reviewed
+batch4-046,,batch4,wild,organic,,T2,,,Ouranos,Cosmos,striker,,frost;sky,,reviewed
+batch4-047,,batch4,wild,organic,,T2,,,Ouranos,Cosmos,striker,,frost;sky,,reviewed
+batch4-048,,batch4,wild,organic,,T2,,,Ouranos,Cosmos,striker,,frost;sky,,reviewed
+batch4-049,,batch4,legendary,organic,,,,,Ouranos,Cosmos,striker,,dragon;apex,,reviewed
+batch4-050,,batch4,legendary,organic,,,,,Ouranos,Cosmos,striker,,dragon;apex,,reviewed
+batch4-051,,batch4,legendary,organic,,,,,Chaos,Thanatos,nuker,,dragon;apex,,reviewed
+batch4-052,,batch4,legendary,organic,,,,,Chaos,Thanatos,nuker,,dragon;apex,,reviewed
+batch4-053,,batch4,legendary,organic,,,,,Chaos,Thanatos,nuker,,dragon;apex,,reviewed
+batch4-054,,batch4,legendary,organic,,,,,Chaos,Thanatos,nuker,,dragon;apex,,reviewed
+batch4-055,,batch4,legendary,organic,,,,,Chaos,Thanatos,nuker,,dragon;apex,,reviewed
+batch4-056,,batch4,legendary,organic,,,,,Thanatos,Ouranos,assassin,,dragon;apex,,reviewed
+batch4-057,,batch4,legendary,organic,,,,,Thanatos,Ouranos,assassin,,dragon;apex,,reviewed
+batch4-058,,batch4,legendary,organic,,,,,Thanatos,Ouranos,assassin,,dragon;apex,,reviewed
+batch4-059,,batch4,legendary,organic,,,,,Thanatos,Ouranos,assassin,,dragon;apex,,reviewed
+batch4-060,,batch4,legendary,organic,,,,,Thanatos,Ouranos,assassin,,dragon;apex,,reviewed
+batch4-061,,batch4,legendary,organic,,,,,Eros,Thanatos,support,,eldritch;apex,,reviewed
+batch4-062,,batch4,legendary,organic,,,,,Eros,Thanatos,support,,eldritch;apex,,reviewed
+batch4-063,,batch4,legendary,organic,,,,,Eros,Thanatos,support,,eldritch;apex,,reviewed
+batch4-064,,batch4,legendary,organic,,,,,Eros,Thanatos,support,,eldritch;apex,,reviewed
+batch4-065,,batch4,wild,construct,,T3,,,Gaia,Cosmos,tank,,construct,,reviewed
+batch4-066,,batch4,legendary,organic,,,,,Thanatos,Eros,assassin,,eldritch;apex,,reviewed
+batch4-067,,batch4,legendary,organic,,,,,Thanatos,Eros,assassin,,eldritch;apex,,reviewed
+batch4-068,,batch4,legendary,organic,,,,,Thanatos,Eros,assassin,,eldritch;apex,,reviewed
+batch4-069,,batch4,legendary,organic,,,,,Thanatos,Eros,assassin,,eldritch;apex,,reviewed
+batch4-070,,batch4,legendary,organic,,,,,Thanatos,Eros,assassin,,eldritch;apex,,reviewed
+batch4-071,,batch4,legendary,organic,,,,,Cosmos,Thanatos,control,,spirit;eldritch,,reviewed
+batch4-072,,batch4,legendary,organic,,,,,Cosmos,Thanatos,control,,spirit;eldritch,,reviewed
+batch4-073,,batch4,legendary,organic,,,,,Cosmos,Thanatos,control,,spirit;eldritch,,reviewed
+batch4-074,,batch4,legendary,organic,,,,,Cosmos,Thanatos,control,,spirit;eldritch,,reviewed
+batch4-075,,batch4,legendary,organic,,,,,Cosmos,Thanatos,control,,spirit;eldritch,,reviewed
+batch4-076,,batch4,legendary,organic,,,,,Cosmos,Thanatos,control,,spirit;eldritch,,reviewed
+batch4-077,,batch4,legendary,organic,,,,,Cosmos,Thanatos,control,,spirit;eldritch,,reviewed
+batch4-078,,batch4,legendary,organic,,,,,Cosmos,Thanatos,control,,spirit;eldritch,,reviewed
+batch4-079,,batch4,legendary,organic,,,,,Cosmos,Thanatos,control,,spirit;eldritch,,reviewed
+batch4-080,,batch4,legendary,organic,,,,,Cosmos,Thanatos,control,,spirit;eldritch,,reviewed
+batch4-081,,batch4,wild,organic,,T1,,,Eros,Ouranos,support,,base;fae,,reviewed
+batch4-082,,batch4,wild,organic,,T1,,,Eros,Ouranos,support,,base;fae,,reviewed
+batch4-083,,batch4,wild,organic,,T1,,,Eros,Ouranos,support,,base;fae,,reviewed
+batch4-084,,batch4,wild,organic,,T1,,,Eros,Ouranos,support,,base;fae,,reviewed
+batch4-085,,batch4,wild,organic,,T1,,,Eros,Ouranos,support,,base;fae,,reviewed
+batch4-086,,batch4,wild,organic,,T1,,,Eros,Ouranos,support,,base;fae,,reviewed
+batch4-087,,batch4,wild,organic,,T1,,,Eros,Ouranos,support,,base;fae,,reviewed
+batch4-088,,batch4,wild,organic,,T1,,,Eros,Ouranos,support,,base;fae,,reviewed
+batch4-089,,batch4,wild,organic,,T1,,,Eros,Ouranos,support,,base;fae,,reviewed
+batch4-090,,batch4,wild,organic,,T1,,,Eros,Ouranos,support,,base;fae,,reviewed
+batch4-091,,batch4,wild,organic,,T3,,,Chaos,Cosmos,nuker,,mystic;crystal,,reviewed
+batch4-092,,batch4,wild,organic,,T3,,,Chaos,Cosmos,nuker,,mystic;crystal,,reviewed
+batch4-093,,batch4,wild,organic,,T3,,,Chaos,Cosmos,nuker,,mystic;crystal,,reviewed
+batch4-094,,batch4,wild,organic,,T3,,,Chaos,Cosmos,nuker,,mystic;crystal,,reviewed
+batch4-095,,batch4,wild,organic,,T3,,,Chaos,Cosmos,nuker,,mystic;crystal,,reviewed
+batch4-096,,batch4,wild,organic,,T3,,,Chaos,Cosmos,nuker,,mystic;crystal,,reviewed
+batch4-097,,batch4,wild,organic,,T3,,,Chaos,Cosmos,nuker,,mystic;crystal,,reviewed
+batch4-098,,batch4,wild,organic,,T3,,,Chaos,Cosmos,nuker,,mystic;crystal,,reviewed
+batch4-099,,batch4,wild,organic,,T3,,,Chaos,Cosmos,nuker,,mystic;crystal,,reviewed
+batch4-100,,batch4,wild,organic,,T3,,,Chaos,Cosmos,nuker,,mystic;crystal,,reviewed
+batch5-001,,batch5,wild,organic,,T2,,,Gaia,Chaos,tank,,beast,,reviewed
+batch5-002,,batch5,wild,organic,,T2,,,Gaia,Chaos,tank,,beast,,reviewed
+batch5-003,,batch5,wild,organic,,T2,,,Gaia,Chaos,tank,,beast,,reviewed
+batch5-004,,batch5,wild,organic,,T2,,,Gaia,Chaos,tank,,beast,,reviewed
+batch5-005,,batch5,wild,organic,,T2,,,Gaia,Chaos,tank,,beast,,reviewed
+batch5-006,,batch5,wild,organic,,T2,,,Gaia,Chaos,tank,,beast,,reviewed
+batch5-007,,batch5,wild,organic,,T2,,,Cosmos,Gaia,control,,mixed,,reviewed
+batch5-008,,batch5,wild,organic,,T2,,,Cosmos,Gaia,control,,mixed,,reviewed
+batch5-009,,batch5,wild,organic,,T2,,,Cosmos,Gaia,control,,mixed,,reviewed
+batch5-010,,batch5,wild,organic,,T2,,,Cosmos,Gaia,control,,mixed,,reviewed
+batch5-011,,batch5,wild,organic,,T2,,,Cosmos,Gaia,control,,mixed,,reviewed
+batch5-012,,batch5,wild,organic,,T2,,,Cosmos,Gaia,control,,mixed,,reviewed
+batch5-013,,batch5,wild,organic,,T2,,,Eros,Cosmos,support,,radiant,,reviewed
+batch5-014,,batch5,wild,organic,,T2,,,Eros,Cosmos,support,,radiant,,reviewed
+batch5-015,,batch5,wild,organic,,T2,,,Eros,Cosmos,support,,radiant,,reviewed
+batch5-016,,batch5,wild,organic,,T2,,,Eros,Cosmos,support,,radiant,,reviewed
+batch5-017,,batch5,wild,organic,,T2,,,Eros,Cosmos,support,,radiant,,reviewed
+batch5-018,,batch5,wild,organic,,T2,,,Eros,Cosmos,support,,radiant,,reviewed
+batch5-019,,batch5,wild,organic,,T2,,,Ouranos,Cosmos,striker,,frost,,reviewed
+batch5-020,,batch5,wild,organic,,T2,,,Ouranos,Cosmos,striker,,frost,,reviewed
+batch5-021,,batch5,wild,organic,,T2,,,Ouranos,Cosmos,striker,,frost,,reviewed
+batch5-022,,batch5,wild,organic,,T2,,,Ouranos,Cosmos,striker,,frost,,reviewed
+batch5-023,,batch5,wild,organic,,T2,,,Ouranos,Cosmos,striker,,frost,,reviewed
+batch5-024,,batch5,wild,organic,,T2,,,Ouranos,Cosmos,striker,,frost,,reviewed
+batch5-025,,batch5,legendary,organic,,,,,Cosmos,Ouranos,control,,celestial,,reviewed
+batch5-026,,batch5,legendary,organic,,,,,Cosmos,Ouranos,control,,celestial,,reviewed
+batch5-027,,batch5,legendary,organic,,,,,Cosmos,Ouranos,control,,celestial,,reviewed
+batch5-028,,batch5,legendary,organic,,,,,Cosmos,Ouranos,control,,celestial,,reviewed
+batch5-029,,batch5,legendary,organic,,,,,Cosmos,Ouranos,control,,celestial,,reviewed
+batch5-030,,batch5,legendary,organic,,,,,Cosmos,Ouranos,control,,celestial,,reviewed
+batch5-031,,batch5,wild,organic,,T3,,,Chaos,Gaia,nuker,,fierce,,reviewed
+batch5-032,,batch5,wild,organic,,T3,,,Chaos,Gaia,nuker,,fierce,,reviewed
+batch5-033,,batch5,wild,organic,,T3,,,Chaos,Gaia,nuker,,fierce,,reviewed
+batch5-034,,batch5,wild,organic,,T3,,,Chaos,Gaia,nuker,,fierce,,reviewed
+batch5-035,,batch5,wild,organic,,T3,,,Chaos,Gaia,nuker,,fierce,,reviewed
+batch5-036,,batch5,wild,organic,,T3,,,Chaos,Gaia,nuker,,fierce,,reviewed
+batch5-037,,batch5,legendary,organic,,,,,Chaos,Thanatos,nuker,,demon,,reviewed
+batch5-038,,batch5,legendary,organic,,,,,Chaos,Thanatos,nuker,,demon,,reviewed
+batch5-039,,batch5,legendary,organic,,,,,Chaos,Thanatos,nuker,,demon,,reviewed
+batch5-040,,batch5,legendary,organic,,,,,Chaos,Thanatos,nuker,,demon,,reviewed
+batch5-041,,batch5,legendary,organic,,,,,Chaos,Thanatos,nuker,,demon,,reviewed
+batch5-042,,batch5,legendary,organic,,,,,Chaos,Thanatos,nuker,,demon,,reviewed
+batch5-043,,batch5,wild,organic,,T3,,,Thanatos,Cosmos,assassin,,dark,,reviewed
+batch5-044,,batch5,wild,organic,,T3,,,Thanatos,Cosmos,assassin,,dark,,reviewed
+batch5-045,,batch5,wild,organic,,T3,,,Thanatos,Cosmos,assassin,,dark,,reviewed
+batch5-046,,batch5,wild,organic,,T3,,,Thanatos,Cosmos,assassin,,dark,,reviewed
+batch5-047,,batch5,wild,organic,,T3,,,Thanatos,Cosmos,assassin,,dark,,reviewed
+batch5-048,,batch5,wild,organic,,T3,,,Thanatos,Cosmos,assassin,,dark,,reviewed
+batch5-049,,batch5,legendary,organic,,,,,Chaos,Thanatos,nuker,,demon,,reviewed
+batch5-050,,batch5,legendary,organic,,,,,Chaos,Thanatos,nuker,,demon,,reviewed
+batch5-051,,batch5,legendary,organic,,,,,Chaos,Thanatos,nuker,,demon,,reviewed
+batch5-052,,batch5,legendary,organic,,,,,Chaos,Thanatos,nuker,,demon,,reviewed
+batch5-053,,batch5,legendary,organic,,,,,Chaos,Thanatos,nuker,,demon,,reviewed
+batch5-054,,batch5,legendary,organic,,,,,Chaos,Thanatos,nuker,,demon,,reviewed
+batch5-055,,batch5,legendary,organic,,,,,Ouranos,Thanatos,striker,,aquatic,,reviewed
+batch5-056,,batch5,legendary,organic,,,,,Ouranos,Thanatos,striker,,aquatic,,reviewed
+batch5-057,,batch5,legendary,organic,,,,,Ouranos,Thanatos,striker,,aquatic,,reviewed
+batch5-058,,batch5,legendary,organic,,,,,Ouranos,Thanatos,striker,,aquatic,,reviewed
+batch5-059,,batch5,legendary,organic,,,,,Ouranos,Thanatos,striker,,aquatic,,reviewed
+batch5-060,,batch5,legendary,organic,,,,,Ouranos,Thanatos,striker,,aquatic,,reviewed
+batch5-061,,batch5,wild,organic,,T3,,,Gaia,Thanatos,tank,,beast,,reviewed
+batch5-062,,batch5,wild,organic,,T3,,,Gaia,Thanatos,tank,,beast,,reviewed
+batch5-063,,batch5,wild,organic,,T3,,,Gaia,Thanatos,tank,,beast,,reviewed
+batch5-064,,batch5,wild,organic,,T3,,,Gaia,Thanatos,tank,,beast,,reviewed
+batch5-065,,batch5,wild,organic,,T3,,,Gaia,Thanatos,tank,,beast,,reviewed
+batch5-066,,batch5,wild,organic,,T3,,,Gaia,Thanatos,tank,,beast,,reviewed
+batch5-067,,batch5,wild,organic,,T2,,,Gaia,Chaos,tank,,beast,,reviewed
+batch5-068,,batch5,wild,organic,,T2,,,Gaia,Chaos,tank,,beast,,reviewed
+batch5-069,,batch5,wild,organic,,T2,,,Gaia,Chaos,tank,,beast,,reviewed
+batch5-070,,batch5,wild,organic,,T2,,,Gaia,Chaos,tank,,beast,,reviewed
+batch5-071,,batch5,wild,organic,,T2,,,Gaia,Chaos,tank,,beast,,reviewed
+batch5-072,,batch5,wild,organic,,T2,,,Gaia,Chaos,tank,,beast,,reviewed
+batch5-073,,batch5,wild,organic,,T3,,,Gaia,Cosmos,tank,,metallic,,reviewed
+batch5-074,,batch5,wild,organic,,T3,,,Gaia,Cosmos,tank,,metallic,,reviewed
+batch5-075,,batch5,wild,organic,,T3,,,Gaia,Cosmos,tank,,metallic,,reviewed
+batch5-076,,batch5,wild,organic,,T3,,,Gaia,Cosmos,tank,,metallic,,reviewed
+batch5-077,,batch5,wild,organic,,T3,,,Gaia,Cosmos,tank,,metallic,,reviewed
+batch5-078,,batch5,wild,organic,,T3,,,Gaia,Cosmos,tank,,metallic,,reviewed
+batch5-079,,batch5,wild,organic,,T3,,,Thanatos,Chaos,assassin,,dark,,reviewed
+batch5-080,,batch5,wild,organic,,T3,,,Thanatos,Chaos,assassin,,dark,,reviewed
+batch5-081,,batch5,wild,organic,,T3,,,Thanatos,Chaos,assassin,,dark,,reviewed
+batch5-082,,batch5,wild,organic,,T3,,,Thanatos,Chaos,assassin,,dark,,reviewed
+batch5-083,,batch5,wild,organic,,T3,,,Thanatos,Chaos,assassin,,dark,,reviewed
+batch5-084,,batch5,wild,organic,,T3,,,Thanatos,Chaos,assassin,,dark,,reviewed
+batch5-085,,batch5,legendary,organic,,,,,Thanatos,Chaos,assassin,,dark,,reviewed
+batch5-086,,batch5,legendary,organic,,,,,Thanatos,Chaos,assassin,,dark,,reviewed
+batch5-087,,batch5,legendary,organic,,,,,Thanatos,Chaos,assassin,,dark,,reviewed
+batch5-088,,batch5,legendary,organic,,,,,Thanatos,Chaos,assassin,,dark,,reviewed
+batch5-089,,batch5,legendary,organic,,,,,Thanatos,Chaos,assassin,,dark,,reviewed
+batch5-090,,batch5,legendary,organic,,,,,Thanatos,Chaos,assassin,,dark,,reviewed
+batch5-091,,batch5,legendary,organic,,,,,Ouranos,Cosmos,striker,,frost,,reviewed
+batch5-092,,batch5,legendary,organic,,,,,Ouranos,Cosmos,striker,,frost,,reviewed
+batch5-093,,batch5,legendary,organic,,,,,Ouranos,Cosmos,striker,,frost,,reviewed
+batch5-094,,batch5,legendary,organic,,,,,Ouranos,Cosmos,striker,,frost,,reviewed
+batch5-095,,batch5,legendary,organic,,,,,Ouranos,Cosmos,striker,,frost,,reviewed
+batch5-096,,batch5,legendary,organic,,,,,Ouranos,Cosmos,striker,,frost,,reviewed
+batch5-097,,batch5,legendary,organic,,,,,Chaos,Cosmos,nuker,,crystal,,reviewed
+batch5-098,,batch5,legendary,organic,,,,,Chaos,Cosmos,nuker,,crystal,,reviewed
+batch5-099,,batch5,legendary,organic,,,,,Chaos,Cosmos,nuker,,crystal,,reviewed
+batch5-100,,batch5,legendary,organic,,,,,Chaos,Cosmos,nuker,,crystal,,reviewed
+batch5-101,,batch5,legendary,organic,,,,,Chaos,Cosmos,nuker,,crystal,,reviewed
+batch5-102,,batch5,legendary,organic,,,,,Chaos,Cosmos,nuker,,crystal,,reviewed
+batch5-103,,batch5,wild,organic,,T3,,,Gaia,Eros,tank,,earth,,reviewed
+batch5-104,,batch5,wild,organic,,T3,,,Gaia,Eros,tank,,earth,,reviewed
+batch5-105,,batch5,wild,organic,,T3,,,Gaia,Eros,tank,,earth,,reviewed
+batch5-106,,batch5,wild,organic,,T3,,,Gaia,Eros,tank,,earth,,reviewed
+batch5-107,,batch5,wild,organic,,T3,,,Gaia,Eros,tank,,earth,,reviewed
+batch5-108,,batch5,wild,organic,,T3,,,Gaia,Eros,tank,,earth,,reviewed
+batch5-109,,batch5,legendary,organic,,,,,Eros,Cosmos,support,,radiant,,reviewed
+batch5-110,,batch5,legendary,organic,,,,,Eros,Cosmos,support,,radiant,,reviewed
+batch5-111,,batch5,legendary,organic,,,,,Eros,Cosmos,support,,radiant,,reviewed
+batch5-112,,batch5,legendary,organic,,,,,Eros,Cosmos,support,,radiant,,reviewed
+batch5-113,,batch5,legendary,organic,,,,,Eros,Cosmos,support,,radiant,,reviewed
+batch5-114,,batch5,legendary,organic,,,,,Eros,Cosmos,support,,radiant,,reviewed
+batch5-115,,batch5,wild,organic,,T3,,,Chaos,Gaia,nuker,,golden,,reviewed
+batch5-116,,batch5,wild,organic,,T3,,,Chaos,Gaia,nuker,,golden,,reviewed
+batch5-117,,batch5,wild,organic,,T3,,,Chaos,Gaia,nuker,,golden,,reviewed
+batch5-118,,batch5,wild,organic,,T3,,,Chaos,Gaia,nuker,,golden,,reviewed
+batch5-119,,batch5,wild,organic,,T3,,,Chaos,Gaia,nuker,,golden,,reviewed

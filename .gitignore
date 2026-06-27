@@ -1,0 +1,58 @@
+# ─────────────────────────────────────────────────────────────
+# Mutants_Game — .gitignore
+# The base repo holds the design + code corpus. The 363 MB of raw
+# creature art (art/) and UI image slices (assets/**) are kept OUT of
+# base history and added later via Git LFS — see README "Adding art via LFS".
+# ─────────────────────────────────────────────────────────────
+
+# Heavy generated art + image slices (add via LFS in a follow-up)
+/art/
+*.png
+*.jpg
+*.jpeg
+*.webp
+*.gif
+
+# Archives / large binaries
+*.zip
+*.7z
+*.rar
+*.psd
+*.aseprite
+
+# Audio / video
+*.wav
+*.ogg
+*.mp3
+*.mp4
+
+# Secrets — NEVER commit (anon key only ships in client config)
+.env
+.env.*
+*.key
+*.pem
+service-role*
+*serviceRole*
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Node / Vercel
+node_modules/
+.vercel/
+dist/
+.next/
+
+# Godot
+.godot/
+.import/
+export_presets.cfg
+
+# OS / editors
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
