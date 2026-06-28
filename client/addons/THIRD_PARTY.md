@@ -35,6 +35,32 @@ a self-contained backend rather than a vendored runtime addon — the spec (D6/D
 *facade contract* (`Toast.show`, `Transition.ritual`, the grimoire `Theme` "authored in code"), and
 each file documents the clean seam to drop in the upstream addon later without touching callers.
 
+## Cluster 4 — Lab Legality Engine (D3): CSP solver NOT vendored (self-contained)
+
+**godot-constraint-solving was evaluated and deliberately NOT vendored for the Lab Legality Engine.**
+The Cluster 4 spec (D3) and `Mutants_Game_SpliceRules.md` §3 permit a self-contained GDScript CSP
+"if `godot-constraint-solving` cannot be vendored cleanly for 4.7 ... the CSP semantics matter more
+than the specific lib." That library's public surface is a **Wave-Function-Collapse tile solver**
+(2D grid collapse over a `TileMapLayer`), not a **generic finite-domain CSP** with arbitrary
+constraint predicates over named variables — which is exactly what SpliceRules §3 requires
+(`force_intent` / `tier_target` / `class_target` / `trait_slots[]` / `flags` with five custom
+rule-constraints). Forcing the WFC API into that shape would be more code and more risk than the
+~70-line backtracking core we need, and (per the cluster constraints) Godot is not installable here
+to verify a 4.7 vendor cleanly. We therefore ship a small, self-contained, parity-irrelevant
+backtracking CSP solver:
+
+| Component | File | Role |
+|---|---|---|
+| `CspSolver` | `infrastructure/lab/csp_solver.gd` | generic finite-domain CSP + chronological backtracking (no game/outcome math) |
+| `LegalitySolver` | `infrastructure/lab/legality_solver.gd` | maps a Lab op → CSP per SpliceRules §3; verdict + candidate configs |
+| `SpliceRules` | `infrastructure/lab/splice_rules.gd` | loader + schema validator for `res://catalog/splice_rules.json` |
+| `LabBench` | `application/lab/lab_bench.gd` | preview/commit; routes commit to `client/domain/lab_engine.gd` (numbers) |
+
+The CSP carries **no outcome math** (ADR-015): it gates legality + resolves ingredient/trait/flag
+config + chooses among legal variants; `lab_engine` computes every number. The WFC use of
+`godot-constraint-solving` for `WorldGenerator` (D2) is a separate, later deliverable and may still
+vendor the addon for its actual (tile-collapse) purpose.
+
 ## Local modifications (4.7 compatibility)
 
 - **Dialogic** `Modules/Variable/subsystem_variables.gd` — added `return null` to the two `_get()`
