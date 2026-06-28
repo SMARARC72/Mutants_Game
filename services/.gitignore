@@ -1,0 +1,8 @@
+# Build output + deps (regenerable). Secrets are env-only (see .env.example) and never committed.
+dist/
+node_modules/
+coverage/
+.vercel/
+.env
+.env.*
+!.env.example
