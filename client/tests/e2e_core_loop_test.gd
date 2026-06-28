@@ -169,9 +169,12 @@ func test_full_core_loop_composes_end_to_end() -> void:
 
 	# --- 8. Bloomwardens standing: a befriend in the Verdant region nudges standing up ----------- #
 	var party_before_befriend := run.party.size()
-	gc.call(
-		"apply_battle_result",
-		{"player_won": true, "caught": {"species_id": "SB18"}, "xp": 8},
+	(
+		gc
+		. call(
+			"apply_battle_result",
+			{"player_won": true, "caught": {"species_id": "SB18"}, "xp": 8},
+		)
 	)
 	assert_int(int(gc.call("bloomwardens_standing"))).is_greater(0)
 	assert_int(run.party.size()).is_equal(party_before_befriend + 1)  # the befriended joins too
@@ -185,7 +188,10 @@ func test_full_core_loop_composes_end_to_end() -> void:
 	var boss_roll := director.boss_step(boss_step)
 	var session: BattleSession = BattleSessionScript.new(gc.call("catalog"))
 	var boss_result := session.run_boss(
-		run.party, boss_roll["enemy_party"], int(boss_roll["battle_seed"]), str(boss_roll["boss_brain"])
+		run.party,
+		boss_roll["enemy_party"],
+		int(boss_roll["battle_seed"]),
+		str(boss_roll["boss_brain"])
 	)
 	assert_bool(bool(boss_result["valid"])).is_true()
 	assert_bool(boss_result.has("boss_win")).is_true()
