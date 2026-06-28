@@ -61,6 +61,36 @@ config + chooses among legal variants; `lab_engine` computes every number. The W
 `godot-constraint-solving` for `WorldGenerator` (D2) is a separate, later deliverable and may still
 vendor the addon for its actual (tile-collapse) purpose.
 
+## Cluster 4 — WorldGenerator (D2 WFC) + set-pieces (D5): NOT vendored (self-contained), ADR-019
+
+**`godot-constraint-solving` (🟢 MIT, WFC2D) and SimpleDungeons (🟢 MIT) were evaluated and
+deliberately NOT vendored for `WorldGenerator`.** Unlike the D3 CSP (whose self-contained choice was
+about API *shape*), the D2/D5 choice is about **determinism**: ADR-019 requires generation to be
+seeded by the **canonical PCG32 sub-stream** `canonical_rng(run.seed, region_id)` so a region is
+bit-identical across OS targets and reloads (parity/replay, ADR-001).
+
+| Library | Why not vendored as-is |
+|---|---|
+| `godot-constraint-solving` `WFC2DGenerator` (rel. 1.7, Oct 2024) | Correct *purpose* (WFC2D over `TileMapLayer`, backtracking, multithreaded) but its collapse draws from Godot's `RandomNumberGenerator`, which is **not bit-identical to our canonical PCG32** across platforms. Satisfying ADR-019's seeding would require forking its RNG core; it is also a `Node`-based generator (scene-tree coupled), whereas our facade is a pure `RefCounted` producing plain-data. Godot is not installable in this build env to verify a clean 4.7 vendor. |
+| SimpleDungeons | Runtime scene/Node graph (rooms-as-PackedScenes, a generator Node) with its own RNG — same canonical-seeding mismatch, same can't-verify-4.7 constraint. |
+
+We therefore ship small, self-contained, **parity-irrelevant** generation cores driven by the
+canonical RNG, behind one facade (ADR-019 / Integrations §A1.2/§B4):
+
+| Component | File | Role |
+|---|---|---|
+| `WorldGenerator` | `infrastructure/worldgen/world_generator.gd` | facade `generate(region_id, seed) -> Layout`; canonical sub-stream, WorkerThreadPool path, authored fallback, persist-to-`world_state`/reuse-on-load |
+| `WfcSolver` | `infrastructure/worldgen/wfc_solver.gd` | deterministic Wave-Function-Collapse 2D (observe/propagate + chronological backtracking + attempt limit); the `WFC2DGenerator` job |
+| `DungeonAssembler` | `infrastructure/worldgen/dungeon_assembler.gd` | SimpleDungeons role — prefab set-piece room stitching (footprint + tile stamp), seeded |
+| `RegionRules` | `infrastructure/worldgen/region_rules.gd` | loader for `res://catalog/region_layouts.json` (tile palette, WFC adjacency, set-piece specs per region) |
+| `Layout` | `infrastructure/worldgen/layout.gd` | plain-data tile grid + rooms + metadata; versioned-JSON serialization (ADR-012) |
+
+These compute **no outcome math** (Cluster 4 §3): they lay out tiles; the domain oracle stays the
+single source of gameplay numbers. **Better Terrain** autotiling is a render-time cosmetic seam over
+the persisted grid (documented in `world_generator.gd`), not vendored — it adds no traversability-
+changing tile, so the persisted `Layout` remains canonical. If a future need arises to vendor the
+upstream WFC addon for its editor tooling, the facade is the only file that would change.
+
 ## Local modifications (4.7 compatibility)
 
 - **Dialogic** `Modules/Variable/subsystem_variables.gd` — added `return null` to the two `_get()`

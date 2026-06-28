@@ -22,3 +22,4 @@ revisit by superseding with a new ADR + a TDD version bump.
 | [015](0015-addons-never-own-outcome-math.md) | Addons never own outcome math; Lab Legality Engine gates, the oracle computes | Accepted | **impl Cluster 4** |
 | [017](0017-narrative-split-dialogic-ink-quest.md) | Narrative split: Dialogic renders, Ink decides, Quest tracks; state in JSON save | Accepted | **impl Cluster 3** |
 | [018](0018-limboconsole-dev-only.md) | LimboConsole is dev-build-only (DEV_TOOLS flag) | Accepted | **impl Cluster 1** |
+| [019](0019-worldgen-seeded-persisted.md) | World generation seeded (canonical RNG) + persisted, never re-simulated; authored fallback | Accepted | **impl Cluster 4** |
