@@ -70,7 +70,7 @@
 - `.github/workflows/ci.yml`: **lint** (gdformat/gdlint, sqlfluff, eslint) → **constants** (generator
   run + drift gate + parity) → **database** (`db reset` + `test db` + anon smoke) → **secret-scan**
   (`tools/secret_scan.sh` + gitleaks informational). Runs on every PR; fail-on-red. Pinned Python 3.12,
-  Node 20, Supabase CLI 2.108.0.
+  Node 22, Supabase CLI 2.108.0.
 - Every CI command was run locally and is green; the secret scanner was proven to fail on a planted
   OpenAI key.
 
