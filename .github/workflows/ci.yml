@@ -85,6 +85,8 @@ jobs:
         run: |
           PYTHONUTF8=1 python -B tools/gen_golden.py
           git diff --exit-code -- client/tests/golden
+      - name: Lab Legality ruleset coverage lint (SpliceRules §7, ADR-015)
+        run: PYTHONUTF8=1 python -B tools/test_splice_rules_coverage.py
 
   database:
     name: DB migrations + RLS (pgTAP) + anon smoke (D2/D3/D5)
