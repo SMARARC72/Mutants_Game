@@ -1,0 +1,113 @@
+{
+  "_source": "authored from docs/Mutants_Game_SpliceRules.md (§2, §3, §4, §5)",
+  "_doc": "The Lab Legality Engine ruleset (ADR-015). DATA ONLY: the CSP gates legality + ingredient/trait/flag/config resolution; lab_engine (client/domain) computes EVERY number (force blend, stat_block, entropy/corruption ledger). Thresholds mirror Constants.BALANCE only where shared with the oracle. Designers expand the Lab by editing THIS file — no GDScript changes.",
+  "schema_version": 1,
+  "forces": ["Gaia", "Ouranos", "Cosmos", "Chaos", "Eros", "Thanatos"],
+  "opposed": [["Cosmos", "Chaos"], ["Eros", "Thanatos"], ["Gaia", "Ouranos"]],
+  "thresholds": {
+    "T_abom": 40,
+    "T_god": 70,
+    "T_self": 85
+  },
+  "unlocks": ["abomination_rites", "auto_chirurgy", "necromancy"],
+  "classes": ["organic", "construct", "hybrid"],
+  "tiers": ["T1", "T2", "T3"],
+  "tier_order": { "T1": 1, "T2": 2, "T3": 3 },
+  "ranks": ["wild", "legendary", "god", "primordial"],
+  "operations": {
+    "fuse": {
+      "inputs": { "creatures": 2, "ingredients": "optional" },
+      "force_rule": "blend",
+      "tier_rule": { "base": "max", "raise_with": ["core"] },
+      "class_rule": "inherit",
+      "slots": {},
+      "taboo_when": {
+        "forces": "opposed",
+        "flags": ["taboo", "abomination"],
+        "gate": { "corruption": "T_abom", "or_unlock": "abomination_rites" }
+      }
+    },
+    "mutate": {
+      "inputs": { "creatures": 1, "ingredients": "required" },
+      "force_rule": "host",
+      "tier_rule": { "base": "host", "raise_with": ["core"] },
+      "class_rule": "inherit",
+      "slots": { "gene": "n" },
+      "taboo_when": {
+        "ingredient_force": "cross",
+        "flags": ["taboo"],
+        "gate": { "corruption": "T_abom", "or_unlock": "abomination_rites" }
+      }
+    },
+    "graft": {
+      "inputs": { "creatures": 1, "ingredients": "required" },
+      "force_rule": "host",
+      "tier_rule": { "base": "host", "raise_with": ["core"] },
+      "class_rule": "match_or_bridge",
+      "slots": { "organ": 1, "plating": "n", "core": "0..1" },
+      "taboo_when": {
+        "ingredient_rank": "god",
+        "flags": ["taboo", "god_graft"],
+        "gate": { "corruption": "T_god", "requires_part": "god_core" }
+      }
+    },
+    "self_splice": {
+      "inputs": { "creatures": 0, "player": true, "ingredients": "required" },
+      "force_rule": "host",
+      "tier_rule": { "base": "host", "raise_with": [] },
+      "class_rule": "match_or_bridge",
+      "slots": { "organ": 1, "core": "0..1" },
+      "always_gated": true,
+      "taboo_when": {
+        "always": true,
+        "flags": ["taboo", "chimera"],
+        "gate": { "corruption": "T_self", "requires_unlock": "auto_chirurgy" }
+      }
+    },
+    "reanimate": {
+      "inputs": { "creatures": 0, "graveyard_part_or_snapshot": true, "ingredients": "required" },
+      "force_rule": "host",
+      "tier_rule": { "base": "host", "raise_with": ["core"] },
+      "class_rule": "inherit",
+      "slots": { "core": 1, "soul": "0..1" },
+      "always_gated": true,
+      "taboo_when": {
+        "always": true,
+        "flags": ["taboo", "reanimated"],
+        "gate": { "requires_part_any": ["soul", "core"], "requires_unlock": "necromancy" }
+      }
+    }
+  },
+  "trait_slots": {
+    "head": { "accepts": ["eye", "horn", "crest", "venom_gland"], "max": 1, "conflicts_with": ["head"] },
+    "core": { "accepts": ["heart", "soul", "reactor", "god_core"], "max": 1, "conflicts_with": ["core"] },
+    "hide": { "accepts": ["scale", "plating", "crystal_lattice"], "max": 1, "conflicts_with": ["hide"] },
+    "limb": { "accepts": ["claw", "wing", "tail"], "max": 2, "conflicts_with": [] }
+  },
+  "ingredient_compat": {
+    "venom_gland": { "type": "organ", "slot": "head", "forces": ["Thanatos", "Chaos"], "class": ["organic"], "rank": "wild" },
+    "eye": { "type": "organ", "slot": "head", "forces": ["Cosmos", "Ouranos", "Eros"], "class": ["organic", "construct", "hybrid"], "rank": "wild" },
+    "horn": { "type": "organ", "slot": "head", "forces": ["Gaia", "Chaos"], "class": ["organic", "hybrid"], "rank": "wild" },
+    "crest": { "type": "organ", "slot": "head", "forces": ["Ouranos", "Eros"], "class": ["organic", "hybrid"], "rank": "wild" },
+    "heart": { "type": "core", "slot": "core", "forces": ["Eros", "Gaia"], "class": ["organic", "hybrid"], "rank": "wild" },
+    "soul": { "type": "soul", "slot": "core", "forces": ["Thanatos", "Cosmos"], "class": ["organic", "hybrid"], "rank": "wild" },
+    "reactor": { "type": "core", "slot": "core", "forces": ["Cosmos", "Ouranos"], "class": ["construct", "hybrid"], "rank": "wild" },
+    "god_core": { "type": "core", "slot": "core", "forces": ["Gaia", "Ouranos", "Cosmos", "Chaos", "Eros", "Thanatos"], "class": ["organic", "construct", "hybrid"], "rank": "god", "raises_tier": true },
+    "scale": { "type": "plating", "slot": "hide", "forces": ["Gaia", "Thanatos"], "class": ["organic", "hybrid"], "rank": "wild" },
+    "plating": { "type": "plating", "slot": "hide", "forces": ["Gaia", "Cosmos"], "class": ["construct", "hybrid"], "rank": "wild" },
+    "crystal_lattice": { "type": "plating", "slot": "hide", "forces": ["Cosmos"], "class": ["construct", "hybrid"], "rank": "wild" },
+    "claw": { "type": "organ", "slot": "limb", "forces": ["Chaos", "Thanatos", "Gaia"], "class": ["organic", "hybrid"], "rank": "wild" },
+    "wing": { "type": "organ", "slot": "limb", "forces": ["Ouranos", "Eros"], "class": ["organic", "hybrid"], "rank": "wild" },
+    "tail": { "type": "organ", "slot": "limb", "forces": ["Chaos", "Ouranos", "Gaia"], "class": ["organic", "hybrid"], "rank": "wild" }
+  },
+  "gene_compat": {
+    "venom": { "type": "gene", "forces": ["Thanatos", "Chaos"], "class": ["organic", "hybrid"], "conflicts_with": ["verdant"] },
+    "ironblood": { "type": "gene", "forces": ["Gaia"], "class": ["organic", "construct", "hybrid"], "conflicts_with": [] },
+    "quickstep": { "type": "gene", "forces": ["Ouranos"], "class": ["organic", "hybrid"], "conflicts_with": [] },
+    "verdant": { "type": "gene", "forces": ["Eros"], "class": ["organic", "hybrid"], "conflicts_with": ["venom"] }
+  },
+  "bridges": {
+    "_doc": "A bridging part lets an organic host accept a construct-only ingredient (and vice-versa) by producing a hybrid class_target (SpliceRules §3 constraint 4).",
+    "parts": ["plating", "reactor", "god_core"]
+  }
+}
