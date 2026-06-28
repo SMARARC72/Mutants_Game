@@ -104,7 +104,8 @@
     "venom": { "type": "gene", "forces": ["Thanatos", "Chaos"], "class": ["organic", "hybrid"], "conflicts_with": ["verdant"] },
     "ironblood": { "type": "gene", "forces": ["Gaia"], "class": ["organic", "construct", "hybrid"], "conflicts_with": [] },
     "quickstep": { "type": "gene", "forces": ["Ouranos"], "class": ["organic", "hybrid"], "conflicts_with": [] },
-    "verdant": { "type": "gene", "forces": ["Eros"], "class": ["organic", "hybrid"], "conflicts_with": ["venom"] }
+    "verdant": { "type": "gene", "forces": ["Eros"], "class": ["organic", "hybrid"], "conflicts_with": ["venom"] },
+    "servo_weave": { "type": "gene", "forces": ["Cosmos"], "class": ["construct"], "conflicts_with": [] }
   },
   "bridges": {
     "_doc": "A bridging part lets an organic host accept a construct-only ingredient (and vice-versa) by producing a hybrid class_target (SpliceRules §3 constraint 4).",

@@ -98,18 +98,20 @@ func _compute(
 	if op == "fuse" and b is Array and (b as Array).size() >= 4:
 		return LabEngine.fuse(a, b, method, rng)
 	# Single-creature ops: lab_engine has no dedicated entry (v0.1 ships fuse), so derive the result
-	# by fusing the host against a partner synthesized from force_intent (the oracle does the blend).
+	# by fusing the host against a HOST-MIRRORING partner (the oracle does the blend).
 	var partner := _partner_from_config(a, config)
 	return LabEngine.fuse(a, partner, method, rng)
 
 
-func _partner_from_config(a: Array, config: Dictionary) -> Array:
-	# Build a synthetic [name, primary, secondary, tier] partner from the resolved config so the
-	# oracle's blend produces the host's force/tier (host-preserving ops). NO math is done here.
-	var fi: Array = config.get("force_intent", [str(a[1]), ""])
-	var prim: String = str(fi[0]) if fi.size() > 0 else str(a[1])
-	var sec: String = str(fi[1]) if fi.size() > 1 else ""
-	var tier: String = str(config.get("tier_target", a[3]))
+func _partner_from_config(a: Array, _config: Dictionary) -> Array:
+	# Build a partner that MIRRORS the host's own poles + tier, INDEPENDENT of the chosen config. This
+	# is the determinism/purity fix: blend([[pA,sA],[pA,sA]]) -> prim=pA, sec=sA, tier=max(tA,tA)=tA for
+	# EVERY config, so the committed creature's forces/tier/stats can NEVER be flipped by the config-pick
+	# RNG (lab_engine stays authoritative for which forces result — SpliceRules §0/§3). The config still
+	# gates legality + records slots/genes/flags; it just may not perturb a NUMBER. NO math is done here.
+	var prim: String = str(a[1])
+	var sec: String = str(a[2]) if a.size() > 2 and a[2] != null else ""
+	var tier: String = str(a[3])
 	return ["graft_part", prim, sec, tier]
 
 
