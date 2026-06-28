@@ -116,6 +116,9 @@ def check(rules):
     trait_slots = rules["trait_slots"]
     compat = rules["ingredient_compat"]
     known_ingredients = set(compat.keys())
+    # Ingredient TYPES span both organ ingredients (ingredient_compat) and genes (gene_compat).
+    known_types = {spec.get("type") for spec in compat.values() if spec.get("type")}
+    known_types |= {spec.get("type") for spec in rules.get("gene_compat", {}).values() if spec.get("type")}
     for ing, spec in compat.items():
         for fc in spec.get("forces", []):
             if fc not in force_set:
@@ -136,16 +139,22 @@ def check(rules):
             if cls not in classes:
                 errs.append("gene %s references undefined class: %s" % (gene, cls))
 
-    # --- trait_slots: accepts tokens are known ingredients/organ names -----
+    # --- trait_slots: enforce the documented invariants (accepts non-empty, max>=1, refs exist) ---
     for slot, sdef in trait_slots.items():
-        for accept in sdef.get("accepts", []):
-            # accept may be a generic organ token (eye/horn/...) or a concrete ingredient id.
-            # We only require that EVERY ingredient id that declares this slot is listed here OR
-            # that the token is itself a defined ingredient -- catches typos in either direction.
+        accepts = sdef.get("accepts", [])
+        if not accepts:
+            errs.append("trait_slot %s has an empty/absent accepts list" % slot)
+        slot_max = sdef.get("max", 1)
+        if not isinstance(slot_max, int) or slot_max < 1:
+            errs.append("trait_slot %s max must be an int >= 1 (got %r)" % (slot, slot_max))
+        for accept in accepts:
+            # Every accepts token must be a DEFINED ingredient id (catches typos in either direction).
             if accept not in known_ingredients:
-                # tolerate generic organ tokens that have no compat row only if SOME ingredient of
-                # that exact token exists; otherwise flag (helps catch dangling accepts).
-                pass  # generic organ tokens are allowed; concrete cross-ref is checked below
+                errs.append("trait_slot %s accepts undefined ingredient: %s" % (slot, accept))
+        # conflicts_with entries must reference defined slots (a slot may list itself = capacity rule).
+        for cw in sdef.get("conflicts_with", []):
+            if cw not in trait_slots:
+                errs.append("trait_slot %s conflicts_with undefined slot: %s" % (slot, cw))
 
     # every ingredient that names a slot must be in that slot's accepts list (cross-ref both ways)
     for ing, spec in compat.items():
@@ -156,8 +165,32 @@ def check(rules):
                 errs.append("ingredient %s declares slot %s but is not in its accepts list"
                             % (ing, slot))
 
+    # --- gene conflicts_with references defined genes -----------------------
+    gene_ids = set(rules.get("gene_compat", {}).keys())
+    for gene, spec in rules.get("gene_compat", {}).items():
+        for cw in spec.get("conflicts_with", []):
+            if cw not in gene_ids:
+                errs.append("gene %s conflicts_with undefined gene: %s" % (gene, cw))
+
+    # --- data<->engine drift: every op key the engine consumes is authored & well-formed ----------
+    # The engine reads inputs, tier_rule.raise_with, slots (per-type caps), taboo_when.flags/gate. If
+    # an op is missing a key the engine relies on, behavior silently degrades -> flag it here.
+    for op, spec in ops.items():
+        tier_rule = spec.get("tier_rule", {})
+        if "raise_with" in tier_rule and not isinstance(tier_rule["raise_with"], list):
+            errs.append("operation %s tier_rule.raise_with must be a list" % op)
+        for raiser in tier_rule.get("raise_with", []):
+            if raiser not in known_types:
+                errs.append("operation %s tier_rule.raise_with references unknown type: %s" % (op, raiser))
+        for type_name in spec.get("slots", {}):
+            if type_name not in known_types:
+                errs.append("operation %s slots references unknown ingredient type: %s" % (op, type_name))
+        taboo = spec.get("taboo_when", {})
+        for flag in taboo.get("flags", []):
+            if flag not in ("taboo", "abomination", "god_graft", "reanimated", "chimera"):
+                errs.append("operation %s taboo_when.flags has unknown flag: %s" % (op, flag))
+
     # --- bridges: parts reference known types or ids -----------------------
-    known_types = {spec.get("type") for spec in compat.values() if spec.get("type")}
     for part in rules.get("bridges", {}).get("parts", []):
         if part not in known_types and part not in known_ingredients:
             errs.append("bridge part references unknown type/ingredient: %s" % part)

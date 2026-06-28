@@ -98,11 +98,12 @@ Python — **run locally, output verbatim:**
 `python -B tools/test_splice_rules_coverage.py`:
 ```
 splice_rules coverage lint: OK
-  forces=6 ops=5 ingredients=14 genes=4 trait_slots=4
+  forces=6 ops=5 ingredients=14 genes=5 trait_slots=4
 ```
-Verified it FAILS on malformed rulesets — 10 mutations (drop a force, bad schema_version, opposed
-undefined force, opposed both directions, drop threshold, drop op, ingredient bad force, ingredient bad
-slot, gate bad unlock, drop trait_slots) were each correctly flagged (exit 1 with a specific message).
+Verified it FAILS on malformed rulesets — 19 mutations total (the original 10 + 9 new: empty accepts,
+accepts→undefined ingredient, slot max<1, slot conflicts→undefined slot, gene conflicts→undefined gene,
+op slots→unknown type, op tier_rule.raise_with→unknown type, op taboo flag→unknown, ingredient not in
+its slot's accepts) were each correctly flagged (exit 1 with a specific message).
 
 Additionally, to de-risk the GDScript algorithm before CI, I ported the solver logic to Python and ran
 it against all four worked examples (all produced the spec verdict, incl. the exact §5 ex3 reason
@@ -124,13 +125,61 @@ gate): `Lab Legality ruleset coverage lint (SpliceRules §7, ADR-015)` →
 unaffected: `splice_rules.json` is authored, not produced by `gen_catalog.mjs` (verified — the generator
 writes only species/gear/skills/version), so it never appears in the drift diff.
 
+## Adversarial-review remediation (PR #10 — 11 findings + Codex)
+All confirmed findings were fixed in `legality_solver.gd` / `lab_bench.gd` / `splice_rules.json` /
+`test_splice_rules_coverage.py`, each with a test that gives it teeth:
+
+- **P1 synthetic-partner purity breach** — `_partner_from_config` now MIRRORS the host's own poles +
+  tier and is CONFIG-INDEPENDENT (`["graft_part", pA, sA, tA]`), so the config-pick RNG can never flip
+  the committed creature's forces/tier/stats. Tests: `test_committed_graft_equals_host_preserving_oracle`,
+  `test_config_pick_never_perturbs_numbers` (varies the picked config across 40 op_ids; every result
+  still equals the host-mirror oracle).
+- **P1 genes bypass legality / mutate never illegal** — genes are now CSP variables (`gene:<id>`) with a
+  class-compatibility constraint (class mismatch → ILLEGAL); FORCE mismatch stays allowed-but-TABOO per
+  §2 ("cross-force gene → TABOO-lite"), applied as a flag. Added a construct-only gene `servo_weave` to
+  prove a class-incompatible required gene → ILLEGAL. Tests: `test_mutate_in_force_gene_is_legal`,
+  `test_mutate_cross_force_gene_is_taboo_then_legal`, `test_mutate_class_incompatible_gene_is_illegal`.
+- **P1 conflicts_with never enforced** — `_add_conflict_constraints` adds a not-both-placed constraint for
+  every conflicting pair (gene `conflicts_with` + cross-slot `trait_slot.conflicts_with`). Test:
+  `test_mutate_conflicting_genes_is_illegal` (venom⇄verdant).
+- **P1 (Codex) input counts unchecked** — `_check_input_counts` validates the op's declared creature count
+  up front (fuse 2, graft/mutate 1; self_splice `player`/reanimate `graveyard` sources required but not
+  counted). Test: `test_input_count_mismatch_is_illegal`.
+- **P2 multi-capacity slot lossy** — `trait_slots[slot]` is now a LIST (limb max 2 keeps both); the
+  soundness re-check iterates the list and asserts `size <= max`; the parity test reads the Array form.
+  Test: `test_slot_capacity_constraints` (2 head → never both; 2 limb → a config places both; 3 organs on
+  graft → ILLEGAL via the op organ-cap).
+- **P2 mutate/self_splice/reanimate had ZERO coverage** — added behavioral tests for all three (incl. a
+  single-creature COMMIT exercising `_partner_from_config`); the soundness loop now iterates all five ops
+  with op-appropriate ingredients (genes + occasional same-slot doubles).
+- **P2 slot-conflict / op-capacity had no teeth** — covered by `test_slot_capacity_constraints` above.
+- **P2 parity only on the safe fuse path** — added the single-creature graft parity + config-independence
+  tests above.
+- **P2 (Codex) `_gate_cost` overwrote unlock** — now preserves `or_unlock` and `requires_unlock` under
+  distinct keys (plus a back-compat `unlock`).
+- **P3 op slot caps unused** — honored as per-ingredient-TYPE capacities (`_add_op_capacity_constraints`)
+  with a coverage-lint drift assertion (every op `slots`/`raise_with`/`flags` key references known
+  types/flags). **P3 force-compat vacuous** — `force_intent` now ranges over the full 6-force universe and
+  the constraint rejects non-input forces (load-bearing); the soundness re-check independently asserts a
+  non-input force is never chosen. **P3 (Codex) coverage-lint `accepts` no-op** — now enforces non-empty
+  accepts, max≥1, defined-ingredient refs, defined conflict slots. **P3 (Codex) class-detection dup** —
+  factored into one `_structural_flags` helper shared by `_class_domain` and `_add_class_constraint`.
+
+Re-validated the whole algorithm by updating the Python solver port to mirror the new GDScript and
+sweeping 4000 random inputs across ALL FIVE ops: `tally {LEGAL:1778, TABOO:829, ILLEGAL:1393},
+violations: 0`, and all 21 worked-scenario verdicts correct (incl. the new mutate/self_splice/reanimate
+and input-count/slot-capacity cases). No finding was judged invalid; one interpretation was refined: the
+coordinator's prescribed gene constraint `gene.forces.has(force_intent)` would make a cross-force gene
+ILLEGAL, contradicting §2's "cross-force gene → TABOO-lite" — so gene FORCE compatibility is a TABOO flag,
+not a hard ILLEGAL gate, while CLASS incompatibility IS the hard gate (genes can now be illegal on class).
+
 ## Deviations / notes / blockers
 - **CSP is self-contained, not the vendored addon** — by design and spec permission (see above). This is
   the only material deviation from a literal reading of D3 ("vendor godot-constraint-solving").
-- **Single-creature ops use a synthetic-partner fuse** — `lab_engine` v0.1 exposes only `fuse`/`blend`;
-  graft/mutate/self_splice/reanimate route through `fuse` with an oracle-blended synthetic partner. The
-  rules/legality (the D3 deliverable) are fully modeled for all five ops; if `lab_engine` later adds
-  dedicated graft/mutate entries, only `LabBench._compute` changes (the CSP/rules are unaffected).
+- **Single-creature ops use a HOST-MIRRORING-partner fuse** — `lab_engine` v0.1 exposes only `fuse`/`blend`;
+  graft/mutate/self_splice/reanimate route through `fuse` with a config-independent host-mirroring partner
+  (the P1 fix). The rules/legality (the D3 deliverable) are fully modeled for all five ops; if `lab_engine`
+  later adds dedicated graft/mutate entries, only `LabBench._compute` changes (the CSP/rules are unaffected).
 - **GdUnit4 tests are CI-validated, not run locally** (Godot not installed). Mitigated by: gdformat/gdlint
   clean against the real CI config, a careful static review (preload paths exist, `LabEngine.fuse`
   signature matched, enum/const refs valid), and the Python algorithm port reproducing every verdict.
