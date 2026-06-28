@@ -60,4 +60,6 @@ func test_rnd_half_to_even() -> void:
 
 func test_rnd_dp_fixed_decimal() -> void:
 	for c in vectors["rnd_dp"]:
-		assert_float(CanonicalMath.rnd_dp(float(c["x"]), int(c["n"]))).is_equal_approx(float(c["r"]), 1e-9)
+		assert_float(CanonicalMath.rnd_dp(float(c["x"]), int(c["n"]))).is_equal_approx(
+			float(c["r"]), 1e-9
+		)
