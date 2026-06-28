@@ -9,6 +9,10 @@
  *   factions.json <- authored (client/catalog/factions.json) — read for the manifest only
  *   version.json  <- generated manifest (counts + provenance)
  *
+ * After the JSON bundle is written, this also packs the species into the Godot client Resource
+ * (client/catalog/species/species_db.tres) via tools/gen_species_db.mjs (Cluster 2, D2) — one
+ * source (the CSV) feeding the JSON bundle, the Postgres seed, AND the client catalog Resource.
+ *
  * Deterministic (no timestamps) so re-running produces a stable, diffable result.
  * Run: node tools/gen_catalog.mjs
  */
@@ -116,3 +120,7 @@ writeFileSync(
 console.log(
   `catalog: species=${species.length} (skipped ${skipped}), gear=${gear.length}, skills=${skills.length}, factions=${factions.length}`
 );
+
+// ---- pack the client Godot Resource (Cluster 2, D2) -----------------------
+// Same source, one more consumer: client/catalog/species/species_db.tres.
+await import("./gen_species_db.mjs");
