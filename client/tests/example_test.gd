@@ -10,7 +10,7 @@ func test_sanity() -> void:
 func test_generated_constants_load() -> void:
 	# Constants is the generated class_name from client/domain/constants.gd (D4).
 	assert_float(Constants.PHI).is_equal(0.5)
-	assert_float(Constants.DAMAGE_K).is_equal(1.5)
+	assert_float(Constants.DAMAGE_K).is_equal(4.5)  # Slice 4 balance tune (1.5 -> 4.5)
 	assert_int(Constants.CORRUPTION_CAP).is_equal(130)
 
 

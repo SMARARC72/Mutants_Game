@@ -76,7 +76,9 @@ func test_wild_pool_resolves_to_real_catalog_ids() -> void:
 	# Every Verdant wild-pool id (and the starter party) must exist in the species catalog.
 	var catalog := SpeciesCatalog.new()
 	var pool := EncounterCatalogScript.wild_pool_for(REGION, catalog)
-	assert_int(pool.size()).is_equal(EncounterCatalogScript.REGION_WILD_POOLS[REGION].size())
+	# The live pool is data-driven from slice_verdant.json (Slice 4); REGION_WILD_POOLS is only the
+	# offline fallback, so don't cross-check sizes against it. The real teeth: non-empty + every id resolves.
+	assert_int(pool.size()).is_greater(0)
 	for sid: Variant in pool:
 		assert_object(catalog.get_by_id(str(sid))).is_not_null()
 	for member: Variant in EncounterCatalogScript.starter_party():
