@@ -79,6 +79,13 @@ export interface GameStore {
   /** Mark a reserved row failed so it can be retried/reclaimed. */
   markArtFailed(instanceId: string): Promise<void>;
 
+  /**
+   * Atomically reclaim a `failed` row for a retry: `failed` -> `pending`. Returns true iff
+   * THIS caller won the transition (i.e. a row was updated). A concurrent caller that loses
+   * the race gets `{ claimed: false }` and should report `pending` rather than regenerate.
+   */
+  reclaimFailedArtAsset(instanceId: string): Promise<{ claimed: boolean }>;
+
   /** Count this player's art generations since `sinceIso` (monthly cap + rate limit). */
   countPlayerArtSince(playerId: string, sinceIso: string): Promise<number>;
 
@@ -170,6 +177,20 @@ export function supabaseStore(client: SupabaseClient): GameStore {
         .update({ status: "failed" })
         .eq("instance_id", instanceId);
       if (error) throw new ApiError("upstream_error", "Failure-state write failed.");
+    },
+
+    async reclaimFailedArtAsset(instanceId) {
+      // Atomic guarded transition: `update ... where instance_id=$1 and status='failed'`.
+      // The conditional `.eq("status","failed")` makes this race-safe — only one concurrent
+      // caller flips the row, and we learn we won iff a row is returned.
+      const { data, error } = await client
+        .from("art_assets")
+        .update({ status: "pending" })
+        .eq("instance_id", instanceId)
+        .eq("status", "failed")
+        .select("id");
+      if (error) throw new ApiError("upstream_error", "Failed-asset reclaim failed.");
+      return { claimed: (data?.length ?? 0) > 0 };
     },
 
     async countPlayerArtSince(playerId, sinceIso) {

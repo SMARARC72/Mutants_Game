@@ -65,12 +65,12 @@ export function openAiProvider(opts: OpenAiProviderOptions): ImageGenProvider {
       };
     },
 
-    async generateImage({ prompt }) {
-      // gpt-image-1 returns b64 by default.
+    async generateImage({ prompt, seed }) {
+      // gpt-image-1 returns b64 by default. Forward `seed` for deterministic generation.
       const res = await fetchImpl(`${base}/images/generations`, {
         method: "POST",
         headers: authHeaders,
-        body: JSON.stringify({ model, prompt, n: 1, size: "1024x1024" }),
+        body: JSON.stringify({ model, prompt, seed, n: 1, size: "1024x1024" }),
       });
       if (!res.ok) throw new ApiError("upstream_error", "Image generation failed.");
       const data = (await res.json()) as { data?: Array<{ b64_json?: string }> };

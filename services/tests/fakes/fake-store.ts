@@ -83,6 +83,16 @@ export function makeFakeStore(opts: FakeStoreOptions = {}): FakeStore {
       if (cur) art.set(instanceId, { ...cur, status: "failed" });
     },
 
+    async reclaimFailedArtAsset(instanceId) {
+      // Atomic-by-construction (single-threaded JS): only flip if currently 'failed'.
+      const cur = art.get(instanceId);
+      if (cur && cur.status === "failed") {
+        art.set(instanceId, { ...cur, status: "pending" });
+        return { claimed: true };
+      }
+      return { claimed: false };
+    },
+
     async countPlayerArtSince(playerId, _sinceIso) {
       return usage[playerId] ?? 0;
     },

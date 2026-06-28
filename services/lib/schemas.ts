@@ -53,7 +53,8 @@ export const SuccessionSnapshot = z.object({
   grid: z.string().nullable(),
   forces: z.unknown(),
   team: z.unknown(),
-  signature_moves: z.unknown(),
+  // Handlers emit `row.signature_moves ?? null`; allow null so the emitted value validates.
+  signature_moves: z.unknown().nullable(),
   shareable: z.boolean(),
   created_at: z.string().nullable(),
 });

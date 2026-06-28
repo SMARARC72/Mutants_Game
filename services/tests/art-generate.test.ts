@@ -91,17 +91,23 @@ describe("/api/art/generate", () => {
     const handler = buildHandler();
     const req = () => makeRequest({ token: harness.sign({ sub: PLAYER }), body: validBody() });
 
-    const [a, b] = await Promise.all([handler(req()), handler(req())]);
+    const results = await Promise.all([handler(req()), handler(req())]);
 
-    // Exactly one generation happened; both callers end with a consistent asset id.
-    expect(imageGen.generateCalls).toBe(1);
-    expect(storage.uploadCalls).toBe(1);
-    const idA = (a.body as ArtGenerateResponse).art_asset_id;
-    const idB = (b.body as ArtGenerateResponse).art_asset_id;
-    expect(idA).toBe(idB);
-    // One is 'ready'; the loser may be 'pending' or 'ready' depending on interleaving, never a 2nd gen.
-    const statuses = [(a.body as ArtGenerateResponse).status, (b.body as ArtGenerateResponse).status];
+    // Exactly two results came back from the two concurrent calls.
+    expect(results).toHaveLength(2);
+    // The OpenAI provider was called AT MOST once (no double-generation under concurrency).
+    expect(imageGen.generateCalls).toBeLessThanOrEqual(1);
+    expect(storage.uploadCalls).toBeLessThanOrEqual(1);
+
+    const bodies = results.map((r) => r.body as ArtGenerateResponse);
+    // Both callers end with a consistent asset id.
+    expect(bodies[0]!.art_asset_id).toBe(bodies[1]!.art_asset_id);
+    // Statuses are a subset of {ready, pending}: winner ready; loser pending or ready, never a 2nd gen.
+    const statuses = bodies.map((b) => b.status);
     expect(statuses).toContain("ready");
+    for (const s of statuses) {
+      expect(["ready", "pending"]).toContain(s);
+    }
   });
 
   it("rejects a missing Authorization header (401 unauthorized)", async () => {
@@ -110,6 +116,19 @@ describe("/api/art/generate", () => {
       code: "unauthorized",
       status: 401,
     });
+    expect(imageGen.generateCalls).toBe(0);
+  });
+
+  it("rejects a malformed (non-Bearer) Authorization header (401 unauthorized)", async () => {
+    const handler = buildHandler();
+    // Present but not a Bearer scheme — exercises authenticate()'s non-Bearer branch.
+    await expect(
+      handler(makeRequest({ headers: { authorization: "Token abc123" }, body: validBody() })),
+    ).rejects.toMatchObject({ code: "unauthorized", status: 401 });
+    // And a Bearer scheme with no token after it.
+    await expect(
+      handler(makeRequest({ headers: { authorization: "Bearer" }, body: validBody() })),
+    ).rejects.toMatchObject({ code: "unauthorized", status: 401 });
     expect(imageGen.generateCalls).toBe(0);
   });
 
@@ -167,7 +186,7 @@ describe("/api/art/generate", () => {
     expect(store.art.get(INSTANCE)?.status).toBe("failed");
   });
 
-  it("enforces the monthly cap (429 rate_limited) before reserving", async () => {
+  it("enforces the monthly cap (429 rate_limited) and marks the reserved row failed (retryable)", async () => {
     store = makeFakeStore({
       instanceOwners: { [INSTANCE]: PLAYER },
       usageCount: { [PLAYER]: 200 },
@@ -177,7 +196,47 @@ describe("/api/art/generate", () => {
       handler(makeRequest({ token: harness.sign({ sub: PLAYER }), body: validBody() })),
     ).rejects.toMatchObject({ code: "rate_limited", status: 429 });
     expect(imageGen.generateCalls).toBe(0);
-    expect(store.art.has(INSTANCE)).toBe(false);
+    // The budget is enforced only after winning the reservation; the reserved row is marked
+    // failed (not left pending) so it is retryable once the player is back under cap.
+    expect(store.art.get(INSTANCE)?.status).toBe("failed");
+  });
+
+  it("an over-cap player with an existing READY asset still gets it (no 429, no generation)", async () => {
+    // Player is over the monthly cap AND already has a ready asset for this instance.
+    store = makeFakeStore({
+      instanceOwners: { [INSTANCE]: PLAYER },
+      usageCount: { [PLAYER]: 200 },
+    });
+    // Seed a ready row directly (as if a prior, in-budget generation had completed).
+    store.art.set(INSTANCE, {
+      id: "a1700000-0000-4000-8000-000000000001",
+      instance_id: INSTANCE,
+      status: "ready",
+      image_url: `https://cdn.example/art/${PLAYER}/${INSTANCE}/123456789.png`,
+      prompt: "prior prompt",
+      seed: 123456789,
+      model: "gpt-image-1-mock",
+    });
+
+    const handler = buildHandler({ store, monthlyCap: 200 });
+    const res = await handler(
+      makeRequest({ token: harness.sign({ sub: PLAYER }), body: validBody() }),
+    );
+
+    // Idempotent re-fetch must succeed despite being over cap — it spends nothing.
+    expect(res.status).toBe(200);
+    const body = res.body as ArtGenerateResponse;
+    expect(body.status).toBe("ready");
+    expect(body.image_url).toMatch(new RegExp(`art/${PLAYER}/${INSTANCE}/123456789\\.png$`));
+    expect(imageGen.generateCalls).toBe(0); // no new generation
+    expect(imageGen.moderateCalls).toBe(0); // budget path never even entered
+    expect(storage.uploadCalls).toBe(0);
+  });
+
+  it("forwards the sigil_seed to the image provider for deterministic generation", async () => {
+    const handler = buildHandler();
+    await handler(makeRequest({ token: harness.sign({ sub: PLAYER }), body: validBody() }));
+    expect(imageGen.seeds).toEqual([123456789]);
   });
 
   it("enforces the per-minute rate limit (429 rate_limited)", async () => {
@@ -200,18 +259,23 @@ describe("/api/art/generate", () => {
     expect(store.art.get(INSTANCE)?.status).toBe("failed");
   });
 
-  it("a subsequent call after a prior failure does not silently re-spend", async () => {
+  it("a failed row is reclaimed on the next call and regenerates to ready", async () => {
     const failingGen = makeFakeImageGen({ failGeneration: true });
     await buildHandler({ imageGen: failingGen })(
       makeRequest({ token: harness.sign({ sub: PLAYER }), body: validBody() }),
     ).catch(() => undefined);
     expect(store.art.get(INSTANCE)?.status).toBe("failed");
 
-    // Next call sees the failed row and reports it rather than generating again automatically.
+    // Next call (healthy provider) atomically reclaims the failed row and regenerates.
     const handler = buildHandler();
-    const res = handler(makeRequest({ token: harness.sign({ sub: PLAYER }), body: validBody() }));
-    await expect(res).rejects.toMatchObject({ code: "upstream_error" });
-    expect(imageGen.generateCalls).toBe(0);
+    const res = await handler(
+      makeRequest({ token: harness.sign({ sub: PLAYER }), body: validBody() }),
+    );
+    const body = res.body as ArtGenerateResponse;
+    expect(body.status).toBe("ready");
+    expect(body.image_url).toMatch(new RegExp(`art/${PLAYER}/${INSTANCE}/123456789\\.png$`));
+    expect(imageGen.generateCalls).toBe(1); // the healthy provider generated exactly once
+    expect(store.art.get(INSTANCE)?.status).toBe("ready");
   });
 
   it("error responses use the {error:{code,message}} envelope via withErrorEnvelope", async () => {

@@ -5,7 +5,12 @@ import { jwksVerifier } from "../lib/jwt.js";
 import { makeJwtHarness, type JwtHarness } from "./fakes/jwt-harness.js";
 import { makeFakeStore, type FakeStore } from "./fakes/fake-store.js";
 import { makeRequest } from "./fakes/request.js";
-import type { SuccessionPublishResponse, SuccessionFetchResponse } from "../lib/schemas.js";
+import {
+  SuccessionPublishResponse as SuccessionPublishResponseSchema,
+  SuccessionFetchResponse as SuccessionFetchResponseSchema,
+  type SuccessionPublishResponse,
+  type SuccessionFetchResponse,
+} from "../lib/schemas.js";
 
 const PLAYER = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa";
 const OTHER = "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb";
@@ -69,6 +74,20 @@ describe("/api/succession/publish", () => {
     ).rejects.toMatchObject({ code: "invalid_request" });
   });
 
+  it("emits a null signature_moves that validates against the response schema", async () => {
+    // Omit signature_moves so the handler emits `null` — the schema must accept it.
+    const res = await handler()(
+      makeRequest({
+        token: harness.sign({ sub: PLAYER }),
+        body: publishBody({ signature_moves: undefined }),
+      }),
+    );
+    const body = res.body as SuccessionPublishResponse;
+    expect(body.snapshot.signature_moves).toBeNull();
+    // The full response (incl. null signature_moves) must pass schema validation.
+    expect(SuccessionPublishResponseSchema.safeParse(res.body).success).toBe(true);
+  });
+
   it("forces source_player to the caller (cannot forge another player's authorship)", async () => {
     const res = await handler()(
       makeRequest({
@@ -122,6 +141,25 @@ describe("/api/succession/fetch", () => {
     const body = res.body as SuccessionFetchResponse;
     expect(body.snapshots).toHaveLength(1);
     expect(body.snapshots[0]!.shareable).toBe(true);
+  });
+
+  it("a snapshot with null signature_moves fetches and validates against the schema", async () => {
+    // Seed a shareable snapshot whose signature_moves is null (DB null column).
+    await store.insertGodSnapshot({
+      source_run: RUN,
+      source_player: PLAYER,
+      name: "Null-moves God",
+      grid: "Chaos",
+      forces: null,
+      team: null,
+      signature_moves: null,
+      shareable: true,
+    });
+    const res = await handler()(makeRequest({ method: "GET", token: harness.sign({ sub: OTHER }) }));
+    const body = res.body as SuccessionFetchResponse;
+    // The fetched pool (incl. the null-signature_moves snapshot) must pass schema validation.
+    expect(SuccessionFetchResponseSchema.safeParse(res.body).success).toBe(true);
+    expect(body.snapshots.some((s) => s.signature_moves === null)).toBe(true);
   });
 
   it("fetches a shareable snapshot by id for a non-owner", async () => {

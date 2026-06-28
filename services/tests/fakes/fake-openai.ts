@@ -7,6 +7,8 @@ export interface FakeImageGen extends ImageGenProvider {
   moderateCalls: number;
   generateCalls: number;
   readonly lastPrompts: string[];
+  /** Seeds received by generateImage(), in call order — lets tests assert seed forwarding. */
+  readonly seeds: number[];
 }
 
 export interface FakeImageGenOptions {
@@ -22,6 +24,7 @@ export function makeFakeImageGen(opts: FakeImageGenOptions = {}): FakeImageGen {
     moderateCalls: 0,
     generateCalls: 0,
     lastPrompts: [],
+    seeds: [],
 
     async moderate(input: string): Promise<ModerationResult> {
       fake.moderateCalls += 1;
@@ -35,8 +38,9 @@ export function makeFakeImageGen(opts: FakeImageGenOptions = {}): FakeImageGen {
       return { flagged: false, categories: {} };
     },
 
-    async generateImage({ prompt }): Promise<GeneratedImage> {
+    async generateImage({ prompt, seed }): Promise<GeneratedImage> {
       fake.generateCalls += 1;
+      fake.seeds.push(seed);
       if (opts.failGeneration) {
         throw new Error("simulated OpenAI failure");
       }
