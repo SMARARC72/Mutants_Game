@@ -19,6 +19,7 @@ extends RefCounted
 const BattleControllerScript := preload("res://application/battle/battle_controller.gd")
 const CombatBrainScript := preload("res://application/ai/combat_brain.gd")
 const MonFactoryScript := preload("res://application/battle/mon_factory.gd")
+const CaptureServiceScript := preload("res://application/battle/capture_service.gd")
 
 ## XP awarded to the winning side per defeated enemy (Slice 1 placeholder economy; the real
 ## level/xp curve is a later slice). Data only — no growth math here.
@@ -72,6 +73,61 @@ func run(player_party: Array, enemy_party: Array, battle_seed: int) -> Dictionar
 		"enemy_defeated": enemy_defeated,
 		"xp": xp,
 		"transcript": transcript,
+		"valid": true,
+	}
+
+
+## Begin an INTERACTIVE battle (Slice 2). Builds the player + enemy teams (with the enemy Mon→creature
+## source map for capture), the BattleController interactive session, and a CaptureService bound to
+## the SAME battle_seed (a DISJOINT canonical capture sub-stream). The player drives side "A". Returns
+## an InteractiveBattle wrapper the UI/test drives turn-by-turn, or null if a team is unassemblable.
+func begin_interactive(
+	player_party: Array, enemy_party: Array, battle_seed: int
+) -> InteractiveBattle:
+	var team_a := MonFactoryScript.team_from_creatures(player_party, _catalog)
+	var enemy_built: Dictionary = MonFactoryScript.team_with_source(enemy_party, _catalog)
+	var team_b: Array = enemy_built["team"]
+	if team_a.is_empty() or team_b.is_empty():
+		return null
+	var run_rng := CanonicalRNG.new(battle_seed)
+	var brain: CombatBrain = CombatBrainScript.new()
+	var controller: BattleController = BattleControllerScript.new(brain, run_rng)
+	var session: BattleController.InteractiveSession = controller.interactive(team_a, team_b, "A")
+	var capture := CaptureServiceScript.new(battle_seed)
+	return InteractiveBattle.new(session, capture, _catalog, enemy_built["source"], team_a, team_b)
+
+
+## Build the Slice-1-shaped result dict from a FINISHED interactive session (so the overworld + the
+## save path treat an interactive battle exactly like an auto one). `caught` adds a "caught" winner
+## tag + the captured creature_instance for the caller to fold into the party.
+func result_for(
+	session: BattleController.InteractiveSession, caught: Dictionary = {}
+) -> Dictionary:
+	var team_a := session.player_team()
+	var team_b := session.enemy_team()
+	var reason := session.end_reason()
+	var player_won := session.player_won()
+	var enemy_defeated := _dead_count(team_b)
+	var xp := XP_PER_DEFEAT * enemy_defeated if player_won else 0
+	var winner := "player" if player_won else "enemy"
+	if reason == BattleController.InteractiveSession.END_CAUGHT:
+		winner = "player"
+		player_won = true
+	elif reason == BattleController.InteractiveSession.END_FLED:
+		winner = "fled"
+		xp = 0
+	return {
+		"winner": winner,
+		"player_won": player_won,
+		"reason": reason,
+		"turns": _turns_from_transcript(session.transcript()),
+		"player_survivors": _alive_names(team_a),
+		"enemy_survivors": _alive_names(team_b),
+		"player_defeated": _dead_count(team_a),
+		"enemy_defeated": enemy_defeated,
+		"xp": xp,
+		"caught": caught.duplicate(true),
+		"transcript": session.transcript(),
 		"valid": true,
 	}
 
@@ -137,3 +193,98 @@ static func _turns_from_transcript(transcript: Array) -> int:
 				if num != "":
 					return int(num)
 	return 0
+
+
+## InteractiveBattle — the wrapper the UI/test drives for a step-wise battle. Owns the controller's
+## InteractiveSession + the CaptureService + the enemy Mon→creature source map (so a captured wild Mon
+## resolves to its SpeciesData / creature dict). It is the SINGLE object the battle screen talks to:
+## advance the pump, apply player verbs, run a capture attempt (oracle chance + canonical roll), and
+## read teams/transcript/result. NO Node — headless-testable.
+class InteractiveBattle:
+	extends RefCounted
+
+	var _session: BattleController.InteractiveSession
+	var _capture: CaptureService
+	var _catalog: SpeciesCatalog
+	var _enemy_source: Dictionary  # Mon -> creature dict (its species_id)
+	var _team_a: Array
+	var _team_b: Array
+	var _caught: Dictionary = {}  # the creature_instance shaped on a successful capture, else {}
+	var _last_capture: Dictionary = {}
+
+	func _init(
+		session: BattleController.InteractiveSession,
+		capture: CaptureService,
+		catalog: SpeciesCatalog,
+		enemy_source: Dictionary,
+		team_a: Array,
+		team_b: Array
+	) -> void:
+		_session = session
+		_capture = capture
+		_catalog = catalog
+		_enemy_source = enemy_source
+		_team_a = team_a
+		_team_b = team_b
+
+	# --- pump + player verbs (thin passthroughs to the session) ----------------------------------- #
+
+	func advance() -> Dictionary:
+		return _session.advance()
+
+	func attack(target: BattleEngine.Mon) -> Dictionary:
+		return _session.attack(target)
+
+	func flee() -> Dictionary:
+		return _session.flee()
+
+	## Attempt to CAPTURE `target` (a wild enemy Mon). Computes the gear-/HP-modified chance via the
+	## oracle, rolls on the canonical capture sub-stream, and — on success — shapes the creature_instance
+	## (cached here for the caller to fold into the party). Then drives the session's capture verb
+	## (SUCCESS → caught/end; FAILURE → the player's turn is spent, the enemy acts). `gear` is the run's
+	## equipped gear id list (CaptureService.gear_ids(run.gear)). Returns the next session step dict;
+	## the capture math itself is available via `last_capture()`.
+	func attempt_capture(target: BattleEngine.Mon, gear: Array = []) -> Dictionary:
+		var species := _species_for(target)
+		var outcome := _capture.attempt(target, species, gear)
+		_last_capture = outcome
+		if bool(outcome["success"]):
+			_caught = outcome["creature_instance"]
+		return _session.capture(bool(outcome["success"]))
+
+	# --- reads ------------------------------------------------------------------------------------ #
+
+	func session() -> BattleController.InteractiveSession:
+		return _session
+
+	func player_team() -> Array:
+		return _team_a
+
+	func enemy_team() -> Array:
+		return _team_b
+
+	func transcript() -> Array:
+		return _session.transcript()
+
+	func is_ended() -> bool:
+		return _session.is_ended()
+
+	## The creature_instance captured this battle (shaped), or {} if nothing was caught.
+	func caught() -> Dictionary:
+		return _caught
+
+	## The last capture attempt's math: {success, chance, roll, creature_instance}. {} before any try.
+	func last_capture() -> Dictionary:
+		return _last_capture
+
+	## The SpeciesData backing an enemy Mon (via the source map), or null if unknown.
+	func species_for(target: BattleEngine.Mon) -> SpeciesData:
+		return _species_for(target)
+
+	# --- internals -------------------------------------------------------------------------------- #
+
+	func _species_for(target: BattleEngine.Mon) -> SpeciesData:
+		var creature: Variant = _enemy_source.get(target, null)
+		if creature == null or not (creature is Dictionary):
+			return null
+		return _catalog.get_by_id(str((creature as Dictionary).get("species_id", "")))
