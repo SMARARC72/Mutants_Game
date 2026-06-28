@@ -1,0 +1,15 @@
+[remap]
+
+importer="inkgd.ink.json"
+type="Resource"
+uid="uid://cw2c7rfhh68uf"
+path="res://.godot/imported/rust_marsh_omen.inkjson-3209460285cc795fc83613c8ac74b46d.res"
+
+[deps]
+
+source_file="res://presentation/narrative/stories/rust_marsh_omen.inkjson"
+dest_files=["res://.godot/imported/rust_marsh_omen.inkjson-3209460285cc795fc83613c8ac74b46d.res"]
+
+[params]
+
+compress=true
