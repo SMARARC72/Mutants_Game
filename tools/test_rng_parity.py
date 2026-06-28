@@ -58,6 +58,9 @@ for c in V["substream"]:
 for c in V["rnd"]:
     eq("rnd(%r)" % c["x"], cm.rnd(c["x"]), c["r"])
 
+for c in V["rnd_dp"]:
+    approx("rnd_dp(%r,%d)" % (c["x"], c["n"]), cm.rnd_dp(c["x"], c["n"]), c["r"])
+
 print("RNG parity (python vs vectors): %d checks, %d failed" % (n, len(fails)))
 if fails:
     for f in fails:

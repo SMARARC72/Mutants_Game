@@ -32,7 +32,7 @@ The flat look is a *lighting and depth* problem, not a dimension problem. Four s
 | **Dynamic lighting** | **Laigter** → normal/specular/AO maps for tiles+sprites, lit by Godot **`Light2D`** + shadows | 🟢 *(see note)* | Kills the flat 80s read — torches, force-glows, time-of-day all cast real light |
 | **Depth** | Godot **parallax layers** + a foreground/atmosphere pass | 🟢 MIT (built-in) | Worlds gain dimensionality without 3D |
 | **Atmosphere** | CC0 **GodotShaders** (fog, god-rays, color-grade, vignette, heat-haze) | 🟢 CC0 | The grimoire mood; the "entropy tide" weather |
-| **Palette** | recolor curated **Kenney/OGA** tiles to parchment-ink | 🟢 CC0 | The design-bible look (§1/§3.5) |
+| **Palette** | recolor curated **Kenney/OGA** tiles to parchment-ink | 🟢 CC0 | The design-bible look |
 
 > **Laigter license note:** the *tool* is GPL-3.0, but the normal/AO maps it generates **for your own art are yours** — output isn't a derivative of the tool's source, so it does **not** infect the game (R9-safe). Use freely.
 

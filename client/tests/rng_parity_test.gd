@@ -56,3 +56,8 @@ func test_substream_matches() -> void:
 func test_rnd_half_to_even() -> void:
 	for c in vectors["rnd"]:
 		assert_int(CanonicalMath.rnd(float(c["x"]))).is_equal(int(c["r"]))
+
+
+func test_rnd_dp_fixed_decimal() -> void:
+	for c in vectors["rnd_dp"]:
+		assert_float(CanonicalMath.rnd_dp(float(c["x"]), int(c["n"]))).is_equal_approx(float(c["r"]), 1e-9)
