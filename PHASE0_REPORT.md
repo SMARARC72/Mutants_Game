@@ -16,7 +16,7 @@
 | 3 | pgTAP RLS suite green (allow+deny every owned table; catalog; god_snapshots) | ✅ | `supabase test db` → **54/54 PASS**; deny-tests proven to have teeth |
 | 4 | Anonymous player row creatable + RLS-isolated | ✅ | `smoke_anon_isolation.mjs` → **PASS** (B cannot read/modify A's run) |
 | 5 | `balance_constants.json` parity test green; generator emits constants.gd + .py | ✅ | parity **113/113**; `gen_constants.mjs` emits both with float fidelity |
-| 6 | CI green on PR; red on planted secret or broken RLS | ✅ (authored + each command verified locally) | `.github/workflows/ci.yml`; secret scan + deny-test teeth proven |
+| 6 | CI green on PR; red on planted secret or broken RLS | ✅ | **all 4 jobs green on PR #1**; deny-test + planted-secret proven to turn red |
 | 7 | This report | ✅ | you're reading it |
 | 8 | STOP before Phase 1 | ✅ | Phase 0.5 (resource integration) follows; Phase 1 not started |
 
