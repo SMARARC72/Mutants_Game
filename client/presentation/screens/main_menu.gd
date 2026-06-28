@@ -9,8 +9,10 @@ extends Control
 const InputActions := preload("res://infrastructure/input/input_actions.gd")
 const SAMPLE_SCENE := "res://presentation/screens/sample_grimoire_screen.tscn"
 const OPTIONS_SCENE := "res://presentation/screens/options_menu.tscn"
+const OVERWORLD_SCENE := "res://presentation/overworld/overworld_screen.tscn"
 
 var _transition: Node
+var _game: Node
 
 
 func _ready() -> void:
@@ -21,6 +23,7 @@ func _ready() -> void:
 	if input != null:
 		input.call("switch_context", InputActions.CTX_MENU)
 	_transition = get_node_or_null("/root/Transition")
+	_game = get_node_or_null("/root/GameController")
 	_build()
 
 
@@ -51,16 +54,52 @@ func _build() -> void:
 	tagline.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	box.add_child(tagline)
 
-	_add_button(box, "Begin the Descent", _on_play)
+	_add_button(box, "Begin the Descent (New Run)", _on_new_run)
+	var continue_button := _add_button(box, "Continue", _on_continue)
+	# Disable Continue when there is no readable local save (slice DoD: menu gating).
+	if _game == null or not _game.has_method("has_save") or not bool(_game.call("has_save")):
+		continue_button.disabled = true
+	_add_button(box, "Sample Plate", _on_play)
 	_add_button(box, "Options", _on_options)
 	_add_button(box, "Abandon Hope (Quit)", _on_quit)
 
 
-func _add_button(parent: VBoxContainer, text: String, handler: Callable) -> void:
+func _add_button(parent: VBoxContainer, text: String, handler: Callable) -> Button:
 	var button := Button.new()
 	button.text = text
 	parent.add_child(button)
 	button.pressed.connect(handler)
+	return button
+
+
+## New Run: seed a fresh run via GameController, then ritual-swap to the overworld.
+func _on_new_run() -> void:
+	if _game != null and _game.has_method("new_run"):
+		_game.call("new_run", _fresh_seed())
+	_go_to_overworld()
+
+
+## Continue: load the latest local save via GameController, then swap to the overworld. Falls back
+## to a no-op (stays on the menu) if the load failed.
+func _on_continue() -> void:
+	if _game == null or not _game.has_method("continue_run"):
+		return
+	if bool(_game.call("continue_run")):
+		_go_to_overworld()
+
+
+func _go_to_overworld() -> void:
+	if _transition != null:
+		await _transition.call("change_scene_ritual", OVERWORLD_SCENE)
+	else:
+		get_tree().change_scene_to_file(OVERWORLD_SCENE)
+
+
+## A fresh run seed. Uses the system RNG here (PRESENTATION layer — NOT a deterministic gameplay
+## draw; the chosen seed then roots every canonical stream for the run). A given seed replays
+## identically, which is what determinism requires.
+func _fresh_seed() -> int:
+	return int(Time.get_unix_time_from_system()) ^ (randi() << 16)
 
 
 func _on_play() -> void:
