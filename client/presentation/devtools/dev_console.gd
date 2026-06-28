@@ -61,11 +61,14 @@ func _register_commands() -> void:
 	_cmd(_state.grant_gear, "grant_gear", "grant_gear <slot> <id> — equip gear into a slot")
 	_cmd(_state.unlock_region, "unlock_region", "unlock_region <id> — unlock an overworld region")
 
-	# --- parity probes (D3 / TDD §11.2): STUBBED, wired in Phase 1-2 ---
+	# --- parity probes (TDD §11.2) ---
+	# parity_battle is WIRED (Cluster 4 / D6): runs the GDScript battle_engine on a golden seed and
+	# diffs a transcript hash vs the committed Python golden vectors. parity_splice stays a stub here
+	# (it is the Lab/D3 sibling track's probe; wired there).
 	_cmd(
 		_parity_battle,
 		"parity_battle",
-		"parity_battle <seed> <teamA> <teamB> — [STUB] run battle_engine + dump hash"
+		"parity_battle <seed> — run battle_engine on the golden teams + diff hash vs golden vectors"
 	)
 	_cmd(
 		_parity_splice,
@@ -79,19 +82,15 @@ func _cmd(callable: Callable, name: String, desc: String) -> void:
 		_console.call("register_command", callable, name, desc)
 
 
-# === parity-probe stubs (the high-value bit; wired when the engines land) ============
-func _parity_battle(seed: int, team_a: String = "", team_b: String = "") -> void:
-	# TODO: wire when the ported engines land (Phase 1-2). Should:
-	#   1. build the two teams, instantiate the GDScript `battle_engine` (client/domain),
-	#   2. run the deterministic battle with `seed`,
-	#   3. dump the transcript + a result hash,
-	#   4. diff the hash against client/tests/golden/battle_engine.jsonl (the Python oracle).
-	# It must only READ the engine; the probe never becomes a source of truth (determinism rule).
-	var msg := (
-		"[parity_battle] STUB — seed=%d teamA=%s teamB=%s. Wire to domain/battle_engine.gd in Phase 1-2 (TDD §11.2)."
-		% [seed, team_a, team_b]
-	)
-	_console_out(msg)
+# === parity-probe: parity_battle (WIRED, Cluster 4 / D6) =============================
+## Runs the GDScript BattleEngine.simulate on the golden teams at `seed`, hashes the transcript, and
+## diffs it against the committed Python golden vector for that seed (TDD §11.2). It only READS the
+## oracle — it never becomes a source of truth (the determinism rule). The manual counterpart to the
+## automated battle_engine_parity_test; the fastest path to triage a parity drift in seconds.
+func _parity_battle(seed: int = 0) -> void:
+	var report := ParityProbe.battle(seed)
+	for line in report:
+		_console_out(line)
 
 
 func _parity_splice(
