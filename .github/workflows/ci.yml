@@ -113,6 +113,24 @@ jobs:
         if: always()
         run: supabase stop --no-backup || true
 
+  services:
+    name: Services — typecheck + unit/contract tests (TDD §7/§11.5)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install (services)
+        working-directory: services
+        run: npm ci
+      - name: Typecheck (services)
+        working-directory: services
+        run: npm run typecheck
+      - name: Unit/contract tests — generate-once invariant, JWT authz, zod (mocked OpenAI + fake Supabase)
+        working-directory: services
+        run: npm test
+
   secret-scan:
     name: Secret scan (D6 guardrail)
     runs-on: ubuntu-latest
