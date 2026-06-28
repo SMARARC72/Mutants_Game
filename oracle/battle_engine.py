@@ -39,7 +39,7 @@ def attack(att, dfn, ent, chain, overload, rng, log):
     mit = dfn.stats[defstat]
     fm = force_mult(att.prim, dfn.prim) * (1.4 if overload else 1.0)
     crit = 1.5 if rng.random() < att.stats["Luck"] / 180.0 else 1.0
-    K = 1.5  # global damage constant (balance dial)
+    K = 4.5  # global damage constant (balance dial) — Slice 4 balance pass (was 1.5; lifts fights into the 5-8 turn band, no one-shots)
     dmg = rnd(K * power * power / (power + mit) * fm * ent * chain * crit)
     dmg = min(dmg, rnd(dfn.maxhp * 0.55))   # anti-one-shot cap (balance pass)
     dfn.hp -= dmg
@@ -58,7 +58,7 @@ def attack(att, dfn, ent, chain, overload, rng, log):
 
 def simulate(teamA, teamB, rng):
     log = []; turn = 0
-    while any(m.alive for m in teamA) and any(m.alive for m in teamB) and turn < 10:
+    while any(m.alive for m in teamA) and any(m.alive for m in teamB) and turn < 8:
         turn += 1
         ent = rnd_dp(1.0 + (turn - 1) * 0.12, 2)
         log.append("== TURN " + str(turn) + "   entropy x" + str(ent) + " (escalating) ==")

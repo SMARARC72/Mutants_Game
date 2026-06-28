@@ -6,7 +6,7 @@ const PHI := 0.5
 const GENOME_LO := 0.65
 const GENOME_HI := 1.35
 const HP_PER_VITALITY := 3
-const DAMAGE_K := 1.5
+const DAMAGE_K := 4.5
 const FORCE_MULT_OPPOSED := 1.5
 const FORCE_MULT_SAME := 0.7
 const FORCE_MULT_NEUTRAL := 1.0
@@ -163,11 +163,11 @@ const BALANCE := {
 		"overload_chance": 0.3,
 		"crit_mult": 1.5,
 		"crit_luck_divisor": 180.0,
-		"damage_k": 1.5,
+		"damage_k": 4.5,
 		"single_hit_cap_frac": 0.55,
 		"entropy_step_per_turn": 0.12,
 		"chain_mult": 1.3,
-		"turn_cap": 10,
+		"turn_cap": 8,
 	},
 	"skill": {
 		"force_mult_opposed": 1.5,

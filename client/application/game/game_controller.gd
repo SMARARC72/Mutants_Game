@@ -29,6 +29,23 @@ const GearCatalogScript := preload("res://infrastructure/catalog/gear_catalog.gd
 const ACTIVE_CREATURE_FLAG := "active_creature"
 const InventoryAdapterScript := preload("res://infrastructure/inventory/inventory_adapter.gd")
 
+## Slice 4 — Bloomwardens faction standing. The run.flags key holding the standing integer (0 =
+## Stranger baseline).
+const BLOOMWARDENS_STANDING_FLAG := "bloomwardens_standing"
+## Standing deltas: catching/befriending a creature is the Bloomwarden way (+); killing it is butchery
+## (-). Small steps — the MVP only wants a taste of reactivity.
+const BLOOM_STANDING_ON_CATCH := 5
+const BLOOM_STANDING_ON_KILL := -3
+## Standing tier thresholds (Mutants_Game_Factions.md: Stranger -> Associate -> Sworn -> Champion ->
+## Hand). A standing >= a threshold's value resolves to that tier (checked high-to-low).
+const BLOOM_STANDING_TIERS := [
+	[60, "Hand"],
+	[40, "Champion"],
+	[20, "Sworn"],
+	[8, "Associate"],
+	[0, "Stranger"],
+]
+
 var _run: RunContext = null
 var _dal: Dictionary = {}
 var _catalog: SpeciesCatalog = null
@@ -154,8 +171,11 @@ func save_run() -> bool:
 ## Apply a BattleSession result back to the run. BACKWARD-COMPATIBLE with Slice 1: still awards xp to
 ## essence + records last_battle_won. Slice 2 additions (only when the keys are present, so a Slice 1
 ## auto result is unchanged): a CAUGHT creature_instance is appended to the party, and the last battle
-## outcome reason (win/lose/fled/caught) is recorded for the overworld to read. Pure bookkeeping — the
-## real xp/level curve is a later slice. Returns the run for chaining.
+## outcome reason (win/lose/fled/caught) is recorded for the overworld to read. Slice 4 additions:
+## Bloomwardens FACTION STANDING reactivity (caught a Verdant creature -> standing up; killed one ->
+## standing down — "tend, heal, befriend; never butcher"), and the boss-cleared / slice-victory flags
+## when a boss fight is won. Pure bookkeeping — the real xp/level curve is a later slice. Returns the
+## run for chaining.
 func apply_battle_result(result: Dictionary) -> RunContext:
 	if _run == null:
 		return null
@@ -168,7 +188,76 @@ func apply_battle_result(result: Dictionary) -> RunContext:
 	var caught: Dictionary = result.get("caught", {})
 	if not caught.is_empty():
 		_run.party.append(caught.duplicate(true))
+	# Slice 4: Bloomwardens reactivity (only in the Verdant region — a "taste of standing" per the MVP).
+	_apply_bloomwardens_reactivity(result, caught)
+	# Slice 4: a won boss fight clears the slice climax + marks victory (idempotent flag set).
+	if bool(result.get("boss_win", false)):
+		_mark_slice_cleared()
 	return _run
+
+
+# === Slice 4: Bloomwardens faction standing (a single tracked value in run.flags) ============== #
+
+
+## The current Bloomwardens standing value (run.flags), or 0 when there is no run.
+func bloomwardens_standing() -> int:
+	if _run == null:
+		return 0
+	return int(_run.flags.get(BLOOMWARDENS_STANDING_FLAG, 0))
+
+
+## The named standing TIER for the current Bloomwardens standing (Stranger..Hand). Pure threshold
+## lookup; never crashes. "Stranger" when there is no run.
+func bloomwardens_tier() -> String:
+	var standing := bloomwardens_standing()
+	for entry in BLOOM_STANDING_TIERS:
+		if standing >= int((entry as Array)[0]):
+			return str((entry as Array)[1])
+	return "Stranger"
+
+
+## Nudge Bloomwardens standing by `delta` (the caller saves the run). Persisted in run.flags. Clamped
+## at a floor of 0 (the MVP keeps standing non-negative — hostility depth is a later slice). Returns
+## the new standing value (or 0 when there is no run).
+func adjust_bloomwardens_standing(delta: int) -> int:
+	if _run == null:
+		return 0
+	var next := maxi(0, bloomwardens_standing() + delta)
+	_run.flags[BLOOMWARDENS_STANDING_FLAG] = next
+	return next
+
+
+## Apply the Bloomwardens reactivity hook from a battle result: a CATCH (caught a Verdant creature)
+## nudges standing up; a KILL (won, downed an enemy, captured nothing) nudges it down. Only fires for
+## battles in the Verdant region (the Bloomwardens' turf). A flee / loss is standing-neutral.
+func _apply_bloomwardens_reactivity(result: Dictionary, caught: Dictionary) -> void:
+	if _run == null or active_region() != EncounterCatalogScript.STARTING_REGION:
+		return
+	if not caught.is_empty():
+		adjust_bloomwardens_standing(BLOOM_STANDING_ON_CATCH)
+		return
+	var player_won := bool(result.get("player_won", false))
+	var killed := int(result.get("enemy_defeated", 0))
+	if player_won and killed > 0:
+		adjust_bloomwardens_standing(BLOOM_STANDING_ON_KILL)
+
+
+## Mark the Verdant slice climax cleared + the slice victory state (idempotent). The boss trigger reads
+## the cleared flag to stop re-firing; the victory flag is the run's "slice complete" state.
+func _mark_slice_cleared() -> void:
+	if _run == null:
+		return
+	var trigger := EncounterCatalogScript.boss_trigger_for(active_region())
+	_run.flags[str(trigger.get("cleared_flag", "verdant_boss_cleared"))] = true
+	_run.flags[str(trigger.get("victory_flag", "slice_verdant_victory"))] = true
+
+
+## True iff the Verdant slice boss has been cleared (the run's victory state).
+func slice_cleared() -> bool:
+	if _run == null:
+		return false
+	var trigger := EncounterCatalogScript.boss_trigger_for(active_region())
+	return bool(_run.flags.get(str(trigger.get("cleared_flag", "verdant_boss_cleared")), false))
 
 
 ## Increment the run's overworld step counter (used as the encounter roll index) and return the new

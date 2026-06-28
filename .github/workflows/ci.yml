@@ -95,6 +95,8 @@ jobs:
           git diff --exit-code -- client/tests/golden
       - name: Lab Legality ruleset coverage lint (SpliceRules §7, ADR-015)
         run: PYTHONUTF8=1 python -B tools/test_splice_rules_coverage.py
+      - name: Slice 4 balance check (MVP targets — no one-shots; ~5-8 turn band)
+        run: PYTHONUTF8=1 python -B tools/balance_slice_check.py
 
   database:
     name: DB migrations + RLS (pgTAP) + anon smoke (D2/D3/D5)

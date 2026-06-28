@@ -156,11 +156,31 @@ func try_move(dir: Vector2i) -> Dictionary:
 	_player_cell = target
 	_position_player()
 	var step_index := int(_game.call("advance_step"))
+	# Slice 4: the LEGENDARY-BOSS climax takes precedence at/after the threshold step (once explored
+	# enough + not yet cleared). Deterministic — a pure function of (seed, region, step, cleared flag).
+	var boss_roll := _maybe_boss(step_index)
+	if not boss_roll.is_empty():
+		boss_roll["moved"] = true
+		_on_boss_encounter(boss_roll)
+		return boss_roll
 	var roll := _director.roll_step(step_index)
 	roll["moved"] = true
 	if bool(roll.get("encounter", false)):
 		_on_encounter(roll)
 	return roll
+
+
+## Build the deterministic boss encounter for `step_index` IF the climax should fire now, else {}.
+## Reads the cleared flag from the run so a cleared slice never re-triggers the boss.
+func _maybe_boss(step_index: int) -> Dictionary:
+	if _director == null or _game == null:
+		return {}
+	var cleared := false
+	if _game.has_method("slice_cleared"):
+		cleared = bool(_game.call("slice_cleared"))
+	if not _director.should_trigger_boss(step_index, cleared):
+		return {}
+	return _director.boss_step(step_index)
 
 
 func _on_encounter(roll: Dictionary) -> void:
@@ -177,6 +197,28 @@ func _on_encounter(roll: Dictionary) -> void:
 				"is_wild": true,  # overworld encounters are wild (Capture/Flee available, Slice 2)
 			}
 	# Save on encounter-end boundary (autosave the run before the fight resolves the loop).
+	if _game != null and _game.has_method("save_run"):
+		_game.call("save_run")
+	if _auto_hand_off:
+		_hand_off_to_battle()
+
+
+## Hand off the LEGENDARY-BOSS climax (Slice 4) through the SAME pending_battle path as a wild fight,
+## tagged is_boss with the boss role brain so the battle screen runs it via BattleSession.run_boss.
+func _on_boss_encounter(roll: Dictionary) -> void:
+	var enemy_party: Array = roll.get("enemy_party", [])
+	var battle_seed := int(roll.get("battle_seed", 0))
+	encounter_started.emit(enemy_party, battle_seed)
+	if _game != null:
+		var run: RunContext = _game.call("run")
+		if run != null:
+			run.flags["pending_battle"] = {
+				"enemy_party": enemy_party,
+				"battle_seed": battle_seed,
+				"is_wild": false,  # the boss is not capturable / fleeable like a wild mon
+				"is_boss": true,
+				"boss_brain": str(roll.get("boss_brain", "controller")),
+			}
 	if _game != null and _game.has_method("save_run"):
 		_game.call("save_run")
 	if _auto_hand_off:

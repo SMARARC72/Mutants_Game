@@ -93,11 +93,11 @@
     "overload_chance": 0.30,
     "crit_mult": 1.5,
     "crit_luck_divisor": 180.0,
-    "damage_k": 1.5,
+    "damage_k": 4.5,
     "single_hit_cap_frac": 0.55,
     "entropy_step_per_turn": 0.12,
     "chain_mult": 1.3,
-    "turn_cap": 10
+    "turn_cap": 8
   },
 
   "skill": {

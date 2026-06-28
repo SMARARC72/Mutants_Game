@@ -77,6 +77,52 @@ func run(player_party: Array, enemy_party: Array, battle_seed: int) -> Dictionar
 	}
 
 
+## Run the Verdant LEGENDARY-BOSS fight (Slice 4) — the region climax. Identical round-trip to run(),
+## except the enemy team is driven by a strong ROLE brain (CombatBrain.assign_role(mon, brain_role),
+## default "controller") instead of the neutral parity brain — the boss plays to win, exploiting force
+## matchups. Deterministic for a fixed (battle_seed, teams, brain_role). The result carries
+## `boss_win` (true iff the player downed the boss) so the caller can set the slice-cleared flag.
+## `brain_role` is one of RoleBrains' roles ("controller"/"aggressor"/...); the full Succession HSM is
+## reserved for god-tier and is NOT used here. Returns the same result shape as run() + `boss_win`.
+func run_boss(
+	player_party: Array, boss_party: Array, battle_seed: int, brain_role: String = "controller"
+) -> Dictionary:
+	var team_a := MonFactoryScript.team_from_creatures(player_party, _catalog)
+	var team_b := MonFactoryScript.team_from_creatures(boss_party, _catalog)
+	if team_a.is_empty() or team_b.is_empty():
+		var inv := _invalid_result()
+		inv["boss_win"] = false
+		return inv
+
+	var run_rng := CanonicalRNG.new(battle_seed)
+	var brain: CombatBrain = CombatBrainScript.new()
+	# Assign the strong role brain to every boss-side combatant (a Verdant Legendary is a single
+	# creature, but the loop keeps it correct if the boss arrives with adds).
+	for mon in team_b:
+		brain.assign_role(mon as BattleEngine.Mon, brain_role)
+	var controller: BattleController = BattleControllerScript.new(brain, run_rng)
+	var transcript: Array = controller.run(team_a, team_b)
+
+	var player_won := _any_alive(team_a)
+	var enemy_defeated := _dead_count(team_b)
+	var xp := XP_PER_DEFEAT * enemy_defeated if player_won else 0
+	# boss_win: the boss team is fully downed (the player cleared the climax).
+	var boss_win := player_won and not _any_alive(team_b)
+	return {
+		"winner": "player" if player_won else "enemy",
+		"player_won": player_won,
+		"boss_win": boss_win,
+		"turns": _turns_from_transcript(transcript),
+		"player_survivors": _alive_names(team_a),
+		"enemy_survivors": _alive_names(team_b),
+		"player_defeated": _dead_count(team_a),
+		"enemy_defeated": enemy_defeated,
+		"xp": xp,
+		"transcript": transcript,
+		"valid": true,
+	}
+
+
 ## Begin an INTERACTIVE battle (Slice 2). Builds the player + enemy teams (with the enemy Mon→creature
 ## source map for capture), the BattleController interactive session, and a CaptureService bound to
 ## the SAME battle_seed (a DISJOINT canonical capture sub-stream). The player drives side "A". Returns

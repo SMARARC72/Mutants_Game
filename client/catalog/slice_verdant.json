@@ -1,0 +1,58 @@
+{
+	"_source": "Phase 5 · Slice 4 (content + balance). The curated VERDANT-FRINGE slice roster — ~25 creatures selected BY ID from client/catalog/species.json (the 406-species DB, generated from docs/creature_registry.csv). This file is DATA ONLY: it names which existing catalog ids the MVP slice uses + their wild-encounter weights + the starter party + the legendary boss + the deterministic boss-trigger config. It computes nothing; species data is always read through SpeciesCatalog. Per docs/Mutants_Game_MVP_Slice.md: the Verdant fringe is Eros/Gaia-tilted (gentle, forgiving onboarding) — ~18 T1/T2 wild, ~5 T3, + 1 Legendary boss (the region climax). Every id here MUST exist in species.json (asserted by the encounter pool test).",
+	"schema_version": 1,
+	"region": "verdant_glut",
+	"faction": "bloomwardens",
+
+	"starter_party": [
+		{ "species_id": "SB07", "nickname": "Leaf-hare" },
+		{ "species_id": "SB05", "nickname": "Sprout-shell" },
+		{ "species_id": "AD10", "nickname": "Thornmane" }
+	],
+
+	"wild_pool": [
+		{ "species_id": "SB05", "weight": 6, "tier": "T1", "role": "tank" },
+		{ "species_id": "SB06", "weight": 5, "tier": "T1", "role": "support" },
+		{ "species_id": "SB07", "weight": 6, "tier": "T1", "role": "support" },
+		{ "species_id": "SB09", "weight": 6, "tier": "T1", "role": "support" },
+		{ "species_id": "SB14", "weight": 5, "tier": "T1", "role": "tank" },
+		{ "species_id": "SB17", "weight": 5, "tier": "T1", "role": "support" },
+		{ "species_id": "SB18", "weight": 5, "tier": "T1", "role": "striker" },
+		{ "species_id": "SB22", "weight": 4, "tier": "T1", "role": "support" },
+		{ "species_id": "SB26", "weight": 4, "tier": "T1", "role": "tank" },
+		{ "species_id": "SB27", "weight": 4, "tier": "T1", "role": "support" },
+		{ "species_id": "SB28", "weight": 4, "tier": "T1", "role": "striker" },
+		{ "species_id": "SB32", "weight": 6, "tier": "T1", "role": "tank" },
+		{ "species_id": "SB33", "weight": 6, "tier": "T1", "role": "support" },
+		{ "species_id": "AD04", "weight": 3, "tier": "T2", "role": "support" },
+		{ "species_id": "AD06", "weight": 3, "tier": "T2", "role": "charger" },
+		{ "species_id": "AD07", "weight": 3, "tier": "T2", "role": "seer" },
+		{ "species_id": "AD08", "weight": 2, "tier": "T2", "role": "control-tank" },
+		{ "species_id": "AD10", "weight": 3, "tier": "T2", "role": "regenerator" },
+		{ "species_id": "S2-07", "weight": 2, "tier": "T2", "role": "support" }
+	],
+
+	"elite_pool": [
+		{ "species_id": "AD02", "weight": 3, "tier": "T3", "role": "fortress" },
+		{ "species_id": "S2-31", "weight": 2, "tier": "T3", "role": "tank" },
+		{ "species_id": "S2-38", "weight": 2, "tier": "T3", "role": "support" },
+		{ "species_id": "S2-45", "weight": 2, "tier": "T3", "role": "support" },
+		{ "species_id": "S2-56", "weight": 2, "tier": "T3", "role": "tank" }
+	],
+
+	"boss": {
+		"species_id": "DM06",
+		"name": "Core-golem",
+		"rank": "legendary",
+		"role": "tank",
+		"brain": "controller",
+		"_note": "The Verdant fringe's Legendary climax (Gaia/Cosmos apex tank, boss-tagged in the registry; Bestiary lists it as an apex region-guardian). Driven by a strong role brain (CombatBrain.assign_role) — the full Succession HSM is reserved for god-tier. A fresh starter party cannot solo it (intended wall); the player grows first."
+	},
+
+	"boss_trigger": {
+		"_note": "Deterministic region climax: the boss fight fires once the player has explored at least `min_steps` overworld steps in the region. Step-indexed + seeded so the trigger is a pure function of (run.seed, region, step) — same as the wild-encounter roll. Reproducible across save/load. The cleared flag stops it re-firing.",
+		"min_steps": 30,
+		"cleared_flag": "verdant_boss_cleared",
+		"victory_flag": "slice_verdant_victory"
+	}
+}
