@@ -20,5 +20,6 @@ revisit by superseding with a new ADR + a TDD version bump.
 | [013](0013-phase05-dependencies.md) | Phase 0.5 vendored addons + asset policy + Beehave RNG rule | Accepted | **impl P0.5** |
 | [014](0014-runs-corruption-uncapped.md) | runs.corruption floor-only (not capped at 130) | Accepted | **impl P0 (deviation)** |
 | [015](0015-addons-never-own-outcome-math.md) | Addons never own outcome math; Lab Legality Engine gates, the oracle computes | Accepted | **impl Cluster 4** |
+| [016](0016-ai-selects-engine-resolves.md) | AI selects, the deterministic engine resolves; selection RNG is the canonical sub-stream via Blackboard | Accepted | **impl Cluster 4** |
 | [017](0017-narrative-split-dialogic-ink-quest.md) | Narrative split: Dialogic renders, Ink decides, Quest tracks; state in JSON save | Accepted | **impl Cluster 3** |
 | [018](0018-limboconsole-dev-only.md) | LimboConsole is dev-build-only (DEV_TOOLS flag) | Accepted | **impl Cluster 1** |
