@@ -90,11 +90,17 @@ func advance(quest_id: String, step: Variant = null) -> bool:
 		return false
 	var definition: Dictionary = _definitions.get(quest_id, {})
 	var steps: Array = definition.get("steps", [])
-	var index: int = _step_cursor.get(quest_id, 0)
+	var cursor: int = _step_cursor.get(quest_id, 0)
+	var index: int = cursor
 	if step is String:
-		index = _index_of_step(steps, step)
-		if index < 0:
+		# A named step (the Ink `quest_<id>_advance` path) must be exactly the next
+		# expected step. Reject naming a later step (would skip earlier effects and
+		# auto-complete) or an earlier/already-applied step (would re-apply corruption,
+		# flags, etc.). Sequential advances (step == null) already follow the cursor.
+		var named: int = _index_of_step(steps, step)
+		if named != cursor:
 			return false
+		index = named
 	if index >= steps.size():
 		return complete(quest_id)
 	var step_def: Dictionary = steps[index]
@@ -214,7 +220,9 @@ func serialize() -> Dictionary:
 func deserialize(data: Dictionary) -> void:
 	if data.is_empty():
 		return
-	_run_state = NarrativeRunState.from_dict(data.get("run_state", {}))
+	# Restore IN PLACE (not by replacement) so cached references stay valid — the
+	# InkBridge holds this exact object and reads it through its Ink externals.
+	_run_state.load_from(data.get("run_state", {}))
 	_statuses = (data.get("statuses", {}) as Dictionary).duplicate(true)
 	_step_cursor = (data.get("step_cursor", {}) as Dictionary).duplicate(true)
 	var tracker_data: Dictionary = data.get("tracker", {})

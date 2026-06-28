@@ -106,11 +106,15 @@ func run() -> Array:
 	quests.advance("rust_marsh_omen", "read_the_omens")
 	transcript.append({"source": "quest", "event": "advanced", "step": "read_the_omens"})
 
-	# 3) Dialogic renders the encounter the Ink branch requested (render_timeline).
+	# 3) Dialogic renders the encounter the Ink branch requested (render_timeline). WAIT
+	#    for it to finish before granting rewards: on-screen, play_timeline returns true
+	#    and scene_finished fires when the timeline ends, so we await it; headless, it
+	#    returns false having already resolved synchronously, so we fall straight through.
 	var timeline: String = str(_bridge_render_timeline())
 	if timeline != "":
-		_dialogic.play_timeline(timeline)
 		transcript.append({"source": "dialogic", "timeline": timeline})
+		if _dialogic.play_timeline(timeline):
+			await _dialogic.scene_finished
 
 	# 4) The encounter resolved -> advance the final step; the quest auto-completes and
 	#    its on_complete effect GATES run state (unlock region + Lab op + corruption).

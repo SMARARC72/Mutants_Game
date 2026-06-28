@@ -98,14 +98,22 @@ func to_dict() -> Dictionary:
 	}
 
 
+## Overwrites THIS object's fields from a save dict, IN PLACE. Restoring in place
+## (rather than constructing a replacement) preserves object identity, so every holder
+## of a cached reference — notably InkBridge, whose Ink externals read this object —
+## sees the restored state after a reload instead of a stale pre-restore snapshot.
+func load_from(data: Dictionary) -> void:
+	corruption = int(data.get("corruption", 0))
+	unlocked_regions = _as_dict(data.get("unlocked_regions", {}))
+	owned_creatures = _as_dict(data.get("owned_creatures", {}))
+	captured_creatures = _as_dict(data.get("captured_creatures", {}))
+	faction_standing = _as_dict(data.get("faction_standing", {}))
+	flags = _as_dict(data.get("flags", {}))
+
+
 static func from_dict(data: Dictionary) -> NarrativeRunState:
 	var state := NarrativeRunState.new()
-	state.corruption = int(data.get("corruption", 0))
-	state.unlocked_regions = _as_dict(data.get("unlocked_regions", {}))
-	state.owned_creatures = _as_dict(data.get("owned_creatures", {}))
-	state.captured_creatures = _as_dict(data.get("captured_creatures", {}))
-	state.faction_standing = _as_dict(data.get("faction_standing", {}))
-	state.flags = _as_dict(data.get("flags", {}))
+	state.load_from(data)
 	return state
 
 
