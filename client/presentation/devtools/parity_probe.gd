@@ -46,9 +46,13 @@ static func battle(seed: int) -> Array:
 	out.append("[parity_battle] gdscript hash = 0x%016x" % got_hash)
 	out.append("[parity_battle] golden   hash = 0x%016x" % golden_hash)
 	if got_hash == golden_hash and result.size() == expected_log.size():
-		out.append("[parity_battle] MATCH — GDScript battle_engine == Python oracle (TDD §11.2) ✔")
+		# Marker is NON-overlapping (PARITY_OK is NOT a substring of PARITY_DRIFT and vice-versa), so a
+		# probe consumer can match success/failure unambiguously — unlike "MATCH"/"MISMATCH".
+		out.append(
+			"[parity_battle] PARITY_OK — GDScript battle_engine == Python oracle (TDD §11.2) ✔"
+		)
 	else:
-		out.append("[parity_battle] MISMATCH — parity drift! First divergence:")
+		out.append("[parity_battle] PARITY_DRIFT — transcript differs from the golden vector!")
 		out.append(_first_diff(result, expected_log))
 	return out
 
