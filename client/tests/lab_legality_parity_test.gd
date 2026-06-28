@@ -79,6 +79,68 @@ func test_committed_taboo_fuse_equals_oracle() -> void:
 	assert_int(int(creature["corruption"])).is_equal(18)
 
 
+# A committed SINGLE-CREATURE op (graft) equals LabEngine.fuse(host, host-mirroring partner, ...) on
+# the same numeric rng — exercising the config-influenced _compute/_partner_from_config path (not the
+# near-tautological fuse path). Proves the single-creature path also contributes config only.
+func test_committed_graft_equals_host_preserving_oracle() -> void:
+	var host := ["Titanhusk", "Gaia", "Chaos", "T2"]
+	var player := {"corruption": 0, "unlocks": [], "has_parts": []}
+	var seed := 5151
+	var op_id := "parity_graft"
+
+	var res := LabBenchScript.new(_rules).commit(
+		host, null, ["claw"], "precise", player, seed, op_id, "graft"
+	)
+	assert_int(int(res["verdict"])).is_equal(0)  # LEGAL
+	var creature: Dictionary = res["creature"]
+
+	# The bench mirrors the host's own poles + tier into the partner (config-INDEPENDENT). Rebuild that
+	# partner + the exact rng, call the oracle directly, and assert field-for-field equality.
+	var partner := ["graft_part", "Gaia", "Chaos", "T2"]
+	var expected := LabEngine.fuse(
+		host, partner, "precise", LabBenchScript.numeric_rng(seed, op_id)
+	)
+	_assert_creatures_equal(creature, expected)
+	# Host-preserving: the committed creature's forces are exactly the host's (blend of [Gaia,Chaos]x2).
+	assert_str(str(creature["prim"])).is_equal("Gaia")
+	assert_str(str(creature["sec"])).is_equal("Chaos")
+	assert_str(str(creature["tier"])).is_equal("T2")
+
+
+# CONFIG-INDEPENDENCE (the P1 fix's teeth): a single-creature op with MULTIPLE legal configs. Across
+# many op_ids the config pick VARIES (>1 distinct config observed), yet EVERY committed creature equals
+# the oracle on the HOST-MIRRORING partner with that op_id's numeric stream. If the config leaked into
+# the partner (the old bug), a config that chose force_intent=secondary would flip prim/sec and the
+# creature would NOT match the host-mirror oracle. (Numbers legitimately differ across op_ids because
+# each has its own numeric sub-stream; what must hold is config-independence, asserted per op_id.)
+func test_config_pick_never_perturbs_numbers() -> void:
+	var host := ["Titanhusk", "Gaia", "Chaos", "T2"]
+	var partner := ["graft_part", "Gaia", "Chaos", "T2"]  # the host-mirroring partner (config-independent)
+	var player := {"corruption": 0, "unlocks": [], "has_parts": []}
+	var bench := LabBenchScript.new(_rules)
+
+	# claw is compatible with both Gaia and Chaos -> force_intent has multiple legal values -> >1 config.
+	var pv := bench.preview(host, null, ["claw"], "precise", player, "graft")
+	assert_int((pv["configs"] as Array).size()).is_greater(1)
+
+	var seed := 777
+	var distinct_configs := {}
+	for n in 40:
+		var op_id := "vary_%d" % n
+		var res := bench.commit(host, null, ["claw"], "precise", player, seed, op_id, "graft")
+		distinct_configs[str(res["splice_config"]["force_intent"])] = true
+		# Whatever config was picked, the numbers equal the HOST-MIRROR oracle for this op_id's stream.
+		var expected := LabEngine.fuse(
+			host, partner, "precise", LabBenchScript.numeric_rng(seed, op_id)
+		)
+		_assert_creatures_equal(res["creature"], expected)
+		# Forces are ALWAYS the host's, never flipped by the config pick.
+		assert_str(str(res["creature"]["prim"])).is_equal("Gaia")
+		assert_str(str(res["creature"]["sec"])).is_equal("Chaos")
+	# The config pick genuinely varied across op_ids (otherwise the test would be vacuous).
+	assert_int(distinct_configs.size()).is_greater(1)
+
+
 func _assert_creatures_equal(got: Dictionary, exp: Dictionary) -> void:
 	for k in ["name", "prim", "sec", "tier", "method"]:
 		assert_str(str(got[k])).is_equal(str(exp[k]))

@@ -92,3 +92,160 @@ func test_example4_god_core_graft_meets_gate_is_legal() -> void:
 	var no_part := {"corruption": 90, "unlocks": [], "has_parts": []}
 	var v3 := _bench().preview(host, null, ["god_core"], "precise", no_part, "graft")
 	assert_int(int(v3["verdict"])).is_equal(LegalitySolverScript.Verdict.TABOO)
+
+
+# --- mutate (genes): in-force LEGAL; cross-force TABOO->LEGAL when gated; class-incompatible ILLEGAL ---
+func test_mutate_in_force_gene_is_legal() -> void:
+	var host := ["Bulwark", "Gaia", "", "T2"]
+	var clean := {"corruption": 0, "unlocks": [], "has_parts": []}
+	# ironblood is a Gaia gene on a Gaia host -> in-force, not taboo.
+	var v := _bench().preview(host, null, ["ironblood"], "precise", clean, "mutate")
+	assert_int(int(v["verdict"])).is_equal(LegalitySolverScript.Verdict.LEGAL)
+	assert_bool(bool(v["configs"][0]["flags"]["taboo"])).is_false()
+	assert_bool((v["configs"][0]["genes"] as Array).has("ironblood")).is_true()
+
+
+func test_mutate_cross_force_gene_is_taboo_then_legal() -> void:
+	var host := ["Bulwark", "Gaia", "", "T2"]
+	# quickstep (Ouranos) on a Gaia host -> cross-force -> taboo-lite, gated by T_abom/abomination_rites.
+	var v := _bench().preview(
+		host,
+		null,
+		["quickstep"],
+		"precise",
+		{"corruption": 0, "unlocks": [], "has_parts": []},
+		"mutate"
+	)
+	assert_int(int(v["verdict"])).is_equal(LegalitySolverScript.Verdict.TABOO)
+	assert_bool(bool(v["configs"][0]["flags"]["taboo"])).is_true()
+
+	var gated := {"corruption": 40, "unlocks": [], "has_parts": []}
+	var v2 := _bench().preview(host, null, ["quickstep"], "precise", gated, "mutate")
+	assert_int(int(v2["verdict"])).is_equal(LegalitySolverScript.Verdict.LEGAL)
+
+
+func test_mutate_class_incompatible_gene_is_illegal() -> void:
+	var host := ["Bulwark", "Gaia", "", "T2"]
+	var gated := {"corruption": 90, "unlocks": ["abomination_rites"], "has_parts": []}
+	# servo_weave is construct-only; an organic host with no bridge cannot weave it -> ILLEGAL.
+	var v := _bench().preview(host, null, ["servo_weave"], "precise", gated, "mutate")
+	assert_int(int(v["verdict"])).is_equal(LegalitySolverScript.Verdict.ILLEGAL)
+	assert_int((v["configs"] as Array).size()).is_equal(0)
+	assert_str(str(v["reason"])).contains("gene")
+
+
+func test_mutate_conflicting_genes_is_illegal() -> void:
+	# venom <-> verdant conflict; a host where BOTH are otherwise placeable still cannot take both.
+	var host := ["Chimera", "Thanatos", "Eros", "T2"]
+	var gated := {"corruption": 90, "unlocks": ["abomination_rites"], "has_parts": []}
+	var v := _bench().preview(host, null, ["venom", "verdant"], "precise", gated, "mutate")
+	assert_int(int(v["verdict"])).is_equal(LegalitySolverScript.Verdict.ILLEGAL)
+
+
+# --- self_splice: LEGAL only with auto_chirurgy + corruption >= T_self, else TABOO ---
+func test_self_splice_requires_unlock_and_corruption() -> void:
+	var player_host := ["Player", "Eros", "", "T2"]
+	# Missing unlock / below T_self -> TABOO.
+	var v := _bench().preview(
+		player_host,
+		null,
+		["heart"],
+		"precise",
+		{"corruption": 50, "unlocks": [], "has_parts": []},
+		"self_splice"
+	)
+	assert_int(int(v["verdict"])).is_equal(LegalitySolverScript.Verdict.TABOO)
+	assert_bool(bool(v["configs"][0]["flags"]["chimera"])).is_true()
+
+	# Has auto_chirurgy AND corruption >= T_self(85) -> LEGAL.
+	var ready := {"corruption": 90, "unlocks": ["auto_chirurgy"], "has_parts": []}
+	var v2 := _bench().preview(player_host, null, ["heart"], "precise", ready, "self_splice")
+	assert_int(int(v2["verdict"])).is_equal(LegalitySolverScript.Verdict.LEGAL)
+
+	# Unlock but corruption below threshold -> still TABOO.
+	var low := {"corruption": 80, "unlocks": ["auto_chirurgy"], "has_parts": []}
+	var v3 := _bench().preview(player_host, null, ["heart"], "precise", low, "self_splice")
+	assert_int(int(v3["verdict"])).is_equal(LegalitySolverScript.Verdict.TABOO)
+
+
+# --- reanimate: LEGAL only with necromancy + a soul/core part, else TABOO ---
+func test_reanimate_requires_necromancy_and_part() -> void:
+	var snapshot := ["Snapshot", "Thanatos", "", "T3"]
+	# No necromancy / no part -> TABOO.
+	var v := _bench().preview(
+		snapshot,
+		null,
+		["soul"],
+		"precise",
+		{"corruption": 0, "unlocks": [], "has_parts": []},
+		"reanimate"
+	)
+	assert_int(int(v["verdict"])).is_equal(LegalitySolverScript.Verdict.TABOO)
+	assert_bool(bool(v["configs"][0]["flags"]["reanimated"])).is_true()
+
+	# necromancy + a soul part -> LEGAL.
+	var ready := {"corruption": 0, "unlocks": ["necromancy"], "has_parts": ["soul"]}
+	var v2 := _bench().preview(snapshot, null, ["soul"], "precise", ready, "reanimate")
+	assert_int(int(v2["verdict"])).is_equal(LegalitySolverScript.Verdict.LEGAL)
+
+	# necromancy but NO part -> TABOO.
+	var no_part := {"corruption": 0, "unlocks": ["necromancy"], "has_parts": []}
+	var v3 := _bench().preview(snapshot, null, ["soul"], "precise", no_part, "reanimate")
+	assert_int(int(v3["verdict"])).is_equal(LegalitySolverScript.Verdict.TABOO)
+
+
+# --- input-count enforcement (SpliceRules §2) ---
+func test_input_count_mismatch_is_illegal() -> void:
+	var clean := {"corruption": 0, "unlocks": [], "has_parts": []}
+	# fuse with only 1 creature -> ILLEGAL.
+	var v := _bench().preview(["Lone", "Gaia", "", "T2"], null, [], "precise", clean, "fuse")
+	assert_int(int(v["verdict"])).is_equal(LegalitySolverScript.Verdict.ILLEGAL)
+	assert_str(str(v["reason"])).contains("requires 2 creature")
+
+	# graft with 2 creatures -> ILLEGAL.
+	var a := ["H", "Gaia", "", "T2"]
+	var b := ["X", "Gaia", "", "T2"]
+	var v2 := _bench().preview(a, b, ["claw"], "precise", clean, "graft")
+	assert_int(int(v2["verdict"])).is_equal(LegalitySolverScript.Verdict.ILLEGAL)
+	assert_str(str(v2["reason"])).contains("requires 1 creature")
+
+
+# --- slot capacity teeth: head max 1, limb max 2 ---
+func test_slot_capacity_constraints() -> void:
+	var clean := {"corruption": 0, "unlocks": [], "has_parts": []}
+	# Two head organs (venom_gland + crest both target head, max 1) on a fuse -> no config places both.
+	var two_head := _bench().preview(
+		["A", "Thanatos", "Eros", "T2"],
+		["B", "Thanatos", "Eros", "T2"],
+		["venom_gland", "crest"],
+		"precise",
+		clean,
+		"fuse"
+	)
+	assert_int(int(two_head["verdict"])).is_equal(LegalitySolverScript.Verdict.LEGAL)
+	for cfg in two_head["configs"]:
+		var head: Array = cfg["trait_slots"].get("head", [])
+		assert_int(head.size()).is_less_equal(1)
+
+	# Two limb organs (claw + tail, limb max 2) -> at least one config places BOTH.
+	var two_limb := _bench().preview(
+		["A", "Gaia", "Chaos", "T2"],
+		["B", "Gaia", "Chaos", "T2"],
+		["claw", "tail"],
+		"precise",
+		clean,
+		"fuse"
+	)
+	assert_int(int(two_limb["verdict"])).is_equal(LegalitySolverScript.Verdict.LEGAL)
+	var found_both := false
+	for cfg in two_limb["configs"]:
+		if (cfg["trait_slots"].get("limb", []) as Array).size() == 2:
+			found_both = true
+	assert_bool(found_both).is_true()
+
+	# Three limb organs on a REQUIRED-ingredient graft (limb max 2) -> cannot place all three -> ILLEGAL.
+	var three_limb := _bench().preview(
+		["H", "Gaia", "Chaos", "T2"], null, ["claw", "tail", "horn"], "precise", clean, "graft"
+	)
+	# horn targets head, claw+tail target limb -> graft.slots organ cap (1) makes 3 organs impossible.
+	assert_int(int(three_limb["verdict"])).is_equal(LegalitySolverScript.Verdict.ILLEGAL)
