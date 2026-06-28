@@ -134,14 +134,23 @@ func save_run() -> bool:
 # === battle result application ================================================================ #
 
 
-## Apply a BattleSession result back to the run (Slice 1: award xp, mark the run's last outcome).
-## Pure bookkeeping — the real xp/level curve is a later slice. Returns the run for chaining.
+## Apply a BattleSession result back to the run. BACKWARD-COMPATIBLE with Slice 1: still awards xp to
+## essence + records last_battle_won. Slice 2 additions (only when the keys are present, so a Slice 1
+## auto result is unchanged): a CAUGHT creature_instance is appended to the party, and the last battle
+## outcome reason (win/lose/fled/caught) is recorded for the overworld to read. Pure bookkeeping — the
+## real xp/level curve is a later slice. Returns the run for chaining.
 func apply_battle_result(result: Dictionary) -> RunContext:
 	if _run == null:
 		return null
 	var gained := int(result.get("xp", 0))
 	_run.essence += gained  # Slice 1 stand-in growth resource.
 	_run.flags["last_battle_won"] = bool(result.get("player_won", false))
+	_run.flags["last_battle_reason"] = str(result.get("reason", ""))
+	# Slice 2: a captured wild creature joins the party (shaped as a creature_instance by the capture
+	# service). Append a deep copy so the run owns it independent of the result dict.
+	var caught: Dictionary = result.get("caught", {})
+	if not caught.is_empty():
+		_run.party.append(caught.duplicate(true))
 	return _run
 
 

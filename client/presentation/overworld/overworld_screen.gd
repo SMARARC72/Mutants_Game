@@ -121,6 +121,7 @@ func _on_encounter(roll: Dictionary) -> void:
 			run.flags["pending_battle"] = {
 				"enemy_party": enemy_party,
 				"battle_seed": battle_seed,
+				"is_wild": true,  # overworld encounters are wild (Capture/Flee available, Slice 2)
 			}
 	# Save on encounter-end boundary (autosave the run before the fight resolves the loop).
 	if _game != null and _game.has_method("save_run"):
