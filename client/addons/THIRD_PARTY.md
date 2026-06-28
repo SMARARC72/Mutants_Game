@@ -99,6 +99,40 @@ The brain carries **no outcome math** (ADR-016): it SELECTS the target/offense; 
 computes every number. `BattleEngine.simulate` is untouched and remains the auto/parity oracle. If a
 clean 4.7 LimboAI binary becomes available, the swap is local: reimplement `CombatBrain` (the facade);
 the controller and the determinism contract are unchanged.
+## Cluster 4 — Inventory + ability/status adapters (D4): expressobits + OctoD (self-contained)
+
+**expressobits/inventory-system (🟢 MIT) and OctoD godot-gameplay-systems (🟢 MIT) were evaluated
+and NOT vendored as runtime addons for D4.** The brief permits a self-contained fallback when a lib
+"doesn't fit cleanly on 4.7 … the adapter contract matters more than the lib." Both decisions follow
+the same precedent as the D3 CSP solver above, for two reasons specific to D4:
+
+1. **ADR-015 (the prime directive): addons never own outcome math.** Both libraries ship their OWN
+   gameplay math — expressobits computes a crafted OUTPUT item from a recipe; OctoD computes
+   attribute/buff/ability VALUES. In Mutants_Game the oracle (`client/domain/lab_engine.gd`,
+   `status_engine.gd`, `skill_engine.gd`) is the SOLE source of every number. Adopting either
+   library's math would create a second source of truth and break parity (TDD §6). We therefore adopt
+   each only for its STRUCTURE/STORAGE/CONTAINER role behind a thin adapter, computing nothing.
+2. **Godot is not installable in this environment**, so a 4.7 vendor cannot be smoke-tested here
+   (`godot --headless --import`) — the same blocker recorded for the CSP solver. Shipping a small,
+   self-contained, parity-irrelevant adapter that fulfils the SAME contract is lower-risk than
+   committing an unverified vendor. The adapter seam is documented in each file so the upstream addon
+   can be dropped in later WITHOUT touching callers (ADR-015 P3: swap an addon = reimplement one facade).
+
+| Component | File | Role (the contract) |
+|---|---|---|
+| `InventoryItem` | `infrastructure/inventory/inventory_item.gd` | data-only item DTO (categories = Lab ingredient types + run items); maps expressobits ItemDefinition/ItemStack → versioned-JSON, never `.tres` (ADR-012) |
+| `InventoryAdapter` | `infrastructure/inventory/inventory_adapter.gd` | the parts/kits/consumables/vials inventory facade — add / stack / consume / query + `to_dict`/`load_from`. The ONLY file callers touch; expressobits `Inventory` would back it 1:1 |
+| `LabRecipe` | `infrastructure/inventory/lab_recipe.gd` | the recipe REPRESENTATION (op + creature inputs + ingredient ids + method) the expressobits crafting GRAPH authors. Stores inputs only; computes no output |
+| `LabRecipeBench` | `application/lab/lab_recipe_bench.gd` | wires inventory + recipe → `LabBench` → `lab_engine`; debits the inventory by `splice_config["consumed"]` ONLY on a LEGAL commit, AFTER the oracle ran. The creature is `lab_engine`'s verbatim |
+| `StatusContainer` | `application/status/status_container.gd` | OctoD-style buff/debuff effect-container SHELL; delegates apply/tick/cleanse/corruption to `status_engine` and reads back state. Owns no number |
+| `AbilityContainer` | `application/status/ability_container.gd` | OctoD-style ability-container SHELL; delegates damage/support/act to `skill_engine`. Owns no number |
+
+**The contamination boundary (ADR-015 / DoD item 4):** `inventory_contamination_guard_test.gd` proves a
+splice driven through inventory → `LabRecipeBench` → `LabBench` yields a creature EQUAL field-for-field to
+`LabEngine.fuse(...)` on the same config + seed — the inventory/recipe contributed storage + recipe
+representation only, NOT a single number. `status_ability_shell_test.gd` proves the OctoD shells reflect
+`status_engine`/`skill_engine` values exactly. The upstream URLs (for a future runtime vendor):
+expressobits https://github.com/expressobits/inventory-system · OctoD https://github.com/OctoD/godot-gameplay-systems.
 
 ## Local modifications (4.7 compatibility)
 
