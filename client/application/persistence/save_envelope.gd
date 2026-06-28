@@ -162,15 +162,18 @@ static func _body_of(envelope: Dictionary) -> Dictionary:
 	}
 
 
-## Deterministic checksum of the body sections: a stable-key JSON string hashed with SHA-256.
+## Deterministic checksum of the body sections: the body in its CANONICAL JSON form, SHA-256'd.
 ## `sort_keys=true` makes the digest independent of dictionary insertion order (stable across
-## runs/OS). full_precision is DELIBERATELY left at its default (false): build_json writes the
-## save with default precision too, so after a save -> disk -> reload round-trip a float reparses
-## to the same default-precision value and the recomputed checksum still matches. Using
-## full_precision here would false-fail any save whose body carries a float (world_state, genome,
-## command-log payloads, etc.).
+## runs/OS). We NORMALIZE the body through a JSON round-trip (`parse(stringify(body))`) BEFORE
+## hashing so the digest is identical whether computed over the NATIVE in-memory body (at build)
+## or the POST-PARSE body (at verify, after a disk round-trip). Without this, Godot's JSON re-types
+## numbers on parse (e.g. a native int `0` reparses to float `0.0`), so `checksum_of(native)` would
+## differ from `checksum_of(parsed)` and a freshly-written save would false-fail verification. The
+## normalize is idempotent and reduces both sides to hashing the same parsed values. full_precision
+## is left at its default (false) to match `build_json`'s disk write, so floats round-trip too.
 static func checksum_of(body: Dictionary) -> String:
-	var canonical := JSON.stringify(body, "", true)
+	var normalized: Variant = JSON.parse_string(JSON.stringify(body))
+	var canonical := JSON.stringify(normalized, "", true)
 	var ctx := HashingContext.new()
 	ctx.start(HashingContext.HASH_SHA256)
 	ctx.update(canonical.to_utf8_buffer())
