@@ -1,29 +1,22 @@
 # ─────────────────────────────────────────────────────────────
 # Mutants_Game — .gitignore
-# The base repo holds the design + code corpus. The 363 MB of raw
-# creature art (art/) and UI image slices (assets/**) are kept OUT of
-# base history and added later via Git LFS — see README "Adding art via LFS".
+# Bulk asset LIBRARIES stay OUT of git (the multi-hundred-MB raw exports). The CURATED
+# subsets that the game actually uses live under client/assets/** and client/addons/**
+# and ARE committed (binaries via Git LFS — see .gitattributes). So we do NOT blanket-ignore
+# *.png/*.wav here (that would wrongly exclude addons + curated assets); we ignore the bulk
+# dirs by path instead. Full third-party packs live in ../_asset-library/ (outside the repo).
 # ─────────────────────────────────────────────────────────────
 
-# Heavy generated art + image slices (add via LFS in a follow-up)
+# Bulk raw-art libraries (kept out of base history; add via LFS later if ever needed)
 /art/
-*.png
-*.jpg
-*.jpeg
-*.webp
-*.gif
+/assets/
 
-# Archives / large binaries
+# Archives / large source binaries (never committed)
 *.zip
 *.7z
 *.rar
 *.psd
 *.aseprite
-
-# Audio / video
-*.wav
-*.ogg
-*.mp3
 *.mp4
 
 # Secrets — NEVER commit (anon key only ships in client config)
@@ -46,9 +39,8 @@ node_modules/
 dist/
 .next/
 
-# Godot
+# Godot (commit .import + .uid; ignore only the regenerable cache)
 .godot/
-.import/
 export_presets.cfg
 
 # OS / editors

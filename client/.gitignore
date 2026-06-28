@@ -1,9 +1,7 @@
-# Godot 4 — generated/import caches (never committed)
+# Godot 4 — only the regenerable cache is ignored. `.import` + `.uid` files ARE committed
+# (Godot 4.4+ practice) so import settings + stable UIDs survive a clean clone / CI.
 .godot/
-.import/
 export_presets.cfg
-*.import
-*.uid
 
 # Local, untracked Supabase client config (anon key injected at build/runtime — never committed)
 infrastructure/supabase/supabase_config.gd

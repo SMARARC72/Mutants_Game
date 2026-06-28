@@ -44,6 +44,11 @@ jobs:
         run: sqlfluff lint supabase/migrations --dialect postgres
       - name: JS (eslint)
         run: npm run lint:js
+      - name: Domain purity (TDD §3.1 — no Node/addon/wall-clock/global-RNG in domain/)
+        run: |
+          M=$(git ls-files 'client/domain/**/*.gd' | xargs -r grep -nE '(\bTime\.|\brandf\(|\brandi\(|\brandomize\(|Engine\.get_process_frames|extends (Node|Node2D|Node3D|Control)|res://addons)' || true)
+          if [ -n "$M" ]; then echo "$M"; echo "domain/ purity violation (see TDD §3.1)"; exit 1; fi
+          echo "domain purity: clean"
 
   constants-parity:
     name: Constants generator + parity (D4)
@@ -100,3 +105,21 @@ jobs:
       - uses: actions/checkout@v4
       - name: Secret gate (deterministic — fails on OpenAI/Anthropic/AWS/private-key/service-role JWT)
         run: bash tools/secret_scan.sh
+
+  godot-tests:
+    name: Godot 4.7 addons + GdUnit4 (P0.5)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+      - uses: chickensoft-games/setup-godot@v2
+        with:
+          version: 4.7.0
+          use-dotnet: false
+      - name: Import project (build cache from committed .uid/.import; loads all 5 addons)
+        working-directory: client
+        run: godot --headless --import
+      - name: GdUnit4 headless test run (sample + Dialogic smoke)
+        working-directory: client
+        run: godot --headless -s res://addons/gdUnit4/bin/GdUnitCmdTool.gd --add res://tests --ignoreHeadlessMode --continue
