@@ -1,0 +1,13 @@
+{
+  "name": "mutants-game-db-tests",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Phase 0 D5 anonymous-auth isolation smoke test (runs against a local Supabase stack).",
+  "scripts": {
+    "smoke": "node smoke_anon_isolation.mjs"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.45.0"
+  }
+}

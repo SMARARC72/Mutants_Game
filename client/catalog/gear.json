@@ -1,0 +1,70 @@
+{
+  "_source": "tools/balance_constants.json (loot_engine.GEAR)",
+  "gear": [
+    {
+      "id": "beastcaller_s_horn",
+      "name": "Beastcaller's Horn",
+      "slot": "Tool",
+      "rarity": "Rare",
+      "force": null,
+      "effects": {
+        "capture": 0.25,
+        "tame": 0.2
+      }
+    },
+    {
+      "id": "geneweaver_gloves",
+      "name": "Geneweaver Gloves",
+      "slot": "Tool",
+      "rarity": "Mythic",
+      "force": null,
+      "effects": {
+        "breed_rare": 0.2,
+        "lab": 0.25
+      }
+    },
+    {
+      "id": "sigil_of_mercy",
+      "name": "Sigil of Mercy",
+      "slot": "Charm",
+      "rarity": "Fine",
+      "force": "Eros",
+      "effects": {
+        "capture": 0.1
+      }
+    },
+    {
+      "id": "tyrant_s_mantle",
+      "name": "Tyrant's Mantle",
+      "slot": "Vestment",
+      "rarity": "Mythic",
+      "force": "Cosmos",
+      "effects": {
+        "capture": 0.15,
+        "combat": "Dominion aura"
+      }
+    },
+    {
+      "id": "luckbone_charm",
+      "name": "Luckbone Charm",
+      "slot": "Charm",
+      "rarity": "Rare",
+      "force": null,
+      "effects": {
+        "breed_rare": 0.1,
+        "capture": 0.08
+      }
+    },
+    {
+      "id": "hephaestus_relic",
+      "name": "Hephaestus Relic",
+      "slot": "Relic",
+      "rarity": "Relic-tier",
+      "force": "Gaia",
+      "effects": {
+        "lab": 0.4,
+        "combat": "Forge-hand"
+      }
+    }
+  ]
+}

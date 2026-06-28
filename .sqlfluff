@@ -1,0 +1,8 @@
+# sqlfluff config — Phase 0. Validates that every migration + the generated seed PARSE
+# under the Postgres dialect (parse/template errors are always reported), while disabling
+# purely-cosmetic layout/convention rules that fight hand-aligned DDL and machine-generated
+# multi-row INSERTs. Tighten in later phases if a house SQL style is adopted.
+[sqlfluff]
+dialect = postgres
+max_line_length = 0
+exclude_rules = LT01, LT02, LT05, LT12, LT14, RF02, RF03, RF04, AL01, ST09, AM05, PG01, CP05

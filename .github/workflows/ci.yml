@@ -1,0 +1,102 @@
+name: CI
+
+# Phase 0 PR pipeline (TDD §12.2 subset, D6): lint -> constants parity -> DB/RLS (pgTAP) +
+# anon-isolation smoke -> secret scan. Fail-on-red; runs on every PR. Godot/GdUnit4 jobs
+# are added in Phase 0.5. Versions pinned (Python 3.12, Node 20, Supabase CLI).
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: Lint (gdformat/gdlint, sqlfluff, eslint)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install linters
+        run: |
+          python -m pip install --quiet "gdtoolkit==4.*" "sqlfluff==4.*"
+          npm ci
+      - name: GDScript (gdformat --check + gdlint, hand-written only)
+        run: |
+          GD_FILES=$(git ls-files 'client/**/*.gd' | grep -v '^client/addons/' | grep -v '^client/domain/constants.gd' || true)
+          echo "linting: $GD_FILES"
+          if [ -n "$GD_FILES" ]; then
+            gdformat --check $GD_FILES
+            gdlint $GD_FILES
+          fi
+      - name: SQL (sqlfluff — migrations)
+        run: sqlfluff lint supabase/migrations --dialect postgres
+      - name: JS (eslint)
+        run: npm run lint:js
+
+  constants-parity:
+    name: Constants generator + parity (D4)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Run generators (must succeed)
+        run: |
+          node tools/gen_constants.mjs
+          node tools/gen_catalog.mjs
+          node tools/gen_seed.mjs
+      - name: Drift gate (committed generated artifacts are up to date)
+        run: git diff --exit-code -- client/domain/constants.gd oracle/constants.py client/catalog supabase/seed.sql
+      - name: JSON<->engine parity test
+        run: PYTHONUTF8=1 python -B tools/test_constants_parity.py
+
+  database:
+    name: DB migrations + RLS (pgTAP) + anon smoke (D2/D3/D5)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 2.108.0
+      - name: Start local stack
+        run: supabase start
+      - name: db reset (apply 0001+0002+0003 + seed)
+        run: supabase db reset
+      - name: pgTAP RLS suite
+        run: supabase test db
+      - name: Anonymous-isolation smoke test
+        run: |
+          npm --prefix supabase/tests ci
+          export SUPABASE_URL=$(supabase status -o env | grep '^API_URL=' | cut -d'"' -f2)
+          export SUPABASE_ANON_KEY=$(supabase status -o env | grep '^ANON_KEY=' | cut -d'"' -f2)
+          node supabase/tests/smoke_anon_isolation.mjs
+      - name: Stop stack
+        if: always()
+        run: supabase stop --no-backup || true
+
+  secret-scan:
+    name: Secret scan (D6 guardrail)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Secret gate (deterministic — fails on OpenAI/Anthropic/AWS/private-key/service-role JWT)
+        run: bash tools/secret_scan.sh

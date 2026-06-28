@@ -1,0 +1,14 @@
+{
+  "_source": "docs/Mutants_Game_Factions.md (v0.1, roundtable-locked). Authored catalog of record for the 9 factions (no structured engine source exists). Consumed by tools/gen_seed.mjs -> supabase/seed.sql and bundled to the client.",
+  "factions": [
+    { "id": "concord",      "name": "The Concord",     "region": "Astral Tier",      "god": "Athena/Apollo",  "grid": "Order / Pure",      "ideology": "Refill the thrones lawfully; gods as cosmic civil service." },
+    { "id": "iron_guild",   "name": "The Iron Guild",  "region": "Forgefell",        "god": "Hephaestus",     "grid": "Order / Tainted",   "ideology": "Build better gods than were born; ethics are an engineering constraint." },
+    { "id": "pale_court",   "name": "The Pale Court",  "region": "Mournmarch",       "god": "Hades",          "grid": "Order / Corrupt",   "ideology": "Death is just unredeemed power; the bloodline-bank aristocracy." },
+    { "id": "high_table",   "name": "The High Table",  "region": "Storm Vault",      "god": "Zeus",           "grid": "Balanced",          "ideology": "The brokers — contracts, markers, the rules between god-makers." },
+    { "id": "stoneblooded", "name": "The Stoneblooded","region": "Titanfall",        "god": "(dead Titan)",   "grid": "Balanced / Pure",   "ideology": "Old clans; endurance, tradition, the husbandry way." },
+    { "id": "bloomwardens", "name": "The Bloomwardens","region": "Verdant Glut",     "god": "Demeter",        "grid": "Pure",              "ideology": "Life is sacred; tend, heal, befriend — never butcher." },
+    { "id": "revel",        "name": "The Revel",       "region": "Verdant/Sunder",   "god": "Dionysus",       "grid": "Chaos / Tainted",   "ideology": "Ecstasy, indulgence, glorious mutation." },
+    { "id": "unbound",      "name": "The Unbound",     "region": "The Sunder",       "god": "Eris",           "grid": "Chaos / (any)",     "ideology": "Burn every throne; let no god rule again." },
+    { "id": "deep_choir",   "name": "The Deep Choir",  "region": "The Tideless",     "god": "Poseidon",       "grid": "Balanced / Corrupt","ideology": "The drowned remember; eldritch communion." }
+  ]
+}
