@@ -33,9 +33,10 @@ for f in "${FILES[@]}"; do
   done
 done
 
-# client/ must never contain a service-role or OpenAI key (anon key only).
-if git ls-files 'client/**' | xargs -r grep -lIE 'service_role|sk-[A-Za-z0-9]{32,}|OPENAI_API_KEY=' 2>/dev/null | grep -q .; then
-  note "client/ contains a forbidden secret reference"
+# OUR client code must never contain a service-role or OpenAI key (anon key only).
+# Vendored third-party addons are excluded (they legitimately reference role names).
+if git ls-files 'client/**' | grep -v '^client/addons/' | xargs -r grep -lIE 'service_role|sk-[A-Za-z0-9]{32,}|OPENAI_API_KEY=' 2>/dev/null | grep -q .; then
+  note "client/ (non-addon) contains a forbidden secret reference"
 fi
 
 if [ "$fail" -ne 0 ]; then

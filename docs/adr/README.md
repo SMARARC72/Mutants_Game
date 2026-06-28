@@ -17,6 +17,5 @@ revisit by superseding with a new ADR + a TDD version bump.
 | [010](0010-monorepo-trunk-flags.md) | Monorepo + trunk-based + flags | Accepted | **impl P0** |
 | [011](0011-anonymous-first-auth.md) | Anonymous-first auth, uid preserved on link | Accepted | **wiring P0** |
 | [012](0012-versioned-json-save.md) | Versioned JSON save (no Resource deserialization) | Accepted | impl P3 |
+| [013](0013-phase05-dependencies.md) | Phase 0.5 vendored addons + asset policy + Beehave RNG rule | Accepted | **impl P0.5** |
 | [014](0014-runs-corruption-uncapped.md) | runs.corruption floor-only (not capped at 130) | Accepted | **impl P0 (deviation)** |
-
-ADR-013 (Phase 0.5 dependency decisions) is added in Phase 0.5.
