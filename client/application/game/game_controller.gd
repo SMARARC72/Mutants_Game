@@ -27,6 +27,7 @@ const GearCatalogScript := preload("res://infrastructure/catalog/gear_catalog.gd
 
 ## The run.flags key holding the active/lead party member index (Slice 3b). 0 by default.
 const ACTIVE_CREATURE_FLAG := "active_creature"
+const InventoryAdapterScript := preload("res://infrastructure/inventory/inventory_adapter.gd")
 
 var _run: RunContext = null
 var _dal: Dictionary = {}
@@ -35,6 +36,11 @@ var _world_gen: WorldGenerator = null
 var _gear_catalog: GearCatalog = null
 ## The save_version we last loaded/saved at — the conflict base for the DAL write (TDD §10.3).
 var _base_save_version: int = 0
+## Live InventoryAdapter over the active run's inventory rows (Slice 3a — the Lab UI's parts drawer).
+## Lazily built from run.inventory on first inventory() call; a debit during a Lab commit is visible
+## to later reads, and write_inventory() flushes it back to run.inventory before save. NEVER persisted
+## (it is a transient view; the rows are the source of truth). Reset whenever the active run changes.
+var _inventory: InventoryAdapter = null
 
 
 func _ready() -> void:
@@ -87,6 +93,7 @@ func new_run(seed: int) -> RunContext:
 	run.flags = {}
 	_run = run
 	_base_save_version = 0
+	_inventory = null  # drop any prior run's live drawer; rebuild lazily from the new run's rows
 	run_changed.emit(_run)
 	return _run
 
@@ -110,6 +117,7 @@ func continue_run() -> bool:
 		return false
 	_run = RunContextScript.from_dict(run_payload)
 	_base_save_version = _run.save_version
+	_inventory = null  # the loaded run's drawer is rebuilt lazily from its restored rows
 	# Mirror the loaded aggregate into the DAL so a later save_run conflict-checks against it.
 	_seed_dal_from_run()
 	run_changed.emit(_run)
@@ -123,6 +131,8 @@ func save_run() -> bool:
 	if _run == null:
 		return false
 	_ensure_deps()
+	# Flush the live parts drawer back into the data-only rows so a Lab debit is in the saved snapshot.
+	write_inventory()
 	# 1) DAL write (conflict-checked). On accept the store bumps save_version; mirror it back. The
 	#    await suspends only for the async Supabase repo; the Fake repo resolves synchronously (no
 	#    suspension), so save_run() returns its bool synchronously offline / in tests.
@@ -184,6 +194,48 @@ func has_run() -> bool:
 
 func party() -> Array:
 	return _run.party if _run != null else []
+
+
+## The active run's parts/vials inventory as an InventoryAdapter (Slice 3a — the Lab UI reads its
+## ingredient drawer through this). Lazily built from run.inventory; the SAME live adapter is returned
+## on later calls so a debit during a Lab commit is visible to a later read. write_inventory() flushes
+## it back to the data-only run.inventory before save. Returns an empty adapter when there is no run.
+func inventory() -> InventoryAdapter:
+	if _run == null:
+		return InventoryAdapterScript.new()
+	if _inventory == null:
+		_inventory = InventoryAdapterScript.from_rows(_run.inventory)
+	return _inventory
+
+
+## Flush the live inventory adapter back into the data-only run.inventory rows (call before save so
+## the persisted snapshot matches the in-memory drawer). No-op when no run / no adapter was created.
+func write_inventory() -> void:
+	if _run == null or _inventory == null:
+		return
+	_run.inventory = _inventory.to_dict()
+
+
+## The Lab gate's player_state ({corruption, unlocks, has_parts}) for the LegalitySolver. corruption
+## is the run's cumulative player track; unlocks/has_parts come from run.flags (data-only lists the
+## later progression slices populate — default empty so a fresh run gates taboo ops as designed).
+func lab_player_state() -> Dictionary:
+	if _run == null:
+		return {"corruption": 0, "unlocks": [], "has_parts": []}
+	return {
+		"corruption": _run.corruption,
+		"unlocks": _as_string_array(_run.flags.get("lab_unlocks", [])),
+		"has_parts": _as_string_array(_run.flags.get("lab_parts", [])),
+	}
+
+
+## Append a spliced creature_instance (the Lab UI's commit output) to the active party. Deep-copied
+## so the run owns it. Returns the new party size, or -1 when there is no active run.
+func add_party_member(creature_instance: Dictionary) -> int:
+	if _run == null:
+		return -1
+	_run.party.append(creature_instance.duplicate(true))
+	return _run.party.size()
 
 
 func active_region() -> String:
@@ -249,6 +301,15 @@ func has_save() -> bool:
 
 
 # === internals =============================================================================== #
+
+
+static func _as_string_array(value: Variant) -> Array:
+	# Coerce a flags value into an Array[String] of ids (defensive: flags are free-form data).
+	var out: Array = []
+	if value is Array:
+		for v in value:
+			out.append(str(v))
+	return out
 
 
 func _ensure_deps() -> void:
