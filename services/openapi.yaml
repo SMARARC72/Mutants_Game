@@ -1,0 +1,201 @@
+openapi: 3.1.0
+info:
+  title: Mutants_Game — Services API
+  version: 0.1.0
+  description: >-
+    Vercel serverless layer (TDD §7). Privileged compute only — never the game, never normal
+    CRUD (that is the client↔Supabase path). Holds the OpenAI key + Supabase service-role key
+    as Vercel env secrets, never returned to the client. Every endpoint requires a valid
+    Supabase JWT and zod-validates input at the boundary.
+servers:
+  - url: https://services.mutants.example/api
+    description: production (illustrative)
+security:
+  - supabaseJwt: []
+components:
+  securitySchemes:
+    supabaseJwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: >-
+        Supabase access token. Verified against the project JWKS; `sub` = player id (TDD §7.2).
+  schemas:
+    ErrorEnvelope:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [code, message]
+          properties:
+            code:
+              type: string
+              enum:
+                - unauthorized
+                - forbidden
+                - invalid_request
+                - not_found
+                - rate_limited
+                - moderation_blocked
+                - method_not_allowed
+                - upstream_error
+                - internal_error
+            message: { type: string }
+            details: { type: object, additionalProperties: true }
+    PromptSpec:
+      type: object
+      additionalProperties: false
+      required: [prompt]
+      properties:
+        prompt: { type: string, minLength: 1, maxLength: 4000 }
+        style: { type: string, maxLength: 256 }
+    ArtGenerateRequest:
+      type: object
+      required: [instance_id, genome_hash, sigil_seed, prompt_spec]
+      properties:
+        instance_id: { type: string, format: uuid }
+        genome_hash: { type: string, minLength: 1, maxLength: 256 }
+        sigil_seed: { type: integer }
+        prompt_spec: { $ref: "#/components/schemas/PromptSpec" }
+    ArtGenerateResponse:
+      type: object
+      required: [status, image_url, art_asset_id]
+      properties:
+        status: { type: string, enum: [ready, pending] }
+        image_url: { type: [string, "null"], format: uri }
+        art_asset_id: { type: string, format: uuid }
+    Snapshot:
+      type: object
+      required: [id, source_run, source_player, name, grid, forces, team, signature_moves, shareable, created_at]
+      properties:
+        id: { type: string, format: uuid }
+        source_run: { type: [string, "null"], format: uuid }
+        source_player: { type: [string, "null"], format: uuid }
+        name: { type: [string, "null"] }
+        grid: { type: [string, "null"] }
+        forces: {}
+        team: {}
+        signature_moves: {}
+        shareable: { type: boolean }
+        created_at: { type: [string, "null"], format: date-time }
+    SuccessionPublishRequest:
+      type: object
+      required: [source_run, team]
+      properties:
+        source_run: { type: string, format: uuid }
+        name: { type: string, minLength: 1, maxLength: 120 }
+        grid: { type: string, maxLength: 120 }
+        forces: {}
+        team: {}
+        signature_moves: {}
+        shareable: { type: boolean, default: true }
+    SuccessionPublishResponse:
+      type: object
+      required: [snapshot]
+      properties:
+        snapshot: { $ref: "#/components/schemas/Snapshot" }
+    SuccessionFetchResponse:
+      type: object
+      required: [snapshots]
+      properties:
+        snapshots:
+          type: array
+          items: { $ref: "#/components/schemas/Snapshot" }
+  responses:
+    Unauthorized:
+      description: Missing/invalid/expired JWT.
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+    Forbidden:
+      description: Authenticated but not the owner.
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+    BadRequest:
+      description: zod validation failed.
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+paths:
+  /art/generate:
+    post:
+      summary: Idempotent generate-once OpenAI image-gen proxy (ADR-007).
+      description: >-
+        Verifies JWT, verifies the player owns instance_id, enforces a per-player rate limit +
+        monthly cap (429 past budget), reserves the art_assets row (insert .. on conflict do
+        nothing) so concurrent calls never double-generate, runs OpenAI moderation, generates,
+        streams to Storage, and persists status=ready. A second call returns the same asset
+        with NO second OpenAI call.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ArtGenerateRequest" }
+      responses:
+        "200":
+          description: Asset ready (generated now or already existed) or still pending.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ArtGenerateResponse" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "422":
+          description: Prompt rejected by content moderation.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+        "429":
+          description: Rate limit or monthly cap exceeded.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+  /succession/publish:
+    post:
+      summary: Snapshot the caller's ascended pantheon into god_snapshots.
+      description: >-
+        Validates the caller owns source_run, then inserts a shareable snapshot. source_player
+        is forced to the authenticated caller (cannot forge authorship).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/SuccessionPublishRequest" }
+      responses:
+        "200":
+          description: Snapshot published.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SuccessionPublishResponse" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+  /succession/fetch:
+    get:
+      summary: Fetch shareable snapshots (by id, or a curated/random pool).
+      description: >-
+        With `id`, returns that snapshot if shareable or owned by the caller (honors RLS).
+        With `pool`, returns up to N shareable snapshots. Default returns a small shareable pool.
+      parameters:
+        - name: id
+          in: query
+          required: false
+          schema: { type: string, format: uuid }
+        - name: pool
+          in: query
+          required: false
+          schema: { type: integer, minimum: 1, maximum: 50 }
+      responses:
+        "200":
+          description: Matching snapshots.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SuccessionFetchResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404":
+          description: Snapshot not found or not shareable to the caller.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorEnvelope" }
