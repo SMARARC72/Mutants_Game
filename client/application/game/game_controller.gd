@@ -23,12 +23,17 @@ const SaveEnvelopeScript := preload("res://application/persistence/save_envelope
 const FakeDalScript := preload("res://infrastructure/dal/fake_dal.gd")
 const WorldGeneratorScript := preload("res://infrastructure/worldgen/world_generator.gd")
 const EncounterCatalogScript := preload("res://application/overworld/encounter_catalog.gd")
+const GearCatalogScript := preload("res://infrastructure/catalog/gear_catalog.gd")
+
+## The run.flags key holding the active/lead party member index (Slice 3b). 0 by default.
+const ACTIVE_CREATURE_FLAG := "active_creature"
 const InventoryAdapterScript := preload("res://infrastructure/inventory/inventory_adapter.gd")
 
 var _run: RunContext = null
 var _dal: Dictionary = {}
 var _catalog: SpeciesCatalog = null
 var _world_gen: WorldGenerator = null
+var _gear_catalog: GearCatalog = null
 ## The save_version we last loaded/saved at — the conflict base for the DAL write (TDD §10.3).
 var _base_save_version: int = 0
 ## Live InventoryAdapter over the active run's inventory rows (Slice 3a — the Lab UI's parts drawer).
@@ -46,6 +51,8 @@ func _ready() -> void:
 		_catalog = SpeciesCatalog.new()
 	if _world_gen == null:
 		_world_gen = WorldGeneratorScript.new()
+	if _gear_catalog == null:
+		_gear_catalog = GearCatalogScript.new()
 
 
 ## Inject dependencies (used by tests + when Supabase is configured). Any null arg keeps the
@@ -248,9 +255,44 @@ func catalog() -> SpeciesCatalog:
 	return _catalog
 
 
+## The gear catalog facade (Slice 3b). Lazily constructed + cached like the species catalog.
+func gear_catalog() -> GearCatalog:
+	_ensure_deps()
+	return _gear_catalog
+
+
 func world_generator() -> WorldGenerator:
 	_ensure_deps()
 	return _world_gen
+
+
+# === party: active/lead creature (Slice 3b) =================================================== #
+
+
+## The index of the active/lead party member (persisted in run.flags). Clamped to a valid party
+## index; 0 when there is no run / empty party.
+func active_creature_index() -> int:
+	if _run == null or _run.party.is_empty():
+		return 0
+	var idx := int(_run.flags.get(ACTIVE_CREATURE_FLAG, 0))
+	return clampi(idx, 0, _run.party.size() - 1)
+
+
+## The active/lead creature_instance dict, or {} when there is no run / empty party.
+func active_creature() -> Dictionary:
+	if _run == null or _run.party.is_empty():
+		return {}
+	var entry: Variant = _run.party[active_creature_index()]
+	return entry if entry is Dictionary else {}
+
+
+## Set the active/lead party member by index. Persists to run.flags (the caller saves the run).
+## Out-of-range indices are ignored (returns false); a valid set returns true.
+func set_active_creature(index: int) -> bool:
+	if _run == null or index < 0 or index >= _run.party.size():
+		return false
+	_run.flags[ACTIVE_CREATURE_FLAG] = index
+	return true
 
 
 ## True if a local save exists to continue from (the menu disables "Continue" otherwise).
@@ -277,6 +319,8 @@ func _ensure_deps() -> void:
 		_catalog = SpeciesCatalog.new()
 	if _world_gen == null:
 		_world_gen = WorldGeneratorScript.new()
+	if _gear_catalog == null:
+		_gear_catalog = GearCatalogScript.new()
 
 
 ## Save the run aggregate through the DAL run repository. Returns a SaveResult, or null if the DAL
