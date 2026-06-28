@@ -63,3 +63,27 @@ func test_old_save_loads_through_parse_after_migration() -> void:
 	var ctx: RunContext = RunContextScript.from_dict(SaveEnvelopeScript.run_payload(envelope))
 	assert_str(ctx.run_id).is_equal("run-old")
 	assert_int(ctx.drachma).is_equal(250)
+
+
+func test_v0_with_valid_checksum_migrates_and_stays_verified() -> void:
+	# A v0 fixture that carries a VALID v0 checksum must (a) pass the on-load corruption gate
+	# against its own body, (b) migrate to current, and (c) come out internally consistent —
+	# parse_json recomputes the checksum from the migrated body, so verify_checksum(result) holds.
+	var v0 := _legacy_v0_envelope()
+	var body := {
+		"run": v0["run"],
+		"narrative": v0["narrative"],
+		"ink": v0["ink"],
+		"command_log": v0["command_log"],
+	}
+	(v0["header"] as Dictionary)["checksum"] = SaveEnvelopeScript.checksum_of(body)
+
+	var envelope := SaveEnvelopeScript.parse_json(JSON.stringify(v0))
+	assert_dict(envelope).is_not_empty()
+	assert_int(int((envelope["header"] as Dictionary)["save_version"])).is_equal(
+		SaveEnvelopeScript.SAVE_VERSION
+	)
+	# The migration renamed zenny -> drachma; the recomputed checksum matches the NEW body.
+	assert_bool(SaveEnvelopeScript.verify_checksum(envelope)).is_true()
+	var ctx: RunContext = RunContextScript.from_dict(SaveEnvelopeScript.run_payload(envelope))
+	assert_int(ctx.drachma).is_equal(250)

@@ -118,6 +118,30 @@ func test_checksum_detects_tamper() -> void:
 	assert_bool(SaveEnvelopeScript.verify_checksum(envelope)).is_false()
 
 
+func test_checksum_survives_float_in_body() -> void:
+	# Regression: full_precision must NOT be used in checksum_of, else a float in the body
+	# (world_state/genome/etc.) reparses at default precision on reload and the recomputed
+	# checksum would false-fail a perfectly good save. Put a non-terminating float in the body,
+	# round-trip through build_json -> disk-form string -> parse_json, and verify it stays valid.
+	var ctx := _sample_context()
+	ctx.world_state["w"] = 1.0 / 3.0  # 0.3333... — the classic precision tripwire
+	ctx.party[0]["genome"]["expression"] = 0.30
+	var json := SaveEnvelopeScript.build_json(ctx.to_dict(), ctx.narrative)
+	var envelope := SaveEnvelopeScript.parse_json(json)
+	# parse_json itself runs the corruption gate; a non-empty result means the checksum matched.
+	assert_dict(envelope).is_not_empty()
+	assert_bool(SaveEnvelopeScript.verify_checksum(envelope)).is_true()
+
+
+func test_parse_rejects_tampered_save() -> void:
+	# A save whose body was mutated WITHOUT re-checksumming must be rejected on load (the
+	# corruption/tamper gate in parse_json), returning {}.
+	var ctx := _sample_context()
+	var envelope := SaveEnvelopeScript.build_dict(ctx.to_dict())
+	(envelope["run"] as Dictionary)["drachma"] = 1234567  # tamper, checksum NOT updated
+	assert_dict(SaveEnvelopeScript.parse_json(JSON.stringify(envelope))).is_empty()
+
+
 func test_parse_refuses_future_save() -> void:
 	var future := SaveEnvelopeScript.build_dict({"run_id": "r"})
 	(future["header"] as Dictionary)["save_version"] = SaveEnvelopeScript.SAVE_VERSION + 5
