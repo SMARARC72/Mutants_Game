@@ -79,9 +79,12 @@ static func build_dict(
 
 
 ## Parses a versioned-JSON string to its (migrated) envelope dictionary, or {} on failure.
-## Refuses a save NEWER than this build (downgrade, TDD §10.2), then runs the forward-only
-## migration chain so an older save reaches the current version. NEVER deserializes a Resource
-## (ADR-012) — strictly JSON data.
+## Order of gates: (1) refuse a save NEWER than this build (downgrade, TDD §10.2); (2) verify
+## the header checksum on the AS-READ body (corruption/tamper gate, TDD §10.3) BEFORE migrating
+## — a migration mutates the body and would invalidate the v_n checksum; (3) run the forward-only
+## migration chain; (4) RECOMPUTE the checksum from the migrated body so the returned envelope is
+## internally consistent (a caller may re-`verify_checksum` it or re-save it). NEVER deserializes
+## a Resource (ADR-012) — strictly JSON data.
 static func parse_json(text: String) -> Dictionary:
 	if text.strip_edges() == "":
 		return {}
@@ -94,12 +97,21 @@ static func parse_json(text: String) -> Dictionary:
 	if int(header.get("save_version", -1)) > SAVE_VERSION:
 		push_error("SaveEnvelope: save is newer than this build can read (downgrade refused).")
 		return {}
+	# Corruption/tamper gate: if a checksum is present it MUST match the as-read body (checked
+	# before migration, against the version that wrote it). A missing checksum is tolerated
+	# (legacy/hand-rolled saves) so we never strand an otherwise-valid old save.
+	if header.has("checksum") and not verify_checksum(envelope):
+		push_error("SaveEnvelope: checksum mismatch — save is corrupt or tampered.")
+		return {}
 	# Forward-only migration chain: older saves are upgraded; current/equal pass through.
 	if not SaveMigrationsScript.is_current(envelope):
 		envelope = SaveMigrationsScript.migrate(envelope)
 		if int((envelope.get("header", {}) as Dictionary).get("save_version", -1)) != SAVE_VERSION:
 			push_error("SaveEnvelope: migration chain did not reach the current save_version.")
 			return {}
+		# The migration rewrote the body; the stored checksum is now stale. Recompute it so the
+		# returned envelope is self-consistent (verify_checksum(result) holds; re-save is clean).
+		_restamp_checksum(envelope)
 	return envelope
 
 
@@ -124,25 +136,41 @@ static func command_log_payload(envelope: Dictionary) -> Dictionary:
 
 
 ## True if the envelope's stored header checksum matches a freshly computed one over its body
-## (corruption detection, TDD §10.3). A migrated envelope is re-checksummed by re-saving.
+## (corruption detection, TDD §10.3). Returns false if no checksum is present.
 static func verify_checksum(envelope: Dictionary) -> bool:
 	var header: Dictionary = _as_dict(envelope.get("header", {}))
 	if not header.has("checksum"):
 		return false
-	var body := {
+	return str(header.get("checksum", "")) == checksum_of(_body_of(envelope))
+
+
+## Overwrites the envelope's header checksum from its current body (after a migration mutates
+## the body, the v_n checksum is stale — this makes the envelope self-consistent again).
+static func _restamp_checksum(envelope: Dictionary) -> void:
+	var header: Dictionary = _as_dict(envelope.get("header", {}))
+	header["checksum"] = checksum_of(_body_of(envelope))
+	envelope["header"] = header
+
+
+## The four body sections in a fixed shape, so checksum/verify/restamp all hash the SAME thing.
+static func _body_of(envelope: Dictionary) -> Dictionary:
+	return {
 		"run": _as_dict(envelope.get("run", {})),
 		"narrative": _as_dict(envelope.get("narrative", {})),
 		"ink": _as_dict(envelope.get("ink", {})),
 		"command_log": _as_dict(envelope.get("command_log", {})),
 	}
-	return str(header.get("checksum", "")) == checksum_of(body)
 
 
 ## Deterministic checksum of the body sections: a stable-key JSON string hashed with SHA-256.
-## `JSON.stringify(..., "", true, true)` sorts keys, so the digest is stable across runs/OS
-## and independent of dictionary insertion order.
+## `sort_keys=true` makes the digest independent of dictionary insertion order (stable across
+## runs/OS). full_precision is DELIBERATELY left at its default (false): build_json writes the
+## save with default precision too, so after a save -> disk -> reload round-trip a float reparses
+## to the same default-precision value and the recomputed checksum still matches. Using
+## full_precision here would false-fail any save whose body carries a float (world_state, genome,
+## command-log payloads, etc.).
 static func checksum_of(body: Dictionary) -> String:
-	var canonical := JSON.stringify(body, "", true, true)
+	var canonical := JSON.stringify(body, "", true)
 	var ctx := HashingContext.new()
 	ctx.start(HashingContext.HASH_SHA256)
 	ctx.update(canonical.to_utf8_buffer())
