@@ -156,3 +156,18 @@ jobs:
       - name: GdUnit4 headless test run (sample + Dialogic smoke)
         working-directory: client
         run: godot --headless -s res://addons/gdUnit4/bin/GdUnitCmdTool.gd --add res://tests --ignoreHeadlessMode --continue
+
+  services:
+    name: Services — typecheck + tests (Phase 4)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install + typecheck + test (Vercel services)
+        working-directory: services
+        run: |
+          npm ci
+          npm run typecheck
+          npm test
