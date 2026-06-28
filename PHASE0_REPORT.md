@@ -13,9 +13,9 @@
 |---|---|---|---|
 | 1 | Monorepo layout, single lean baseline, LFS configured | ✅ | `git mv` reorg; `.git` 805 MB → 738 KB; LFS hooks+patterns ready (art excluded by design) |
 | 2 | `supabase db reset` applies 0001+0002+0003+seed cleanly | ✅ | reset output: all 3 migrations + seed, no errors |
-| 3 | pgTAP RLS suite green (allow+deny every owned table; catalog; god_snapshots) | ✅ | `supabase test db` → **40/40 PASS**; deny-tests proven to have teeth |
+| 3 | pgTAP RLS suite green (allow+deny every owned table; catalog; god_snapshots) | ✅ | `supabase test db` → **54/54 PASS**; deny-tests proven to have teeth |
 | 4 | Anonymous player row creatable + RLS-isolated | ✅ | `smoke_anon_isolation.mjs` → **PASS** (B cannot read/modify A's run) |
-| 5 | `balance_constants.json` parity test green; generator emits constants.gd + .py | ✅ | parity **93/93**; `gen_constants.mjs` emits both with float fidelity |
+| 5 | `balance_constants.json` parity test green; generator emits constants.gd + .py | ✅ | parity **113/113**; `gen_constants.mjs` emits both with float fidelity |
 | 6 | CI green on PR; red on planted secret or broken RLS | ✅ (authored + each command verified locally) | `.github/workflows/ci.yml`; secret scan + deny-test teeth proven |
 | 7 | This report | ✅ | you're reading it |
 | 8 | STOP before Phase 1 | ✅ | Phase 0.5 (resource integration) follows; Phase 1 not started |
@@ -46,7 +46,7 @@
 - `seed.sql` — generated from the in-repo catalog (ADR-006): **406 species, 6 gear, 12 skills, 9 factions**.
 
 ### D3 — pgTAP RLS proof
-- `supabase/tests/rls_test.sql`: **40 assertions**, allow+deny (read & write) for every player-owned
+- `supabase/tests/rls_test.sql`: **54 assertions**, allow+deny (read & write) for every player-owned
   table, catalog read-only (authenticated + anon), and the `god_snapshots` shareable rule.
 - Verified the suite has **teeth**: weakening `runs_owner` to `using(true)` turns the "A cannot read B"
   deny-test red.
@@ -55,8 +55,9 @@
 - `tools/balance_constants.json` — faithful transcription of **every** balance constant in the engines.
 - `tools/gen_constants.mjs` — emits `client/domain/constants.gd` + `oracle/constants.py` (floats stay
   floats, ints stay ints).
-- `tools/test_constants_parity.py` — **93 checks** (module-level structural + exact source-fragment
-  checks) proving JSON ≡ engines. Engines are **not** rewired to import the JSON yet (that's Phase 1).
+- `tools/test_constants_parity.py` — **113 checks** (structural `eq` + `ast`-numeric + derived-fragment;
+  every expected value is derived from the JSON, so JSON-side drift turns it red) proving JSON ≡ engines.
+  Engines are **not** rewired to import the JSON yet (that's Phase 1).
 - Catalog pipeline: `tools/gen_catalog.mjs` (→ `client/catalog/*.json`) + `tools/gen_seed.mjs` (→ `seed.sql`).
 
 ### D5 — Anonymous auth wiring
@@ -84,12 +85,12 @@
 # 1. Constants generators + parity (D4)
 npm ci
 npm run gen:all                                  # constants.gd/.py + catalog/*.json + seed.sql
-PYTHONUTF8=1 python -B tools/test_constants_parity.py     # -> 93/93 OK  (PYTHONUTF8=1 only needed on Windows)
+PYTHONUTF8=1 python -B tools/test_constants_parity.py     # -> 113/113 OK  (PYTHONUTF8=1 only needed on Windows)
 
 # 2. Database: migrations + seed + RLS (D2/D3)
 npx supabase start
 npx supabase db reset                            # applies 0001+0002+0003 + seed, clean
-npx supabase test db                             # -> 40/40 pgTAP PASS
+npx supabase test db                             # -> 54/54 pgTAP PASS
 
 # 3. Anonymous isolation smoke (D5)
 npm --prefix supabase/tests ci
