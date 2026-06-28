@@ -97,7 +97,9 @@ static func _fits(layout: Layout, ox: int, oy: int, rw: int, rh: int, margin: in
 
 
 ## Stamp a room's tiles: a wall ring on the border, floor inside. A 1- or 2-wide room is all wall.
-static func _stamp(layout: Layout, ox: int, oy: int, rw: int, rh: int, floor_tile: int, wall_tile: int) -> void:
+static func _stamp(
+	layout: Layout, ox: int, oy: int, rw: int, rh: int, floor_tile: int, wall_tile: int
+) -> void:
 	for dy in rh:
 		for dx in rw:
 			var x := ox + dx

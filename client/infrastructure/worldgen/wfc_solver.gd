@@ -229,7 +229,9 @@ func _allowed_into(idx: int, dir: String) -> Dictionary:
 # --- backtracking ----------------------------------------------------------------------------- #
 
 
-func _retry_or_backtrack(cell_index: int, chosen: int, snapshot: Array, decisions: Array, rng: CanonicalRNG) -> bool:
+func _retry_or_backtrack(
+	cell_index: int, chosen: int, snapshot: Array, decisions: Array, rng: CanonicalRNG
+) -> bool:
 	# `chosen` failed at this cell. Try the next untried option here; if none remain, unwind.
 	var tried: Array = [chosen]
 	while true:
@@ -246,6 +248,10 @@ func _retry_or_backtrack(cell_index: int, chosen: int, snapshot: Array, decision
 			decisions.append({"cell": cell_index, "tried": tried.duplicate(), "snapshot": snapshot})
 			return true
 		_restore_cells(snapshot)
+	# Unreachable (the loop only returns via the branches above); required so GDScript's static
+	# analysis can prove every path returns a value ("Not all code paths return").
+	@warning_ignore("unreachable_code")
+	return false
 
 
 func _backtrack(decisions: Array) -> bool:

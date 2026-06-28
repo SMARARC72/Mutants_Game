@@ -113,9 +113,13 @@ static func from_dict(data: Dictionary) -> Layout:
 	for i in raw_tiles.size():
 		packed[i] = int(raw_tiles[i])
 	out.tiles = packed
-	out.rooms = (data.get("rooms", []) as Array).duplicate(true) if data.get("rooms", []) is Array else []
+	out.rooms = (
+		(data.get("rooms", []) as Array).duplicate(true) if data.get("rooms", []) is Array else []
+	)
 	out.metadata = (
-		(data.get("metadata", {}) as Dictionary).duplicate(true) if data.get("metadata", {}) is Dictionary else {}
+		(data.get("metadata", {}) as Dictionary).duplicate(true)
+		if data.get("metadata", {}) is Dictionary
+		else {}
 	)
 	return out
 

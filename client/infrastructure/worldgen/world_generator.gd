@@ -170,7 +170,9 @@ func _generate_with_rng(region_id: String, seed: int, rng: CanonicalRNG) -> Layo
 ## soft-lock)"). A simple, always-valid walled room: a wall ring (tile 3) around a floor (tile 0).
 ## Deterministic, depends on nothing random — it is the guaranteed-traversable safety net. Marked in
 ## metadata so callers/tests can see the fallback fired.
-func _authored_fallback(region_id: String, seed: int, width: int, height: int, reason: String) -> Layout:
+func _authored_fallback(
+	region_id: String, seed: int, width: int, height: int, reason: String
+) -> Layout:
 	var w: int = max(width, 4)
 	var h: int = max(height, 4)
 	var layout := Layout.new(region_id, seed, w, h)

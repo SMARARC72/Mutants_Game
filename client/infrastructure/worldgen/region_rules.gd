@@ -63,7 +63,9 @@ func wfc_rules(region_id: String) -> Dictionary:
 	var region: Dictionary = regions[region_id]
 	var tiles: Array = _int_array(region.get("tiles", defaults.get("tiles", [0, 1, 2])))
 	var weights: Dictionary = region.get("weights", defaults.get("weights", {}))
-	var adjacency: Dictionary = _normalise_adjacency(region.get("adjacency", defaults.get("adjacency", {})))
+	var adjacency: Dictionary = _normalise_adjacency(
+		region.get("adjacency", defaults.get("adjacency", {}))
+	)
 	return {
 		"tiles": tiles,
 		"weights": _int_keyed_weights(weights),
