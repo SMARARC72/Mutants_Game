@@ -48,3 +48,6 @@ export_presets.cfg
 Thumbs.db
 .idea/
 .vscode/
+
+# GdUnit4 test report output (regenerated)
+client/reports/
