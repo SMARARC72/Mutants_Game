@@ -176,7 +176,7 @@ const BALANCE := {
 		"damage_k": 1.5,
 		"rank_mult_step": 0.25,
 		"combo_mult": 1.4,
-		"entropy_step_per_turn": 0.08,
+		"entropy_step_per_turn": 0.12,
 		"entropy_step_per_turn_canonical": 0.12,
 		"act_mend_hp_threshold": 0.78,
 		"act_ward_hp_threshold": 0.6,
