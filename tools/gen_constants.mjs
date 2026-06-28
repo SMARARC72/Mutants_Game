@@ -1,0 +1,130 @@
+#!/usr/bin/env node
+/**
+ * gen_constants.mjs — emit client/domain/constants.gd and oracle/constants.py from
+ * tools/balance_constants.json (the single source of truth, TDD §6.5, ADR-002 / D4).
+ *
+ * Phase 0 only GENERATES these files; it does NOT rewire the engines to import them
+ * (that is Phase 1, under the golden-vector harness). Keys starting with "_" are
+ * documentation/metadata and are excluded from the generated constants.
+ *
+ * Float fidelity: Node's JSON.parse collapses 1.0 -> 1, which would emit an int into
+ * a float constant. We pre-tag every float literal in the source text so floats stay
+ * floats and ints stay ints in the generated GDScript/Python.
+ *
+ * Run: node tools/gen_constants.mjs
+ */
+import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+
+const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
+const SRC = join(ROOT, "tools", "balance_constants.json");
+
+// Tag float literals (those with a decimal point / exponent) so we keep their type
+// through JSON.parse (which collapses 1.0 -> 1). String-aware: numbers inside string
+// values (e.g. "+0.08/turn" in _meta) are skipped, only value-position numbers tagged.
+const FLOAT = "__float__";
+function tagFloats(s) {
+  let out = "";
+  let i = 0;
+  let inStr = false;
+  const numRe = /^(-?\d+\.\d+([eE][+-]?\d+)?|-?\d+[eE][+-]?\d+)/;
+  while (i < s.length) {
+    const c = s[i];
+    if (inStr) {
+      out += c;
+      if (c === "\\") { out += s[i + 1] ?? ""; i += 2; continue; }
+      if (c === '"') inStr = false;
+      i++;
+      continue;
+    }
+    if (c === '"') { inStr = true; out += c; i++; continue; }
+    const m = numRe.exec(s.slice(i));
+    if (m) { out += `{"${FLOAT}": ${m[0]}}`; i += m[0].length; continue; }
+    out += c;
+    i++;
+  }
+  return out;
+}
+const raw = JSON.parse(tagFloats(readFileSync(SRC, "utf8")));
+
+const isFloatTag = (v) => v && typeof v === "object" && !Array.isArray(v) && Object.keys(v).length === 1 && FLOAT in v;
+
+// Drop documentation keys (leading underscore) recursively; keep float tags intact.
+function strip(v) {
+  if (isFloatTag(v)) return v;
+  if (Array.isArray(v)) return v.map(strip);
+  if (v && typeof v === "object") {
+    const o = {};
+    for (const [k, val] of Object.entries(v)) {
+      if (k.startsWith("_")) continue;
+      o[k] = strip(val);
+    }
+    return o;
+  }
+  return v;
+}
+const data = strip(raw);
+
+// Headline scalar constants surfaced as named consts (derived from JSON — no drift).
+const HEADLINE = {
+  PHI: data.stat.phi,
+  GENOME_LO: data.stat.genome_lo,
+  GENOME_HI: data.stat.genome_hi,
+  HP_PER_VITALITY: data.stat.hp_per_vitality,
+  DAMAGE_K: data.battle.damage_k,
+  FORCE_MULT_OPPOSED: data.battle.force_mult_opposed,
+  FORCE_MULT_SAME: data.battle.force_mult_same,
+  FORCE_MULT_NEUTRAL: data.battle.force_mult_neutral,
+  SINGLE_HIT_CAP_FRAC: data.battle.single_hit_cap_frac,
+  ENTROPY_STEP_PER_TURN: data.battle.entropy_step_per_turn, // canonical (TDD §6.5)
+  CORRUPTION_CAP: data.status.corruption_cap,
+  FERAL_THRESHOLD: data.status.feral_threshold,
+  BURNOUT: data.level.burnout,
+};
+
+function floatLit(n) {
+  return Number.isInteger(n) ? n.toFixed(1) : String(n);
+}
+
+// ---- generic literal serializer (lang = "py" | "gd") ----------------------
+function lit(v, indent, lang) {
+  const tab = lang === "gd" ? "\t" : "    ";
+  const pad = tab.repeat(indent);
+  const pad1 = tab.repeat(indent + 1);
+  if (isFloatTag(v)) return floatLit(v[FLOAT]);
+  if (v === null) return lang === "gd" ? "null" : "None";
+  if (typeof v === "boolean") return lang === "gd" ? (v ? "true" : "false") : v ? "True" : "False";
+  if (typeof v === "number") return String(v); // untagged number == integer
+  if (typeof v === "string") return JSON.stringify(v); // JSON string == valid py/gd str
+  if (Array.isArray(v)) {
+    if (v.length === 0) return "[]";
+    const items = v.map((x) => pad1 + lit(x, indent + 1, lang));
+    return "[\n" + items.join(",\n") + ",\n" + pad + "]";
+  }
+  const entries = Object.entries(v);
+  if (entries.length === 0) return "{}";
+  const items = entries.map(([k, val]) => pad1 + JSON.stringify(k) + ": " + lit(val, indent + 1, lang));
+  return "{\n" + items.join(",\n") + ",\n" + pad + "}";
+}
+const headlineLit = (v, lang) => (typeof v === "number" && !Number.isInteger(v) ? floatLit(v) : lit(v, 0, lang));
+
+// ---- emit oracle/constants.py --------------------------------------------
+let pyOut = '"""Generated balance constants. DO NOT EDIT — see tools/gen_constants.mjs."""\n';
+pyOut += "# Source: tools/balance_constants.json\n\n";
+for (const [k, v] of Object.entries(HEADLINE)) pyOut += `${k} = ${headlineLit(v, "py")}\n`;
+pyOut += "\nBALANCE = " + lit(data, 0, "py") + "\n";
+const pyPath = join(ROOT, "oracle", "constants.py");
+writeFileSync(pyPath, pyOut, "utf8");
+
+// ---- emit client/domain/constants.gd -------------------------------------
+let gdOut = "# GENERATED by tools/gen_constants.mjs from tools/balance_constants.json — DO NOT EDIT.\n";
+gdOut += "# Single source of truth for all balance constants (TDD §6.5, D4).\n";
+gdOut += "class_name Constants\n\n";
+for (const [k, v] of Object.entries(HEADLINE)) gdOut += `const ${k} := ${headlineLit(v, "gd")}\n`;
+gdOut += "\nconst BALANCE := " + lit(data, 0, "gd") + "\n";
+const gdPath = join(ROOT, "client", "domain", "constants.gd");
+mkdirSync(dirname(gdPath), { recursive: true });
+writeFileSync(gdPath, gdOut, "utf8");
+
+console.log("generated:\n  " + pyPath + "\n  " + gdPath);

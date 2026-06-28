@@ -1,0 +1,9 @@
+# Godot 4 — generated/import caches (never committed)
+.godot/
+.import/
+export_presets.cfg
+*.import
+*.uid
+
+# Local, untracked Supabase client config (anon key injected at build/runtime — never committed)
+infrastructure/supabase/supabase_config.gd

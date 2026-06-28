@@ -1,0 +1,17 @@
+; Mutants_Game — Godot 4.7 client project (Phase 0 scaffold).
+; Layered architecture (TDD §3.1): presentation -> application -> domain -> infrastructure.
+; The domain/ layer is PURE (no Node/addon/wall-clock/global-RNG deps) — enforced in CI.
+; Addons (Supabase, Dialogic, GdUnit4, Beehave, Phantom Camera) are vendored + enabled in Phase 0.5.
+
+config_version=5
+
+[application]
+
+config/name="Mutants_Game"
+config/description="A funny-grim, mature-occult creature-collection RPG."
+config/features=PackedStringArray("4.7", "Forward Plus")
+config/icon="res://icon.svg"
+
+[dotnet]
+
+project/assembly_name="Mutants_Game"

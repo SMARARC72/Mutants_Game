@@ -1,0 +1,19 @@
+{
+  "name": "mutants-game-tooling",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Repo dev tooling: constants pipeline, catalog/seed generators, and lint. Game code lives in /client (Godot), /oracle (Python), /services (Vercel).",
+  "scripts": {
+    "gen:constants": "node tools/gen_constants.mjs",
+    "gen:catalog": "node tools/gen_catalog.mjs",
+    "gen:seed": "node tools/gen_seed.mjs",
+    "gen:all": "node tools/gen_constants.mjs && node tools/gen_catalog.mjs && node tools/gen_seed.mjs",
+    "lint:js": "eslint tools supabase/tests"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.13.0",
+    "eslint": "^9.13.0",
+    "globals": "^15.11.0"
+  }
+}

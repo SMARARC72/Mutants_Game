@@ -1,0 +1,16 @@
+{
+  "catalog_version": 1,
+  "counts": {
+    "species": 406,
+    "gear": 6,
+    "skills": 12,
+    "factions": 9
+  },
+  "sources": {
+    "species": "docs/creature_registry.csv",
+    "gear": "tools/balance_constants.json",
+    "skills": "tools/balance_constants.json",
+    "factions": "client/catalog/factions.json (authored from docs/Mutants_Game_Factions.md)"
+  },
+  "notes": "1 registry row(s) skipped (empty force_primary — NOT NULL + force CHECK)."
+}

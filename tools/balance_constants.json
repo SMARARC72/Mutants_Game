@@ -1,0 +1,210 @@
+{
+  "_meta": {
+    "schema_version": 1,
+    "title": "Mutants_Game balance constants — single source of truth",
+    "description": "Faithful transcription of every balance constant currently in the Python reference engines (the oracle). Generated into client/domain/constants.gd and oracle/constants.py by tools/gen_constants.mjs. Phase 0 transcribes and proves parity (tools/test_constants_parity.py); it does NOT yet rewire the engines to import this file (that is Phase 1, under the golden-vector harness). The engine source is authoritative — these values were copied from it, not invented.",
+    "source_engines": [
+      "oracle/stat_engine.py", "oracle/level_engine.py", "oracle/lab_engine.py",
+      "oracle/battle_engine.py", "oracle/skill_engine.py", "oracle/status_engine.py",
+      "oracle/loot_engine.py", "oracle/character_engine.py"
+    ],
+    "known_divergences_phase1": {
+      "entropy_step_skill_engine": "skill_engine uses +0.08/turn; battle_engine uses +0.12/turn. TDD §6.5 #2 ratifies 0.12 as canonical; skill_engine unifies to 0.12 in Phase 1. Recorded per-engine below so the parity test stays faithful to today's source.",
+      "skill_engine_global_rng": "skill_engine.battle seeds both random.Random(seed) AND random.seed(seed); act()/Rouse use global random.random(). TDD §6.5 #1: thread the injected canonical RNG in Phase 1 (not a constant; noted here for completeness)."
+    }
+  },
+
+  "forces": {
+    "poles": ["Gaia", "Ouranos", "Cosmos", "Chaos", "Eros", "Thanatos"],
+    "stat_of": {
+      "Gaia": "Bulk", "Ouranos": "Celerity", "Cosmos": "Ward",
+      "Chaos": "Spike", "Eros": "Vitality", "Thanatos": "Bane"
+    },
+    "pole_stats": ["Bulk", "Celerity", "Ward", "Spike", "Vitality", "Bane"],
+    "universals": ["Luck", "Focus"],
+    "opposed": {
+      "Cosmos": "Chaos", "Chaos": "Cosmos", "Eros": "Thanatos",
+      "Thanatos": "Eros", "Gaia": "Ouranos", "Ouranos": "Gaia"
+    }
+  },
+
+  "stat": {
+    "phi": 0.50,
+    "genome_lo": 0.65,
+    "genome_hi": 1.35,
+    "genome_round_dp": 3,
+    "bst": {
+      "wild_T1": 200, "wild_T2": 360, "wild_T3": 640,
+      "legendary": 1050, "god": 1550, "primordial": 2400
+    },
+    "hpbase": {
+      "T1": 120, "T2": 240, "T3": 420,
+      "legendary": 650, "god": 1300, "primordial": 2200
+    },
+    "univ_base": {
+      "T1": [10, 20], "T2": [14, 30], "T3": [18, 45],
+      "legendary": [24, 60], "god": [32, 85], "primordial": [42, 120]
+    },
+    "force_dist": { "primary_with_secondary": 0.60, "secondary": 0.40, "primary_pure": 1.0 },
+    "class_mod_construct": { "Bulk": 1.25, "Ward": 1.20, "Vitality": 0.40 },
+    "hp_per_vitality": 3
+  },
+
+  "level": {
+    "burnout": 100,
+    "expression_start": 0.30,
+    "genes": {
+      "Ironblood": "Bulk", "Venomous": "Bane", "Quickstep": "Celerity",
+      "Warded Soul": "Ward", "Frenzy": "Spike", "Verdant": "Vitality"
+    },
+    "gene_bonus_step": 0.12,
+    "awaken_surge_lo": 0.10,
+    "awaken_surge_hi": 0.22,
+    "gene_chance": 0.35,
+    "branch_chance": 0.20,
+    "resonance_chance_base": 0.28,
+    "resonance_chance_per_attempt": 0.12,
+    "resonance_chance_luck_factor": 0.003,
+    "resonance_chance_cap": 0.90,
+    "overclock_entropy_lo": 16,
+    "overclock_entropy_hi": 30,
+    "overclock_entropy_threshold": 65,
+    "burnout_expr_penalty": 0.18,
+    "burnout_entropy_relief": 45
+  },
+
+  "lab": {
+    "next_tier": { "T1": "T2", "T2": "T3", "T3": "T3" },
+    "blend_primary_weight": 0.6,
+    "blend_secondary_weight": 0.4,
+    "fuse_entropy_lo": 12,
+    "fuse_entropy_hi": 24,
+    "taboo_entropy_bonus": 28,
+    "wild_method_entropy_reduction": 9,
+    "wild_method_entropy_floor": 6,
+    "taboo_corruption": 18
+  },
+
+  "battle": {
+    "force_mult_opposed": 1.5,
+    "force_mult_same": 0.7,
+    "force_mult_neutral": 1.0,
+    "overload_mult": 1.4,
+    "overload_chance": 0.30,
+    "crit_mult": 1.5,
+    "crit_luck_divisor": 180.0,
+    "damage_k": 1.5,
+    "single_hit_cap_frac": 0.55,
+    "entropy_step_per_turn": 0.12,
+    "chain_mult": 1.3,
+    "turn_cap": 10
+  },
+
+  "skill": {
+    "force_mult_opposed": 1.5,
+    "force_mult_same": 0.7,
+    "force_mult_neutral": 1.0,
+    "damage_k": 1.5,
+    "rank_mult_step": 0.25,
+    "combo_mult": 1.4,
+    "entropy_step_per_turn": 0.08,
+    "entropy_step_per_turn_canonical": 0.12,
+    "act_mend_hp_threshold": 0.78,
+    "act_ward_hp_threshold": 0.60,
+    "act_rouse_chance": 0.3,
+    "turn_cap": 10,
+    "library": {
+      "Riot Fang":    { "force": "Chaos",    "verb": "Strike", "ap": 1, "power": 1.0 },
+      "Overload":     { "force": "Chaos",    "verb": "Gambit", "ap": 2, "power": 1.25, "entropy": 15 },
+      "Aegis":        { "force": "Cosmos",   "verb": "Ward",   "ap": 1, "shield": 0.30 },
+      "Bind":         { "force": "Cosmos",   "verb": "Hex",    "ap": 1, "slow": 0.30 },
+      "Bloom":        { "force": "Eros",     "verb": "Mend",   "ap": 1, "heal": 0.70 },
+      "Verdant Gift": { "force": "Eros",     "verb": "Rouse",  "ap": 1, "buff": 0.30 },
+      "Soul Leech":   { "force": "Thanatos", "verb": "Drain",  "ap": 1, "power": 0.9, "lifesteal": 0.5 },
+      "Wither":       { "force": "Thanatos", "verb": "Hex",    "ap": 1, "defdown": 0.30 },
+      "Boulder Smash":{ "force": "Gaia",     "verb": "Strike", "ap": 2, "power": 1.3 },
+      "Bulwark":      { "force": "Gaia",     "verb": "Ward",   "ap": 1, "shield": 0.40 },
+      "Gale Slash":   { "force": "Ouranos",  "verb": "Strike", "ap": 1, "power": 0.85 },
+      "Tailwind":     { "force": "Ouranos",  "verb": "Rouse",  "ap": 1, "buff": 0.20 }
+    }
+  },
+
+  "status": {
+    "corruption_cap": 130,
+    "feral_threshold": 100,
+    "feral_stat_penalty": 0.20,
+    "statuses": {
+      "Wither":     { "force": "Thanatos", "kind": "dot", "base": 24, "stack": true },
+      "Bloom-rot":  { "force": "Eros",     "kind": "dot", "base": 18, "stack": true, "spread": true },
+      "Petrify":    { "force": "Gaia",     "kind": "control", "effect": "skip turn",   "dur": 2 },
+      "Shock":      { "force": "Ouranos",  "kind": "control", "effect": "lose AP",     "dur": 2 },
+      "Seal":       { "force": "Cosmos",   "kind": "control", "effect": "no skills",   "dur": 2 },
+      "Madness":    { "force": "Chaos",    "kind": "control", "effect": "act randomly","dur": 2 },
+      "Corruption": { "kind": "meta", "threshold": 100 }
+    }
+  },
+
+  "loot": {
+    "slots": ["Relic", "Tool", "Vestment", "Charm", "Glyph"],
+    "rarity": ["Common", "Fine", "Rare", "Mythic", "Relic-tier"],
+    "tier_factor": { "T1": 1.0, "T2": 0.72, "T3": 0.48, "legendary": 0.22, "god": 0.07 },
+    "capture_base": { "befriend": 0.35, "trap": 0.45 },
+    "capture_hp_mult_const": 1.7,
+    "capture_hp_mult_lo": 0.5,
+    "capture_hp_mult_hi": 1.6,
+    "capture_bond_factor": 0.004,
+    "capture_clamp_lo": 0.02,
+    "capture_clamp_hi": 0.95,
+    "breed_rare_base": 0.10,
+    "breed_rare_clamp_lo": 0.0,
+    "breed_rare_clamp_hi": 0.6,
+    "breed_iv_ceiling_base": 1.20,
+    "breed_iv_ceiling_rare_bonus": 0.10,
+    "breed_iv_ceiling_round_dp": 2,
+    "gear": {
+      "Beastcaller's Horn": { "slot": "Tool",     "rarity": "Rare",       "capture": 0.25, "tame": 0.20 },
+      "Geneweaver Gloves":  { "slot": "Tool",     "rarity": "Mythic",     "breed_rare": 0.20, "lab": 0.25 },
+      "Sigil of Mercy":     { "slot": "Charm",    "rarity": "Fine",       "capture": 0.10, "force": "Eros" },
+      "Tyrant's Mantle":    { "slot": "Vestment", "rarity": "Mythic",     "capture": 0.15, "combat": "Dominion aura", "force": "Cosmos" },
+      "Luckbone Charm":     { "slot": "Charm",    "rarity": "Rare",       "breed_rare": 0.10, "capture": 0.08 },
+      "Hephaestus Relic":   { "slot": "Relic",    "rarity": "Relic-tier", "lab": 0.40, "combat": "Forge-hand", "force": "Gaia" }
+    }
+  },
+
+  "character": {
+    "ranks": ["Mortal", "Adept", "Demigod", "Titan", "God", "Primordial"],
+    "rank_deed_thresholds": [0, 1, 3, 5, 7, 9],
+    "axis_clamp_lo": -100,
+    "axis_clamp_hi": 100,
+    "band3_lo": -34,
+    "band3_hi": 34,
+    "gods": {
+      "Order|Pure": "The Lawgiver  (Law / Heaven)",
+      "Order|Tainted": "The Architect (Order, compromised)",
+      "Order|Corrupt": "The Iron Throne (Dominion / Machine)",
+      "Balanced|Pure": "The Warden  (Steward)",
+      "Balanced|Tainted": "The Broker  (Gray god)",
+      "Balanced|Corrupt": "The Plaguelord",
+      "Chaos|Pure": "The Free Wild (Liberty / Nature)",
+      "Chaos|Tainted": "The Reveler  (Dionysian)",
+      "Chaos|Corrupt": "The Devourer (the Abyss)"
+    },
+    "events": {
+      "uphold a law":   { "oc": -12, "note": 2 },
+      "ally a faction": { "oc": -8, "note": -5 },
+      "break a taboo":  { "oc": 12, "note": 8 },
+      "incite chaos":   { "oc": 10, "note": 6 },
+      "spare / heal":   { "pc": -9 },
+      "refuse power":   { "pc": -11 },
+      "self-splice":    { "pc": 14, "corr": 1, "note": 10 },
+      "sacrifice kin":  { "pc": 10, "corr": 1, "note": 7 },
+      "kill a god":     { "deeds": 1, "note": 20 },
+      "kill a legend":  { "deeds": 1, "note": 10 }
+    },
+    "notoriety_thresholds": [
+      [90, "the Pantheon itself marks you for death"],
+      [60, "a rival god-maker sends hunters"],
+      [30, "a faction turns hostile"]
+    ]
+  }
+}
