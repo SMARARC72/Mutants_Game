@@ -6,6 +6,8 @@ import stat_engine as se
 import lab_engine as lab
 import loot_engine as loot
 import status_engine as st
+from canonical_rng import RNG
+from canonical_math import rnd
 
 
 def line(s):
@@ -19,7 +21,7 @@ print("============ VERTICAL SLICE — THE RUIN WOLF LINE ============")
 line("[species]  Ruinmaw  | Organic/Wild/T2 | Chaos/Thanatos | line: Ruin Wolf (pup SB30 -> Ruinmaw)")
 
 # 2) STATS — one-of-one genome (stat_engine) ---------------------------
-genome = se.roll_genome(7)
+genome = se.roll_genome(RNG(7))
 stats, hp, bst = se.stat_block(prim, sec, rank, tier, cls, genome)
 line("[stats]    one-of-one roll: " + "  ".join(k + " " + str(stats[k]) for k in se.POLE_STATS) +
      "  | HP " + str(hp) + "  BST " + str(bst))
@@ -28,12 +30,12 @@ line("[stats]    one-of-one roll: " + "  ".join(k + " " + str(stats[k]) for k in
 expr = 0.30
 for surge in (0.18, 0.15, 0.20):           # three resonance awakenings
     expr = min(1.0, expr + surge)
-cur = {k: round(v * expr) for k, v in stats.items()}
-line("[leveling] 3 awakenings -> expression " + str(round(expr * 100)) + "%  (Spike now " +
+cur = {k: rnd(v * expr) for k, v in stats.items()}
+line("[leveling] 3 awakenings -> expression " + str(rnd(expr * 100)) + "%  (Spike now " +
      str(cur["Spike"]) + ", Bane " + str(cur["Bane"]) + ")  [overclock would bank entropy]")
 
 # 4) LAB — fuse into a chimera (lab_engine) ----------------------------
-r = lab.fuse(("Ruinmaw", "Chaos", "Thanatos", "T2"), ("Gloamcat", "Thanatos", "Ouranos", "T2"), "precise", 3)
+r = lab.fuse(("Ruinmaw", "Chaos", "Thanatos", "T2"), ("Gloamcat", "Thanatos", "Ouranos", "T2"), "precise", RNG(3))
 line("[lab]      FUSE Ruinmaw x Gloamcat -> " + r["name"] + " [" + r["prim"] + "/" + r["sec"] + " " + r["tier"] +
      "]  cost: entropy +" + str(r["entropy"]) + ", corruption +" + str(r["corruption"]))
 

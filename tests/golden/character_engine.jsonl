@@ -1,0 +1,103 @@
+{"fn":"rank_for","inputs":{"deeds":0},"expected":"Mortal"}
+{"fn":"rank_for","inputs":{"deeds":1},"expected":"Adept"}
+{"fn":"rank_for","inputs":{"deeds":2},"expected":"Adept"}
+{"fn":"rank_for","inputs":{"deeds":3},"expected":"Demigod"}
+{"fn":"rank_for","inputs":{"deeds":4},"expected":"Demigod"}
+{"fn":"rank_for","inputs":{"deeds":5},"expected":"Titan"}
+{"fn":"rank_for","inputs":{"deeds":6},"expected":"Titan"}
+{"fn":"rank_for","inputs":{"deeds":7},"expected":"God"}
+{"fn":"rank_for","inputs":{"deeds":8},"expected":"God"}
+{"fn":"rank_for","inputs":{"deeds":9},"expected":"Primordial"}
+{"fn":"rank_for","inputs":{"deeds":10},"expected":"Primordial"}
+{"fn":"rank_for","inputs":{"deeds":11},"expected":"Primordial"}
+{"fn":"band3_oc","inputs":{"v":-100},"expected":"Order"}
+{"fn":"band3_pc","inputs":{"v":-100},"expected":"Pure"}
+{"fn":"band3_oc","inputs":{"v":-95},"expected":"Order"}
+{"fn":"band3_pc","inputs":{"v":-95},"expected":"Pure"}
+{"fn":"band3_oc","inputs":{"v":-90},"expected":"Order"}
+{"fn":"band3_pc","inputs":{"v":-90},"expected":"Pure"}
+{"fn":"band3_oc","inputs":{"v":-85},"expected":"Order"}
+{"fn":"band3_pc","inputs":{"v":-85},"expected":"Pure"}
+{"fn":"band3_oc","inputs":{"v":-80},"expected":"Order"}
+{"fn":"band3_pc","inputs":{"v":-80},"expected":"Pure"}
+{"fn":"band3_oc","inputs":{"v":-75},"expected":"Order"}
+{"fn":"band3_pc","inputs":{"v":-75},"expected":"Pure"}
+{"fn":"band3_oc","inputs":{"v":-70},"expected":"Order"}
+{"fn":"band3_pc","inputs":{"v":-70},"expected":"Pure"}
+{"fn":"band3_oc","inputs":{"v":-65},"expected":"Order"}
+{"fn":"band3_pc","inputs":{"v":-65},"expected":"Pure"}
+{"fn":"band3_oc","inputs":{"v":-60},"expected":"Order"}
+{"fn":"band3_pc","inputs":{"v":-60},"expected":"Pure"}
+{"fn":"band3_oc","inputs":{"v":-55},"expected":"Order"}
+{"fn":"band3_pc","inputs":{"v":-55},"expected":"Pure"}
+{"fn":"band3_oc","inputs":{"v":-50},"expected":"Order"}
+{"fn":"band3_pc","inputs":{"v":-50},"expected":"Pure"}
+{"fn":"band3_oc","inputs":{"v":-45},"expected":"Order"}
+{"fn":"band3_pc","inputs":{"v":-45},"expected":"Pure"}
+{"fn":"band3_oc","inputs":{"v":-40},"expected":"Order"}
+{"fn":"band3_pc","inputs":{"v":-40},"expected":"Pure"}
+{"fn":"band3_oc","inputs":{"v":-35},"expected":"Order"}
+{"fn":"band3_pc","inputs":{"v":-35},"expected":"Pure"}
+{"fn":"band3_oc","inputs":{"v":-30},"expected":"Balanced"}
+{"fn":"band3_pc","inputs":{"v":-30},"expected":"Tainted"}
+{"fn":"band3_oc","inputs":{"v":-25},"expected":"Balanced"}
+{"fn":"band3_pc","inputs":{"v":-25},"expected":"Tainted"}
+{"fn":"band3_oc","inputs":{"v":-20},"expected":"Balanced"}
+{"fn":"band3_pc","inputs":{"v":-20},"expected":"Tainted"}
+{"fn":"band3_oc","inputs":{"v":-15},"expected":"Balanced"}
+{"fn":"band3_pc","inputs":{"v":-15},"expected":"Tainted"}
+{"fn":"band3_oc","inputs":{"v":-10},"expected":"Balanced"}
+{"fn":"band3_pc","inputs":{"v":-10},"expected":"Tainted"}
+{"fn":"band3_oc","inputs":{"v":-5},"expected":"Balanced"}
+{"fn":"band3_pc","inputs":{"v":-5},"expected":"Tainted"}
+{"fn":"band3_oc","inputs":{"v":0},"expected":"Balanced"}
+{"fn":"band3_pc","inputs":{"v":0},"expected":"Tainted"}
+{"fn":"band3_oc","inputs":{"v":5},"expected":"Balanced"}
+{"fn":"band3_pc","inputs":{"v":5},"expected":"Tainted"}
+{"fn":"band3_oc","inputs":{"v":10},"expected":"Balanced"}
+{"fn":"band3_pc","inputs":{"v":10},"expected":"Tainted"}
+{"fn":"band3_oc","inputs":{"v":15},"expected":"Balanced"}
+{"fn":"band3_pc","inputs":{"v":15},"expected":"Tainted"}
+{"fn":"band3_oc","inputs":{"v":20},"expected":"Balanced"}
+{"fn":"band3_pc","inputs":{"v":20},"expected":"Tainted"}
+{"fn":"band3_oc","inputs":{"v":25},"expected":"Balanced"}
+{"fn":"band3_pc","inputs":{"v":25},"expected":"Tainted"}
+{"fn":"band3_oc","inputs":{"v":30},"expected":"Balanced"}
+{"fn":"band3_pc","inputs":{"v":30},"expected":"Tainted"}
+{"fn":"band3_oc","inputs":{"v":35},"expected":"Chaos"}
+{"fn":"band3_pc","inputs":{"v":35},"expected":"Corrupt"}
+{"fn":"band3_oc","inputs":{"v":40},"expected":"Chaos"}
+{"fn":"band3_pc","inputs":{"v":40},"expected":"Corrupt"}
+{"fn":"band3_oc","inputs":{"v":45},"expected":"Chaos"}
+{"fn":"band3_pc","inputs":{"v":45},"expected":"Corrupt"}
+{"fn":"band3_oc","inputs":{"v":50},"expected":"Chaos"}
+{"fn":"band3_pc","inputs":{"v":50},"expected":"Corrupt"}
+{"fn":"band3_oc","inputs":{"v":55},"expected":"Chaos"}
+{"fn":"band3_pc","inputs":{"v":55},"expected":"Corrupt"}
+{"fn":"band3_oc","inputs":{"v":60},"expected":"Chaos"}
+{"fn":"band3_pc","inputs":{"v":60},"expected":"Corrupt"}
+{"fn":"band3_oc","inputs":{"v":65},"expected":"Chaos"}
+{"fn":"band3_pc","inputs":{"v":65},"expected":"Corrupt"}
+{"fn":"band3_oc","inputs":{"v":70},"expected":"Chaos"}
+{"fn":"band3_pc","inputs":{"v":70},"expected":"Corrupt"}
+{"fn":"band3_oc","inputs":{"v":75},"expected":"Chaos"}
+{"fn":"band3_pc","inputs":{"v":75},"expected":"Corrupt"}
+{"fn":"band3_oc","inputs":{"v":80},"expected":"Chaos"}
+{"fn":"band3_pc","inputs":{"v":80},"expected":"Corrupt"}
+{"fn":"band3_oc","inputs":{"v":85},"expected":"Chaos"}
+{"fn":"band3_pc","inputs":{"v":85},"expected":"Corrupt"}
+{"fn":"band3_oc","inputs":{"v":90},"expected":"Chaos"}
+{"fn":"band3_pc","inputs":{"v":90},"expected":"Corrupt"}
+{"fn":"band3_oc","inputs":{"v":95},"expected":"Chaos"}
+{"fn":"band3_pc","inputs":{"v":95},"expected":"Corrupt"}
+{"fn":"band3_oc","inputs":{"v":100},"expected":"Chaos"}
+{"fn":"band3_pc","inputs":{"v":100},"expected":"Corrupt"}
+{"fn":"gods","inputs":{"grid":["Order","Pure"]},"expected":"The Lawgiver  (Law / Heaven)"}
+{"fn":"gods","inputs":{"grid":["Order","Tainted"]},"expected":"The Architect (Order, compromised)"}
+{"fn":"gods","inputs":{"grid":["Order","Corrupt"]},"expected":"The Iron Throne (Dominion / Machine)"}
+{"fn":"gods","inputs":{"grid":["Balanced","Pure"]},"expected":"The Warden  (Steward)"}
+{"fn":"gods","inputs":{"grid":["Balanced","Tainted"]},"expected":"The Broker  (Gray god)"}
+{"fn":"gods","inputs":{"grid":["Balanced","Corrupt"]},"expected":"The Plaguelord"}
+{"fn":"gods","inputs":{"grid":["Chaos","Pure"]},"expected":"The Free Wild (Liberty / Nature)"}
+{"fn":"gods","inputs":{"grid":["Chaos","Tainted"]},"expected":"The Reveler  (Dionysian)"}
+{"fn":"gods","inputs":{"grid":["Chaos","Corrupt"]},"expected":"The Devourer (the Abyss)"}

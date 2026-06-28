@@ -50,8 +50,8 @@ jobs:
           if [ -n "$M" ]; then echo "$M"; echo "domain/ purity violation (see TDD §3.1)"; exit 1; fi
           echo "domain purity: clean"
 
-  constants-parity:
-    name: Constants generator + parity (D4)
+  oracle:
+    name: Oracle — constants + RNG parity + determinism + golden (D4/P1)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -66,10 +66,25 @@ jobs:
           node tools/gen_constants.mjs
           node tools/gen_catalog.mjs
           node tools/gen_seed.mjs
-      - name: Drift gate (committed generated artifacts are up to date)
+      - name: Drift gate (committed generated artifacts up to date)
         run: git diff --exit-code -- client/domain/constants.gd oracle/constants.py client/catalog supabase/seed.sql
-      - name: JSON<->engine parity test
+      - name: JSON<->engine constants parity (D4)
         run: PYTHONUTF8=1 python -B tools/test_constants_parity.py
+      - name: Canonical RNG parity — Python side (ADR-001/002)
+        run: PYTHONUTF8=1 python -B tools/test_rng_parity.py
+      - name: Oracle determinism — every engine same seed => identical transcript x2
+        run: |
+          set -e
+          cd oracle
+          for f in stat_engine level_engine lab_engine battle_engine skill_engine status_engine loot_engine character_engine wire_line; do
+            a=$(PYTHONUTF8=1 python -B "$f.py"); b=$(PYTHONUTF8=1 python -B "$f.py")
+            if [ "$a" != "$b" ]; then echo "NONDETERMINISTIC: $f"; exit 1; fi
+          done
+          echo "all engines deterministic"
+      - name: Golden vectors regenerate + stability gate (TDD §11.2/§12.2)
+        run: |
+          PYTHONUTF8=1 python -B tools/gen_golden.py
+          git diff --exit-code -- tests/golden
 
   database:
     name: DB migrations + RLS (pgTAP) + anon smoke (D2/D3/D5)

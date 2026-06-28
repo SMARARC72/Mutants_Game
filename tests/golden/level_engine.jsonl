@@ -1,0 +1,1012 @@
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":0},"expected":{"expression":0.404874,"events":["surge +10%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":1},"expected":{"expression":0.512683,"events":["surge +21%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":2},"expected":{"expression":0.488003,"events":["surge +19%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":3},"expected":{"expression":0.476847,"events":["surge +18%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":4},"expected":{"expression":0.498595,"events":["surge +20%","GENE: Warded Soul (+Ward)"],"gene_bonus":{"Ward":0.12},"genes":["Warded Soul"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":5},"expected":{"expression":0.475094,"events":["surge +18%","GENE: Ironblood (+Bulk)"],"gene_bonus":{"Bulk":0.12},"genes":["Ironblood"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":6},"expected":{"expression":0.445627,"events":["surge +15%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":7},"expected":{"expression":0.498813,"events":["surge +20%","GENE: Frenzy (+Spike)"],"gene_bonus":{"Spike":0.12},"genes":["Frenzy"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":8},"expected":{"expression":0.441975,"events":["surge +14%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":9},"expected":{"expression":0.426414,"events":["surge +13%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":10},"expected":{"expression":0.422426,"events":["surge +12%","GENE: Warded Soul (+Ward)"],"gene_bonus":{"Ward":0.12},"genes":["Warded Soul"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":11},"expected":{"expression":0.506395,"events":["surge +21%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":12},"expected":{"expression":0.505004,"events":["surge +21%","GENE: Venomous (+Bane)"],"gene_bonus":{"Bane":0.12},"genes":["Venomous"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":13},"expected":{"expression":0.417373,"events":["surge +12%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":14},"expected":{"expression":0.419549,"events":["surge +12%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":15},"expected":{"expression":0.475452,"events":["surge +18%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":16},"expected":{"expression":0.450294,"events":["surge +15%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":17},"expected":{"expression":0.450459,"events":["surge +15%","GENE: Verdant (+Vitality)","BRANCH"],"gene_bonus":{"Vitality":0.12},"genes":["Verdant"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":18},"expected":{"expression":0.507326,"events":["surge +21%","GENE: Warded Soul (+Ward)"],"gene_bonus":{"Ward":0.12},"genes":["Warded Soul"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":19},"expected":{"expression":0.438437,"events":["surge +14%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":20},"expected":{"expression":0.41548,"events":["surge +12%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":21},"expected":{"expression":0.468776,"events":["surge +17%","GENE: Frenzy (+Spike)"],"gene_bonus":{"Spike":0.12},"genes":["Frenzy"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":22},"expected":{"expression":0.403122,"events":["surge +10%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":23},"expected":{"expression":0.46311,"events":["surge +16%","GENE: Warded Soul (+Ward)","BRANCH"],"gene_bonus":{"Ward":0.12},"genes":["Warded Soul"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":24},"expected":{"expression":0.473819,"events":["surge +17%","GENE: Verdant (+Vitality)","BRANCH"],"gene_bonus":{"Vitality":0.12},"genes":["Verdant"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":25},"expected":{"expression":0.474375,"events":["surge +17%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":26},"expected":{"expression":0.42913,"events":["surge +13%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":27},"expected":{"expression":0.468813,"events":["surge +17%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":28},"expected":{"expression":0.50916,"events":["surge +21%","GENE: Venomous (+Bane)"],"gene_bonus":{"Bane":0.12},"genes":["Venomous"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":29},"expected":{"expression":0.44341,"events":["surge +14%","GENE: Frenzy (+Spike)"],"gene_bonus":{"Spike":0.12},"genes":["Frenzy"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":30},"expected":{"expression":0.473209,"events":["surge +17%","GENE: Warded Soul (+Ward)"],"gene_bonus":{"Ward":0.12},"genes":["Warded Soul"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":31},"expected":{"expression":0.408515,"events":["surge +11%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":32},"expected":{"expression":0.496104,"events":["surge +20%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":33},"expected":{"expression":0.469307,"events":["surge +17%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":34},"expected":{"expression":0.414052,"events":["surge +11%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":35},"expected":{"expression":0.455255,"events":["surge +16%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":36},"expected":{"expression":0.514022,"events":["surge +21%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":37},"expected":{"expression":0.426411,"events":["surge +13%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":38},"expected":{"expression":0.400614,"events":["surge +10%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":39},"expected":{"expression":0.472005,"events":["surge +17%","GENE: Ironblood (+Bulk)"],"gene_bonus":{"Bulk":0.12},"genes":["Ironblood"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":40},"expected":{"expression":0.459926,"events":["surge +16%","GENE: Warded Soul (+Ward)"],"gene_bonus":{"Ward":0.12},"genes":["Warded Soul"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":41},"expected":{"expression":0.416208,"events":["surge +12%","GENE: Warded Soul (+Ward)"],"gene_bonus":{"Ward":0.12},"genes":["Warded Soul"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":42},"expected":{"expression":0.453057,"events":["surge +15%","GENE: Verdant (+Vitality)","BRANCH"],"gene_bonus":{"Vitality":0.12},"genes":["Verdant"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":43},"expected":{"expression":0.451089,"events":["surge +15%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":44},"expected":{"expression":0.416054,"events":["surge +12%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":45},"expected":{"expression":0.468347,"events":["surge +17%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":46},"expected":{"expression":0.467023,"events":["surge +17%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":47},"expected":{"expression":0.517002,"events":["surge +22%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":48},"expected":{"expression":0.417348,"events":["surge +12%","GENE: Venomous (+Bane)"],"gene_bonus":{"Bane":0.12},"genes":["Venomous"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":49},"expected":{"expression":0.483775,"events":["surge +18%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":50},"expected":{"expression":0.467989,"events":["surge +17%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":51},"expected":{"expression":0.430565,"events":["surge +13%","GENE: Venomous (+Bane)"],"gene_bonus":{"Bane":0.12},"genes":["Venomous"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":52},"expected":{"expression":0.497255,"events":["surge +20%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":53},"expected":{"expression":0.463113,"events":["surge +16%","GENE: Frenzy (+Spike)","BRANCH"],"gene_bonus":{"Spike":0.12},"genes":["Frenzy"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":54},"expected":{"expression":0.4274,"events":["surge +13%","GENE: Ironblood (+Bulk)"],"gene_bonus":{"Bulk":0.12},"genes":["Ironblood"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":55},"expected":{"expression":0.506202,"events":["surge +21%","GENE: Frenzy (+Spike)"],"gene_bonus":{"Spike":0.12},"genes":["Frenzy"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":56},"expected":{"expression":0.472132,"events":["surge +17%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":57},"expected":{"expression":0.444839,"events":["surge +14%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":58},"expected":{"expression":0.481887,"events":["surge +18%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":59},"expected":{"expression":0.428111,"events":["surge +13%","GENE: Ironblood (+Bulk)"],"gene_bonus":{"Bulk":0.12},"genes":["Ironblood"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":60},"expected":{"expression":0.49423,"events":["surge +19%","GENE: Ironblood (+Bulk)"],"gene_bonus":{"Bulk":0.12},"genes":["Ironblood"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":61},"expected":{"expression":0.515362,"events":["surge +22%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":62},"expected":{"expression":0.441807,"events":["surge +14%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":63},"expected":{"expression":0.417027,"events":["surge +12%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":64},"expected":{"expression":0.432442,"events":["surge +13%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":65},"expected":{"expression":0.464748,"events":["surge +16%","GENE: Warded Soul (+Ward)"],"gene_bonus":{"Ward":0.12},"genes":["Warded Soul"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":66},"expected":{"expression":0.440061,"events":["surge +14%","GENE: Venomous (+Bane)"],"gene_bonus":{"Bane":0.12},"genes":["Venomous"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":67},"expected":{"expression":0.418022,"events":["surge +12%","GENE: Venomous (+Bane)"],"gene_bonus":{"Bane":0.12},"genes":["Venomous"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":68},"expected":{"expression":0.415075,"events":["surge +12%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":69},"expected":{"expression":0.402197,"events":["surge +10%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":70},"expected":{"expression":0.417411,"events":["surge +12%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":71},"expected":{"expression":0.474386,"events":["surge +17%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":72},"expected":{"expression":0.48391,"events":["surge +18%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":73},"expected":{"expression":0.446656,"events":["surge +15%","GENE: Verdant (+Vitality)"],"gene_bonus":{"Vitality":0.12},"genes":["Verdant"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":74},"expected":{"expression":0.486092,"events":["surge +19%","GENE: Verdant (+Vitality)"],"gene_bonus":{"Vitality":0.12},"genes":["Verdant"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":75},"expected":{"expression":0.482547,"events":["surge +18%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":76},"expected":{"expression":0.509803,"events":["surge +21%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":77},"expected":{"expression":0.481786,"events":["surge +18%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":78},"expected":{"expression":0.432077,"events":["surge +13%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":79},"expected":{"expression":0.497202,"events":["surge +20%","GENE: Warded Soul (+Ward)"],"gene_bonus":{"Ward":0.12},"genes":["Warded Soul"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":80},"expected":{"expression":0.471879,"events":["surge +17%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":81},"expected":{"expression":0.411164,"events":["surge +11%","GENE: Venomous (+Bane)"],"gene_bonus":{"Bane":0.12},"genes":["Venomous"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":82},"expected":{"expression":0.465063,"events":["surge +17%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":83},"expected":{"expression":0.499943,"events":["surge +20%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":84},"expected":{"expression":0.463277,"events":["surge +16%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":85},"expected":{"expression":0.474279,"events":["surge +17%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":86},"expected":{"expression":0.40612,"events":["surge +11%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":87},"expected":{"expression":0.400213,"events":["surge +10%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":88},"expected":{"expression":0.431057,"events":["surge +13%","GENE: Venomous (+Bane)"],"gene_bonus":{"Bane":0.12},"genes":["Venomous"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":89},"expected":{"expression":0.499341,"events":["surge +20%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":90},"expected":{"expression":0.46731,"events":["surge +17%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":91},"expected":{"expression":0.429097,"events":["surge +13%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":92},"expected":{"expression":0.438216,"events":["surge +14%","GENE: Venomous (+Bane)"],"gene_bonus":{"Bane":0.12},"genes":["Venomous"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":93},"expected":{"expression":0.497256,"events":["surge +20%","GENE: Frenzy (+Spike)"],"gene_bonus":{"Spike":0.12},"genes":["Frenzy"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":94},"expected":{"expression":0.432773,"events":["surge +13%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":95},"expected":{"expression":0.451894,"events":["surge +15%","GENE: Verdant (+Vitality)"],"gene_bonus":{"Vitality":0.12},"genes":["Verdant"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":96},"expected":{"expression":0.450429,"events":["surge +15%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":97},"expected":{"expression":0.493848,"events":["surge +19%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":98},"expected":{"expression":0.468069,"events":["surge +17%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":99},"expected":{"expression":0.516115,"events":["surge +22%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":100},"expected":{"expression":0.48798,"events":["surge +19%","GENE: Verdant (+Vitality)","BRANCH"],"gene_bonus":{"Vitality":0.12},"genes":["Verdant"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":101},"expected":{"expression":0.515474,"events":["surge +22%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":102},"expected":{"expression":0.413508,"events":["surge +11%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":103},"expected":{"expression":0.507217,"events":["surge +21%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":104},"expected":{"expression":0.499242,"events":["surge +20%","GENE: Quickstep (+Celerity)"],"gene_bonus":{"Celerity":0.12},"genes":["Quickstep"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":105},"expected":{"expression":0.502604,"events":["surge +20%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":106},"expected":{"expression":0.410881,"events":["surge +11%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":107},"expected":{"expression":0.499898,"events":["surge +20%","GENE: Quickstep (+Celerity)"],"gene_bonus":{"Celerity":0.12},"genes":["Quickstep"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":108},"expected":{"expression":0.423289,"events":["surge +12%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":109},"expected":{"expression":0.500292,"events":["surge +20%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":110},"expected":{"expression":0.445308,"events":["surge +15%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":111},"expected":{"expression":0.452014,"events":["surge +15%","GENE: Quickstep (+Celerity)"],"gene_bonus":{"Celerity":0.12},"genes":["Quickstep"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":112},"expected":{"expression":0.478765,"events":["surge +18%","GENE: Frenzy (+Spike)"],"gene_bonus":{"Spike":0.12},"genes":["Frenzy"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":113},"expected":{"expression":0.410114,"events":["surge +11%","GENE: Verdant (+Vitality)"],"gene_bonus":{"Vitality":0.12},"genes":["Verdant"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":114},"expected":{"expression":0.481221,"events":["surge +18%","GENE: Verdant (+Vitality)"],"gene_bonus":{"Vitality":0.12},"genes":["Verdant"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":115},"expected":{"expression":0.453766,"events":["surge +15%","GENE: Frenzy (+Spike)"],"gene_bonus":{"Spike":0.12},"genes":["Frenzy"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":116},"expected":{"expression":0.419471,"events":["surge +12%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":117},"expected":{"expression":0.40007,"events":["surge +10%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":118},"expected":{"expression":0.405955,"events":["surge +11%","GENE: Warded Soul (+Ward)"],"gene_bonus":{"Ward":0.12},"genes":["Warded Soul"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":119},"expected":{"expression":0.476939,"events":["surge +18%","GENE: Verdant (+Vitality)"],"gene_bonus":{"Vitality":0.12},"genes":["Verdant"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":120},"expected":{"expression":0.469853,"events":["surge +17%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":121},"expected":{"expression":0.4674,"events":["surge +17%","GENE: Frenzy (+Spike)"],"gene_bonus":{"Spike":0.12},"genes":["Frenzy"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":122},"expected":{"expression":0.50207,"events":["surge +20%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":123},"expected":{"expression":0.40988,"events":["surge +11%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":124},"expected":{"expression":0.458056,"events":["surge +16%","GENE: Warded Soul (+Ward)","BRANCH"],"gene_bonus":{"Ward":0.12},"genes":["Warded Soul"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":125},"expected":{"expression":0.512836,"events":["surge +21%","GENE: Quickstep (+Celerity)","BRANCH"],"gene_bonus":{"Celerity":0.12},"genes":["Quickstep"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":126},"expected":{"expression":0.482673,"events":["surge +18%","GENE: Ironblood (+Bulk)"],"gene_bonus":{"Bulk":0.12},"genes":["Ironblood"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":127},"expected":{"expression":0.414812,"events":["surge +11%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":128},"expected":{"expression":0.404818,"events":["surge +10%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":129},"expected":{"expression":0.41059,"events":["surge +11%","GENE: Frenzy (+Spike)"],"gene_bonus":{"Spike":0.12},"genes":["Frenzy"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":130},"expected":{"expression":0.428393,"events":["surge +13%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":131},"expected":{"expression":0.481609,"events":["surge +18%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":132},"expected":{"expression":0.491289,"events":["surge +19%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":133},"expected":{"expression":0.515694,"events":["surge +22%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":134},"expected":{"expression":0.42603,"events":["surge +13%","GENE: Warded Soul (+Ward)"],"gene_bonus":{"Ward":0.12},"genes":["Warded Soul"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":135},"expected":{"expression":0.518575,"events":["surge +22%","GENE: Quickstep (+Celerity)","BRANCH"],"gene_bonus":{"Celerity":0.12},"genes":["Quickstep"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":136},"expected":{"expression":0.448141,"events":["surge +15%","GENE: Frenzy (+Spike)"],"gene_bonus":{"Spike":0.12},"genes":["Frenzy"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":137},"expected":{"expression":0.41172,"events":["surge +11%","GENE: Frenzy (+Spike)"],"gene_bonus":{"Spike":0.12},"genes":["Frenzy"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":138},"expected":{"expression":0.487269,"events":["surge +19%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":139},"expected":{"expression":0.43961,"events":["surge +14%","GENE: Verdant (+Vitality)"],"gene_bonus":{"Vitality":0.12},"genes":["Verdant"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":140},"expected":{"expression":0.457685,"events":["surge +16%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":141},"expected":{"expression":0.412618,"events":["surge +11%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":142},"expected":{"expression":0.448651,"events":["surge +15%","GENE: Venomous (+Bane)"],"gene_bonus":{"Bane":0.12},"genes":["Venomous"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":143},"expected":{"expression":0.509247,"events":["surge +21%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":144},"expected":{"expression":0.420271,"events":["surge +12%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":145},"expected":{"expression":0.438728,"events":["surge +14%","GENE: Ironblood (+Bulk)"],"gene_bonus":{"Bulk":0.12},"genes":["Ironblood"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":146},"expected":{"expression":0.491779,"events":["surge +19%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":147},"expected":{"expression":0.456946,"events":["surge +16%","GENE: Venomous (+Bane)","BRANCH"],"gene_bonus":{"Bane":0.12},"genes":["Venomous"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":148},"expected":{"expression":0.426567,"events":["surge +13%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":149},"expected":{"expression":0.495639,"events":["surge +20%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":150},"expected":{"expression":0.477544,"events":["surge +18%","GENE: Frenzy (+Spike)"],"gene_bonus":{"Spike":0.12},"genes":["Frenzy"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":151},"expected":{"expression":0.416885,"events":["surge +12%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":152},"expected":{"expression":0.421439,"events":["surge +12%","GENE: Frenzy (+Spike)","BRANCH"],"gene_bonus":{"Spike":0.12},"genes":["Frenzy"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":153},"expected":{"expression":0.46973,"events":["surge +17%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":154},"expected":{"expression":0.425243,"events":["surge +13%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":155},"expected":{"expression":0.449429,"events":["surge +15%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":156},"expected":{"expression":0.476883,"events":["surge +18%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":157},"expected":{"expression":0.413522,"events":["surge +11%","GENE: Warded Soul (+Ward)","BRANCH"],"gene_bonus":{"Ward":0.12},"genes":["Warded Soul"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":158},"expected":{"expression":0.505875,"events":["surge +21%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":159},"expected":{"expression":0.461488,"events":["surge +16%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":160},"expected":{"expression":0.512211,"events":["surge +21%","GENE: Frenzy (+Spike)"],"gene_bonus":{"Spike":0.12},"genes":["Frenzy"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":161},"expected":{"expression":0.420497,"events":["surge +12%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":162},"expected":{"expression":0.405701,"events":["surge +11%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":163},"expected":{"expression":0.442228,"events":["surge +14%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":164},"expected":{"expression":0.464016,"events":["surge +16%","GENE: Venomous (+Bane)"],"gene_bonus":{"Bane":0.12},"genes":["Venomous"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":165},"expected":{"expression":0.518219,"events":["surge +22%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":166},"expected":{"expression":0.403358,"events":["surge +10%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":167},"expected":{"expression":0.444351,"events":["surge +14%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":168},"expected":{"expression":0.516684,"events":["surge +22%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":169},"expected":{"expression":0.488894,"events":["surge +19%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":170},"expected":{"expression":0.496493,"events":["surge +20%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":171},"expected":{"expression":0.487186,"events":["surge +19%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":172},"expected":{"expression":0.450555,"events":["surge +15%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":173},"expected":{"expression":0.460093,"events":["surge +16%","GENE: Venomous (+Bane)"],"gene_bonus":{"Bane":0.12},"genes":["Venomous"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":174},"expected":{"expression":0.457985,"events":["surge +16%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":175},"expected":{"expression":0.462023,"events":["surge +16%","GENE: Quickstep (+Celerity)"],"gene_bonus":{"Celerity":0.12},"genes":["Quickstep"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":176},"expected":{"expression":0.499954,"events":["surge +20%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":177},"expected":{"expression":0.496195,"events":["surge +20%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":178},"expected":{"expression":0.5158,"events":["surge +22%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":179},"expected":{"expression":0.498993,"events":["surge +20%","GENE: Venomous (+Bane)"],"gene_bonus":{"Bane":0.12},"genes":["Venomous"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":180},"expected":{"expression":0.4217,"events":["surge +12%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":181},"expected":{"expression":0.488165,"events":["surge +19%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":182},"expected":{"expression":0.481677,"events":["surge +18%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":183},"expected":{"expression":0.44265,"events":["surge +14%","GENE: Venomous (+Bane)","BRANCH"],"gene_bonus":{"Bane":0.12},"genes":["Venomous"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":184},"expected":{"expression":0.461618,"events":["surge +16%","GENE: Warded Soul (+Ward)"],"gene_bonus":{"Ward":0.12},"genes":["Warded Soul"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":185},"expected":{"expression":0.423883,"events":["surge +12%","GENE: Venomous (+Bane)"],"gene_bonus":{"Bane":0.12},"genes":["Venomous"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":186},"expected":{"expression":0.407226,"events":["surge +11%","GENE: Venomous (+Bane)"],"gene_bonus":{"Bane":0.12},"genes":["Venomous"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":187},"expected":{"expression":0.479411,"events":["surge +18%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":188},"expected":{"expression":0.446519,"events":["surge +15%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":189},"expected":{"expression":0.495781,"events":["surge +20%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":190},"expected":{"expression":0.429452,"events":["surge +13%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":191},"expected":{"expression":0.473995,"events":["surge +17%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":192},"expected":{"expression":0.436753,"events":["surge +14%","GENE: Frenzy (+Spike)","BRANCH"],"gene_bonus":{"Spike":0.12},"genes":["Frenzy"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":193},"expected":{"expression":0.49807,"events":["surge +20%","GENE: Quickstep (+Celerity)"],"gene_bonus":{"Celerity":0.12},"genes":["Quickstep"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":194},"expected":{"expression":0.432124,"events":["surge +13%","GENE: Ironblood (+Bulk)"],"gene_bonus":{"Bulk":0.12},"genes":["Ironblood"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":195},"expected":{"expression":0.420308,"events":["surge +12%","GENE: Frenzy (+Spike)"],"gene_bonus":{"Spike":0.12},"genes":["Frenzy"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":196},"expected":{"expression":0.513145,"events":["surge +21%","GENE: Verdant (+Vitality)"],"gene_bonus":{"Vitality":0.12},"genes":["Verdant"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":197},"expected":{"expression":0.473758,"events":["surge +17%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":198},"expected":{"expression":0.51987,"events":["surge +22%","GENE: Ironblood (+Bulk)"],"gene_bonus":{"Bulk":0.12},"genes":["Ironblood"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":199},"expected":{"expression":0.48964,"events":["surge +19%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":200},"expected":{"expression":0.405664,"events":["surge +11%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":201},"expected":{"expression":0.415652,"events":["surge +12%","GENE: Quickstep (+Celerity)"],"gene_bonus":{"Celerity":0.12},"genes":["Quickstep"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":202},"expected":{"expression":0.456615,"events":["surge +16%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":203},"expected":{"expression":0.477243,"events":["surge +18%","GENE: Venomous (+Bane)"],"gene_bonus":{"Bane":0.12},"genes":["Venomous"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":204},"expected":{"expression":0.435021,"events":["surge +14%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":205},"expected":{"expression":0.406807,"events":["surge +11%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":206},"expected":{"expression":0.445825,"events":["surge +15%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":207},"expected":{"expression":0.474115,"events":["surge +17%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":208},"expected":{"expression":0.404066,"events":["surge +10%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":209},"expected":{"expression":0.426514,"events":["surge +13%","GENE: Ironblood (+Bulk)","BRANCH"],"gene_bonus":{"Bulk":0.12},"genes":["Ironblood"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":210},"expected":{"expression":0.462152,"events":["surge +16%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":211},"expected":{"expression":0.487679,"events":["surge +19%","GENE: Frenzy (+Spike)"],"gene_bonus":{"Spike":0.12},"genes":["Frenzy"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":212},"expected":{"expression":0.512529,"events":["surge +21%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":213},"expected":{"expression":0.518374,"events":["surge +22%","GENE: Warded Soul (+Ward)"],"gene_bonus":{"Ward":0.12},"genes":["Warded Soul"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":214},"expected":{"expression":0.444798,"events":["surge +14%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":215},"expected":{"expression":0.460465,"events":["surge +16%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":216},"expected":{"expression":0.493739,"events":["surge +19%","GENE: Warded Soul (+Ward)"],"gene_bonus":{"Ward":0.12},"genes":["Warded Soul"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":217},"expected":{"expression":0.462966,"events":["surge +16%","GENE: Warded Soul (+Ward)","BRANCH"],"gene_bonus":{"Ward":0.12},"genes":["Warded Soul"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":218},"expected":{"expression":0.411707,"events":["surge +11%","GENE: Ironblood (+Bulk)"],"gene_bonus":{"Bulk":0.12},"genes":["Ironblood"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":219},"expected":{"expression":0.462967,"events":["surge +16%","GENE: Venomous (+Bane)"],"gene_bonus":{"Bane":0.12},"genes":["Venomous"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":220},"expected":{"expression":0.421824,"events":["surge +12%","GENE: Warded Soul (+Ward)","BRANCH"],"gene_bonus":{"Ward":0.12},"genes":["Warded Soul"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":221},"expected":{"expression":0.426591,"events":["surge +13%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":222},"expected":{"expression":0.41387,"events":["surge +11%","GENE: Ironblood (+Bulk)"],"gene_bonus":{"Bulk":0.12},"genes":["Ironblood"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":223},"expected":{"expression":0.466272,"events":["surge +17%","GENE: Verdant (+Vitality)"],"gene_bonus":{"Vitality":0.12},"genes":["Verdant"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":224},"expected":{"expression":0.421789,"events":["surge +12%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":225},"expected":{"expression":0.46574,"events":["surge +17%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":226},"expected":{"expression":0.430708,"events":["surge +13%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":227},"expected":{"expression":0.488501,"events":["surge +19%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":228},"expected":{"expression":0.409148,"events":["surge +11%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":229},"expected":{"expression":0.4442,"events":["surge +14%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":230},"expected":{"expression":0.477546,"events":["surge +18%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":231},"expected":{"expression":0.500584,"events":["surge +20%","GENE: Venomous (+Bane)"],"gene_bonus":{"Bane":0.12},"genes":["Venomous"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":232},"expected":{"expression":0.4965,"events":["surge +20%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":233},"expected":{"expression":0.457061,"events":["surge +16%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":234},"expected":{"expression":0.457275,"events":["surge +16%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":235},"expected":{"expression":0.515453,"events":["surge +22%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":236},"expected":{"expression":0.42581,"events":["surge +13%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":237},"expected":{"expression":0.407859,"events":["surge +11%","GENE: Verdant (+Vitality)"],"gene_bonus":{"Vitality":0.12},"genes":["Verdant"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":238},"expected":{"expression":0.505664,"events":["surge +21%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":239},"expected":{"expression":0.419974,"events":["surge +12%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":240},"expected":{"expression":0.509705,"events":["surge +21%","GENE: Quickstep (+Celerity)"],"gene_bonus":{"Celerity":0.12},"genes":["Quickstep"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":241},"expected":{"expression":0.416233,"events":["surge +12%","GENE: Verdant (+Vitality)"],"gene_bonus":{"Vitality":0.12},"genes":["Verdant"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":242},"expected":{"expression":0.442961,"events":["surge +14%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":243},"expected":{"expression":0.476337,"events":["surge +18%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":244},"expected":{"expression":0.401066,"events":["surge +10%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":245},"expected":{"expression":0.507577,"events":["surge +21%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":246},"expected":{"expression":0.479666,"events":["surge +18%","GENE: Frenzy (+Spike)"],"gene_bonus":{"Spike":0.12},"genes":["Frenzy"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":247},"expected":{"expression":0.492633,"events":["surge +19%","GENE: Warded Soul (+Ward)"],"gene_bonus":{"Ward":0.12},"genes":["Warded Soul"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":248},"expected":{"expression":0.452215,"events":["surge +15%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":249},"expected":{"expression":0.490061,"events":["surge +19%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":250},"expected":{"expression":0.426742,"events":["surge +13%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":251},"expected":{"expression":0.481514,"events":["surge +18%","GENE: Quickstep (+Celerity)"],"gene_bonus":{"Celerity":0.12},"genes":["Quickstep"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":252},"expected":{"expression":0.50043,"events":["surge +20%","GENE: Frenzy (+Spike)"],"gene_bonus":{"Spike":0.12},"genes":["Frenzy"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":253},"expected":{"expression":0.425615,"events":["surge +13%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":254},"expected":{"expression":0.419657,"events":["surge +12%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":255},"expected":{"expression":0.50778,"events":["surge +21%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":256},"expected":{"expression":0.454554,"events":["surge +15%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":257},"expected":{"expression":0.4902,"events":["surge +19%","GENE: Quickstep (+Celerity)","BRANCH"],"gene_bonus":{"Celerity":0.12},"genes":["Quickstep"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":258},"expected":{"expression":0.482677,"events":["surge +18%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":259},"expected":{"expression":0.448619,"events":["surge +15%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":260},"expected":{"expression":0.466526,"events":["surge +17%","GENE: Warded Soul (+Ward)"],"gene_bonus":{"Ward":0.12},"genes":["Warded Soul"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":261},"expected":{"expression":0.515758,"events":["surge +22%","GENE: Ironblood (+Bulk)"],"gene_bonus":{"Bulk":0.12},"genes":["Ironblood"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":262},"expected":{"expression":0.412744,"events":["surge +11%","GENE: Verdant (+Vitality)"],"gene_bonus":{"Vitality":0.12},"genes":["Verdant"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":263},"expected":{"expression":0.510235,"events":["surge +21%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":264},"expected":{"expression":0.432541,"events":["surge +13%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":265},"expected":{"expression":0.418854,"events":["surge +12%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":266},"expected":{"expression":0.421508,"events":["surge +12%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":267},"expected":{"expression":0.478071,"events":["surge +18%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":268},"expected":{"expression":0.51311,"events":["surge +21%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":269},"expected":{"expression":0.452774,"events":["surge +15%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":270},"expected":{"expression":0.439936,"events":["surge +14%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":271},"expected":{"expression":0.478444,"events":["surge +18%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":272},"expected":{"expression":0.509403,"events":["surge +21%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":273},"expected":{"expression":0.465418,"events":["surge +17%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":274},"expected":{"expression":0.405146,"events":["surge +11%","GENE: Verdant (+Vitality)","BRANCH"],"gene_bonus":{"Vitality":0.12},"genes":["Verdant"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":275},"expected":{"expression":0.495184,"events":["surge +20%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":276},"expected":{"expression":0.464809,"events":["surge +16%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":277},"expected":{"expression":0.505082,"events":["surge +21%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":278},"expected":{"expression":0.43835,"events":["surge +14%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":279},"expected":{"expression":0.419392,"events":["surge +12%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":280},"expected":{"expression":0.507993,"events":["surge +21%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":281},"expected":{"expression":0.414338,"events":["surge +11%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":282},"expected":{"expression":0.487565,"events":["surge +19%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":283},"expected":{"expression":0.493691,"events":["surge +19%","GENE: Ironblood (+Bulk)"],"gene_bonus":{"Bulk":0.12},"genes":["Ironblood"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":284},"expected":{"expression":0.464856,"events":["surge +16%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":285},"expected":{"expression":0.462092,"events":["surge +16%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":286},"expected":{"expression":0.485434,"events":["surge +19%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":287},"expected":{"expression":0.40061,"events":["surge +10%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":288},"expected":{"expression":0.517776,"events":["surge +22%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":289},"expected":{"expression":0.423317,"events":["surge +12%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":290},"expected":{"expression":0.467508,"events":["surge +17%","GENE: Quickstep (+Celerity)"],"gene_bonus":{"Celerity":0.12},"genes":["Quickstep"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":291},"expected":{"expression":0.49481,"events":["surge +19%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":292},"expected":{"expression":0.40067,"events":["surge +10%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":293},"expected":{"expression":0.437356,"events":["surge +14%","GENE: Warded Soul (+Ward)"],"gene_bonus":{"Ward":0.12},"genes":["Warded Soul"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":294},"expected":{"expression":0.480424,"events":["surge +18%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":295},"expected":{"expression":0.433325,"events":["surge +13%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":296},"expected":{"expression":0.435478,"events":["surge +14%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":297},"expected":{"expression":0.403292,"events":["surge +10%","GENE: Ironblood (+Bulk)"],"gene_bonus":{"Bulk":0.12},"genes":["Ironblood"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":298},"expected":{"expression":0.518771,"events":["surge +22%","GENE: Warded Soul (+Ward)","BRANCH"],"gene_bonus":{"Ward":0.12},"genes":["Warded Soul"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":299},"expected":{"expression":0.516139,"events":["surge +22%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":300},"expected":{"expression":0.468165,"events":["surge +17%","GENE: Warded Soul (+Ward)","BRANCH"],"gene_bonus":{"Ward":0.12},"genes":["Warded Soul"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":301},"expected":{"expression":0.422329,"events":["surge +12%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":302},"expected":{"expression":0.41352,"events":["surge +11%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":303},"expected":{"expression":0.409092,"events":["surge +11%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":304},"expected":{"expression":0.511875,"events":["surge +21%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":305},"expected":{"expression":0.444485,"events":["surge +14%","GENE: Frenzy (+Spike)"],"gene_bonus":{"Spike":0.12},"genes":["Frenzy"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":306},"expected":{"expression":0.444027,"events":["surge +14%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":307},"expected":{"expression":0.506183,"events":["surge +21%","GENE: Warded Soul (+Ward)","BRANCH"],"gene_bonus":{"Ward":0.12},"genes":["Warded Soul"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":308},"expected":{"expression":0.493605,"events":["surge +19%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":309},"expected":{"expression":0.426782,"events":["surge +13%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":310},"expected":{"expression":0.448481,"events":["surge +15%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":311},"expected":{"expression":0.489515,"events":["surge +19%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":312},"expected":{"expression":0.421951,"events":["surge +12%","GENE: Venomous (+Bane)"],"gene_bonus":{"Bane":0.12},"genes":["Venomous"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":313},"expected":{"expression":0.410905,"events":["surge +11%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":314},"expected":{"expression":0.430948,"events":["surge +13%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":315},"expected":{"expression":0.423292,"events":["surge +12%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":316},"expected":{"expression":0.419867,"events":["surge +12%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":317},"expected":{"expression":0.464114,"events":["surge +16%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":318},"expected":{"expression":0.449692,"events":["surge +15%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":319},"expected":{"expression":0.417137,"events":["surge +12%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":320},"expected":{"expression":0.510517,"events":["surge +21%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":321},"expected":{"expression":0.4295,"events":["surge +13%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":322},"expected":{"expression":0.41217,"events":["surge +11%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":323},"expected":{"expression":0.489567,"events":["surge +19%","GENE: Venomous (+Bane)"],"gene_bonus":{"Bane":0.12},"genes":["Venomous"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":324},"expected":{"expression":0.437584,"events":["surge +14%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":325},"expected":{"expression":0.512886,"events":["surge +21%","GENE: Warded Soul (+Ward)","BRANCH"],"gene_bonus":{"Ward":0.12},"genes":["Warded Soul"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":326},"expected":{"expression":0.44559,"events":["surge +15%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":327},"expected":{"expression":0.465541,"events":["surge +17%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":328},"expected":{"expression":0.427343,"events":["surge +13%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":329},"expected":{"expression":0.436104,"events":["surge +14%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":330},"expected":{"expression":0.453905,"events":["surge +15%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":331},"expected":{"expression":0.485372,"events":["surge +19%","GENE: Ironblood (+Bulk)"],"gene_bonus":{"Bulk":0.12},"genes":["Ironblood"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":332},"expected":{"expression":0.451474,"events":["surge +15%","GENE: Venomous (+Bane)"],"gene_bonus":{"Bane":0.12},"genes":["Venomous"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":333},"expected":{"expression":0.408324,"events":["surge +11%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":334},"expected":{"expression":0.401661,"events":["surge +10%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":335},"expected":{"expression":0.494713,"events":["surge +19%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":336},"expected":{"expression":0.454471,"events":["surge +15%","GENE: Frenzy (+Spike)"],"gene_bonus":{"Spike":0.12},"genes":["Frenzy"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":337},"expected":{"expression":0.496097,"events":["surge +20%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":338},"expected":{"expression":0.478905,"events":["surge +18%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":339},"expected":{"expression":0.441305,"events":["surge +14%","GENE: Quickstep (+Celerity)"],"gene_bonus":{"Celerity":0.12},"genes":["Quickstep"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":340},"expected":{"expression":0.498701,"events":["surge +20%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":341},"expected":{"expression":0.460814,"events":["surge +16%","GENE: Ironblood (+Bulk)","BRANCH"],"gene_bonus":{"Bulk":0.12},"genes":["Ironblood"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":342},"expected":{"expression":0.44944,"events":["surge +15%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":343},"expected":{"expression":0.492959,"events":["surge +19%","GENE: Verdant (+Vitality)","BRANCH"],"gene_bonus":{"Vitality":0.12},"genes":["Verdant"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":344},"expected":{"expression":0.512267,"events":["surge +21%","GENE: Frenzy (+Spike)","BRANCH"],"gene_bonus":{"Spike":0.12},"genes":["Frenzy"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":345},"expected":{"expression":0.439125,"events":["surge +14%","GENE: Verdant (+Vitality)"],"gene_bonus":{"Vitality":0.12},"genes":["Verdant"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":346},"expected":{"expression":0.442092,"events":["surge +14%","GENE: Verdant (+Vitality)"],"gene_bonus":{"Vitality":0.12},"genes":["Verdant"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":347},"expected":{"expression":0.493125,"events":["surge +19%","GENE: Frenzy (+Spike)","BRANCH"],"gene_bonus":{"Spike":0.12},"genes":["Frenzy"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":348},"expected":{"expression":0.486765,"events":["surge +19%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":349},"expected":{"expression":0.413022,"events":["surge +11%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":350},"expected":{"expression":0.439514,"events":["surge +14%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":351},"expected":{"expression":0.416984,"events":["surge +12%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":352},"expected":{"expression":0.435019,"events":["surge +14%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":353},"expected":{"expression":0.451321,"events":["surge +15%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":354},"expected":{"expression":0.440293,"events":["surge +14%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":355},"expected":{"expression":0.427896,"events":["surge +13%","GENE: Verdant (+Vitality)"],"gene_bonus":{"Vitality":0.12},"genes":["Verdant"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":356},"expected":{"expression":0.407639,"events":["surge +11%","GENE: Ironblood (+Bulk)"],"gene_bonus":{"Bulk":0.12},"genes":["Ironblood"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":357},"expected":{"expression":0.436047,"events":["surge +14%","GENE: Venomous (+Bane)"],"gene_bonus":{"Bane":0.12},"genes":["Venomous"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":358},"expected":{"expression":0.407261,"events":["surge +11%","GENE: Frenzy (+Spike)"],"gene_bonus":{"Spike":0.12},"genes":["Frenzy"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":359},"expected":{"expression":0.486814,"events":["surge +19%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":360},"expected":{"expression":0.407224,"events":["surge +11%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":361},"expected":{"expression":0.489658,"events":["surge +19%","GENE: Quickstep (+Celerity)"],"gene_bonus":{"Celerity":0.12},"genes":["Quickstep"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":362},"expected":{"expression":0.411983,"events":["surge +11%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":363},"expected":{"expression":0.415981,"events":["surge +12%","GENE: Quickstep (+Celerity)"],"gene_bonus":{"Celerity":0.12},"genes":["Quickstep"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":364},"expected":{"expression":0.507588,"events":["surge +21%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":365},"expected":{"expression":0.401389,"events":["surge +10%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":366},"expected":{"expression":0.432422,"events":["surge +13%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":367},"expected":{"expression":0.436195,"events":["surge +14%","GENE: Frenzy (+Spike)","BRANCH"],"gene_bonus":{"Spike":0.12},"genes":["Frenzy"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":368},"expected":{"expression":0.518262,"events":["surge +22%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":369},"expected":{"expression":0.502255,"events":["surge +20%","GENE: Quickstep (+Celerity)"],"gene_bonus":{"Celerity":0.12},"genes":["Quickstep"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":370},"expected":{"expression":0.453479,"events":["surge +15%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":371},"expected":{"expression":0.487976,"events":["surge +19%","GENE: Quickstep (+Celerity)"],"gene_bonus":{"Celerity":0.12},"genes":["Quickstep"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":372},"expected":{"expression":0.48618,"events":["surge +19%","GENE: Verdant (+Vitality)"],"gene_bonus":{"Vitality":0.12},"genes":["Verdant"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":373},"expected":{"expression":0.432257,"events":["surge +13%","GENE: Ironblood (+Bulk)"],"gene_bonus":{"Bulk":0.12},"genes":["Ironblood"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":374},"expected":{"expression":0.458382,"events":["surge +16%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":375},"expected":{"expression":0.4063,"events":["surge +11%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":376},"expected":{"expression":0.424285,"events":["surge +12%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":377},"expected":{"expression":0.496394,"events":["surge +20%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":378},"expected":{"expression":0.48788,"events":["surge +19%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":379},"expected":{"expression":0.460951,"events":["surge +16%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":380},"expected":{"expression":0.451799,"events":["surge +15%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":381},"expected":{"expression":0.410353,"events":["surge +11%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":382},"expected":{"expression":0.46295,"events":["surge +16%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":383},"expected":{"expression":0.4277,"events":["surge +13%","GENE: Quickstep (+Celerity)"],"gene_bonus":{"Celerity":0.12},"genes":["Quickstep"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":384},"expected":{"expression":0.513327,"events":["surge +21%","GENE: Ironblood (+Bulk)"],"gene_bonus":{"Bulk":0.12},"genes":["Ironblood"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":385},"expected":{"expression":0.473697,"events":["surge +17%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":386},"expected":{"expression":0.49725,"events":["surge +20%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":387},"expected":{"expression":0.41014,"events":["surge +11%","GENE: Warded Soul (+Ward)","BRANCH"],"gene_bonus":{"Ward":0.12},"genes":["Warded Soul"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":388},"expected":{"expression":0.459142,"events":["surge +16%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":389},"expected":{"expression":0.433913,"events":["surge +13%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":390},"expected":{"expression":0.455975,"events":["surge +16%","GENE: Verdant (+Vitality)","BRANCH"],"gene_bonus":{"Vitality":0.12},"genes":["Verdant"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":391},"expected":{"expression":0.480278,"events":["surge +18%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":392},"expected":{"expression":0.430194,"events":["surge +13%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":393},"expected":{"expression":0.421567,"events":["surge +12%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":394},"expected":{"expression":0.435302,"events":["surge +14%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":395},"expected":{"expression":0.514059,"events":["surge +21%","GENE: Frenzy (+Spike)","BRANCH"],"gene_bonus":{"Spike":0.12},"genes":["Frenzy"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":396},"expected":{"expression":0.506859,"events":["surge +21%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":397},"expected":{"expression":0.475336,"events":["surge +18%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":398},"expected":{"expression":0.43362,"events":["surge +13%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":399},"expected":{"expression":0.417068,"events":["surge +12%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":400},"expected":{"expression":0.406454,"events":["surge +11%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":401},"expected":{"expression":0.440731,"events":["surge +14%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":402},"expected":{"expression":0.428307,"events":["surge +13%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":403},"expected":{"expression":0.477639,"events":["surge +18%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":404},"expected":{"expression":0.489572,"events":["surge +19%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":405},"expected":{"expression":0.452187,"events":["surge +15%","GENE: Venomous (+Bane)"],"gene_bonus":{"Bane":0.12},"genes":["Venomous"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":406},"expected":{"expression":0.506023,"events":["surge +21%","GENE: Frenzy (+Spike)"],"gene_bonus":{"Spike":0.12},"genes":["Frenzy"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":407},"expected":{"expression":0.435092,"events":["surge +14%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":408},"expected":{"expression":0.48998,"events":["surge +19%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":409},"expected":{"expression":0.456613,"events":["surge +16%","GENE: Frenzy (+Spike)","BRANCH"],"gene_bonus":{"Spike":0.12},"genes":["Frenzy"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":410},"expected":{"expression":0.412626,"events":["surge +11%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":411},"expected":{"expression":0.4692,"events":["surge +17%","GENE: Quickstep (+Celerity)"],"gene_bonus":{"Celerity":0.12},"genes":["Quickstep"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":412},"expected":{"expression":0.505054,"events":["surge +21%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":413},"expected":{"expression":0.499379,"events":["surge +20%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":414},"expected":{"expression":0.470274,"events":["surge +17%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":415},"expected":{"expression":0.501727,"events":["surge +20%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":416},"expected":{"expression":0.422824,"events":["surge +12%","GENE: Warded Soul (+Ward)"],"gene_bonus":{"Ward":0.12},"genes":["Warded Soul"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":417},"expected":{"expression":0.475612,"events":["surge +18%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":418},"expected":{"expression":0.413589,"events":["surge +11%","GENE: Warded Soul (+Ward)","BRANCH"],"gene_bonus":{"Ward":0.12},"genes":["Warded Soul"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":419},"expected":{"expression":0.495768,"events":["surge +20%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":420},"expected":{"expression":0.428572,"events":["surge +13%","GENE: Warded Soul (+Ward)"],"gene_bonus":{"Ward":0.12},"genes":["Warded Soul"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":421},"expected":{"expression":0.475344,"events":["surge +18%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":422},"expected":{"expression":0.452724,"events":["surge +15%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":423},"expected":{"expression":0.469444,"events":["surge +17%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":424},"expected":{"expression":0.459291,"events":["surge +16%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":425},"expected":{"expression":0.460775,"events":["surge +16%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":426},"expected":{"expression":0.432291,"events":["surge +13%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":427},"expected":{"expression":0.43483,"events":["surge +13%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":428},"expected":{"expression":0.469979,"events":["surge +17%","GENE: Quickstep (+Celerity)"],"gene_bonus":{"Celerity":0.12},"genes":["Quickstep"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":429},"expected":{"expression":0.444989,"events":["surge +14%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":430},"expected":{"expression":0.513288,"events":["surge +21%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":431},"expected":{"expression":0.510624,"events":["surge +21%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":432},"expected":{"expression":0.496897,"events":["surge +20%","GENE: Warded Soul (+Ward)"],"gene_bonus":{"Ward":0.12},"genes":["Warded Soul"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":433},"expected":{"expression":0.46714,"events":["surge +17%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":434},"expected":{"expression":0.501537,"events":["surge +20%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":435},"expected":{"expression":0.515652,"events":["surge +22%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":436},"expected":{"expression":0.450097,"events":["surge +15%","GENE: Quickstep (+Celerity)"],"gene_bonus":{"Celerity":0.12},"genes":["Quickstep"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":437},"expected":{"expression":0.509308,"events":["surge +21%","GENE: Venomous (+Bane)"],"gene_bonus":{"Bane":0.12},"genes":["Venomous"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":438},"expected":{"expression":0.505714,"events":["surge +21%","GENE: Ironblood (+Bulk)"],"gene_bonus":{"Bulk":0.12},"genes":["Ironblood"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":439},"expected":{"expression":0.508084,"events":["surge +21%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":440},"expected":{"expression":0.440439,"events":["surge +14%","GENE: Verdant (+Vitality)"],"gene_bonus":{"Vitality":0.12},"genes":["Verdant"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":441},"expected":{"expression":0.483757,"events":["surge +18%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":442},"expected":{"expression":0.400422,"events":["surge +10%","GENE: Venomous (+Bane)","BRANCH"],"gene_bonus":{"Bane":0.12},"genes":["Venomous"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":443},"expected":{"expression":0.501351,"events":["surge +20%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":444},"expected":{"expression":0.427329,"events":["surge +13%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":445},"expected":{"expression":0.435067,"events":["surge +14%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":446},"expected":{"expression":0.492297,"events":["surge +19%","GENE: Quickstep (+Celerity)"],"gene_bonus":{"Celerity":0.12},"genes":["Quickstep"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":447},"expected":{"expression":0.434515,"events":["surge +13%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":448},"expected":{"expression":0.442088,"events":["surge +14%","GENE: Ironblood (+Bulk)"],"gene_bonus":{"Bulk":0.12},"genes":["Ironblood"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":449},"expected":{"expression":0.496399,"events":["surge +20%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":450},"expected":{"expression":0.461432,"events":["surge +16%","GENE: Venomous (+Bane)"],"gene_bonus":{"Bane":0.12},"genes":["Venomous"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":451},"expected":{"expression":0.464266,"events":["surge +16%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":452},"expected":{"expression":0.50357,"events":["surge +20%","GENE: Verdant (+Vitality)"],"gene_bonus":{"Vitality":0.12},"genes":["Verdant"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":453},"expected":{"expression":0.513272,"events":["surge +21%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":454},"expected":{"expression":0.444834,"events":["surge +14%","GENE: Verdant (+Vitality)"],"gene_bonus":{"Vitality":0.12},"genes":["Verdant"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":455},"expected":{"expression":0.50936,"events":["surge +21%","GENE: Warded Soul (+Ward)"],"gene_bonus":{"Ward":0.12},"genes":["Warded Soul"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":456},"expected":{"expression":0.498617,"events":["surge +20%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":457},"expected":{"expression":0.434266,"events":["surge +13%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":458},"expected":{"expression":0.483525,"events":["surge +18%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":459},"expected":{"expression":0.450495,"events":["surge +15%","GENE: Frenzy (+Spike)"],"gene_bonus":{"Spike":0.12},"genes":["Frenzy"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":460},"expected":{"expression":0.431059,"events":["surge +13%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":461},"expected":{"expression":0.516154,"events":["surge +22%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":462},"expected":{"expression":0.512266,"events":["surge +21%","GENE: Verdant (+Vitality)"],"gene_bonus":{"Vitality":0.12},"genes":["Verdant"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":463},"expected":{"expression":0.472214,"events":["surge +17%","GENE: Venomous (+Bane)"],"gene_bonus":{"Bane":0.12},"genes":["Venomous"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":464},"expected":{"expression":0.40264,"events":["surge +10%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":465},"expected":{"expression":0.427277,"events":["surge +13%","GENE: Verdant (+Vitality)"],"gene_bonus":{"Vitality":0.12},"genes":["Verdant"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":466},"expected":{"expression":0.401113,"events":["surge +10%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":467},"expected":{"expression":0.433121,"events":["surge +13%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":468},"expected":{"expression":0.489203,"events":["surge +19%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":469},"expected":{"expression":0.503525,"events":["surge +20%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":470},"expected":{"expression":0.469961,"events":["surge +17%","GENE: Warded Soul (+Ward)"],"gene_bonus":{"Ward":0.12},"genes":["Warded Soul"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":471},"expected":{"expression":0.43656,"events":["surge +14%","GENE: Warded Soul (+Ward)","BRANCH"],"gene_bonus":{"Ward":0.12},"genes":["Warded Soul"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":472},"expected":{"expression":0.414757,"events":["surge +11%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":473},"expected":{"expression":0.45043,"events":["surge +15%","GENE: Venomous (+Bane)"],"gene_bonus":{"Bane":0.12},"genes":["Venomous"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":474},"expected":{"expression":0.473747,"events":["surge +17%","GENE: Quickstep (+Celerity)"],"gene_bonus":{"Celerity":0.12},"genes":["Quickstep"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":475},"expected":{"expression":0.507925,"events":["surge +21%","GENE: Warded Soul (+Ward)"],"gene_bonus":{"Ward":0.12},"genes":["Warded Soul"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":476},"expected":{"expression":0.45544,"events":["surge +16%","GENE: Warded Soul (+Ward)"],"gene_bonus":{"Ward":0.12},"genes":["Warded Soul"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":477},"expected":{"expression":0.427543,"events":["surge +13%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":478},"expected":{"expression":0.444698,"events":["surge +14%","GENE: Verdant (+Vitality)"],"gene_bonus":{"Vitality":0.12},"genes":["Verdant"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":479},"expected":{"expression":0.446583,"events":["surge +15%","GENE: Quickstep (+Celerity)","BRANCH"],"gene_bonus":{"Celerity":0.12},"genes":["Quickstep"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":480},"expected":{"expression":0.491288,"events":["surge +19%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":481},"expected":{"expression":0.417481,"events":["surge +12%","GENE: Warded Soul (+Ward)"],"gene_bonus":{"Ward":0.12},"genes":["Warded Soul"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":482},"expected":{"expression":0.401316,"events":["surge +10%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":483},"expected":{"expression":0.516435,"events":["surge +22%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":484},"expected":{"expression":0.466431,"events":["surge +17%","GENE: Frenzy (+Spike)"],"gene_bonus":{"Spike":0.12},"genes":["Frenzy"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":485},"expected":{"expression":0.51178,"events":["surge +21%","GENE: Quickstep (+Celerity)","BRANCH"],"gene_bonus":{"Celerity":0.12},"genes":["Quickstep"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":486},"expected":{"expression":0.429871,"events":["surge +13%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":487},"expected":{"expression":0.401006,"events":["surge +10%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":488},"expected":{"expression":0.440022,"events":["surge +14%","GENE: Venomous (+Bane)"],"gene_bonus":{"Bane":0.12},"genes":["Venomous"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":489},"expected":{"expression":0.47467,"events":["surge +17%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":490},"expected":{"expression":0.407706,"events":["surge +11%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":491},"expected":{"expression":0.463052,"events":["surge +16%","GENE: Venomous (+Bane)"],"gene_bonus":{"Bane":0.12},"genes":["Venomous"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":492},"expected":{"expression":0.482636,"events":["surge +18%","GENE: Frenzy (+Spike)"],"gene_bonus":{"Spike":0.12},"genes":["Frenzy"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":493},"expected":{"expression":0.407455,"events":["surge +11%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":494},"expected":{"expression":0.406948,"events":["surge +11%","GENE: Frenzy (+Spike)"],"gene_bonus":{"Spike":0.12},"genes":["Frenzy"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":495},"expected":{"expression":0.41473,"events":["surge +11%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":496},"expected":{"expression":0.435528,"events":["surge +14%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":497},"expected":{"expression":0.457278,"events":["surge +16%","GENE: Verdant (+Vitality)"],"gene_bonus":{"Vitality":0.12},"genes":["Verdant"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":498},"expected":{"expression":0.449533,"events":["surge +15%","GENE: Venomous (+Bane)"],"gene_bonus":{"Bane":0.12},"genes":["Venomous"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":499},"expected":{"expression":0.463664,"events":["surge +16%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":500},"expected":{"expression":0.509169,"events":["surge +21%","GENE: Venomous (+Bane)"],"gene_bonus":{"Bane":0.12},"genes":["Venomous"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":501},"expected":{"expression":0.447607,"events":["surge +15%","GENE: Frenzy (+Spike)"],"gene_bonus":{"Spike":0.12},"genes":["Frenzy"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":502},"expected":{"expression":0.439782,"events":["surge +14%","GENE: Frenzy (+Spike)"],"gene_bonus":{"Spike":0.12},"genes":["Frenzy"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":503},"expected":{"expression":0.467093,"events":["surge +17%","GENE: Warded Soul (+Ward)"],"gene_bonus":{"Ward":0.12},"genes":["Warded Soul"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":504},"expected":{"expression":0.40438,"events":["surge +10%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":505},"expected":{"expression":0.438866,"events":["surge +14%","GENE: Verdant (+Vitality)"],"gene_bonus":{"Vitality":0.12},"genes":["Verdant"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":506},"expected":{"expression":0.476565,"events":["surge +18%","GENE: Verdant (+Vitality)"],"gene_bonus":{"Vitality":0.12},"genes":["Verdant"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":507},"expected":{"expression":0.512516,"events":["surge +21%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":508},"expected":{"expression":0.433608,"events":["surge +13%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":509},"expected":{"expression":0.413183,"events":["surge +11%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":510},"expected":{"expression":0.451624,"events":["surge +15%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":511},"expected":{"expression":0.512485,"events":["surge +21%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":512},"expected":{"expression":0.440108,"events":["surge +14%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":513},"expected":{"expression":0.411694,"events":["surge +11%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":514},"expected":{"expression":0.437862,"events":["surge +14%","GENE: Quickstep (+Celerity)","BRANCH"],"gene_bonus":{"Celerity":0.12},"genes":["Quickstep"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":515},"expected":{"expression":0.514883,"events":["surge +21%","GENE: Frenzy (+Spike)"],"gene_bonus":{"Spike":0.12},"genes":["Frenzy"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":516},"expected":{"expression":0.420263,"events":["surge +12%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":517},"expected":{"expression":0.410676,"events":["surge +11%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":518},"expected":{"expression":0.495541,"events":["surge +20%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":519},"expected":{"expression":0.477335,"events":["surge +18%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":520},"expected":{"expression":0.429307,"events":["surge +13%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":521},"expected":{"expression":0.511427,"events":["surge +21%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":522},"expected":{"expression":0.412269,"events":["surge +11%","GENE: Frenzy (+Spike)"],"gene_bonus":{"Spike":0.12},"genes":["Frenzy"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":523},"expected":{"expression":0.442634,"events":["surge +14%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":524},"expected":{"expression":0.418989,"events":["surge +12%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":525},"expected":{"expression":0.497935,"events":["surge +20%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":526},"expected":{"expression":0.42383,"events":["surge +12%","GENE: Warded Soul (+Ward)"],"gene_bonus":{"Ward":0.12},"genes":["Warded Soul"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":527},"expected":{"expression":0.515379,"events":["surge +22%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":528},"expected":{"expression":0.464868,"events":["surge +16%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":529},"expected":{"expression":0.4804,"events":["surge +18%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":530},"expected":{"expression":0.479109,"events":["surge +18%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":531},"expected":{"expression":0.489134,"events":["surge +19%","GENE: Venomous (+Bane)"],"gene_bonus":{"Bane":0.12},"genes":["Venomous"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":532},"expected":{"expression":0.51675,"events":["surge +22%","GENE: Warded Soul (+Ward)"],"gene_bonus":{"Ward":0.12},"genes":["Warded Soul"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":533},"expected":{"expression":0.421073,"events":["surge +12%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":534},"expected":{"expression":0.424167,"events":["surge +12%","GENE: Verdant (+Vitality)"],"gene_bonus":{"Vitality":0.12},"genes":["Verdant"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":535},"expected":{"expression":0.407649,"events":["surge +11%","GENE: Warded Soul (+Ward)"],"gene_bonus":{"Ward":0.12},"genes":["Warded Soul"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":536},"expected":{"expression":0.460817,"events":["surge +16%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":537},"expected":{"expression":0.489067,"events":["surge +19%","GENE: Ironblood (+Bulk)"],"gene_bonus":{"Bulk":0.12},"genes":["Ironblood"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":538},"expected":{"expression":0.47781,"events":["surge +18%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":539},"expected":{"expression":0.44289,"events":["surge +14%","GENE: Ironblood (+Bulk)"],"gene_bonus":{"Bulk":0.12},"genes":["Ironblood"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":540},"expected":{"expression":0.42253,"events":["surge +12%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":541},"expected":{"expression":0.403489,"events":["surge +10%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":542},"expected":{"expression":0.450229,"events":["surge +15%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":543},"expected":{"expression":0.48499,"events":["surge +18%","GENE: Verdant (+Vitality)"],"gene_bonus":{"Vitality":0.12},"genes":["Verdant"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":544},"expected":{"expression":0.476352,"events":["surge +18%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":545},"expected":{"expression":0.439521,"events":["surge +14%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":546},"expected":{"expression":0.486096,"events":["surge +19%","GENE: Venomous (+Bane)"],"gene_bonus":{"Bane":0.12},"genes":["Venomous"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":547},"expected":{"expression":0.416919,"events":["surge +12%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":548},"expected":{"expression":0.486964,"events":["surge +19%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":549},"expected":{"expression":0.432153,"events":["surge +13%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":550},"expected":{"expression":0.412953,"events":["surge +11%","GENE: Venomous (+Bane)"],"gene_bonus":{"Bane":0.12},"genes":["Venomous"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":551},"expected":{"expression":0.507083,"events":["surge +21%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":552},"expected":{"expression":0.501581,"events":["surge +20%","GENE: Quickstep (+Celerity)"],"gene_bonus":{"Celerity":0.12},"genes":["Quickstep"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":553},"expected":{"expression":0.432769,"events":["surge +13%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":554},"expected":{"expression":0.455342,"events":["surge +16%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":555},"expected":{"expression":0.466832,"events":["surge +17%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":556},"expected":{"expression":0.458392,"events":["surge +16%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":557},"expected":{"expression":0.466071,"events":["surge +17%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":558},"expected":{"expression":0.437789,"events":["surge +14%","GENE: Quickstep (+Celerity)"],"gene_bonus":{"Celerity":0.12},"genes":["Quickstep"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":559},"expected":{"expression":0.512073,"events":["surge +21%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":560},"expected":{"expression":0.500986,"events":["surge +20%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":561},"expected":{"expression":0.497976,"events":["surge +20%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":562},"expected":{"expression":0.418324,"events":["surge +12%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":563},"expected":{"expression":0.471297,"events":["surge +17%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":564},"expected":{"expression":0.490669,"events":["surge +19%","GENE: Verdant (+Vitality)"],"gene_bonus":{"Vitality":0.12},"genes":["Verdant"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":565},"expected":{"expression":0.404531,"events":["surge +10%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":566},"expected":{"expression":0.460548,"events":["surge +16%","GENE: Verdant (+Vitality)"],"gene_bonus":{"Vitality":0.12},"genes":["Verdant"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":567},"expected":{"expression":0.457915,"events":["surge +16%","GENE: Ironblood (+Bulk)"],"gene_bonus":{"Bulk":0.12},"genes":["Ironblood"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":568},"expected":{"expression":0.51984,"events":["surge +22%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":569},"expected":{"expression":0.449052,"events":["surge +15%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":570},"expected":{"expression":0.517865,"events":["surge +22%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":571},"expected":{"expression":0.488766,"events":["surge +19%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":572},"expected":{"expression":0.502939,"events":["surge +20%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":573},"expected":{"expression":0.412888,"events":["surge +11%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":574},"expected":{"expression":0.458778,"events":["surge +16%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":575},"expected":{"expression":0.516047,"events":["surge +22%","GENE: Frenzy (+Spike)"],"gene_bonus":{"Spike":0.12},"genes":["Frenzy"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":576},"expected":{"expression":0.468258,"events":["surge +17%","GENE: Warded Soul (+Ward)","BRANCH"],"gene_bonus":{"Ward":0.12},"genes":["Warded Soul"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":577},"expected":{"expression":0.496592,"events":["surge +20%","GENE: Verdant (+Vitality)"],"gene_bonus":{"Vitality":0.12},"genes":["Verdant"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":578},"expected":{"expression":0.450849,"events":["surge +15%","GENE: Verdant (+Vitality)"],"gene_bonus":{"Vitality":0.12},"genes":["Verdant"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":579},"expected":{"expression":0.423177,"events":["surge +12%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":580},"expected":{"expression":0.451897,"events":["surge +15%","GENE: Venomous (+Bane)"],"gene_bonus":{"Bane":0.12},"genes":["Venomous"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":581},"expected":{"expression":0.463922,"events":["surge +16%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":582},"expected":{"expression":0.444455,"events":["surge +14%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":583},"expected":{"expression":0.48775,"events":["surge +19%","GENE: Warded Soul (+Ward)"],"gene_bonus":{"Ward":0.12},"genes":["Warded Soul"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":584},"expected":{"expression":0.41828,"events":["surge +12%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":585},"expected":{"expression":0.404231,"events":["surge +10%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":586},"expected":{"expression":0.474775,"events":["surge +17%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":587},"expected":{"expression":0.461353,"events":["surge +16%","GENE: Warded Soul (+Ward)"],"gene_bonus":{"Ward":0.12},"genes":["Warded Soul"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":588},"expected":{"expression":0.472584,"events":["surge +17%","GENE: Quickstep (+Celerity)"],"gene_bonus":{"Celerity":0.12},"genes":["Quickstep"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":589},"expected":{"expression":0.447044,"events":["surge +15%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":590},"expected":{"expression":0.481343,"events":["surge +18%","GENE: Ironblood (+Bulk)"],"gene_bonus":{"Bulk":0.12},"genes":["Ironblood"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":591},"expected":{"expression":0.486618,"events":["surge +19%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":592},"expected":{"expression":0.493947,"events":["surge +19%","GENE: Warded Soul (+Ward)","BRANCH"],"gene_bonus":{"Ward":0.12},"genes":["Warded Soul"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":593},"expected":{"expression":0.406124,"events":["surge +11%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":594},"expected":{"expression":0.438445,"events":["surge +14%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":595},"expected":{"expression":0.483592,"events":["surge +18%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":596},"expected":{"expression":0.413274,"events":["surge +11%","GENE: Frenzy (+Spike)"],"gene_bonus":{"Spike":0.12},"genes":["Frenzy"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":597},"expected":{"expression":0.476913,"events":["surge +18%","GENE: Quickstep (+Celerity)","BRANCH"],"gene_bonus":{"Celerity":0.12},"genes":["Quickstep"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":598},"expected":{"expression":0.415106,"events":["surge +12%","GENE: Ironblood (+Bulk)"],"gene_bonus":{"Bulk":0.12},"genes":["Ironblood"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":599},"expected":{"expression":0.481369,"events":["surge +18%","GENE: Frenzy (+Spike)","BRANCH"],"gene_bonus":{"Spike":0.12},"genes":["Frenzy"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":600},"expected":{"expression":0.407242,"events":["surge +11%","GENE: Quickstep (+Celerity)"],"gene_bonus":{"Celerity":0.12},"genes":["Quickstep"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":601},"expected":{"expression":0.458426,"events":["surge +16%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":602},"expected":{"expression":0.513206,"events":["surge +21%","GENE: Venomous (+Bane)"],"gene_bonus":{"Bane":0.12},"genes":["Venomous"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":603},"expected":{"expression":0.478036,"events":["surge +18%","GENE: Verdant (+Vitality)"],"gene_bonus":{"Vitality":0.12},"genes":["Verdant"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":604},"expected":{"expression":0.499826,"events":["surge +20%","GENE: Ironblood (+Bulk)"],"gene_bonus":{"Bulk":0.12},"genes":["Ironblood"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":605},"expected":{"expression":0.496142,"events":["surge +20%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":606},"expected":{"expression":0.506221,"events":["surge +21%","GENE: Frenzy (+Spike)","BRANCH"],"gene_bonus":{"Spike":0.12},"genes":["Frenzy"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":607},"expected":{"expression":0.40266,"events":["surge +10%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":608},"expected":{"expression":0.452088,"events":["surge +15%","GENE: Verdant (+Vitality)"],"gene_bonus":{"Vitality":0.12},"genes":["Verdant"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":609},"expected":{"expression":0.456712,"events":["surge +16%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":610},"expected":{"expression":0.516381,"events":["surge +22%","GENE: Ironblood (+Bulk)"],"gene_bonus":{"Bulk":0.12},"genes":["Ironblood"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":611},"expected":{"expression":0.448846,"events":["surge +15%","GENE: Venomous (+Bane)"],"gene_bonus":{"Bane":0.12},"genes":["Venomous"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":612},"expected":{"expression":0.497578,"events":["surge +20%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":613},"expected":{"expression":0.480878,"events":["surge +18%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":614},"expected":{"expression":0.495522,"events":["surge +20%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":615},"expected":{"expression":0.434239,"events":["surge +13%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":616},"expected":{"expression":0.480898,"events":["surge +18%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":617},"expected":{"expression":0.488352,"events":["surge +19%","GENE: Ironblood (+Bulk)"],"gene_bonus":{"Bulk":0.12},"genes":["Ironblood"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":618},"expected":{"expression":0.413595,"events":["surge +11%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":619},"expected":{"expression":0.423878,"events":["surge +12%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":620},"expected":{"expression":0.434912,"events":["surge +13%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":621},"expected":{"expression":0.51566,"events":["surge +22%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":622},"expected":{"expression":0.439632,"events":["surge +14%","GENE: Verdant (+Vitality)"],"gene_bonus":{"Vitality":0.12},"genes":["Verdant"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":623},"expected":{"expression":0.472584,"events":["surge +17%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":624},"expected":{"expression":0.482261,"events":["surge +18%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":625},"expected":{"expression":0.485812,"events":["surge +19%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":626},"expected":{"expression":0.433871,"events":["surge +13%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":627},"expected":{"expression":0.508893,"events":["surge +21%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":628},"expected":{"expression":0.413236,"events":["surge +11%","GENE: Warded Soul (+Ward)"],"gene_bonus":{"Ward":0.12},"genes":["Warded Soul"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":629},"expected":{"expression":0.445779,"events":["surge +15%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":630},"expected":{"expression":0.490789,"events":["surge +19%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":631},"expected":{"expression":0.4789,"events":["surge +18%","GENE: Quickstep (+Celerity)"],"gene_bonus":{"Celerity":0.12},"genes":["Quickstep"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":632},"expected":{"expression":0.497293,"events":["surge +20%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":633},"expected":{"expression":0.412003,"events":["surge +11%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":634},"expected":{"expression":0.418204,"events":["surge +12%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":635},"expected":{"expression":0.45585,"events":["surge +16%","GENE: Venomous (+Bane)"],"gene_bonus":{"Bane":0.12},"genes":["Venomous"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":636},"expected":{"expression":0.472157,"events":["surge +17%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":637},"expected":{"expression":0.490758,"events":["surge +19%","GENE: Venomous (+Bane)"],"gene_bonus":{"Bane":0.12},"genes":["Venomous"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":638},"expected":{"expression":0.490763,"events":["surge +19%","GENE: Ironblood (+Bulk)","BRANCH"],"gene_bonus":{"Bulk":0.12},"genes":["Ironblood"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":639},"expected":{"expression":0.485145,"events":["surge +19%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":640},"expected":{"expression":0.491265,"events":["surge +19%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":641},"expected":{"expression":0.483782,"events":["surge +18%","GENE: Quickstep (+Celerity)"],"gene_bonus":{"Celerity":0.12},"genes":["Quickstep"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":642},"expected":{"expression":0.508945,"events":["surge +21%","GENE: Venomous (+Bane)"],"gene_bonus":{"Bane":0.12},"genes":["Venomous"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":643},"expected":{"expression":0.406584,"events":["surge +11%","GENE: Venomous (+Bane)"],"gene_bonus":{"Bane":0.12},"genes":["Venomous"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":644},"expected":{"expression":0.487341,"events":["surge +19%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":645},"expected":{"expression":0.504818,"events":["surge +20%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":646},"expected":{"expression":0.504797,"events":["surge +20%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":647},"expected":{"expression":0.421396,"events":["surge +12%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":648},"expected":{"expression":0.461746,"events":["surge +16%","GENE: Venomous (+Bane)"],"gene_bonus":{"Bane":0.12},"genes":["Venomous"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":649},"expected":{"expression":0.502744,"events":["surge +20%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":650},"expected":{"expression":0.51956,"events":["surge +22%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":651},"expected":{"expression":0.468456,"events":["surge +17%","GENE: Warded Soul (+Ward)"],"gene_bonus":{"Ward":0.12},"genes":["Warded Soul"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":652},"expected":{"expression":0.50673,"events":["surge +21%","GENE: Frenzy (+Spike)"],"gene_bonus":{"Spike":0.12},"genes":["Frenzy"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":653},"expected":{"expression":0.440149,"events":["surge +14%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":654},"expected":{"expression":0.43853,"events":["surge +14%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":655},"expected":{"expression":0.510938,"events":["surge +21%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":656},"expected":{"expression":0.497915,"events":["surge +20%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":657},"expected":{"expression":0.514296,"events":["surge +21%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":658},"expected":{"expression":0.484314,"events":["surge +18%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":659},"expected":{"expression":0.428347,"events":["surge +13%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":660},"expected":{"expression":0.403343,"events":["surge +10%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":661},"expected":{"expression":0.51655,"events":["surge +22%","GENE: Quickstep (+Celerity)"],"gene_bonus":{"Celerity":0.12},"genes":["Quickstep"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":662},"expected":{"expression":0.477227,"events":["surge +18%","GENE: Warded Soul (+Ward)","BRANCH"],"gene_bonus":{"Ward":0.12},"genes":["Warded Soul"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":663},"expected":{"expression":0.434643,"events":["surge +13%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":664},"expected":{"expression":0.492739,"events":["surge +19%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":665},"expected":{"expression":0.473449,"events":["surge +17%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":666},"expected":{"expression":0.50256,"events":["surge +20%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":667},"expected":{"expression":0.43317,"events":["surge +13%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":668},"expected":{"expression":0.454318,"events":["surge +15%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":669},"expected":{"expression":0.437031,"events":["surge +14%","GENE: Quickstep (+Celerity)"],"gene_bonus":{"Celerity":0.12},"genes":["Quickstep"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":670},"expected":{"expression":0.432486,"events":["surge +13%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":671},"expected":{"expression":0.409545,"events":["surge +11%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":672},"expected":{"expression":0.440017,"events":["surge +14%","GENE: Frenzy (+Spike)"],"gene_bonus":{"Spike":0.12},"genes":["Frenzy"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":673},"expected":{"expression":0.499193,"events":["surge +20%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":674},"expected":{"expression":0.513239,"events":["surge +21%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":675},"expected":{"expression":0.400562,"events":["surge +10%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":676},"expected":{"expression":0.476072,"events":["surge +18%","GENE: Frenzy (+Spike)"],"gene_bonus":{"Spike":0.12},"genes":["Frenzy"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":677},"expected":{"expression":0.405808,"events":["surge +11%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":678},"expected":{"expression":0.450982,"events":["surge +15%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":679},"expected":{"expression":0.510336,"events":["surge +21%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":680},"expected":{"expression":0.422289,"events":["surge +12%","GENE: Warded Soul (+Ward)"],"gene_bonus":{"Ward":0.12},"genes":["Warded Soul"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":681},"expected":{"expression":0.420653,"events":["surge +12%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":682},"expected":{"expression":0.492724,"events":["surge +19%","GENE: Verdant (+Vitality)"],"gene_bonus":{"Vitality":0.12},"genes":["Verdant"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":683},"expected":{"expression":0.510119,"events":["surge +21%","GENE: Ironblood (+Bulk)"],"gene_bonus":{"Bulk":0.12},"genes":["Ironblood"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":684},"expected":{"expression":0.46801,"events":["surge +17%","GENE: Venomous (+Bane)"],"gene_bonus":{"Bane":0.12},"genes":["Venomous"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":685},"expected":{"expression":0.434203,"events":["surge +13%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":686},"expected":{"expression":0.47538,"events":["surge +18%","GENE: Venomous (+Bane)"],"gene_bonus":{"Bane":0.12},"genes":["Venomous"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":687},"expected":{"expression":0.401402,"events":["surge +10%","GENE: Quickstep (+Celerity)"],"gene_bonus":{"Celerity":0.12},"genes":["Quickstep"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":688},"expected":{"expression":0.480745,"events":["surge +18%","GENE: Warded Soul (+Ward)"],"gene_bonus":{"Ward":0.12},"genes":["Warded Soul"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":689},"expected":{"expression":0.518638,"events":["surge +22%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":690},"expected":{"expression":0.467904,"events":["surge +17%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":691},"expected":{"expression":0.443804,"events":["surge +14%","GENE: Frenzy (+Spike)"],"gene_bonus":{"Spike":0.12},"genes":["Frenzy"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":692},"expected":{"expression":0.448374,"events":["surge +15%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":693},"expected":{"expression":0.407553,"events":["surge +11%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":694},"expected":{"expression":0.46954,"events":["surge +17%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":695},"expected":{"expression":0.516222,"events":["surge +22%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":696},"expected":{"expression":0.495578,"events":["surge +20%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":697},"expected":{"expression":0.481558,"events":["surge +18%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":698},"expected":{"expression":0.500117,"events":["surge +20%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":699},"expected":{"expression":0.501189,"events":["surge +20%","GENE: Verdant (+Vitality)"],"gene_bonus":{"Vitality":0.12},"genes":["Verdant"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":700},"expected":{"expression":0.490156,"events":["surge +19%","GENE: Quickstep (+Celerity)"],"gene_bonus":{"Celerity":0.12},"genes":["Quickstep"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":701},"expected":{"expression":0.473083,"events":["surge +17%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":702},"expected":{"expression":0.499795,"events":["surge +20%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":703},"expected":{"expression":0.427489,"events":["surge +13%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":704},"expected":{"expression":0.417019,"events":["surge +12%","GENE: Frenzy (+Spike)","BRANCH"],"gene_bonus":{"Spike":0.12},"genes":["Frenzy"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":705},"expected":{"expression":0.476372,"events":["surge +18%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":706},"expected":{"expression":0.510027,"events":["surge +21%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":707},"expected":{"expression":0.519271,"events":["surge +22%","GENE: Verdant (+Vitality)"],"gene_bonus":{"Vitality":0.12},"genes":["Verdant"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":708},"expected":{"expression":0.500174,"events":["surge +20%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":709},"expected":{"expression":0.446407,"events":["surge +15%","GENE: Frenzy (+Spike)","BRANCH"],"gene_bonus":{"Spike":0.12},"genes":["Frenzy"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":710},"expected":{"expression":0.454796,"events":["surge +15%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":711},"expected":{"expression":0.443581,"events":["surge +14%","GENE: Verdant (+Vitality)","BRANCH"],"gene_bonus":{"Vitality":0.12},"genes":["Verdant"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":712},"expected":{"expression":0.503325,"events":["surge +20%","GENE: Frenzy (+Spike)","BRANCH"],"gene_bonus":{"Spike":0.12},"genes":["Frenzy"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":713},"expected":{"expression":0.412482,"events":["surge +11%","GENE: Quickstep (+Celerity)"],"gene_bonus":{"Celerity":0.12},"genes":["Quickstep"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":714},"expected":{"expression":0.415362,"events":["surge +12%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":715},"expected":{"expression":0.46421,"events":["surge +16%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":716},"expected":{"expression":0.42066,"events":["surge +12%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":717},"expected":{"expression":0.519485,"events":["surge +22%","GENE: Frenzy (+Spike)"],"gene_bonus":{"Spike":0.12},"genes":["Frenzy"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":718},"expected":{"expression":0.41963,"events":["surge +12%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":719},"expected":{"expression":0.477533,"events":["surge +18%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":720},"expected":{"expression":0.446035,"events":["surge +15%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":721},"expected":{"expression":0.473765,"events":["surge +17%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":722},"expected":{"expression":0.442368,"events":["surge +14%","GENE: Quickstep (+Celerity)"],"gene_bonus":{"Celerity":0.12},"genes":["Quickstep"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":723},"expected":{"expression":0.492555,"events":["surge +19%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":724},"expected":{"expression":0.400508,"events":["surge +10%","GENE: Verdant (+Vitality)"],"gene_bonus":{"Vitality":0.12},"genes":["Verdant"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":725},"expected":{"expression":0.422985,"events":["surge +12%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":726},"expected":{"expression":0.493696,"events":["surge +19%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":727},"expected":{"expression":0.446168,"events":["surge +15%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":728},"expected":{"expression":0.494893,"events":["surge +19%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":729},"expected":{"expression":0.469469,"events":["surge +17%","GENE: Venomous (+Bane)","BRANCH"],"gene_bonus":{"Bane":0.12},"genes":["Venomous"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":730},"expected":{"expression":0.504123,"events":["surge +20%","GENE: Quickstep (+Celerity)"],"gene_bonus":{"Celerity":0.12},"genes":["Quickstep"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":731},"expected":{"expression":0.425397,"events":["surge +13%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":732},"expected":{"expression":0.402193,"events":["surge +10%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":733},"expected":{"expression":0.433708,"events":["surge +13%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":734},"expected":{"expression":0.506673,"events":["surge +21%","GENE: Verdant (+Vitality)","BRANCH"],"gene_bonus":{"Vitality":0.12},"genes":["Verdant"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":735},"expected":{"expression":0.442161,"events":["surge +14%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":736},"expected":{"expression":0.467103,"events":["surge +17%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":737},"expected":{"expression":0.451568,"events":["surge +15%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":738},"expected":{"expression":0.499027,"events":["surge +20%","GENE: Frenzy (+Spike)"],"gene_bonus":{"Spike":0.12},"genes":["Frenzy"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":739},"expected":{"expression":0.444468,"events":["surge +14%","GENE: Ironblood (+Bulk)","BRANCH"],"gene_bonus":{"Bulk":0.12},"genes":["Ironblood"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":740},"expected":{"expression":0.453469,"events":["surge +15%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":741},"expected":{"expression":0.466599,"events":["surge +17%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":742},"expected":{"expression":0.451019,"events":["surge +15%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":743},"expected":{"expression":0.451358,"events":["surge +15%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":744},"expected":{"expression":0.445615,"events":["surge +15%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":745},"expected":{"expression":0.439917,"events":["surge +14%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":746},"expected":{"expression":0.418772,"events":["surge +12%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":747},"expected":{"expression":0.4611,"events":["surge +16%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":748},"expected":{"expression":0.427162,"events":["surge +13%","GENE: Venomous (+Bane)","BRANCH"],"gene_bonus":{"Bane":0.12},"genes":["Venomous"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":749},"expected":{"expression":0.460864,"events":["surge +16%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":750},"expected":{"expression":0.495153,"events":["surge +20%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":751},"expected":{"expression":0.507182,"events":["surge +21%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":752},"expected":{"expression":0.458676,"events":["surge +16%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":753},"expected":{"expression":0.412202,"events":["surge +11%","GENE: Verdant (+Vitality)"],"gene_bonus":{"Vitality":0.12},"genes":["Verdant"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":754},"expected":{"expression":0.455392,"events":["surge +16%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":755},"expected":{"expression":0.443899,"events":["surge +14%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":756},"expected":{"expression":0.509173,"events":["surge +21%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":757},"expected":{"expression":0.458596,"events":["surge +16%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":758},"expected":{"expression":0.456363,"events":["surge +16%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":759},"expected":{"expression":0.417568,"events":["surge +12%","GENE: Venomous (+Bane)","BRANCH"],"gene_bonus":{"Bane":0.12},"genes":["Venomous"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":760},"expected":{"expression":0.444748,"events":["surge +14%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":761},"expected":{"expression":0.447719,"events":["surge +15%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":762},"expected":{"expression":0.424665,"events":["surge +12%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":763},"expected":{"expression":0.45255,"events":["surge +15%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":764},"expected":{"expression":0.502359,"events":["surge +20%","GENE: Venomous (+Bane)"],"gene_bonus":{"Bane":0.12},"genes":["Venomous"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":765},"expected":{"expression":0.407694,"events":["surge +11%","GENE: Ironblood (+Bulk)"],"gene_bonus":{"Bulk":0.12},"genes":["Ironblood"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":766},"expected":{"expression":0.494769,"events":["surge +19%","GENE: Quickstep (+Celerity)"],"gene_bonus":{"Celerity":0.12},"genes":["Quickstep"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":767},"expected":{"expression":0.455321,"events":["surge +16%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":768},"expected":{"expression":0.401418,"events":["surge +10%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":769},"expected":{"expression":0.404756,"events":["surge +10%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":770},"expected":{"expression":0.445796,"events":["surge +15%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":771},"expected":{"expression":0.489554,"events":["surge +19%","GENE: Quickstep (+Celerity)"],"gene_bonus":{"Celerity":0.12},"genes":["Quickstep"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":772},"expected":{"expression":0.509033,"events":["surge +21%","GENE: Venomous (+Bane)","BRANCH"],"gene_bonus":{"Bane":0.12},"genes":["Venomous"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":773},"expected":{"expression":0.504114,"events":["surge +20%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":774},"expected":{"expression":0.459175,"events":["surge +16%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":775},"expected":{"expression":0.412219,"events":["surge +11%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":776},"expected":{"expression":0.519215,"events":["surge +22%","GENE: Quickstep (+Celerity)"],"gene_bonus":{"Celerity":0.12},"genes":["Quickstep"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":777},"expected":{"expression":0.49679,"events":["surge +20%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":778},"expected":{"expression":0.415195,"events":["surge +12%","GENE: Warded Soul (+Ward)"],"gene_bonus":{"Ward":0.12},"genes":["Warded Soul"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":779},"expected":{"expression":0.505165,"events":["surge +21%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":780},"expected":{"expression":0.511997,"events":["surge +21%","GENE: Frenzy (+Spike)"],"gene_bonus":{"Spike":0.12},"genes":["Frenzy"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":781},"expected":{"expression":0.511398,"events":["surge +21%","GENE: Warded Soul (+Ward)"],"gene_bonus":{"Ward":0.12},"genes":["Warded Soul"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":782},"expected":{"expression":0.425969,"events":["surge +13%","GENE: Ironblood (+Bulk)"],"gene_bonus":{"Bulk":0.12},"genes":["Ironblood"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":783},"expected":{"expression":0.412799,"events":["surge +11%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":784},"expected":{"expression":0.469257,"events":["surge +17%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":785},"expected":{"expression":0.454984,"events":["surge +15%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":786},"expected":{"expression":0.4223,"events":["surge +12%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":787},"expected":{"expression":0.511612,"events":["surge +21%","GENE: Warded Soul (+Ward)"],"gene_bonus":{"Ward":0.12},"genes":["Warded Soul"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":788},"expected":{"expression":0.485237,"events":["surge +19%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":789},"expected":{"expression":0.48455,"events":["surge +18%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":790},"expected":{"expression":0.472941,"events":["surge +17%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":791},"expected":{"expression":0.492902,"events":["surge +19%","GENE: Frenzy (+Spike)"],"gene_bonus":{"Spike":0.12},"genes":["Frenzy"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":792},"expected":{"expression":0.453638,"events":["surge +15%","GENE: Verdant (+Vitality)"],"gene_bonus":{"Vitality":0.12},"genes":["Verdant"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":793},"expected":{"expression":0.44506,"events":["surge +15%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":794},"expected":{"expression":0.441613,"events":["surge +14%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":795},"expected":{"expression":0.441875,"events":["surge +14%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":796},"expected":{"expression":0.406932,"events":["surge +11%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":797},"expected":{"expression":0.478492,"events":["surge +18%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":798},"expected":{"expression":0.402919,"events":["surge +10%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":799},"expected":{"expression":0.498822,"events":["surge +20%","GENE: Frenzy (+Spike)"],"gene_bonus":{"Spike":0.12},"genes":["Frenzy"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":800},"expected":{"expression":0.408032,"events":["surge +11%","GENE: Verdant (+Vitality)","BRANCH"],"gene_bonus":{"Vitality":0.12},"genes":["Verdant"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":801},"expected":{"expression":0.480927,"events":["surge +18%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":802},"expected":{"expression":0.484916,"events":["surge +18%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":803},"expected":{"expression":0.478432,"events":["surge +18%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":804},"expected":{"expression":0.450666,"events":["surge +15%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":805},"expected":{"expression":0.420584,"events":["surge +12%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":806},"expected":{"expression":0.446419,"events":["surge +15%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":807},"expected":{"expression":0.430551,"events":["surge +13%","GENE: Warded Soul (+Ward)"],"gene_bonus":{"Ward":0.12},"genes":["Warded Soul"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":808},"expected":{"expression":0.414132,"events":["surge +11%","GENE: Warded Soul (+Ward)"],"gene_bonus":{"Ward":0.12},"genes":["Warded Soul"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":809},"expected":{"expression":0.486811,"events":["surge +19%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":810},"expected":{"expression":0.442143,"events":["surge +14%","GENE: Verdant (+Vitality)"],"gene_bonus":{"Vitality":0.12},"genes":["Verdant"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":811},"expected":{"expression":0.430134,"events":["surge +13%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":812},"expected":{"expression":0.407603,"events":["surge +11%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":813},"expected":{"expression":0.462381,"events":["surge +16%","GENE: Warded Soul (+Ward)"],"gene_bonus":{"Ward":0.12},"genes":["Warded Soul"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":814},"expected":{"expression":0.400528,"events":["surge +10%","GENE: Verdant (+Vitality)"],"gene_bonus":{"Vitality":0.12},"genes":["Verdant"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":815},"expected":{"expression":0.509252,"events":["surge +21%","GENE: Quickstep (+Celerity)"],"gene_bonus":{"Celerity":0.12},"genes":["Quickstep"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":816},"expected":{"expression":0.412144,"events":["surge +11%","GENE: Ironblood (+Bulk)"],"gene_bonus":{"Bulk":0.12},"genes":["Ironblood"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":817},"expected":{"expression":0.500976,"events":["surge +20%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":818},"expected":{"expression":0.499851,"events":["surge +20%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":819},"expected":{"expression":0.45654,"events":["surge +16%","GENE: Venomous (+Bane)"],"gene_bonus":{"Bane":0.12},"genes":["Venomous"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":820},"expected":{"expression":0.441198,"events":["surge +14%","GENE: Quickstep (+Celerity)"],"gene_bonus":{"Celerity":0.12},"genes":["Quickstep"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":821},"expected":{"expression":0.439726,"events":["surge +14%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":822},"expected":{"expression":0.480455,"events":["surge +18%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":823},"expected":{"expression":0.47576,"events":["surge +18%","GENE: Ironblood (+Bulk)"],"gene_bonus":{"Bulk":0.12},"genes":["Ironblood"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":824},"expected":{"expression":0.504763,"events":["surge +20%","GENE: Ironblood (+Bulk)"],"gene_bonus":{"Bulk":0.12},"genes":["Ironblood"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":825},"expected":{"expression":0.477329,"events":["surge +18%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":826},"expected":{"expression":0.435566,"events":["surge +14%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":827},"expected":{"expression":0.402722,"events":["surge +10%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":828},"expected":{"expression":0.463726,"events":["surge +16%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":829},"expected":{"expression":0.446568,"events":["surge +15%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":830},"expected":{"expression":0.423406,"events":["surge +12%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":831},"expected":{"expression":0.450953,"events":["surge +15%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":832},"expected":{"expression":0.497689,"events":["surge +20%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":833},"expected":{"expression":0.483488,"events":["surge +18%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":834},"expected":{"expression":0.463295,"events":["surge +16%","GENE: Venomous (+Bane)","BRANCH"],"gene_bonus":{"Bane":0.12},"genes":["Venomous"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":835},"expected":{"expression":0.516047,"events":["surge +22%","GENE: Verdant (+Vitality)","BRANCH"],"gene_bonus":{"Vitality":0.12},"genes":["Verdant"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":836},"expected":{"expression":0.478251,"events":["surge +18%","GENE: Frenzy (+Spike)"],"gene_bonus":{"Spike":0.12},"genes":["Frenzy"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":837},"expected":{"expression":0.477829,"events":["surge +18%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":838},"expected":{"expression":0.490813,"events":["surge +19%","GENE: Frenzy (+Spike)"],"gene_bonus":{"Spike":0.12},"genes":["Frenzy"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":839},"expected":{"expression":0.436007,"events":["surge +14%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":840},"expected":{"expression":0.421989,"events":["surge +12%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":841},"expected":{"expression":0.401307,"events":["surge +10%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":842},"expected":{"expression":0.500804,"events":["surge +20%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":843},"expected":{"expression":0.432078,"events":["surge +13%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":844},"expected":{"expression":0.483603,"events":["surge +18%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":845},"expected":{"expression":0.416072,"events":["surge +12%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":846},"expected":{"expression":0.517446,"events":["surge +22%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":847},"expected":{"expression":0.511402,"events":["surge +21%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":848},"expected":{"expression":0.494975,"events":["surge +19%","GENE: Verdant (+Vitality)","BRANCH"],"gene_bonus":{"Vitality":0.12},"genes":["Verdant"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":849},"expected":{"expression":0.509023,"events":["surge +21%","GENE: Warded Soul (+Ward)"],"gene_bonus":{"Ward":0.12},"genes":["Warded Soul"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":850},"expected":{"expression":0.474563,"events":["surge +17%","GENE: Quickstep (+Celerity)"],"gene_bonus":{"Celerity":0.12},"genes":["Quickstep"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":851},"expected":{"expression":0.519753,"events":["surge +22%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":852},"expected":{"expression":0.509903,"events":["surge +21%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":853},"expected":{"expression":0.472963,"events":["surge +17%","GENE: Verdant (+Vitality)"],"gene_bonus":{"Vitality":0.12},"genes":["Verdant"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":854},"expected":{"expression":0.430371,"events":["surge +13%","GENE: Frenzy (+Spike)"],"gene_bonus":{"Spike":0.12},"genes":["Frenzy"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":855},"expected":{"expression":0.51252,"events":["surge +21%","GENE: Ironblood (+Bulk)"],"gene_bonus":{"Bulk":0.12},"genes":["Ironblood"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":856},"expected":{"expression":0.454088,"events":["surge +15%","GENE: Warded Soul (+Ward)"],"gene_bonus":{"Ward":0.12},"genes":["Warded Soul"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":857},"expected":{"expression":0.454822,"events":["surge +15%","GENE: Frenzy (+Spike)"],"gene_bonus":{"Spike":0.12},"genes":["Frenzy"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":858},"expected":{"expression":0.485104,"events":["surge +19%","GENE: Venomous (+Bane)","BRANCH"],"gene_bonus":{"Bane":0.12},"genes":["Venomous"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":859},"expected":{"expression":0.499128,"events":["surge +20%","GENE: Quickstep (+Celerity)"],"gene_bonus":{"Celerity":0.12},"genes":["Quickstep"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":860},"expected":{"expression":0.503005,"events":["surge +20%","GENE: Quickstep (+Celerity)"],"gene_bonus":{"Celerity":0.12},"genes":["Quickstep"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":861},"expected":{"expression":0.516947,"events":["surge +22%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":862},"expected":{"expression":0.45628,"events":["surge +16%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":863},"expected":{"expression":0.516596,"events":["surge +22%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":864},"expected":{"expression":0.402838,"events":["surge +10%","GENE: Quickstep (+Celerity)"],"gene_bonus":{"Celerity":0.12},"genes":["Quickstep"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":865},"expected":{"expression":0.403532,"events":["surge +10%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":866},"expected":{"expression":0.483974,"events":["surge +18%","GENE: Verdant (+Vitality)"],"gene_bonus":{"Vitality":0.12},"genes":["Verdant"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":867},"expected":{"expression":0.44822,"events":["surge +15%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":868},"expected":{"expression":0.477148,"events":["surge +18%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":869},"expected":{"expression":0.487874,"events":["surge +19%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":870},"expected":{"expression":0.45501,"events":["surge +16%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":871},"expected":{"expression":0.427767,"events":["surge +13%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":872},"expected":{"expression":0.465015,"events":["surge +17%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":873},"expected":{"expression":0.409205,"events":["surge +11%","GENE: Verdant (+Vitality)"],"gene_bonus":{"Vitality":0.12},"genes":["Verdant"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":874},"expected":{"expression":0.432242,"events":["surge +13%","GENE: Ironblood (+Bulk)"],"gene_bonus":{"Bulk":0.12},"genes":["Ironblood"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":875},"expected":{"expression":0.413184,"events":["surge +11%","GENE: Ironblood (+Bulk)","BRANCH"],"gene_bonus":{"Bulk":0.12},"genes":["Ironblood"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":876},"expected":{"expression":0.513578,"events":["surge +21%","GENE: Venomous (+Bane)"],"gene_bonus":{"Bane":0.12},"genes":["Venomous"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":877},"expected":{"expression":0.432584,"events":["surge +13%","GENE: Ironblood (+Bulk)"],"gene_bonus":{"Bulk":0.12},"genes":["Ironblood"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":878},"expected":{"expression":0.457315,"events":["surge +16%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":879},"expected":{"expression":0.470026,"events":["surge +17%","GENE: Venomous (+Bane)"],"gene_bonus":{"Bane":0.12},"genes":["Venomous"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":880},"expected":{"expression":0.424648,"events":["surge +12%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":881},"expected":{"expression":0.423796,"events":["surge +12%","GENE: Ironblood (+Bulk)"],"gene_bonus":{"Bulk":0.12},"genes":["Ironblood"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":882},"expected":{"expression":0.464132,"events":["surge +16%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":883},"expected":{"expression":0.414586,"events":["surge +11%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":884},"expected":{"expression":0.469589,"events":["surge +17%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":885},"expected":{"expression":0.429516,"events":["surge +13%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":886},"expected":{"expression":0.419722,"events":["surge +12%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":887},"expected":{"expression":0.401798,"events":["surge +10%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":888},"expected":{"expression":0.41764,"events":["surge +12%","GENE: Verdant (+Vitality)","BRANCH"],"gene_bonus":{"Vitality":0.12},"genes":["Verdant"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":889},"expected":{"expression":0.442585,"events":["surge +14%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":890},"expected":{"expression":0.468102,"events":["surge +17%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":891},"expected":{"expression":0.404253,"events":["surge +10%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":892},"expected":{"expression":0.410358,"events":["surge +11%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":893},"expected":{"expression":0.497653,"events":["surge +20%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":894},"expected":{"expression":0.513486,"events":["surge +21%","GENE: Verdant (+Vitality)"],"gene_bonus":{"Vitality":0.12},"genes":["Verdant"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":895},"expected":{"expression":0.495755,"events":["surge +20%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":896},"expected":{"expression":0.510627,"events":["surge +21%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":897},"expected":{"expression":0.413238,"events":["surge +11%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":898},"expected":{"expression":0.430877,"events":["surge +13%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":899},"expected":{"expression":0.403714,"events":["surge +10%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":900},"expected":{"expression":0.412054,"events":["surge +11%","GENE: Frenzy (+Spike)"],"gene_bonus":{"Spike":0.12},"genes":["Frenzy"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":901},"expected":{"expression":0.498416,"events":["surge +20%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":902},"expected":{"expression":0.466057,"events":["surge +17%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":903},"expected":{"expression":0.440532,"events":["surge +14%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":904},"expected":{"expression":0.42976,"events":["surge +13%","GENE: Frenzy (+Spike)","BRANCH"],"gene_bonus":{"Spike":0.12},"genes":["Frenzy"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":905},"expected":{"expression":0.470754,"events":["surge +17%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":906},"expected":{"expression":0.422744,"events":["surge +12%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":907},"expected":{"expression":0.405614,"events":["surge +11%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":908},"expected":{"expression":0.485177,"events":["surge +19%","GENE: Verdant (+Vitality)"],"gene_bonus":{"Vitality":0.12},"genes":["Verdant"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":909},"expected":{"expression":0.432914,"events":["surge +13%","GENE: Frenzy (+Spike)","BRANCH"],"gene_bonus":{"Spike":0.12},"genes":["Frenzy"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":910},"expected":{"expression":0.45794,"events":["surge +16%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":911},"expected":{"expression":0.464207,"events":["surge +16%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":912},"expected":{"expression":0.431478,"events":["surge +13%","GENE: Verdant (+Vitality)"],"gene_bonus":{"Vitality":0.12},"genes":["Verdant"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":913},"expected":{"expression":0.413273,"events":["surge +11%","GENE: Venomous (+Bane)","BRANCH"],"gene_bonus":{"Bane":0.12},"genes":["Venomous"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":914},"expected":{"expression":0.519308,"events":["surge +22%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":915},"expected":{"expression":0.435788,"events":["surge +14%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":916},"expected":{"expression":0.421056,"events":["surge +12%","GENE: Ironblood (+Bulk)"],"gene_bonus":{"Bulk":0.12},"genes":["Ironblood"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":917},"expected":{"expression":0.446185,"events":["surge +15%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":918},"expected":{"expression":0.485817,"events":["surge +19%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":919},"expected":{"expression":0.417731,"events":["surge +12%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":920},"expected":{"expression":0.479785,"events":["surge +18%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":921},"expected":{"expression":0.43585,"events":["surge +14%","GENE: Quickstep (+Celerity)"],"gene_bonus":{"Celerity":0.12},"genes":["Quickstep"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":922},"expected":{"expression":0.442467,"events":["surge +14%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":923},"expected":{"expression":0.452492,"events":["surge +15%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":924},"expected":{"expression":0.501911,"events":["surge +20%","GENE: Ironblood (+Bulk)"],"gene_bonus":{"Bulk":0.12},"genes":["Ironblood"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":925},"expected":{"expression":0.483034,"events":["surge +18%","GENE: Frenzy (+Spike)"],"gene_bonus":{"Spike":0.12},"genes":["Frenzy"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":926},"expected":{"expression":0.469401,"events":["surge +17%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":927},"expected":{"expression":0.496885,"events":["surge +20%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":928},"expected":{"expression":0.412417,"events":["surge +11%","GENE: Ironblood (+Bulk)"],"gene_bonus":{"Bulk":0.12},"genes":["Ironblood"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":929},"expected":{"expression":0.518442,"events":["surge +22%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":930},"expected":{"expression":0.4094,"events":["surge +11%","GENE: Ironblood (+Bulk)"],"gene_bonus":{"Bulk":0.12},"genes":["Ironblood"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":931},"expected":{"expression":0.406659,"events":["surge +11%","GENE: Frenzy (+Spike)"],"gene_bonus":{"Spike":0.12},"genes":["Frenzy"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":932},"expected":{"expression":0.471239,"events":["surge +17%","GENE: Ironblood (+Bulk)"],"gene_bonus":{"Bulk":0.12},"genes":["Ironblood"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":933},"expected":{"expression":0.446223,"events":["surge +15%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":934},"expected":{"expression":0.49918,"events":["surge +20%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":935},"expected":{"expression":0.478554,"events":["surge +18%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":936},"expected":{"expression":0.473433,"events":["surge +17%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":937},"expected":{"expression":0.41407,"events":["surge +11%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":938},"expected":{"expression":0.490371,"events":["surge +19%","GENE: Quickstep (+Celerity)","BRANCH"],"gene_bonus":{"Celerity":0.12},"genes":["Quickstep"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":939},"expected":{"expression":0.446046,"events":["surge +15%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":940},"expected":{"expression":0.50011,"events":["surge +20%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":941},"expected":{"expression":0.42524,"events":["surge +13%","GENE: Verdant (+Vitality)","BRANCH"],"gene_bonus":{"Vitality":0.12},"genes":["Verdant"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":942},"expected":{"expression":0.451808,"events":["surge +15%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":943},"expected":{"expression":0.473858,"events":["surge +17%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":944},"expected":{"expression":0.417654,"events":["surge +12%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":945},"expected":{"expression":0.440313,"events":["surge +14%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":946},"expected":{"expression":0.446663,"events":["surge +15%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":947},"expected":{"expression":0.506656,"events":["surge +21%","GENE: Quickstep (+Celerity)"],"gene_bonus":{"Celerity":0.12},"genes":["Quickstep"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":948},"expected":{"expression":0.427359,"events":["surge +13%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":949},"expected":{"expression":0.487612,"events":["surge +19%","GENE: Frenzy (+Spike)"],"gene_bonus":{"Spike":0.12},"genes":["Frenzy"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":950},"expected":{"expression":0.457114,"events":["surge +16%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":951},"expected":{"expression":0.477281,"events":["surge +18%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":952},"expected":{"expression":0.468915,"events":["surge +17%","GENE: Warded Soul (+Ward)","BRANCH"],"gene_bonus":{"Ward":0.12},"genes":["Warded Soul"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":953},"expected":{"expression":0.513766,"events":["surge +21%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":954},"expected":{"expression":0.470442,"events":["surge +17%","GENE: Ironblood (+Bulk)","BRANCH"],"gene_bonus":{"Bulk":0.12},"genes":["Ironblood"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":955},"expected":{"expression":0.417034,"events":["surge +12%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":956},"expected":{"expression":0.442739,"events":["surge +14%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":957},"expected":{"expression":0.451121,"events":["surge +15%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":958},"expected":{"expression":0.461691,"events":["surge +16%","GENE: Ironblood (+Bulk)"],"gene_bonus":{"Bulk":0.12},"genes":["Ironblood"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":959},"expected":{"expression":0.442776,"events":["surge +14%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":960},"expected":{"expression":0.474761,"events":["surge +17%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":961},"expected":{"expression":0.515536,"events":["surge +22%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":962},"expected":{"expression":0.430946,"events":["surge +13%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":963},"expected":{"expression":0.474115,"events":["surge +17%","GENE: Verdant (+Vitality)"],"gene_bonus":{"Vitality":0.12},"genes":["Verdant"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":964},"expected":{"expression":0.426152,"events":["surge +13%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":965},"expected":{"expression":0.410863,"events":["surge +11%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":966},"expected":{"expression":0.412739,"events":["surge +11%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":967},"expected":{"expression":0.447119,"events":["surge +15%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":968},"expected":{"expression":0.403003,"events":["surge +10%","GENE: Venomous (+Bane)"],"gene_bonus":{"Bane":0.12},"genes":["Venomous"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":969},"expected":{"expression":0.503194,"events":["surge +20%","GENE: Frenzy (+Spike)"],"gene_bonus":{"Spike":0.12},"genes":["Frenzy"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":970},"expected":{"expression":0.508267,"events":["surge +21%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":971},"expected":{"expression":0.490344,"events":["surge +19%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":972},"expected":{"expression":0.427471,"events":["surge +13%","GENE: Warded Soul (+Ward)"],"gene_bonus":{"Ward":0.12},"genes":["Warded Soul"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":973},"expected":{"expression":0.468771,"events":["surge +17%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":974},"expected":{"expression":0.459571,"events":["surge +16%","GENE: Quickstep (+Celerity)"],"gene_bonus":{"Celerity":0.12},"genes":["Quickstep"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":975},"expected":{"expression":0.476672,"events":["surge +18%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":976},"expected":{"expression":0.443536,"events":["surge +14%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":977},"expected":{"expression":0.436988,"events":["surge +14%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":978},"expected":{"expression":0.417041,"events":["surge +12%","GENE: Warded Soul (+Ward)"],"gene_bonus":{"Ward":0.12},"genes":["Warded Soul"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":979},"expected":{"expression":0.471021,"events":["surge +17%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":980},"expected":{"expression":0.482095,"events":["surge +18%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":981},"expected":{"expression":0.433527,"events":["surge +13%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":982},"expected":{"expression":0.407285,"events":["surge +11%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":983},"expected":{"expression":0.517849,"events":["surge +22%","GENE: Warded Soul (+Ward)"],"gene_bonus":{"Ward":0.12},"genes":["Warded Soul"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":984},"expected":{"expression":0.49632,"events":["surge +20%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":985},"expected":{"expression":0.505751,"events":["surge +21%","GENE: Venomous (+Bane)","BRANCH"],"gene_bonus":{"Bane":0.12},"genes":["Venomous"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":986},"expected":{"expression":0.422325,"events":["surge +12%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":987},"expected":{"expression":0.442268,"events":["surge +14%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":988},"expected":{"expression":0.49786,"events":["surge +20%","GENE: Verdant (+Vitality)"],"gene_bonus":{"Vitality":0.12},"genes":["Verdant"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":989},"expected":{"expression":0.460181,"events":["surge +16%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":990},"expected":{"expression":0.498561,"events":["surge +20%","GENE: Frenzy (+Spike)","BRANCH"],"gene_bonus":{"Spike":0.12},"genes":["Frenzy"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":991},"expected":{"expression":0.499243,"events":["surge +20%","GENE: Ironblood (+Bulk)"],"gene_bonus":{"Bulk":0.12},"genes":["Ironblood"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":992},"expected":{"expression":0.477078,"events":["surge +18%","GENE: Venomous (+Bane)"],"gene_bonus":{"Bane":0.12},"genes":["Venomous"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":993},"expected":{"expression":0.457815,"events":["surge +16%","BRANCH"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":994},"expected":{"expression":0.44499,"events":["surge +14%","GENE: Ironblood (+Bulk)"],"gene_bonus":{"Bulk":0.12},"genes":["Ironblood"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":995},"expected":{"expression":0.402502,"events":["surge +10%","GENE: Warded Soul (+Ward)"],"gene_bonus":{"Ward":0.12},"genes":["Warded Soul"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":996},"expected":{"expression":0.42755,"events":["surge +13%","GENE: Venomous (+Bane)"],"gene_bonus":{"Bane":0.12},"genes":["Venomous"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":997},"expected":{"expression":0.480069,"events":["surge +18%","GENE: Ironblood (+Bulk)"],"gene_bonus":{"Bulk":0.12},"genes":["Ironblood"]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":998},"expected":{"expression":0.443466,"events":["surge +14%"],"gene_bonus":{},"genes":[]}}
+{"fn":"awaken","inputs":{"expression":0.3,"gene_bonus":{},"genes":[],"seed":999},"expected":{"expression":0.441276,"events":["surge +14%","GENE: Ironblood (+Bulk)"],"gene_bonus":{"Bulk":0.12},"genes":["Ironblood"]}}
+{"fn":"current_stats","inputs":{"ceiling":{"Bulk":100,"Celerity":80,"Ward":60,"Spike":140,"Vitality":90,"Bane":110,"Luck":40,"Focus":70},"expression":0.3,"gene_bonus":{}},"expected":{"Bulk":30,"Celerity":24,"Ward":18,"Spike":42,"Vitality":27,"Bane":33,"Luck":12,"Focus":21}}
+{"fn":"current_stats","inputs":{"ceiling":{"Bulk":100,"Celerity":80,"Ward":60,"Spike":140,"Vitality":90,"Bane":110,"Luck":40,"Focus":70},"expression":0.3,"gene_bonus":{"Spike":0.12}},"expected":{"Bulk":30,"Celerity":24,"Ward":18,"Spike":59,"Vitality":27,"Bane":33,"Luck":12,"Focus":21}}
+{"fn":"current_stats","inputs":{"ceiling":{"Bulk":100,"Celerity":80,"Ward":60,"Spike":140,"Vitality":90,"Bane":110,"Luck":40,"Focus":70},"expression":0.3,"gene_bonus":{"Bulk":0.24,"Bane":0.12}},"expected":{"Bulk":54,"Celerity":24,"Ward":18,"Spike":42,"Vitality":27,"Bane":46,"Luck":12,"Focus":21}}
+{"fn":"current_stats","inputs":{"ceiling":{"Bulk":100,"Celerity":80,"Ward":60,"Spike":140,"Vitality":90,"Bane":110,"Luck":40,"Focus":70},"expression":0.5,"gene_bonus":{}},"expected":{"Bulk":50,"Celerity":40,"Ward":30,"Spike":70,"Vitality":45,"Bane":55,"Luck":20,"Focus":35}}
+{"fn":"current_stats","inputs":{"ceiling":{"Bulk":100,"Celerity":80,"Ward":60,"Spike":140,"Vitality":90,"Bane":110,"Luck":40,"Focus":70},"expression":0.5,"gene_bonus":{"Spike":0.12}},"expected":{"Bulk":50,"Celerity":40,"Ward":30,"Spike":87,"Vitality":45,"Bane":55,"Luck":20,"Focus":35}}
+{"fn":"current_stats","inputs":{"ceiling":{"Bulk":100,"Celerity":80,"Ward":60,"Spike":140,"Vitality":90,"Bane":110,"Luck":40,"Focus":70},"expression":0.5,"gene_bonus":{"Bulk":0.24,"Bane":0.12}},"expected":{"Bulk":74,"Celerity":40,"Ward":30,"Spike":70,"Vitality":45,"Bane":68,"Luck":20,"Focus":35}}
+{"fn":"current_stats","inputs":{"ceiling":{"Bulk":100,"Celerity":80,"Ward":60,"Spike":140,"Vitality":90,"Bane":110,"Luck":40,"Focus":70},"expression":0.75,"gene_bonus":{}},"expected":{"Bulk":75,"Celerity":60,"Ward":45,"Spike":105,"Vitality":68,"Bane":82,"Luck":30,"Focus":52}}
+{"fn":"current_stats","inputs":{"ceiling":{"Bulk":100,"Celerity":80,"Ward":60,"Spike":140,"Vitality":90,"Bane":110,"Luck":40,"Focus":70},"expression":0.75,"gene_bonus":{"Spike":0.12}},"expected":{"Bulk":75,"Celerity":60,"Ward":45,"Spike":122,"Vitality":68,"Bane":82,"Luck":30,"Focus":52}}
+{"fn":"current_stats","inputs":{"ceiling":{"Bulk":100,"Celerity":80,"Ward":60,"Spike":140,"Vitality":90,"Bane":110,"Luck":40,"Focus":70},"expression":0.75,"gene_bonus":{"Bulk":0.24,"Bane":0.12}},"expected":{"Bulk":99,"Celerity":60,"Ward":45,"Spike":105,"Vitality":68,"Bane":96,"Luck":30,"Focus":52}}
+{"fn":"current_stats","inputs":{"ceiling":{"Bulk":100,"Celerity":80,"Ward":60,"Spike":140,"Vitality":90,"Bane":110,"Luck":40,"Focus":70},"expression":1.0,"gene_bonus":{}},"expected":{"Bulk":100,"Celerity":80,"Ward":60,"Spike":140,"Vitality":90,"Bane":110,"Luck":40,"Focus":70}}
+{"fn":"current_stats","inputs":{"ceiling":{"Bulk":100,"Celerity":80,"Ward":60,"Spike":140,"Vitality":90,"Bane":110,"Luck":40,"Focus":70},"expression":1.0,"gene_bonus":{"Spike":0.12}},"expected":{"Bulk":100,"Celerity":80,"Ward":60,"Spike":157,"Vitality":90,"Bane":110,"Luck":40,"Focus":70}}
+{"fn":"current_stats","inputs":{"ceiling":{"Bulk":100,"Celerity":80,"Ward":60,"Spike":140,"Vitality":90,"Bane":110,"Luck":40,"Focus":70},"expression":1.0,"gene_bonus":{"Bulk":0.24,"Bane":0.12}},"expected":{"Bulk":124,"Celerity":80,"Ward":60,"Spike":140,"Vitality":90,"Bane":123,"Luck":40,"Focus":70}}

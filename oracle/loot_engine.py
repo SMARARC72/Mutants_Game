@@ -3,7 +3,8 @@
 for capture / tame / breed / lab / combat. 5 slots, rarity tiers, force-attune, loot sources.
 Proves gear meaningfully shifts the capture & breeding odds.
 """
-import random
+from canonical_rng import RNG
+from canonical_math import rnd, rnd_dp
 
 SLOTS = ["Relic", "Tool", "Vestment", "Charm", "Glyph"]
 RARITY = ["Common", "Fine", "Rare", "Mythic", "Relic-tier"]
@@ -36,16 +37,15 @@ def capture_chance(method, tier, hp_frac, bond, gear_list, morality_fit=1.0):
     return clamp(base * TIER_FACTOR[tier] * hp_mult * bond_mult * gear_mult * morality_fit, 0.02, 0.95)
 
 
-def breed_roll(gear_list, seed):
-    rng = random.Random(seed)
+def breed_roll(gear_list, rng):
     rare_chance = clamp(0.10 + bonus(gear_list, "breed_rare"), 0, 0.6)
     rare = rng.random() < rare_chance
-    iv_ceiling = round(1.20 + (0.10 if rare else 0.0), 2)    # rare/gear lifts the genome ceiling
+    iv_ceiling = rnd_dp(1.20 + (0.10 if rare else 0.0), 2)    # rare/gear lifts the genome ceiling
     return rare, rare_chance, iv_ceiling
 
 
 def pct(x):
-    return str(round(x * 100)) + "%"
+    return str(rnd(x * 100)) + "%"
 
 
 if __name__ == "__main__":
@@ -71,7 +71,7 @@ if __name__ == "__main__":
     print()
     print("=== BREEDING: rare-gene roll (gear lifts odds + genome ceiling) ===")
     for seed in (1, 2, 3, 4):
-        r0, c0, iv0 = breed_roll([], seed)
-        r1, c1, iv1 = breed_roll(loadout, seed)
+        r0, c0, iv0 = breed_roll([], RNG(seed))
+        r1, c1, iv1 = breed_roll(loadout, RNG(seed))
         print("  seed " + str(seed) + ": no-gear rare=" + str(r0) + " (" + pct(c0) + ", iv x" + str(iv0) + ")   " +
               "geared rare=" + str(r1) + " (" + pct(c1) + ", iv x" + str(iv1) + ")")

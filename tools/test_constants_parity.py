@@ -169,7 +169,7 @@ eq("skill.force_mult_neutral", sk.force_mult("Gaia", "Cosmos"), SK["force_mult_n
 num("skill.damage_k", sk.damage, SK["damage_k"])
 num("skill.rank_mult_step", sk.rank_mult, SK["rank_mult_step"])
 num("skill.combo_mult", sk.act, SK["combo_mult"])
-num("skill.entropy_step_per_turn(current 0.08)", sk.battle, SK["entropy_step_per_turn"])
+num("skill.entropy_step_per_turn(unified 0.12)", sk.battle, SK["entropy_step_per_turn"])
 num("skill.act_mend_hp_threshold", sk.act, SK["act_mend_hp_threshold"])
 num("skill.act_ward_hp_threshold", sk.act, SK["act_ward_hp_threshold"])
 num("skill.act_rouse_chance", sk.act, SK["act_rouse_chance"])
