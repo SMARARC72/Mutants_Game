@@ -49,3 +49,20 @@ static func team_from_creatures(creatures: Array, catalog: SpeciesCatalog) -> Ar
 			if mon != null:
 				team.append(mon)
 	return team
+
+
+## Build a team AND a parallel Mon→source-creature-dict map (object identity keyed). The interactive
+## battle needs this to map a captured wild Mon back to its species_id / creature dict (the Mon object
+## itself — a DOMAIN type — carries no species_id, and we never modify client/domain/). Skipped
+## (missing-id) entries are absent from both, so the two stay aligned. Returns
+##   { "team": Array[BattleEngine.Mon], "source": Dictionary }  # source: Mon -> creature dict
+static func team_with_source(creatures: Array, catalog: SpeciesCatalog) -> Dictionary:
+	var team: Array = []
+	var source: Dictionary = {}
+	for entry in creatures:
+		if entry is Dictionary:
+			var mon := from_creature(entry as Dictionary, catalog)
+			if mon != null:
+				team.append(mon)
+				source[mon] = entry
+	return {"team": team, "source": source}
