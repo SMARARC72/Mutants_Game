@@ -84,7 +84,7 @@ jobs:
       - name: Golden vectors regenerate + stability gate (TDD §11.2/§12.2)
         run: |
           PYTHONUTF8=1 python -B tools/gen_golden.py
-          git diff --exit-code -- tests/golden
+          git diff --exit-code -- client/tests/golden
 
   database:
     name: DB migrations + RLS (pgTAP) + anon smoke (D2/D3/D5)
