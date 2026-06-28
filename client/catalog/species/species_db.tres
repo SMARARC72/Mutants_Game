@@ -1,0 +1,7722 @@
+[gd_resource type="Resource" script_class="SpeciesDB" load_steps=409 format=3 uid="uid://aspeciesdbres0"]
+
+[ext_resource type="Script" uid="uid://bspeciesdb0aa" path="res://infrastructure/catalog/species_db.gd" id="1_db"]
+[ext_resource type="Script" uid="uid://cspeciesdat0a" path="res://infrastructure/catalog/species_data.gd" id="2_data"]
+
+[sub_resource type="Resource" id="SpeciesData_AD01"]
+script = ExtResource("2_data")
+id = "AD01"
+name = "Ruinmaw"
+batch = "adult"
+art_ref = "adult#1"
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Chaos"
+force_secondary = "Thanatos"
+role = "striker"
+evolution_line = "Ruin Wolf"
+stage = "adult"
+signature_skill = ""
+description = "Feral runed wolf; bleeds what it bites."
+status = "confirmed"
+tags = PackedStringArray()
+
+[sub_resource type="Resource" id="SpeciesData_AD02"]
+script = ExtResource("2_data")
+id = "AD02"
+name = "Worldback"
+batch = "adult"
+art_ref = "adult#2"
+species_class = "organic"
+rank = "wild"
+tier = "T3"
+force_primary = "Gaia"
+force_secondary = "Eros"
+role = "fortress"
+evolution_line = "World Tortoise"
+stage = "apex"
+signature_skill = ""
+description = "A mountain that walks and grows orchards on its back."
+status = "confirmed"
+tags = PackedStringArray("apex")
+
+[sub_resource type="Resource" id="SpeciesData_AD03"]
+script = ExtResource("2_data")
+id = "AD03"
+name = "Emberwyrm"
+batch = "adult"
+art_ref = "adult#3"
+species_class = "organic"
+rank = "wild"
+tier = "T3"
+force_primary = "Chaos"
+force_secondary = "Ouranos"
+role = "nuker"
+evolution_line = "Ember Drake"
+stage = "apex"
+signature_skill = ""
+description = "Volatile winged furnace."
+status = "confirmed"
+tags = PackedStringArray("apex")
+
+[sub_resource type="Resource" id="SpeciesData_AD04"]
+script = ExtResource("2_data")
+id = "AD04"
+name = "Palehart"
+batch = "adult"
+art_ref = "adult#4"
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Cosmos"
+force_secondary = "Eros"
+role = "support"
+evolution_line = "Pale Hart"
+stage = "adult"
+signature_skill = ""
+description = "Serene stag wreathed in ordered sigils."
+status = "confirmed"
+tags = PackedStringArray()
+
+[sub_resource type="Resource" id="SpeciesData_AD05"]
+script = ExtResource("2_data")
+id = "AD05"
+name = "Tidecoil"
+batch = "adult"
+art_ref = "adult#5"
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Ouranos"
+force_secondary = "Cosmos"
+role = "controller"
+evolution_line = "Tide Serpent"
+stage = "adult"
+signature_skill = ""
+description = "Sinuous tide-caller of the deep."
+status = "confirmed"
+tags = PackedStringArray()
+
+[sub_resource type="Resource" id="SpeciesData_AD06"]
+script = ExtResource("2_data")
+id = "AD06"
+name = "Gravetusk"
+batch = "adult"
+art_ref = "adult#6"
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Gaia"
+force_secondary = "Chaos"
+role = "charger"
+evolution_line = "Grave Boar"
+stage = "adult"
+signature_skill = ""
+description = "Reckless tusked battering-ram."
+status = "confirmed"
+tags = PackedStringArray()
+
+[sub_resource type="Resource" id="SpeciesData_AD07"]
+script = ExtResource("2_data")
+id = "AD07"
+name = "Augurwing"
+batch = "adult"
+art_ref = "adult#7"
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Ouranos"
+force_secondary = "Eros"
+role = "seer"
+evolution_line = "Augur Bird"
+stage = "adult"
+signature_skill = ""
+description = "Plumed diviner; reads the next turn."
+status = "confirmed"
+tags = PackedStringArray()
+
+[sub_resource type="Resource" id="SpeciesData_AD08"]
+script = ExtResource("2_data")
+id = "AD08"
+name = "Rimewarden"
+batch = "adult"
+art_ref = "adult#8"
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Cosmos"
+force_secondary = "Gaia"
+role = "control-tank"
+evolution_line = "Rime Bear"
+stage = "adult"
+signature_skill = ""
+description = "Ice-armored bulwark."
+status = "confirmed"
+tags = PackedStringArray()
+
+[sub_resource type="Resource" id="SpeciesData_AD09"]
+script = ExtResource("2_data")
+id = "AD09"
+name = "Gloamcat"
+batch = "adult"
+art_ref = "adult#9"
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Thanatos"
+force_secondary = "Ouranos"
+role = "assassin"
+evolution_line = "Gloam Cat"
+stage = "adult"
+signature_skill = ""
+description = "Soul-flame panther; drains as it strikes."
+status = "confirmed"
+tags = PackedStringArray()
+
+[sub_resource type="Resource" id="SpeciesData_AD10"]
+script = ExtResource("2_data")
+id = "AD10"
+name = "Thornmane"
+batch = "adult"
+art_ref = "adult#10"
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Eros"
+force_secondary = "Gaia"
+role = "regenerator"
+evolution_line = "Thorn Lion"
+stage = "adult"
+signature_skill = ""
+description = "Bark-maned beast that roots and heals."
+status = "confirmed"
+tags = PackedStringArray()
+
+[sub_resource type="Resource" id="SpeciesData_DM01"]
+script = ExtResource("2_data")
+id = "DM01"
+name = "Shade-wraith"
+batch = "demon"
+art_ref = "demon#1"
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Thanatos"
+force_secondary = "Chaos"
+role = "boss"
+evolution_line = ""
+stage = "apex"
+signature_skill = ""
+description = "A grief that grew tentacles."
+status = "confirmed"
+tags = PackedStringArray("taboo-fusion", "boss")
+
+[sub_resource type="Resource" id="SpeciesData_DM02"]
+script = ExtResource("2_data")
+id = "DM02"
+name = "Ogre-brute"
+batch = "demon"
+art_ref = "demon#2"
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Gaia"
+force_secondary = "Chaos"
+role = "bruiser"
+evolution_line = ""
+stage = "apex"
+signature_skill = ""
+description = "All fists, no patience."
+status = "confirmed"
+tags = PackedStringArray("boss")
+
+[sub_resource type="Resource" id="SpeciesData_DM03"]
+script = ExtResource("2_data")
+id = "DM03"
+name = "Bone-weaver"
+batch = "demon"
+art_ref = "demon#3"
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Thanatos"
+force_secondary = "Chaos"
+role = "boss"
+evolution_line = ""
+stage = "apex"
+signature_skill = ""
+description = "A spider knit from someone else's skeleton."
+status = "confirmed"
+tags = PackedStringArray("undead", "boss")
+
+[sub_resource type="Resource" id="SpeciesData_DM04"]
+script = ExtResource("2_data")
+id = "DM04"
+name = "Eye-tyrant"
+batch = "demon"
+art_ref = "demon#4"
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Chaos"
+force_secondary = "Ouranos"
+role = "boss"
+evolution_line = ""
+stage = "apex"
+signature_skill = ""
+description = "Sees too much, forgives nothing."
+status = "confirmed"
+tags = PackedStringArray("secret-boss", "eldritch")
+
+[sub_resource type="Resource" id="SpeciesData_DM05"]
+script = ExtResource("2_data")
+id = "DM05"
+name = "Phoenix"
+batch = "demon"
+art_ref = "demon#5"
+species_class = "organic"
+rank = "god"
+tier = ""
+force_primary = "Ouranos"
+force_secondary = "Chaos"
+role = "god-seed"
+evolution_line = ""
+stage = "apex"
+signature_skill = ""
+description = "Dies on schedule, comes back annoyed."
+status = "confirmed"
+tags = PackedStringArray("ascension-candidate")
+
+[sub_resource type="Resource" id="SpeciesData_DM06"]
+script = ExtResource("2_data")
+id = "DM06"
+name = "Core-golem"
+batch = "demon"
+art_ref = "demon#6"
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Gaia"
+force_secondary = "Cosmos"
+role = "tank"
+evolution_line = ""
+stage = "apex"
+signature_skill = ""
+description = "A boulder with a glowing grudge."
+status = "confirmed"
+tags = PackedStringArray("boss")
+
+[sub_resource type="Resource" id="SpeciesData_DM07"]
+script = ExtResource("2_data")
+id = "DM07"
+name = "Ash-fiend"
+batch = "demon"
+art_ref = "demon#7"
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Thanatos"
+force_secondary = "Chaos"
+role = "boss"
+evolution_line = ""
+stage = "apex"
+signature_skill = ""
+description = "Brought a sword to a soul fight."
+status = "confirmed"
+tags = PackedStringArray("taboo-fusion", "boss")
+
+[sub_resource type="Resource" id="SpeciesData_DM08"]
+script = ExtResource("2_data")
+id = "DM08"
+name = "Spectral-kelpie"
+batch = "demon"
+art_ref = "demon#8"
+species_class = "organic"
+rank = "god"
+tier = ""
+force_primary = "Thanatos"
+force_secondary = "Ouranos"
+role = "god-seed"
+evolution_line = ""
+stage = "apex"
+signature_skill = ""
+description = "A drowned horse still looking for a rider."
+status = "confirmed"
+tags = PackedStringArray("ascension-candidate")
+
+[sub_resource type="Resource" id="SpeciesData_DM09"]
+script = ExtResource("2_data")
+id = "DM09"
+name = "Abyssal-leviathan"
+batch = "demon"
+art_ref = "demon#9"
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Thanatos"
+force_secondary = "Ouranos"
+role = "boss"
+evolution_line = ""
+stage = "apex"
+signature_skill = ""
+description = "The deep, with teeth."
+status = "confirmed"
+tags = PackedStringArray("boss")
+
+[sub_resource type="Resource" id="SpeciesData_DM10"]
+script = ExtResource("2_data")
+id = "DM10"
+name = "Elder-treant"
+batch = "demon"
+art_ref = "demon#10"
+species_class = "organic"
+rank = "god"
+tier = ""
+force_primary = "Eros"
+force_secondary = "Gaia"
+role = "god-seed"
+evolution_line = ""
+stage = "apex"
+signature_skill = ""
+description = "Older than the forest's first apology."
+status = "confirmed"
+tags = PackedStringArray("ascension-candidate")
+
+[sub_resource type="Resource" id="SpeciesData_SB04"]
+script = ExtResource("2_data")
+id = "SB04"
+name = "Ember-kit (fox)"
+batch = "storybook"
+art_ref = "SB#4"
+species_class = "organic"
+rank = "wild"
+tier = "T1"
+force_primary = "Chaos"
+force_secondary = "Ouranos"
+role = "striker"
+evolution_line = "Ember Fox"
+stage = "baby"
+signature_skill = ""
+description = "Tiny arsonist."
+status = "confirmed"
+tags = PackedStringArray("new-species")
+
+[sub_resource type="Resource" id="SpeciesData_SB05"]
+script = ExtResource("2_data")
+id = "SB05"
+name = "Sprout-shell"
+batch = "storybook"
+art_ref = "SB#5"
+species_class = "organic"
+rank = "wild"
+tier = "T1"
+force_primary = "Gaia"
+force_secondary = "Eros"
+role = "tank"
+evolution_line = "World Tortoise"
+stage = "baby"
+signature_skill = ""
+description = "Worldback, before the mountain."
+status = "confirmed"
+tags = PackedStringArray()
+
+[sub_resource type="Resource" id="SpeciesData_SB06"]
+script = ExtResource("2_data")
+id = "SB06"
+name = "Fin-otter"
+batch = "storybook"
+art_ref = "SB#6"
+species_class = "organic"
+rank = "wild"
+tier = "T1"
+force_primary = "Ouranos"
+force_secondary = "Eros"
+role = "support"
+evolution_line = "Fin Otter"
+stage = "baby"
+signature_skill = ""
+description = "Slippery optimist."
+status = "confirmed"
+tags = PackedStringArray("new-species")
+
+[sub_resource type="Resource" id="SpeciesData_SB07"]
+script = ExtResource("2_data")
+id = "SB07"
+name = "Leaf-hare"
+batch = "storybook"
+art_ref = "SB#7"
+species_class = "organic"
+rank = "wild"
+tier = "T1"
+force_primary = "Eros"
+force_secondary = "Gaia"
+role = "support"
+evolution_line = "Leaf Hare"
+stage = "baby"
+signature_skill = ""
+description = ""
+status = "confirmed"
+tags = PackedStringArray("new-species")
+
+[sub_resource type="Resource" id="SpeciesData_SB08"]
+script = ExtResource("2_data")
+id = "SB08"
+name = "Delver-pup"
+batch = "storybook"
+art_ref = "SB#8"
+species_class = "organic"
+rank = "wild"
+tier = "T1"
+force_primary = "Gaia"
+force_secondary = "Thanatos"
+role = "tank"
+evolution_line = "Delver"
+stage = "baby"
+signature_skill = ""
+description = ""
+status = "confirmed"
+tags = PackedStringArray("new-species")
+
+[sub_resource type="Resource" id="SpeciesData_SB09"]
+script = ExtResource("2_data")
+id = "SB09"
+name = "Sprite-blob"
+batch = "storybook"
+art_ref = "SB#9"
+species_class = "organic"
+rank = "wild"
+tier = "T1"
+force_primary = "Eros"
+force_secondary = "Ouranos"
+role = "support"
+evolution_line = "Sprite"
+stage = "baby"
+signature_skill = ""
+description = ""
+status = "confirmed"
+tags = PackedStringArray("new-species")
+
+[sub_resource type="Resource" id="SpeciesData_SB10"]
+script = ExtResource("2_data")
+id = "SB10"
+name = "Gloam-kitten"
+batch = "storybook"
+art_ref = "SB#10"
+species_class = "organic"
+rank = "wild"
+tier = "T1"
+force_primary = "Thanatos"
+force_secondary = "Ouranos"
+role = "assassin"
+evolution_line = "Gloam Cat"
+stage = "baby"
+signature_skill = ""
+description = "Gloamcat kitten; already plotting."
+status = "confirmed"
+tags = PackedStringArray()
+
+[sub_resource type="Resource" id="SpeciesData_SB11"]
+script = ExtResource("2_data")
+id = "SB11"
+name = "Holy-lamb"
+batch = "storybook"
+art_ref = "SB#11"
+species_class = "organic"
+rank = "wild"
+tier = "T1"
+force_primary = "Cosmos"
+force_secondary = "Eros"
+role = "support"
+evolution_line = "Holy Lamb"
+stage = "baby"
+signature_skill = ""
+description = ""
+status = "confirmed"
+tags = PackedStringArray("new-species")
+
+[sub_resource type="Resource" id="SpeciesData_SB12"]
+script = ExtResource("2_data")
+id = "SB12"
+name = "Grave-piglet"
+batch = "storybook"
+art_ref = "SB#12"
+species_class = "organic"
+rank = "wild"
+tier = "T1"
+force_primary = "Gaia"
+force_secondary = "Chaos"
+role = "charger"
+evolution_line = "Grave Boar"
+stage = "baby"
+signature_skill = ""
+description = ""
+status = "confirmed"
+tags = PackedStringArray()
+
+[sub_resource type="Resource" id="SpeciesData_SB13"]
+script = ExtResource("2_data")
+id = "SB13"
+name = "Finned-hatchling"
+batch = "storybook"
+art_ref = "SB#13"
+species_class = "organic"
+rank = "wild"
+tier = "T1"
+force_primary = "Ouranos"
+force_secondary = "Chaos"
+role = "striker"
+evolution_line = "Drake/Serpent (TBD)"
+stage = "baby"
+signature_skill = ""
+description = ""
+status = "draft"
+tags = PackedStringArray("line-tbd")
+
+[sub_resource type="Resource" id="SpeciesData_SB14"]
+script = ExtResource("2_data")
+id = "SB14"
+name = "Quill-hog"
+batch = "storybook"
+art_ref = "SB#14"
+species_class = "organic"
+rank = "wild"
+tier = "T1"
+force_primary = "Gaia"
+force_secondary = ""
+role = "tank"
+evolution_line = "Quill"
+stage = "baby"
+signature_skill = ""
+description = ""
+status = "confirmed"
+tags = PackedStringArray("new-species")
+
+[sub_resource type="Resource" id="SpeciesData_SB15"]
+script = ExtResource("2_data")
+id = "SB15"
+name = "Sky-chick"
+batch = "storybook"
+art_ref = "SB#15"
+species_class = "organic"
+rank = "wild"
+tier = "T1"
+force_primary = "Ouranos"
+force_secondary = "Cosmos"
+role = "seer"
+evolution_line = "Augur Bird"
+stage = "baby"
+signature_skill = ""
+description = ""
+status = "confirmed"
+tags = PackedStringArray()
+
+[sub_resource type="Resource" id="SpeciesData_SB16"]
+script = ExtResource("2_data")
+id = "SB16"
+name = "Armor-dino"
+batch = "storybook"
+art_ref = "SB#16"
+species_class = "organic"
+rank = "wild"
+tier = "T1"
+force_primary = "Gaia"
+force_secondary = "Chaos"
+role = "tank"
+evolution_line = "Armor Reptile"
+stage = "baby"
+signature_skill = ""
+description = ""
+status = "confirmed"
+tags = PackedStringArray("new-species")
+
+[sub_resource type="Resource" id="SpeciesData_SB17"]
+script = ExtResource("2_data")
+id = "SB17"
+name = "Leaf-fae"
+batch = "storybook"
+art_ref = "SB#17"
+species_class = "organic"
+rank = "wild"
+tier = "T1"
+force_primary = "Eros"
+force_secondary = "Cosmos"
+role = "support"
+evolution_line = "Leaf Fae"
+stage = "baby"
+signature_skill = ""
+description = ""
+status = "confirmed"
+tags = PackedStringArray("new-species")
+
+[sub_resource type="Resource" id="SpeciesData_SB18"]
+script = ExtResource("2_data")
+id = "SB18"
+name = "Leaf-gecko"
+batch = "storybook"
+art_ref = "SB#18"
+species_class = "organic"
+rank = "wild"
+tier = "T1"
+force_primary = "Eros"
+force_secondary = "Ouranos"
+role = "striker"
+evolution_line = "Frill"
+stage = "baby"
+signature_skill = ""
+description = ""
+status = "confirmed"
+tags = PackedStringArray("new-species")
+
+[sub_resource type="Resource" id="SpeciesData_SB19"]
+script = ExtResource("2_data")
+id = "SB19"
+name = "Ring-tail"
+batch = "storybook"
+art_ref = "SB#19"
+species_class = "organic"
+rank = "wild"
+tier = "T1"
+force_primary = "Chaos"
+force_secondary = "Gaia"
+role = "striker"
+evolution_line = "Trickster Coon"
+stage = "baby"
+signature_skill = ""
+description = ""
+status = "confirmed"
+tags = PackedStringArray("new-species")
+
+[sub_resource type="Resource" id="SpeciesData_SB20"]
+script = ExtResource("2_data")
+id = "SB20"
+name = "Azure-kit"
+batch = "storybook"
+art_ref = "SB#20"
+species_class = "organic"
+rank = "wild"
+tier = "T1"
+force_primary = "Ouranos"
+force_secondary = ""
+role = "striker"
+evolution_line = "Sky Cat"
+stage = "baby"
+signature_skill = ""
+description = ""
+status = "confirmed"
+tags = PackedStringArray("new-species")
+
+[sub_resource type="Resource" id="SpeciesData_SB21"]
+script = ExtResource("2_data")
+id = "SB21"
+name = "Lion-cub"
+batch = "storybook"
+art_ref = "SB#21"
+species_class = "organic"
+rank = "wild"
+tier = "T1"
+force_primary = "Cosmos"
+force_secondary = "Gaia"
+role = "bruiser"
+evolution_line = "Lion"
+stage = "baby"
+signature_skill = ""
+description = ""
+status = "confirmed"
+tags = PackedStringArray("new-species")
+
+[sub_resource type="Resource" id="SpeciesData_SB22"]
+script = ExtResource("2_data")
+id = "SB22"
+name = "Fawn"
+batch = "storybook"
+art_ref = "SB#22"
+species_class = "organic"
+rank = "wild"
+tier = "T1"
+force_primary = "Cosmos"
+force_secondary = "Eros"
+role = "support"
+evolution_line = "Pale Hart"
+stage = "baby"
+signature_skill = ""
+description = ""
+status = "confirmed"
+tags = PackedStringArray()
+
+[sub_resource type="Resource" id="SpeciesData_SB23"]
+script = ExtResource("2_data")
+id = "SB23"
+name = "Fennec"
+batch = "storybook"
+art_ref = "SB#23"
+species_class = "organic"
+rank = "wild"
+tier = "T1"
+force_primary = "Ouranos"
+force_secondary = "Chaos"
+role = "striker"
+evolution_line = "Fennec"
+stage = "baby"
+signature_skill = ""
+description = ""
+status = "confirmed"
+tags = PackedStringArray("new-species")
+
+[sub_resource type="Resource" id="SpeciesData_SB24"]
+script = ExtResource("2_data")
+id = "SB24"
+name = "Quill-badger"
+batch = "storybook"
+art_ref = "SB#24"
+species_class = "organic"
+rank = "wild"
+tier = "T1"
+force_primary = "Gaia"
+force_secondary = "Thanatos"
+role = "tank"
+evolution_line = "Quill"
+stage = "mid"
+signature_skill = ""
+description = ""
+status = "draft"
+tags = PackedStringArray("evo-of-SB14?")
+
+[sub_resource type="Resource" id="SpeciesData_SB25"]
+script = ExtResource("2_data")
+id = "SB25"
+name = "Spirit-fox"
+batch = "storybook"
+art_ref = "SB#25"
+species_class = "organic"
+rank = "wild"
+tier = "T1"
+force_primary = "Chaos"
+force_secondary = "Ouranos"
+role = "striker"
+evolution_line = "Spirit Fox"
+stage = "baby"
+signature_skill = ""
+description = ""
+status = "confirmed"
+tags = PackedStringArray("new-species")
+
+[sub_resource type="Resource" id="SpeciesData_SB26"]
+script = ExtResource("2_data")
+id = "SB26"
+name = "Spiked-tortoise"
+batch = "storybook"
+art_ref = "SB#26"
+species_class = "organic"
+rank = "wild"
+tier = "T1"
+force_primary = "Gaia"
+force_secondary = ""
+role = "tank"
+evolution_line = "World Tortoise"
+stage = "mid"
+signature_skill = ""
+description = "Worldback, mid-shell."
+status = "draft"
+tags = PackedStringArray()
+
+[sub_resource type="Resource" id="SpeciesData_SB27"]
+script = ExtResource("2_data")
+id = "SB27"
+name = "Kitsune-kit"
+batch = "storybook"
+art_ref = "SB#27"
+species_class = "organic"
+rank = "wild"
+tier = "T1"
+force_primary = "Eros"
+force_secondary = "Ouranos"
+role = "support"
+evolution_line = "Kitsune"
+stage = "baby"
+signature_skill = ""
+description = ""
+status = "confirmed"
+tags = PackedStringArray("new-species")
+
+[sub_resource type="Resource" id="SpeciesData_SB28"]
+script = ExtResource("2_data")
+id = "SB28"
+name = "Frilled-gecko"
+batch = "storybook"
+art_ref = "SB#28"
+species_class = "organic"
+rank = "wild"
+tier = "T1"
+force_primary = "Ouranos"
+force_secondary = "Eros"
+role = "striker"
+evolution_line = "Frill"
+stage = "mid"
+signature_skill = ""
+description = ""
+status = "draft"
+tags = PackedStringArray("evo-of-SB18?")
+
+[sub_resource type="Resource" id="SpeciesData_SB29"]
+script = ExtResource("2_data")
+id = "SB29"
+name = "Griffin-cub"
+batch = "storybook"
+art_ref = "SB#29"
+species_class = "organic"
+rank = "wild"
+tier = "T1"
+force_primary = "Ouranos"
+force_secondary = "Cosmos"
+role = "seer"
+evolution_line = "Griffin"
+stage = "baby"
+signature_skill = ""
+description = ""
+status = "confirmed"
+tags = PackedStringArray("new-species")
+
+[sub_resource type="Resource" id="SpeciesData_SB30"]
+script = ExtResource("2_data")
+id = "SB30"
+name = "Ruin-pup"
+batch = "storybook"
+art_ref = "SB#30"
+species_class = "organic"
+rank = "wild"
+tier = "T1"
+force_primary = "Chaos"
+force_secondary = "Thanatos"
+role = "striker"
+evolution_line = "Ruin Wolf"
+stage = "baby"
+signature_skill = ""
+description = "Ruinmaw pup; chews everything."
+status = "confirmed"
+tags = PackedStringArray()
+
+[sub_resource type="Resource" id="SpeciesData_SB31"]
+script = ExtResource("2_data")
+id = "SB31"
+name = "Frost-kit"
+batch = "storybook"
+art_ref = "SB#31"
+species_class = "organic"
+rank = "wild"
+tier = "T1"
+force_primary = "Ouranos"
+force_secondary = "Cosmos"
+role = "striker"
+evolution_line = "Frost Cat"
+stage = "baby"
+signature_skill = ""
+description = ""
+status = "confirmed"
+tags = PackedStringArray("new-species")
+
+[sub_resource type="Resource" id="SpeciesData_SB32"]
+script = ExtResource("2_data")
+id = "SB32"
+name = "Spore-cub"
+batch = "storybook"
+art_ref = "SB#32"
+species_class = "organic"
+rank = "wild"
+tier = "T1"
+force_primary = "Gaia"
+force_secondary = "Eros"
+role = "tank"
+evolution_line = "Spore Bear"
+stage = "baby"
+signature_skill = ""
+description = ""
+status = "confirmed"
+tags = PackedStringArray("new-species")
+
+[sub_resource type="Resource" id="SpeciesData_SB33"]
+script = ExtResource("2_data")
+id = "SB33"
+name = "Wild-stag-calf"
+batch = "storybook"
+art_ref = "SB#33"
+species_class = "organic"
+rank = "wild"
+tier = "T1"
+force_primary = "Eros"
+force_secondary = "Gaia"
+role = "support"
+evolution_line = "Wild Stag"
+stage = "baby"
+signature_skill = ""
+description = ""
+status = "confirmed"
+tags = PackedStringArray("new-species")
+
+[sub_resource type="Resource" id="SpeciesData_S2_01"]
+script = ExtResource("2_data")
+id = "S2-01"
+name = "S2-1"
+batch = "set2A"
+art_ref = "montage_set2_A #S2-1"
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Thanatos"
+force_secondary = ""
+role = "assassin"
+evolution_line = ""
+stage = "mid"
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("draft")
+
+[sub_resource type="Resource" id="SpeciesData_S2_02"]
+script = ExtResource("2_data")
+id = "S2-02"
+name = "S2-2"
+batch = "set2A"
+art_ref = "montage_set2_A #S2-2"
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Thanatos"
+force_secondary = ""
+role = "assassin"
+evolution_line = ""
+stage = "mid"
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("draft")
+
+[sub_resource type="Resource" id="SpeciesData_S2_03"]
+script = ExtResource("2_data")
+id = "S2-03"
+name = "S2-3"
+batch = "set2A"
+art_ref = "montage_set2_A #S2-3"
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Chaos"
+force_secondary = ""
+role = "nuker"
+evolution_line = ""
+stage = "mid"
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("draft")
+
+[sub_resource type="Resource" id="SpeciesData_S2_04"]
+script = ExtResource("2_data")
+id = "S2-04"
+name = "S2-4"
+batch = "set2A"
+art_ref = "montage_set2_A #S2-4"
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Cosmos"
+force_secondary = ""
+role = "control"
+evolution_line = ""
+stage = "mid"
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("draft")
+
+[sub_resource type="Resource" id="SpeciesData_S2_05"]
+script = ExtResource("2_data")
+id = "S2-05"
+name = "S2-5"
+batch = "set2A"
+art_ref = "montage_set2_A #S2-5"
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Thanatos"
+force_secondary = ""
+role = "assassin"
+evolution_line = ""
+stage = "mid"
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("draft")
+
+[sub_resource type="Resource" id="SpeciesData_S2_06"]
+script = ExtResource("2_data")
+id = "S2-06"
+name = "S2-6"
+batch = "set2A"
+art_ref = "montage_set2_A #S2-6"
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Chaos"
+force_secondary = ""
+role = "nuker"
+evolution_line = ""
+stage = "mid"
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("draft")
+
+[sub_resource type="Resource" id="SpeciesData_S2_07"]
+script = ExtResource("2_data")
+id = "S2-07"
+name = "S2-7"
+batch = "set2A"
+art_ref = "montage_set2_A #S2-7"
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Eros"
+force_secondary = ""
+role = "support"
+evolution_line = ""
+stage = "mid"
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("draft")
+
+[sub_resource type="Resource" id="SpeciesData_S2_08"]
+script = ExtResource("2_data")
+id = "S2-08"
+name = "S2-8"
+batch = "set2A"
+art_ref = "montage_set2_A #S2-8"
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Thanatos"
+force_secondary = ""
+role = "assassin"
+evolution_line = ""
+stage = "mid"
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("draft")
+
+[sub_resource type="Resource" id="SpeciesData_S2_09"]
+script = ExtResource("2_data")
+id = "S2-09"
+name = "S2-9"
+batch = "set2A"
+art_ref = "montage_set2_A #S2-9"
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Thanatos"
+force_secondary = ""
+role = "assassin"
+evolution_line = ""
+stage = "mid"
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("draft")
+
+[sub_resource type="Resource" id="SpeciesData_S2_10"]
+script = ExtResource("2_data")
+id = "S2-10"
+name = "S2-10"
+batch = "set2A"
+art_ref = "montage_set2_A #S2-10"
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Gaia"
+force_secondary = ""
+role = "tank"
+evolution_line = ""
+stage = "mid"
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("draft")
+
+[sub_resource type="Resource" id="SpeciesData_S2_11"]
+script = ExtResource("2_data")
+id = "S2-11"
+name = "S2-11"
+batch = "set2A"
+art_ref = "montage_set2_A #S2-11"
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Ouranos"
+force_secondary = ""
+role = "striker"
+evolution_line = ""
+stage = "mid"
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("draft")
+
+[sub_resource type="Resource" id="SpeciesData_S2_12"]
+script = ExtResource("2_data")
+id = "S2-12"
+name = "S2-12"
+batch = "set2A"
+art_ref = "montage_set2_A #S2-12"
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Thanatos"
+force_secondary = ""
+role = "assassin"
+evolution_line = ""
+stage = "mid"
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("draft")
+
+[sub_resource type="Resource" id="SpeciesData_S2_13"]
+script = ExtResource("2_data")
+id = "S2-13"
+name = "S2-13"
+batch = "set2A"
+art_ref = "montage_set2_A #S2-13"
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Gaia"
+force_secondary = ""
+role = "tank"
+evolution_line = ""
+stage = "mid"
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("draft")
+
+[sub_resource type="Resource" id="SpeciesData_S2_14"]
+script = ExtResource("2_data")
+id = "S2-14"
+name = "S2-14"
+batch = "set2A"
+art_ref = "montage_set2_A #S2-14"
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Ouranos"
+force_secondary = ""
+role = "striker"
+evolution_line = ""
+stage = "mid"
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("draft")
+
+[sub_resource type="Resource" id="SpeciesData_S2_15"]
+script = ExtResource("2_data")
+id = "S2-15"
+name = "S2-15"
+batch = "set2A"
+art_ref = "montage_set2_A #S2-15"
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Ouranos"
+force_secondary = ""
+role = "striker"
+evolution_line = ""
+stage = "mid"
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("draft")
+
+[sub_resource type="Resource" id="SpeciesData_S2_16"]
+script = ExtResource("2_data")
+id = "S2-16"
+name = "S2-16"
+batch = "set2A"
+art_ref = "montage_set2_A #S2-16"
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Gaia"
+force_secondary = ""
+role = "tank"
+evolution_line = ""
+stage = "mid"
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("draft")
+
+[sub_resource type="Resource" id="SpeciesData_S2_17"]
+script = ExtResource("2_data")
+id = "S2-17"
+name = "S2-17"
+batch = "set2A"
+art_ref = "montage_set2_A #S2-17"
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Eros"
+force_secondary = ""
+role = "support"
+evolution_line = ""
+stage = "mid"
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("draft")
+
+[sub_resource type="Resource" id="SpeciesData_S2_18"]
+script = ExtResource("2_data")
+id = "S2-18"
+name = "S2-18"
+batch = "set2A"
+art_ref = "montage_set2_A #S2-18"
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Cosmos"
+force_secondary = ""
+role = "control"
+evolution_line = ""
+stage = "mid"
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("draft")
+
+[sub_resource type="Resource" id="SpeciesData_S2_19"]
+script = ExtResource("2_data")
+id = "S2-19"
+name = "S2-19"
+batch = "set2A"
+art_ref = "montage_set2_A #S2-19"
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Cosmos"
+force_secondary = ""
+role = "control"
+evolution_line = ""
+stage = "mid"
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("draft")
+
+[sub_resource type="Resource" id="SpeciesData_S2_20"]
+script = ExtResource("2_data")
+id = "S2-20"
+name = "S2-20"
+batch = "set2A"
+art_ref = "montage_set2_A #S2-20"
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Gaia"
+force_secondary = ""
+role = "tank"
+evolution_line = ""
+stage = "mid"
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("draft")
+
+[sub_resource type="Resource" id="SpeciesData_S2_21"]
+script = ExtResource("2_data")
+id = "S2-21"
+name = "S2-21"
+batch = "set2A"
+art_ref = "montage_set2_A #S2-21"
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Chaos"
+force_secondary = ""
+role = "nuker"
+evolution_line = ""
+stage = "mid"
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("draft")
+
+[sub_resource type="Resource" id="SpeciesData_S2_22"]
+script = ExtResource("2_data")
+id = "S2-22"
+name = "S2-22"
+batch = "set2A"
+art_ref = "montage_set2_A #S2-22"
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Gaia"
+force_secondary = ""
+role = "tank"
+evolution_line = ""
+stage = "mid"
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("draft")
+
+[sub_resource type="Resource" id="SpeciesData_S2_23"]
+script = ExtResource("2_data")
+id = "S2-23"
+name = "S2-23"
+batch = "set2A"
+art_ref = "montage_set2_A #S2-23"
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Ouranos"
+force_secondary = ""
+role = "striker"
+evolution_line = ""
+stage = "mid"
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("draft")
+
+[sub_resource type="Resource" id="SpeciesData_S2_24"]
+script = ExtResource("2_data")
+id = "S2-24"
+name = "S2-24"
+batch = "set2A"
+art_ref = "montage_set2_A #S2-24"
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Cosmos"
+force_secondary = ""
+role = "control"
+evolution_line = ""
+stage = "mid"
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("draft")
+
+[sub_resource type="Resource" id="SpeciesData_S2_25"]
+script = ExtResource("2_data")
+id = "S2-25"
+name = "S2-25"
+batch = "set2A"
+art_ref = "montage_set2_A #S2-25"
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Gaia"
+force_secondary = ""
+role = "tank"
+evolution_line = ""
+stage = "mid"
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("draft")
+
+[sub_resource type="Resource" id="SpeciesData_S2_26"]
+script = ExtResource("2_data")
+id = "S2-26"
+name = "S2-26"
+batch = "set2A"
+art_ref = "montage_set2_A #S2-26"
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Gaia"
+force_secondary = ""
+role = "tank"
+evolution_line = ""
+stage = "mid"
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("draft")
+
+[sub_resource type="Resource" id="SpeciesData_S2_27"]
+script = ExtResource("2_data")
+id = "S2-27"
+name = "S2-27"
+batch = "set2A"
+art_ref = "montage_set2_A #S2-27"
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Ouranos"
+force_secondary = ""
+role = "striker"
+evolution_line = ""
+stage = "mid"
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("draft")
+
+[sub_resource type="Resource" id="SpeciesData_S2_28"]
+script = ExtResource("2_data")
+id = "S2-28"
+name = "S2-28"
+batch = "set2A"
+art_ref = "montage_set2_A #S2-28"
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Gaia"
+force_secondary = ""
+role = "tank"
+evolution_line = ""
+stage = "mid"
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("draft")
+
+[sub_resource type="Resource" id="SpeciesData_S2_29"]
+script = ExtResource("2_data")
+id = "S2-29"
+name = "S2-29"
+batch = "set2A"
+art_ref = "montage_set2_A #S2-29"
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Gaia"
+force_secondary = ""
+role = "tank"
+evolution_line = ""
+stage = "mid"
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("draft")
+
+[sub_resource type="Resource" id="SpeciesData_S2_30"]
+script = ExtResource("2_data")
+id = "S2-30"
+name = "S2-30"
+batch = "set2A"
+art_ref = "montage_set2_A #S2-30"
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Chaos"
+force_secondary = ""
+role = "nuker"
+evolution_line = ""
+stage = "mid"
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("draft")
+
+[sub_resource type="Resource" id="SpeciesData_S2_31"]
+script = ExtResource("2_data")
+id = "S2-31"
+name = "S2-31"
+batch = "set2B"
+art_ref = "montage_set2_B #S2-31"
+species_class = "organic"
+rank = "wild"
+tier = "T3"
+force_primary = "Gaia"
+force_secondary = ""
+role = "tank"
+evolution_line = ""
+stage = "apex"
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("draft")
+
+[sub_resource type="Resource" id="SpeciesData_S2_32"]
+script = ExtResource("2_data")
+id = "S2-32"
+name = "S2-32"
+batch = "set2B"
+art_ref = "montage_set2_B #S2-32"
+species_class = "organic"
+rank = "wild"
+tier = "T3"
+force_primary = "Gaia"
+force_secondary = ""
+role = "tank"
+evolution_line = ""
+stage = "apex"
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("draft")
+
+[sub_resource type="Resource" id="SpeciesData_S2_33"]
+script = ExtResource("2_data")
+id = "S2-33"
+name = "S2-33"
+batch = "set2B"
+art_ref = "montage_set2_B #S2-33"
+species_class = "organic"
+rank = "wild"
+tier = "T3"
+force_primary = "Gaia"
+force_secondary = ""
+role = "tank"
+evolution_line = ""
+stage = "apex"
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("draft")
+
+[sub_resource type="Resource" id="SpeciesData_S2_34"]
+script = ExtResource("2_data")
+id = "S2-34"
+name = "S2-34"
+batch = "set2B"
+art_ref = "montage_set2_B #S2-34"
+species_class = "organic"
+rank = "wild"
+tier = "T3"
+force_primary = "Thanatos"
+force_secondary = ""
+role = "assassin"
+evolution_line = ""
+stage = "apex"
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("draft")
+
+[sub_resource type="Resource" id="SpeciesData_S2_35"]
+script = ExtResource("2_data")
+id = "S2-35"
+name = "S2-35"
+batch = "set2B"
+art_ref = "montage_set2_B #S2-35"
+species_class = "organic"
+rank = "wild"
+tier = "T3"
+force_primary = "Gaia"
+force_secondary = ""
+role = "tank"
+evolution_line = ""
+stage = "apex"
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("draft")
+
+[sub_resource type="Resource" id="SpeciesData_S2_36"]
+script = ExtResource("2_data")
+id = "S2-36"
+name = "S2-36"
+batch = "set2B"
+art_ref = "montage_set2_B #S2-36"
+species_class = "organic"
+rank = "wild"
+tier = "T3"
+force_primary = "Ouranos"
+force_secondary = ""
+role = "striker"
+evolution_line = ""
+stage = "apex"
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("draft")
+
+[sub_resource type="Resource" id="SpeciesData_S2_37"]
+script = ExtResource("2_data")
+id = "S2-37"
+name = "S2-37"
+batch = "set2B"
+art_ref = "montage_set2_B #S2-37"
+species_class = "organic"
+rank = "wild"
+tier = "T3"
+force_primary = "Gaia"
+force_secondary = ""
+role = "tank"
+evolution_line = ""
+stage = "apex"
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("draft")
+
+[sub_resource type="Resource" id="SpeciesData_S2_38"]
+script = ExtResource("2_data")
+id = "S2-38"
+name = "S2-38"
+batch = "set2B"
+art_ref = "montage_set2_B #S2-38"
+species_class = "organic"
+rank = "wild"
+tier = "T3"
+force_primary = "Eros"
+force_secondary = ""
+role = "support"
+evolution_line = ""
+stage = "apex"
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("draft")
+
+[sub_resource type="Resource" id="SpeciesData_S2_39"]
+script = ExtResource("2_data")
+id = "S2-39"
+name = "S2-39"
+batch = "set2B"
+art_ref = "montage_set2_B #S2-39"
+species_class = "organic"
+rank = "wild"
+tier = "T3"
+force_primary = "Gaia"
+force_secondary = ""
+role = "tank"
+evolution_line = ""
+stage = "apex"
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("draft")
+
+[sub_resource type="Resource" id="SpeciesData_S2_40"]
+script = ExtResource("2_data")
+id = "S2-40"
+name = "S2-40"
+batch = "set2B"
+art_ref = "montage_set2_B #S2-40"
+species_class = "organic"
+rank = "wild"
+tier = "T3"
+force_primary = "Thanatos"
+force_secondary = ""
+role = "assassin"
+evolution_line = ""
+stage = "apex"
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("draft")
+
+[sub_resource type="Resource" id="SpeciesData_S2_41"]
+script = ExtResource("2_data")
+id = "S2-41"
+name = "S2-41"
+batch = "set2B"
+art_ref = "montage_set2_B #S2-41"
+species_class = "organic"
+rank = "wild"
+tier = "T3"
+force_primary = "Ouranos"
+force_secondary = ""
+role = "striker"
+evolution_line = ""
+stage = "apex"
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("draft")
+
+[sub_resource type="Resource" id="SpeciesData_S2_42"]
+script = ExtResource("2_data")
+id = "S2-42"
+name = "S2-42"
+batch = "set2B"
+art_ref = "montage_set2_B #S2-42"
+species_class = "organic"
+rank = "wild"
+tier = "T3"
+force_primary = "Ouranos"
+force_secondary = ""
+role = "striker"
+evolution_line = ""
+stage = "apex"
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("draft")
+
+[sub_resource type="Resource" id="SpeciesData_S2_43"]
+script = ExtResource("2_data")
+id = "S2-43"
+name = "S2-43"
+batch = "set2B"
+art_ref = "montage_set2_B #S2-43"
+species_class = "organic"
+rank = "wild"
+tier = "T3"
+force_primary = "Ouranos"
+force_secondary = ""
+role = "striker"
+evolution_line = ""
+stage = "apex"
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("draft")
+
+[sub_resource type="Resource" id="SpeciesData_S2_44"]
+script = ExtResource("2_data")
+id = "S2-44"
+name = "S2-44"
+batch = "set2B"
+art_ref = "montage_set2_B #S2-44"
+species_class = "organic"
+rank = "wild"
+tier = "T3"
+force_primary = "Ouranos"
+force_secondary = ""
+role = "striker"
+evolution_line = ""
+stage = "apex"
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("draft")
+
+[sub_resource type="Resource" id="SpeciesData_S2_45"]
+script = ExtResource("2_data")
+id = "S2-45"
+name = "S2-45"
+batch = "set2B"
+art_ref = "montage_set2_B #S2-45"
+species_class = "organic"
+rank = "wild"
+tier = "T3"
+force_primary = "Eros"
+force_secondary = ""
+role = "support"
+evolution_line = ""
+stage = "apex"
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("draft")
+
+[sub_resource type="Resource" id="SpeciesData_S2_46"]
+script = ExtResource("2_data")
+id = "S2-46"
+name = "S2-46"
+batch = "set2B"
+art_ref = "montage_set2_B #S2-46"
+species_class = "organic"
+rank = "wild"
+tier = "T3"
+force_primary = "Cosmos"
+force_secondary = ""
+role = "control"
+evolution_line = ""
+stage = "apex"
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("draft")
+
+[sub_resource type="Resource" id="SpeciesData_S2_47"]
+script = ExtResource("2_data")
+id = "S2-47"
+name = "S2-47"
+batch = "set2B"
+art_ref = "montage_set2_B #S2-47"
+species_class = "organic"
+rank = "wild"
+tier = "T3"
+force_primary = "Eros"
+force_secondary = ""
+role = "support"
+evolution_line = ""
+stage = "apex"
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("draft")
+
+[sub_resource type="Resource" id="SpeciesData_S2_48"]
+script = ExtResource("2_data")
+id = "S2-48"
+name = "S2-48"
+batch = "set2B"
+art_ref = "montage_set2_B #S2-48"
+species_class = "organic"
+rank = "wild"
+tier = "T3"
+force_primary = "Ouranos"
+force_secondary = ""
+role = "striker"
+evolution_line = ""
+stage = "apex"
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("draft")
+
+[sub_resource type="Resource" id="SpeciesData_S2_49"]
+script = ExtResource("2_data")
+id = "S2-49"
+name = "S2-49"
+batch = "set2B"
+art_ref = "montage_set2_B #S2-49"
+species_class = "organic"
+rank = "wild"
+tier = "T3"
+force_primary = "Thanatos"
+force_secondary = ""
+role = "assassin"
+evolution_line = ""
+stage = "apex"
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("draft")
+
+[sub_resource type="Resource" id="SpeciesData_S2_50"]
+script = ExtResource("2_data")
+id = "S2-50"
+name = "S2-50"
+batch = "set2B"
+art_ref = "montage_set2_B #S2-50"
+species_class = "organic"
+rank = "wild"
+tier = "T3"
+force_primary = "Cosmos"
+force_secondary = ""
+role = "control"
+evolution_line = ""
+stage = "apex"
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("draft")
+
+[sub_resource type="Resource" id="SpeciesData_S2_51"]
+script = ExtResource("2_data")
+id = "S2-51"
+name = "S2-51"
+batch = "set2B"
+art_ref = "montage_set2_B #S2-51"
+species_class = "organic"
+rank = "wild"
+tier = "T3"
+force_primary = "Chaos"
+force_secondary = ""
+role = "nuker"
+evolution_line = ""
+stage = "apex"
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("draft")
+
+[sub_resource type="Resource" id="SpeciesData_S2_52"]
+script = ExtResource("2_data")
+id = "S2-52"
+name = "S2-52"
+batch = "set2B"
+art_ref = "montage_set2_B #S2-52"
+species_class = "organic"
+rank = "wild"
+tier = "T3"
+force_primary = "Thanatos"
+force_secondary = ""
+role = "assassin"
+evolution_line = ""
+stage = "apex"
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("draft")
+
+[sub_resource type="Resource" id="SpeciesData_S2_53"]
+script = ExtResource("2_data")
+id = "S2-53"
+name = "S2-53"
+batch = "set2B"
+art_ref = "montage_set2_B #S2-53"
+species_class = "organic"
+rank = "wild"
+tier = "T3"
+force_primary = "Cosmos"
+force_secondary = ""
+role = "control"
+evolution_line = ""
+stage = "apex"
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("draft")
+
+[sub_resource type="Resource" id="SpeciesData_S2_54"]
+script = ExtResource("2_data")
+id = "S2-54"
+name = "S2-54"
+batch = "set2B"
+art_ref = "montage_set2_B #S2-54"
+species_class = "organic"
+rank = "wild"
+tier = "T3"
+force_primary = "Thanatos"
+force_secondary = ""
+role = "assassin"
+evolution_line = ""
+stage = "apex"
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("draft")
+
+[sub_resource type="Resource" id="SpeciesData_S2_55"]
+script = ExtResource("2_data")
+id = "S2-55"
+name = "S2-55"
+batch = "set2B"
+art_ref = "montage_set2_B #S2-55"
+species_class = "organic"
+rank = "wild"
+tier = "T3"
+force_primary = "Chaos"
+force_secondary = ""
+role = "nuker"
+evolution_line = ""
+stage = "apex"
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("draft")
+
+[sub_resource type="Resource" id="SpeciesData_S2_56"]
+script = ExtResource("2_data")
+id = "S2-56"
+name = "S2-56"
+batch = "set2B"
+art_ref = "montage_set2_B #S2-56"
+species_class = "organic"
+rank = "wild"
+tier = "T3"
+force_primary = "Gaia"
+force_secondary = ""
+role = "tank"
+evolution_line = ""
+stage = "apex"
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("draft")
+
+[sub_resource type="Resource" id="SpeciesData_S2_57"]
+script = ExtResource("2_data")
+id = "S2-57"
+name = "S2-57"
+batch = "set2B"
+art_ref = "montage_set2_B #S2-57"
+species_class = "organic"
+rank = "wild"
+tier = "T3"
+force_primary = "Eros"
+force_secondary = ""
+role = "support"
+evolution_line = ""
+stage = "apex"
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("draft")
+
+[sub_resource type="Resource" id="SpeciesData_S2_58"]
+script = ExtResource("2_data")
+id = "S2-58"
+name = "S2-58"
+batch = "set2B"
+art_ref = "montage_set2_B #S2-58"
+species_class = "organic"
+rank = "wild"
+tier = "T3"
+force_primary = "Cosmos"
+force_secondary = ""
+role = "control"
+evolution_line = ""
+stage = "apex"
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("draft")
+
+[sub_resource type="Resource" id="SpeciesData_S2_59"]
+script = ExtResource("2_data")
+id = "S2-59"
+name = "S2-59"
+batch = "set2B"
+art_ref = "montage_set2_B #S2-59"
+species_class = "organic"
+rank = "wild"
+tier = "T3"
+force_primary = "Gaia"
+force_secondary = ""
+role = "tank"
+evolution_line = ""
+stage = "apex"
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("draft")
+
+[sub_resource type="Resource" id="SpeciesData_S2_60"]
+script = ExtResource("2_data")
+id = "S2-60"
+name = "S2-60"
+batch = "set2B"
+art_ref = "montage_set2_B #S2-60"
+species_class = "organic"
+rank = "wild"
+tier = "T3"
+force_primary = "Thanatos"
+force_secondary = ""
+role = "assassin"
+evolution_line = ""
+stage = "apex"
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("draft")
+
+[sub_resource type="Resource" id="SpeciesData_batch3_001"]
+script = ExtResource("2_data")
+id = "batch3-001"
+name = ""
+batch = "batch3"
+art_ref = "art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_10_56 AM (1).png"
+species_class = "organic"
+rank = "god"
+tier = ""
+force_primary = "Chaos"
+force_secondary = "Thanatos"
+role = "nuker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("demon-lord", "boss")
+
+[sub_resource type="Resource" id="SpeciesData_batch3_002"]
+script = ExtResource("2_data")
+id = "batch3-002"
+name = ""
+batch = "batch3"
+art_ref = "art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_10_56 AM (2).png"
+species_class = "organic"
+rank = "god"
+tier = ""
+force_primary = "Chaos"
+force_secondary = ""
+role = "nuker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("demon-lord", "boss")
+
+[sub_resource type="Resource" id="SpeciesData_batch3_003"]
+script = ExtResource("2_data")
+id = "batch3-003"
+name = ""
+batch = "batch3"
+art_ref = "art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_10_56 AM (3).png"
+species_class = "organic"
+rank = "god"
+tier = ""
+force_primary = "Eros"
+force_secondary = "Thanatos"
+role = "support"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("demon-lord", "boss")
+
+[sub_resource type="Resource" id="SpeciesData_batch3_004"]
+script = ExtResource("2_data")
+id = "batch3-004"
+name = ""
+batch = "batch3"
+art_ref = "art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_10_56 AM (4).png"
+species_class = "organic"
+rank = "god"
+tier = ""
+force_primary = "Thanatos"
+force_secondary = "Ouranos"
+role = "assassin"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("demon-lord", "boss")
+
+[sub_resource type="Resource" id="SpeciesData_batch3_005"]
+script = ExtResource("2_data")
+id = "batch3-005"
+name = ""
+batch = "batch3"
+art_ref = "art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_10_57 AM (5).png"
+species_class = "organic"
+rank = "god"
+tier = ""
+force_primary = "Cosmos"
+force_secondary = "Gaia"
+role = "control"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("demon-lord", "boss")
+
+[sub_resource type="Resource" id="SpeciesData_batch3_006"]
+script = ExtResource("2_data")
+id = "batch3-006"
+name = ""
+batch = "batch3"
+art_ref = "art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_10_57 AM (6).png"
+species_class = "organic"
+rank = "god"
+tier = ""
+force_primary = "Chaos"
+force_secondary = "Eros"
+role = "nuker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("demon-lord", "boss")
+
+[sub_resource type="Resource" id="SpeciesData_batch3_007"]
+script = ExtResource("2_data")
+id = "batch3-007"
+name = ""
+batch = "batch3"
+art_ref = "art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_10_57 AM (7).png"
+species_class = "organic"
+rank = "god"
+tier = ""
+force_primary = "Cosmos"
+force_secondary = "Ouranos"
+role = "control"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("demon-lord", "boss")
+
+[sub_resource type="Resource" id="SpeciesData_batch3_008"]
+script = ExtResource("2_data")
+id = "batch3-008"
+name = ""
+batch = "batch3"
+art_ref = "art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_10_57 AM (8).png"
+species_class = "organic"
+rank = "god"
+tier = ""
+force_primary = "Thanatos"
+force_secondary = "Ouranos"
+role = "assassin"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("demon-lord", "boss")
+
+[sub_resource type="Resource" id="SpeciesData_batch3_009"]
+script = ExtResource("2_data")
+id = "batch3-009"
+name = ""
+batch = "batch3"
+art_ref = "art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_10_57 AM (9).png"
+species_class = "organic"
+rank = "god"
+tier = ""
+force_primary = "Eros"
+force_secondary = "Ouranos"
+role = "support"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("demon-lord", "boss")
+
+[sub_resource type="Resource" id="SpeciesData_batch3_010"]
+script = ExtResource("2_data")
+id = "batch3-010"
+name = ""
+batch = "batch3"
+art_ref = "art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_10_58 AM (10).png"
+species_class = "organic"
+rank = "god"
+tier = ""
+force_primary = "Chaos"
+force_secondary = "Thanatos"
+role = "nuker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("demon-lord", "boss")
+
+[sub_resource type="Resource" id="SpeciesData_batch3_011"]
+script = ExtResource("2_data")
+id = "batch3-011"
+name = ""
+batch = "batch3"
+art_ref = "art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_14_00 AM (1).png"
+species_class = "organic"
+rank = "god"
+tier = ""
+force_primary = "Chaos"
+force_secondary = "Thanatos"
+role = "nuker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("demon-lord", "boss")
+
+[sub_resource type="Resource" id="SpeciesData_batch3_012"]
+script = ExtResource("2_data")
+id = "batch3-012"
+name = ""
+batch = "batch3"
+art_ref = "art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_14_01 AM (2).png"
+species_class = "organic"
+rank = "god"
+tier = ""
+force_primary = "Thanatos"
+force_secondary = "Cosmos"
+role = "assassin"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("demon-lord", "boss")
+
+[sub_resource type="Resource" id="SpeciesData_batch3_013"]
+script = ExtResource("2_data")
+id = "batch3-013"
+name = ""
+batch = "batch3"
+art_ref = "art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_14_01 AM (3).png"
+species_class = "organic"
+rank = "god"
+tier = ""
+force_primary = "Thanatos"
+force_secondary = "Chaos"
+role = "assassin"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("demon-lord", "boss")
+
+[sub_resource type="Resource" id="SpeciesData_batch3_014"]
+script = ExtResource("2_data")
+id = "batch3-014"
+name = ""
+batch = "batch3"
+art_ref = "art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_14_01 AM (4).png"
+species_class = "organic"
+rank = "god"
+tier = ""
+force_primary = "Chaos"
+force_secondary = "Thanatos"
+role = "nuker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("demon-lord", "boss")
+
+[sub_resource type="Resource" id="SpeciesData_batch3_015"]
+script = ExtResource("2_data")
+id = "batch3-015"
+name = ""
+batch = "batch3"
+art_ref = "art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_14_01 AM (5).png"
+species_class = "organic"
+rank = "god"
+tier = ""
+force_primary = "Cosmos"
+force_secondary = "Ouranos"
+role = "control"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("demon-lord", "boss")
+
+[sub_resource type="Resource" id="SpeciesData_batch3_016"]
+script = ExtResource("2_data")
+id = "batch3-016"
+name = ""
+batch = "batch3"
+art_ref = "art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_14_02 AM (6).png"
+species_class = "organic"
+rank = "god"
+tier = ""
+force_primary = "Cosmos"
+force_secondary = "Ouranos"
+role = "control"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("demon-lord", "boss")
+
+[sub_resource type="Resource" id="SpeciesData_batch3_017"]
+script = ExtResource("2_data")
+id = "batch3-017"
+name = ""
+batch = "batch3"
+art_ref = "art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_14_02 AM (7).png"
+species_class = "organic"
+rank = "god"
+tier = ""
+force_primary = "Eros"
+force_secondary = "Gaia"
+role = "support"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("demon-lord", "boss")
+
+[sub_resource type="Resource" id="SpeciesData_batch3_018"]
+script = ExtResource("2_data")
+id = "batch3-018"
+name = ""
+batch = "batch3"
+art_ref = "art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_14_02 AM (8).png"
+species_class = "organic"
+rank = "god"
+tier = ""
+force_primary = "Chaos"
+force_secondary = "Ouranos"
+role = "nuker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("demon-lord", "boss")
+
+[sub_resource type="Resource" id="SpeciesData_batch3_019"]
+script = ExtResource("2_data")
+id = "batch3-019"
+name = ""
+batch = "batch3"
+art_ref = "art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_14_02 AM (9).png"
+species_class = "organic"
+rank = "god"
+tier = ""
+force_primary = "Thanatos"
+force_secondary = "Eros"
+role = "assassin"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("demon-lord", "boss")
+
+[sub_resource type="Resource" id="SpeciesData_batch3_020"]
+script = ExtResource("2_data")
+id = "batch3-020"
+name = ""
+batch = "batch3"
+art_ref = "art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_14_03 AM (10).png"
+species_class = "organic"
+rank = "god"
+tier = ""
+force_primary = "Gaia"
+force_secondary = "Thanatos"
+role = "tank"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("demon-lord", "boss")
+
+[sub_resource type="Resource" id="SpeciesData_batch3_021"]
+script = ExtResource("2_data")
+id = "batch3-021"
+name = ""
+batch = "batch3"
+art_ref = "art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_16_08 AM (1).png"
+species_class = "organic"
+rank = "god"
+tier = ""
+force_primary = "Thanatos"
+force_secondary = "Chaos"
+role = "assassin"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("demon-lord", "boss")
+
+[sub_resource type="Resource" id="SpeciesData_batch3_022"]
+script = ExtResource("2_data")
+id = "batch3-022"
+name = ""
+batch = "batch3"
+art_ref = "art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_16_09 AM (2).png"
+species_class = "organic"
+rank = "god"
+tier = ""
+force_primary = "Thanatos"
+force_secondary = ""
+role = "assassin"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("demon-lord", "boss")
+
+[sub_resource type="Resource" id="SpeciesData_batch3_023"]
+script = ExtResource("2_data")
+id = "batch3-023"
+name = ""
+batch = "batch3"
+art_ref = "art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_16_09 AM (3).png"
+species_class = "organic"
+rank = "god"
+tier = ""
+force_primary = "Eros"
+force_secondary = "Gaia"
+role = "support"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("demon-lord", "boss")
+
+[sub_resource type="Resource" id="SpeciesData_batch3_024"]
+script = ExtResource("2_data")
+id = "batch3-024"
+name = ""
+batch = "batch3"
+art_ref = "art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_16_09 AM (4).png"
+species_class = "organic"
+rank = "god"
+tier = ""
+force_primary = "Ouranos"
+force_secondary = "Cosmos"
+role = "striker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("demon-lord", "boss")
+
+[sub_resource type="Resource" id="SpeciesData_batch3_025"]
+script = ExtResource("2_data")
+id = "batch3-025"
+name = ""
+batch = "batch3"
+art_ref = "art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_16_09 AM (5).png"
+species_class = "organic"
+rank = "god"
+tier = ""
+force_primary = "Thanatos"
+force_secondary = "Chaos"
+role = "assassin"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("demon-lord", "boss")
+
+[sub_resource type="Resource" id="SpeciesData_batch3_026"]
+script = ExtResource("2_data")
+id = "batch3-026"
+name = ""
+batch = "batch3"
+art_ref = "art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_16_10 AM (6).png"
+species_class = "organic"
+rank = "god"
+tier = ""
+force_primary = "Cosmos"
+force_secondary = "Ouranos"
+role = "control"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("demon-lord", "boss")
+
+[sub_resource type="Resource" id="SpeciesData_batch3_027"]
+script = ExtResource("2_data")
+id = "batch3-027"
+name = ""
+batch = "batch3"
+art_ref = "art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_16_10 AM (7).png"
+species_class = "organic"
+rank = "god"
+tier = ""
+force_primary = "Thanatos"
+force_secondary = "Gaia"
+role = "assassin"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("demon-lord", "boss")
+
+[sub_resource type="Resource" id="SpeciesData_batch3_028"]
+script = ExtResource("2_data")
+id = "batch3-028"
+name = ""
+batch = "batch3"
+art_ref = "art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_16_10 AM (8).png"
+species_class = "organic"
+rank = "god"
+tier = ""
+force_primary = "Chaos"
+force_secondary = "Ouranos"
+role = "nuker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("demon-lord", "boss")
+
+[sub_resource type="Resource" id="SpeciesData_batch3_029"]
+script = ExtResource("2_data")
+id = "batch3-029"
+name = ""
+batch = "batch3"
+art_ref = "art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_16_10 AM (9).png"
+species_class = "organic"
+rank = "god"
+tier = ""
+force_primary = "Cosmos"
+force_secondary = "Gaia"
+role = "control"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("demon-lord", "boss")
+
+[sub_resource type="Resource" id="SpeciesData_batch3_030"]
+script = ExtResource("2_data")
+id = "batch3-030"
+name = ""
+batch = "batch3"
+art_ref = "art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_16_11 AM (10).png"
+species_class = "organic"
+rank = "god"
+tier = ""
+force_primary = "Thanatos"
+force_secondary = "Chaos"
+role = "assassin"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("demon-lord", "boss")
+
+[sub_resource type="Resource" id="SpeciesData_batch3_031"]
+script = ExtResource("2_data")
+id = "batch3-031"
+name = ""
+batch = "batch3"
+art_ref = "art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_18_34 AM (1).png"
+species_class = "construct"
+rank = "wild"
+tier = "T3"
+force_primary = "Cosmos"
+force_secondary = "Gaia"
+role = "control"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("construct", "clockwork")
+
+[sub_resource type="Resource" id="SpeciesData_batch3_032"]
+script = ExtResource("2_data")
+id = "batch3-032"
+name = ""
+batch = "batch3"
+art_ref = "art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_18_34 AM (2).png"
+species_class = "construct"
+rank = "wild"
+tier = "T3"
+force_primary = "Cosmos"
+force_secondary = "Gaia"
+role = "control"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("construct", "clockwork")
+
+[sub_resource type="Resource" id="SpeciesData_batch3_033"]
+script = ExtResource("2_data")
+id = "batch3-033"
+name = ""
+batch = "batch3"
+art_ref = "art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_18_35 AM (3).png"
+species_class = "construct"
+rank = "wild"
+tier = "T3"
+force_primary = "Cosmos"
+force_secondary = "Gaia"
+role = "control"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("construct", "clockwork")
+
+[sub_resource type="Resource" id="SpeciesData_batch3_034"]
+script = ExtResource("2_data")
+id = "batch3-034"
+name = ""
+batch = "batch3"
+art_ref = "art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_18_35 AM (4).png"
+species_class = "construct"
+rank = "wild"
+tier = "T3"
+force_primary = "Cosmos"
+force_secondary = "Gaia"
+role = "control"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("construct", "clockwork")
+
+[sub_resource type="Resource" id="SpeciesData_batch3_035"]
+script = ExtResource("2_data")
+id = "batch3-035"
+name = ""
+batch = "batch3"
+art_ref = "art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_18_35 AM (5).png"
+species_class = "construct"
+rank = "wild"
+tier = "T3"
+force_primary = "Cosmos"
+force_secondary = "Gaia"
+role = "control"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("construct", "clockwork")
+
+[sub_resource type="Resource" id="SpeciesData_batch3_036"]
+script = ExtResource("2_data")
+id = "batch3-036"
+name = ""
+batch = "batch3"
+art_ref = "art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_18_35 AM (6).png"
+species_class = "construct"
+rank = "wild"
+tier = "T3"
+force_primary = "Cosmos"
+force_secondary = "Gaia"
+role = "control"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("construct", "clockwork")
+
+[sub_resource type="Resource" id="SpeciesData_batch3_037"]
+script = ExtResource("2_data")
+id = "batch3-037"
+name = ""
+batch = "batch3"
+art_ref = "art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_18_36 AM (10).png"
+species_class = "construct"
+rank = "wild"
+tier = "T3"
+force_primary = "Cosmos"
+force_secondary = "Gaia"
+role = "control"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("construct", "clockwork")
+
+[sub_resource type="Resource" id="SpeciesData_batch3_038"]
+script = ExtResource("2_data")
+id = "batch3-038"
+name = ""
+batch = "batch3"
+art_ref = "art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_18_36 AM (7).png"
+species_class = "construct"
+rank = "wild"
+tier = "T3"
+force_primary = "Cosmos"
+force_secondary = "Gaia"
+role = "control"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("construct", "clockwork")
+
+[sub_resource type="Resource" id="SpeciesData_batch3_039"]
+script = ExtResource("2_data")
+id = "batch3-039"
+name = ""
+batch = "batch3"
+art_ref = "art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_18_36 AM (8).png"
+species_class = "construct"
+rank = "wild"
+tier = "T3"
+force_primary = "Cosmos"
+force_secondary = "Gaia"
+role = "control"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("construct", "clockwork")
+
+[sub_resource type="Resource" id="SpeciesData_batch3_040"]
+script = ExtResource("2_data")
+id = "batch3-040"
+name = ""
+batch = "batch3"
+art_ref = "art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_18_36 AM (9).png"
+species_class = "construct"
+rank = "wild"
+tier = "T3"
+force_primary = "Cosmos"
+force_secondary = "Gaia"
+role = "control"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("construct", "clockwork")
+
+[sub_resource type="Resource" id="SpeciesData_batch3_041"]
+script = ExtResource("2_data")
+id = "batch3-041"
+name = ""
+batch = "batch3"
+art_ref = "art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_24_08 AM (1).png"
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Thanatos"
+force_secondary = "Eros"
+role = "assassin"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("eldritch", "abomination")
+
+[sub_resource type="Resource" id="SpeciesData_batch3_042"]
+script = ExtResource("2_data")
+id = "batch3-042"
+name = ""
+batch = "batch3"
+art_ref = "art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_24_08 AM (2).png"
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Ouranos"
+force_secondary = "Cosmos"
+role = "striker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("eldritch", "abomination")
+
+[sub_resource type="Resource" id="SpeciesData_batch3_043"]
+script = ExtResource("2_data")
+id = "batch3-043"
+name = ""
+batch = "batch3"
+art_ref = "art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_24_08 AM (3).png"
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Thanatos"
+force_secondary = ""
+role = "assassin"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("eldritch", "abomination")
+
+[sub_resource type="Resource" id="SpeciesData_batch3_044"]
+script = ExtResource("2_data")
+id = "batch3-044"
+name = ""
+batch = "batch3"
+art_ref = "art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_24_08 AM (4).png"
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Eros"
+force_secondary = "Ouranos"
+role = "support"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("eldritch", "abomination")
+
+[sub_resource type="Resource" id="SpeciesData_batch3_045"]
+script = ExtResource("2_data")
+id = "batch3-045"
+name = ""
+batch = "batch3"
+art_ref = "art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_24_09 AM (5).png"
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Eros"
+force_secondary = "Chaos"
+role = "support"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("eldritch", "abomination")
+
+[sub_resource type="Resource" id="SpeciesData_batch3_046"]
+script = ExtResource("2_data")
+id = "batch3-046"
+name = ""
+batch = "batch3"
+art_ref = "art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_24_09 AM (6).png"
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Thanatos"
+force_secondary = "Chaos"
+role = "assassin"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("eldritch", "abomination")
+
+[sub_resource type="Resource" id="SpeciesData_batch3_047"]
+script = ExtResource("2_data")
+id = "batch3-047"
+name = ""
+batch = "batch3"
+art_ref = "art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_24_09 AM (7).png"
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Thanatos"
+force_secondary = "Ouranos"
+role = "assassin"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("eldritch", "abomination")
+
+[sub_resource type="Resource" id="SpeciesData_batch3_048"]
+script = ExtResource("2_data")
+id = "batch3-048"
+name = ""
+batch = "batch3"
+art_ref = "art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_24_09 AM (8).png"
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Chaos"
+force_secondary = "Thanatos"
+role = "nuker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("eldritch", "abomination")
+
+[sub_resource type="Resource" id="SpeciesData_batch3_049"]
+script = ExtResource("2_data")
+id = "batch3-049"
+name = ""
+batch = "batch3"
+art_ref = "art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_24_09 AM (9).png"
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Thanatos"
+force_secondary = "Chaos"
+role = "assassin"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("eldritch", "abomination")
+
+[sub_resource type="Resource" id="SpeciesData_batch3_050"]
+script = ExtResource("2_data")
+id = "batch3-050"
+name = ""
+batch = "batch3"
+art_ref = "art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_24_10 AM (10).png"
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Thanatos"
+force_secondary = "Chaos"
+role = "assassin"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("eldritch", "abomination")
+
+[sub_resource type="Resource" id="SpeciesData_batch3_051"]
+script = ExtResource("2_data")
+id = "batch3-051"
+name = ""
+batch = "batch3"
+art_ref = "art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_27_26 AM (1).png"
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Gaia"
+force_secondary = "Ouranos"
+role = "tank"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("kaiju", "apex")
+
+[sub_resource type="Resource" id="SpeciesData_batch3_052"]
+script = ExtResource("2_data")
+id = "batch3-052"
+name = ""
+batch = "batch3"
+art_ref = "art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_27_26 AM (2).png"
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Gaia"
+force_secondary = "Chaos"
+role = "tank"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("kaiju", "apex")
+
+[sub_resource type="Resource" id="SpeciesData_batch3_053"]
+script = ExtResource("2_data")
+id = "batch3-053"
+name = ""
+batch = "batch3"
+art_ref = "art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_27_26 AM (3).png"
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Gaia"
+force_secondary = "Thanatos"
+role = "tank"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("kaiju", "apex")
+
+[sub_resource type="Resource" id="SpeciesData_batch3_054"]
+script = ExtResource("2_data")
+id = "batch3-054"
+name = ""
+batch = "batch3"
+art_ref = "art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_27_26 AM (4).png"
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Ouranos"
+force_secondary = "Chaos"
+role = "striker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("kaiju", "apex")
+
+[sub_resource type="Resource" id="SpeciesData_batch3_055"]
+script = ExtResource("2_data")
+id = "batch3-055"
+name = ""
+batch = "batch3"
+art_ref = "art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_27_27 AM (5).png"
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Gaia"
+force_secondary = "Thanatos"
+role = "tank"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("kaiju", "apex")
+
+[sub_resource type="Resource" id="SpeciesData_batch3_056"]
+script = ExtResource("2_data")
+id = "batch3-056"
+name = ""
+batch = "batch3"
+art_ref = "art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_27_27 AM (6).png"
+species_class = "construct"
+rank = "wild"
+tier = "T3"
+force_primary = "Cosmos"
+force_secondary = "Gaia"
+role = "control"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("construct", "mecha")
+
+[sub_resource type="Resource" id="SpeciesData_batch3_057"]
+script = ExtResource("2_data")
+id = "batch3-057"
+name = ""
+batch = "batch3"
+art_ref = "art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_27_27 AM (7).png"
+species_class = "construct"
+rank = "wild"
+tier = "T3"
+force_primary = "Cosmos"
+force_secondary = "Gaia"
+role = "control"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("construct", "mecha")
+
+[sub_resource type="Resource" id="SpeciesData_batch3_058"]
+script = ExtResource("2_data")
+id = "batch3-058"
+name = ""
+batch = "batch3"
+art_ref = "art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_27_27 AM (8).png"
+species_class = "construct"
+rank = "wild"
+tier = "T3"
+force_primary = "Cosmos"
+force_secondary = "Gaia"
+role = "control"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("construct", "mecha")
+
+[sub_resource type="Resource" id="SpeciesData_batch3_059"]
+script = ExtResource("2_data")
+id = "batch3-059"
+name = ""
+batch = "batch3"
+art_ref = "art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_27_27 AM (9).png"
+species_class = "construct"
+rank = "wild"
+tier = "T3"
+force_primary = "Cosmos"
+force_secondary = "Gaia"
+role = "control"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("construct", "mecha")
+
+[sub_resource type="Resource" id="SpeciesData_batch3_060"]
+script = ExtResource("2_data")
+id = "batch3-060"
+name = ""
+batch = "batch3"
+art_ref = "art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_27_28 AM (10).png"
+species_class = "construct"
+rank = "wild"
+tier = "T3"
+force_primary = "Cosmos"
+force_secondary = "Gaia"
+role = "control"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("construct", "mecha")
+
+[sub_resource type="Resource" id="SpeciesData_batch3_061"]
+script = ExtResource("2_data")
+id = "batch3-061"
+name = ""
+batch = "batch3"
+art_ref = "art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_29_44 AM (1).png"
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Gaia"
+force_secondary = "Chaos"
+role = "tank"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("kaiju", "apex")
+
+[sub_resource type="Resource" id="SpeciesData_batch3_062"]
+script = ExtResource("2_data")
+id = "batch3-062"
+name = ""
+batch = "batch3"
+art_ref = "art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_29_44 AM (2).png"
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Gaia"
+force_secondary = ""
+role = "tank"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("kaiju", "apex")
+
+[sub_resource type="Resource" id="SpeciesData_batch3_063"]
+script = ExtResource("2_data")
+id = "batch3-063"
+name = ""
+batch = "batch3"
+art_ref = "art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_29_45 AM (3).png"
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Ouranos"
+force_secondary = "Cosmos"
+role = "striker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("kaiju", "apex")
+
+[sub_resource type="Resource" id="SpeciesData_batch3_064"]
+script = ExtResource("2_data")
+id = "batch3-064"
+name = ""
+batch = "batch3"
+art_ref = "art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_29_45 AM (4).png"
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Ouranos"
+force_secondary = "Gaia"
+role = "striker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("kaiju", "apex")
+
+[sub_resource type="Resource" id="SpeciesData_batch3_065"]
+script = ExtResource("2_data")
+id = "batch3-065"
+name = ""
+batch = "batch3"
+art_ref = "art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_29_45 AM (5).png"
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Ouranos"
+force_secondary = "Chaos"
+role = "striker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("kaiju", "apex")
+
+[sub_resource type="Resource" id="SpeciesData_batch3_066"]
+script = ExtResource("2_data")
+id = "batch3-066"
+name = ""
+batch = "batch3"
+art_ref = "art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_29_46 AM (6).png"
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Gaia"
+force_secondary = "Cosmos"
+role = "tank"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("kaiju", "apex")
+
+[sub_resource type="Resource" id="SpeciesData_batch3_067"]
+script = ExtResource("2_data")
+id = "batch3-067"
+name = ""
+batch = "batch3"
+art_ref = "art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_29_46 AM (7).png"
+species_class = "construct"
+rank = "wild"
+tier = "T3"
+force_primary = "Cosmos"
+force_secondary = "Gaia"
+role = "control"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("construct", "mecha")
+
+[sub_resource type="Resource" id="SpeciesData_batch3_068"]
+script = ExtResource("2_data")
+id = "batch3-068"
+name = ""
+batch = "batch3"
+art_ref = "art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_29_46 AM (8).png"
+species_class = "construct"
+rank = "wild"
+tier = "T3"
+force_primary = "Cosmos"
+force_secondary = "Gaia"
+role = "control"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("construct", "mecha")
+
+[sub_resource type="Resource" id="SpeciesData_batch3_069"]
+script = ExtResource("2_data")
+id = "batch3-069"
+name = ""
+batch = "batch3"
+art_ref = "art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_29_46 AM (9).png"
+species_class = "construct"
+rank = "wild"
+tier = "T3"
+force_primary = "Cosmos"
+force_secondary = "Gaia"
+role = "control"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("construct", "mecha")
+
+[sub_resource type="Resource" id="SpeciesData_batch3_070"]
+script = ExtResource("2_data")
+id = "batch3-070"
+name = ""
+batch = "batch3"
+art_ref = "art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_29_47 AM (10).png"
+species_class = "construct"
+rank = "wild"
+tier = "T3"
+force_primary = "Cosmos"
+force_secondary = "Gaia"
+role = "control"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("construct", "mecha")
+
+[sub_resource type="Resource" id="SpeciesData_batch3_071"]
+script = ExtResource("2_data")
+id = "batch3-071"
+name = ""
+batch = "batch3"
+art_ref = "art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_32_19 AM (1).png"
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Cosmos"
+force_secondary = "Gaia"
+role = "control"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("beast")
+
+[sub_resource type="Resource" id="SpeciesData_batch3_072"]
+script = ExtResource("2_data")
+id = "batch3-072"
+name = ""
+batch = "batch3"
+art_ref = "art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_32_19 AM (2).png"
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Thanatos"
+force_secondary = "Ouranos"
+role = "assassin"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("dragon", "apex")
+
+[sub_resource type="Resource" id="SpeciesData_batch3_073"]
+script = ExtResource("2_data")
+id = "batch3-073"
+name = ""
+batch = "batch3"
+art_ref = "art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_32_19 AM (3).png"
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Gaia"
+force_secondary = "Chaos"
+role = "tank"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("greek-myth", "champion")
+
+[sub_resource type="Resource" id="SpeciesData_batch3_074"]
+script = ExtResource("2_data")
+id = "batch3-074"
+name = ""
+batch = "batch3"
+art_ref = "art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_32_20 AM (4).png"
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Thanatos"
+force_secondary = "Chaos"
+role = "assassin"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("greek-myth", "champion")
+
+[sub_resource type="Resource" id="SpeciesData_batch3_075"]
+script = ExtResource("2_data")
+id = "batch3-075"
+name = ""
+batch = "batch3"
+art_ref = "art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_32_20 AM (5).png"
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Ouranos"
+force_secondary = "Thanatos"
+role = "striker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("greek-myth", "champion")
+
+[sub_resource type="Resource" id="SpeciesData_batch3_076"]
+script = ExtResource("2_data")
+id = "batch3-076"
+name = ""
+batch = "batch3"
+art_ref = "art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_32_20 AM (6).png"
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Thanatos"
+force_secondary = "Chaos"
+role = "assassin"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("greek-myth", "champion")
+
+[sub_resource type="Resource" id="SpeciesData_batch3_077"]
+script = ExtResource("2_data")
+id = "batch3-077"
+name = ""
+batch = "batch3"
+art_ref = "art/batch3/Mutant Images 3/ChatGPT Image Jun 26, 2026, 12_32_20 AM (7).png"
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Cosmos"
+force_secondary = "Gaia"
+role = "control"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("greek-myth", "champion")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_001"]
+script = ExtResource("2_data")
+id = "batch4-001"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Eros"
+force_secondary = "Cosmos"
+role = "support"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("radiant", "holy")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_002"]
+script = ExtResource("2_data")
+id = "batch4-002"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Eros"
+force_secondary = "Cosmos"
+role = "support"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("radiant", "holy")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_003"]
+script = ExtResource("2_data")
+id = "batch4-003"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Eros"
+force_secondary = "Cosmos"
+role = "support"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("radiant", "holy")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_004"]
+script = ExtResource("2_data")
+id = "batch4-004"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Eros"
+force_secondary = "Cosmos"
+role = "support"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("radiant", "holy")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_005"]
+script = ExtResource("2_data")
+id = "batch4-005"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Eros"
+force_secondary = "Cosmos"
+role = "support"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("radiant", "holy")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_006"]
+script = ExtResource("2_data")
+id = "batch4-006"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Eros"
+force_secondary = "Cosmos"
+role = "support"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("radiant", "holy")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_007"]
+script = ExtResource("2_data")
+id = "batch4-007"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Eros"
+force_secondary = "Cosmos"
+role = "support"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("radiant", "holy")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_008"]
+script = ExtResource("2_data")
+id = "batch4-008"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Eros"
+force_secondary = "Cosmos"
+role = "support"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("radiant", "holy")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_009"]
+script = ExtResource("2_data")
+id = "batch4-009"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Eros"
+force_secondary = "Cosmos"
+role = "support"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("radiant", "holy")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_010"]
+script = ExtResource("2_data")
+id = "batch4-010"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Eros"
+force_secondary = "Cosmos"
+role = "support"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("radiant", "holy")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_011"]
+script = ExtResource("2_data")
+id = "batch4-011"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Eros"
+force_secondary = "Cosmos"
+role = "support"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("radiant", "holy")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_012"]
+script = ExtResource("2_data")
+id = "batch4-012"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Eros"
+force_secondary = "Cosmos"
+role = "support"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("radiant", "holy")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_013"]
+script = ExtResource("2_data")
+id = "batch4-013"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Eros"
+force_secondary = "Cosmos"
+role = "support"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("radiant", "holy")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_014"]
+script = ExtResource("2_data")
+id = "batch4-014"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Eros"
+force_secondary = "Cosmos"
+role = "support"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("radiant", "holy")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_015"]
+script = ExtResource("2_data")
+id = "batch4-015"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Eros"
+force_secondary = "Cosmos"
+role = "support"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("radiant", "holy")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_016"]
+script = ExtResource("2_data")
+id = "batch4-016"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Eros"
+force_secondary = "Cosmos"
+role = "support"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("radiant", "holy")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_017"]
+script = ExtResource("2_data")
+id = "batch4-017"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Eros"
+force_secondary = "Cosmos"
+role = "support"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("radiant", "holy")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_018"]
+script = ExtResource("2_data")
+id = "batch4-018"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Eros"
+force_secondary = "Cosmos"
+role = "support"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("radiant", "holy")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_019"]
+script = ExtResource("2_data")
+id = "batch4-019"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Eros"
+force_secondary = "Cosmos"
+role = "support"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("radiant", "holy")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_020"]
+script = ExtResource("2_data")
+id = "batch4-020"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Eros"
+force_secondary = "Cosmos"
+role = "support"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("radiant", "holy")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_021"]
+script = ExtResource("2_data")
+id = "batch4-021"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Eros"
+force_secondary = "Cosmos"
+role = "support"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("radiant", "holy")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_022"]
+script = ExtResource("2_data")
+id = "batch4-022"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Eros"
+force_secondary = "Cosmos"
+role = "support"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("radiant", "holy")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_023"]
+script = ExtResource("2_data")
+id = "batch4-023"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Eros"
+force_secondary = "Cosmos"
+role = "support"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("radiant", "holy")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_024"]
+script = ExtResource("2_data")
+id = "batch4-024"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Eros"
+force_secondary = "Cosmos"
+role = "support"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("radiant", "holy")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_025"]
+script = ExtResource("2_data")
+id = "batch4-025"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Thanatos"
+force_secondary = "Chaos"
+role = "assassin"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("dark")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_026"]
+script = ExtResource("2_data")
+id = "batch4-026"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Thanatos"
+force_secondary = "Chaos"
+role = "assassin"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("dark")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_027"]
+script = ExtResource("2_data")
+id = "batch4-027"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Thanatos"
+force_secondary = "Chaos"
+role = "assassin"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("dark")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_028"]
+script = ExtResource("2_data")
+id = "batch4-028"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Thanatos"
+force_secondary = "Chaos"
+role = "assassin"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("dark")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_029"]
+script = ExtResource("2_data")
+id = "batch4-029"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Thanatos"
+force_secondary = "Chaos"
+role = "assassin"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("dark")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_030"]
+script = ExtResource("2_data")
+id = "batch4-030"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Thanatos"
+force_secondary = "Chaos"
+role = "assassin"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("dark")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_031"]
+script = ExtResource("2_data")
+id = "batch4-031"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Ouranos"
+force_secondary = "Cosmos"
+role = "striker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("frost", "sky")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_032"]
+script = ExtResource("2_data")
+id = "batch4-032"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Ouranos"
+force_secondary = "Cosmos"
+role = "striker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("frost", "sky")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_033"]
+script = ExtResource("2_data")
+id = "batch4-033"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Ouranos"
+force_secondary = "Cosmos"
+role = "striker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("frost", "sky")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_034"]
+script = ExtResource("2_data")
+id = "batch4-034"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Ouranos"
+force_secondary = "Cosmos"
+role = "striker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("frost", "sky")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_035"]
+script = ExtResource("2_data")
+id = "batch4-035"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Ouranos"
+force_secondary = "Cosmos"
+role = "striker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("frost", "sky")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_036"]
+script = ExtResource("2_data")
+id = "batch4-036"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Ouranos"
+force_secondary = "Cosmos"
+role = "striker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("frost", "sky")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_037"]
+script = ExtResource("2_data")
+id = "batch4-037"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Ouranos"
+force_secondary = "Cosmos"
+role = "striker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("frost", "sky")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_038"]
+script = ExtResource("2_data")
+id = "batch4-038"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Ouranos"
+force_secondary = "Cosmos"
+role = "striker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("frost", "sky")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_039"]
+script = ExtResource("2_data")
+id = "batch4-039"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Ouranos"
+force_secondary = "Cosmos"
+role = "striker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("frost", "sky")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_040"]
+script = ExtResource("2_data")
+id = "batch4-040"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Ouranos"
+force_secondary = "Cosmos"
+role = "striker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("frost", "sky")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_041"]
+script = ExtResource("2_data")
+id = "batch4-041"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Ouranos"
+force_secondary = "Cosmos"
+role = "striker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("frost", "sky")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_042"]
+script = ExtResource("2_data")
+id = "batch4-042"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Ouranos"
+force_secondary = "Cosmos"
+role = "striker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("frost", "sky")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_043"]
+script = ExtResource("2_data")
+id = "batch4-043"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Ouranos"
+force_secondary = "Cosmos"
+role = "striker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("frost", "sky")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_044"]
+script = ExtResource("2_data")
+id = "batch4-044"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Ouranos"
+force_secondary = "Cosmos"
+role = "striker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("frost", "sky")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_045"]
+script = ExtResource("2_data")
+id = "batch4-045"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Ouranos"
+force_secondary = "Cosmos"
+role = "striker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("frost", "sky")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_046"]
+script = ExtResource("2_data")
+id = "batch4-046"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Ouranos"
+force_secondary = "Cosmos"
+role = "striker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("frost", "sky")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_047"]
+script = ExtResource("2_data")
+id = "batch4-047"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Ouranos"
+force_secondary = "Cosmos"
+role = "striker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("frost", "sky")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_048"]
+script = ExtResource("2_data")
+id = "batch4-048"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Ouranos"
+force_secondary = "Cosmos"
+role = "striker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("frost", "sky")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_049"]
+script = ExtResource("2_data")
+id = "batch4-049"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Ouranos"
+force_secondary = "Cosmos"
+role = "striker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("dragon", "apex")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_050"]
+script = ExtResource("2_data")
+id = "batch4-050"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Ouranos"
+force_secondary = "Cosmos"
+role = "striker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("dragon", "apex")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_051"]
+script = ExtResource("2_data")
+id = "batch4-051"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Chaos"
+force_secondary = "Thanatos"
+role = "nuker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("dragon", "apex")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_052"]
+script = ExtResource("2_data")
+id = "batch4-052"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Chaos"
+force_secondary = "Thanatos"
+role = "nuker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("dragon", "apex")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_053"]
+script = ExtResource("2_data")
+id = "batch4-053"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Chaos"
+force_secondary = "Thanatos"
+role = "nuker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("dragon", "apex")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_054"]
+script = ExtResource("2_data")
+id = "batch4-054"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Chaos"
+force_secondary = "Thanatos"
+role = "nuker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("dragon", "apex")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_055"]
+script = ExtResource("2_data")
+id = "batch4-055"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Chaos"
+force_secondary = "Thanatos"
+role = "nuker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("dragon", "apex")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_056"]
+script = ExtResource("2_data")
+id = "batch4-056"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Thanatos"
+force_secondary = "Ouranos"
+role = "assassin"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("dragon", "apex")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_057"]
+script = ExtResource("2_data")
+id = "batch4-057"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Thanatos"
+force_secondary = "Ouranos"
+role = "assassin"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("dragon", "apex")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_058"]
+script = ExtResource("2_data")
+id = "batch4-058"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Thanatos"
+force_secondary = "Ouranos"
+role = "assassin"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("dragon", "apex")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_059"]
+script = ExtResource("2_data")
+id = "batch4-059"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Thanatos"
+force_secondary = "Ouranos"
+role = "assassin"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("dragon", "apex")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_060"]
+script = ExtResource("2_data")
+id = "batch4-060"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Thanatos"
+force_secondary = "Ouranos"
+role = "assassin"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("dragon", "apex")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_061"]
+script = ExtResource("2_data")
+id = "batch4-061"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Eros"
+force_secondary = "Thanatos"
+role = "support"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("eldritch", "apex")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_062"]
+script = ExtResource("2_data")
+id = "batch4-062"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Eros"
+force_secondary = "Thanatos"
+role = "support"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("eldritch", "apex")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_063"]
+script = ExtResource("2_data")
+id = "batch4-063"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Eros"
+force_secondary = "Thanatos"
+role = "support"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("eldritch", "apex")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_064"]
+script = ExtResource("2_data")
+id = "batch4-064"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Eros"
+force_secondary = "Thanatos"
+role = "support"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("eldritch", "apex")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_065"]
+script = ExtResource("2_data")
+id = "batch4-065"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "construct"
+rank = "wild"
+tier = "T3"
+force_primary = "Gaia"
+force_secondary = "Cosmos"
+role = "tank"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("construct")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_066"]
+script = ExtResource("2_data")
+id = "batch4-066"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Thanatos"
+force_secondary = "Eros"
+role = "assassin"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("eldritch", "apex")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_067"]
+script = ExtResource("2_data")
+id = "batch4-067"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Thanatos"
+force_secondary = "Eros"
+role = "assassin"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("eldritch", "apex")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_068"]
+script = ExtResource("2_data")
+id = "batch4-068"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Thanatos"
+force_secondary = "Eros"
+role = "assassin"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("eldritch", "apex")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_069"]
+script = ExtResource("2_data")
+id = "batch4-069"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Thanatos"
+force_secondary = "Eros"
+role = "assassin"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("eldritch", "apex")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_070"]
+script = ExtResource("2_data")
+id = "batch4-070"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Thanatos"
+force_secondary = "Eros"
+role = "assassin"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("eldritch", "apex")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_071"]
+script = ExtResource("2_data")
+id = "batch4-071"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Cosmos"
+force_secondary = "Thanatos"
+role = "control"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("spirit", "eldritch")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_072"]
+script = ExtResource("2_data")
+id = "batch4-072"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Cosmos"
+force_secondary = "Thanatos"
+role = "control"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("spirit", "eldritch")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_073"]
+script = ExtResource("2_data")
+id = "batch4-073"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Cosmos"
+force_secondary = "Thanatos"
+role = "control"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("spirit", "eldritch")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_074"]
+script = ExtResource("2_data")
+id = "batch4-074"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Cosmos"
+force_secondary = "Thanatos"
+role = "control"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("spirit", "eldritch")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_075"]
+script = ExtResource("2_data")
+id = "batch4-075"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Cosmos"
+force_secondary = "Thanatos"
+role = "control"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("spirit", "eldritch")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_076"]
+script = ExtResource("2_data")
+id = "batch4-076"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Cosmos"
+force_secondary = "Thanatos"
+role = "control"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("spirit", "eldritch")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_077"]
+script = ExtResource("2_data")
+id = "batch4-077"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Cosmos"
+force_secondary = "Thanatos"
+role = "control"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("spirit", "eldritch")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_078"]
+script = ExtResource("2_data")
+id = "batch4-078"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Cosmos"
+force_secondary = "Thanatos"
+role = "control"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("spirit", "eldritch")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_079"]
+script = ExtResource("2_data")
+id = "batch4-079"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Cosmos"
+force_secondary = "Thanatos"
+role = "control"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("spirit", "eldritch")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_080"]
+script = ExtResource("2_data")
+id = "batch4-080"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Cosmos"
+force_secondary = "Thanatos"
+role = "control"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("spirit", "eldritch")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_081"]
+script = ExtResource("2_data")
+id = "batch4-081"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T1"
+force_primary = "Eros"
+force_secondary = "Ouranos"
+role = "support"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("base", "fae")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_082"]
+script = ExtResource("2_data")
+id = "batch4-082"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T1"
+force_primary = "Eros"
+force_secondary = "Ouranos"
+role = "support"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("base", "fae")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_083"]
+script = ExtResource("2_data")
+id = "batch4-083"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T1"
+force_primary = "Eros"
+force_secondary = "Ouranos"
+role = "support"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("base", "fae")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_084"]
+script = ExtResource("2_data")
+id = "batch4-084"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T1"
+force_primary = "Eros"
+force_secondary = "Ouranos"
+role = "support"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("base", "fae")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_085"]
+script = ExtResource("2_data")
+id = "batch4-085"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T1"
+force_primary = "Eros"
+force_secondary = "Ouranos"
+role = "support"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("base", "fae")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_086"]
+script = ExtResource("2_data")
+id = "batch4-086"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T1"
+force_primary = "Eros"
+force_secondary = "Ouranos"
+role = "support"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("base", "fae")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_087"]
+script = ExtResource("2_data")
+id = "batch4-087"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T1"
+force_primary = "Eros"
+force_secondary = "Ouranos"
+role = "support"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("base", "fae")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_088"]
+script = ExtResource("2_data")
+id = "batch4-088"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T1"
+force_primary = "Eros"
+force_secondary = "Ouranos"
+role = "support"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("base", "fae")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_089"]
+script = ExtResource("2_data")
+id = "batch4-089"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T1"
+force_primary = "Eros"
+force_secondary = "Ouranos"
+role = "support"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("base", "fae")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_090"]
+script = ExtResource("2_data")
+id = "batch4-090"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T1"
+force_primary = "Eros"
+force_secondary = "Ouranos"
+role = "support"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("base", "fae")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_091"]
+script = ExtResource("2_data")
+id = "batch4-091"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T3"
+force_primary = "Chaos"
+force_secondary = "Cosmos"
+role = "nuker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("mystic", "crystal")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_092"]
+script = ExtResource("2_data")
+id = "batch4-092"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T3"
+force_primary = "Chaos"
+force_secondary = "Cosmos"
+role = "nuker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("mystic", "crystal")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_093"]
+script = ExtResource("2_data")
+id = "batch4-093"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T3"
+force_primary = "Chaos"
+force_secondary = "Cosmos"
+role = "nuker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("mystic", "crystal")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_094"]
+script = ExtResource("2_data")
+id = "batch4-094"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T3"
+force_primary = "Chaos"
+force_secondary = "Cosmos"
+role = "nuker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("mystic", "crystal")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_095"]
+script = ExtResource("2_data")
+id = "batch4-095"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T3"
+force_primary = "Chaos"
+force_secondary = "Cosmos"
+role = "nuker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("mystic", "crystal")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_096"]
+script = ExtResource("2_data")
+id = "batch4-096"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T3"
+force_primary = "Chaos"
+force_secondary = "Cosmos"
+role = "nuker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("mystic", "crystal")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_097"]
+script = ExtResource("2_data")
+id = "batch4-097"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T3"
+force_primary = "Chaos"
+force_secondary = "Cosmos"
+role = "nuker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("mystic", "crystal")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_098"]
+script = ExtResource("2_data")
+id = "batch4-098"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T3"
+force_primary = "Chaos"
+force_secondary = "Cosmos"
+role = "nuker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("mystic", "crystal")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_099"]
+script = ExtResource("2_data")
+id = "batch4-099"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T3"
+force_primary = "Chaos"
+force_secondary = "Cosmos"
+role = "nuker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("mystic", "crystal")
+
+[sub_resource type="Resource" id="SpeciesData_batch4_100"]
+script = ExtResource("2_data")
+id = "batch4-100"
+name = ""
+batch = "batch4"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T3"
+force_primary = "Chaos"
+force_secondary = "Cosmos"
+role = "nuker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("mystic", "crystal")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_001"]
+script = ExtResource("2_data")
+id = "batch5-001"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Gaia"
+force_secondary = "Chaos"
+role = "tank"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("beast")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_002"]
+script = ExtResource("2_data")
+id = "batch5-002"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Gaia"
+force_secondary = "Chaos"
+role = "tank"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("beast")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_003"]
+script = ExtResource("2_data")
+id = "batch5-003"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Gaia"
+force_secondary = "Chaos"
+role = "tank"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("beast")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_004"]
+script = ExtResource("2_data")
+id = "batch5-004"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Gaia"
+force_secondary = "Chaos"
+role = "tank"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("beast")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_005"]
+script = ExtResource("2_data")
+id = "batch5-005"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Gaia"
+force_secondary = "Chaos"
+role = "tank"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("beast")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_006"]
+script = ExtResource("2_data")
+id = "batch5-006"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Gaia"
+force_secondary = "Chaos"
+role = "tank"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("beast")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_007"]
+script = ExtResource("2_data")
+id = "batch5-007"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Cosmos"
+force_secondary = "Gaia"
+role = "control"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("mixed")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_008"]
+script = ExtResource("2_data")
+id = "batch5-008"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Cosmos"
+force_secondary = "Gaia"
+role = "control"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("mixed")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_009"]
+script = ExtResource("2_data")
+id = "batch5-009"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Cosmos"
+force_secondary = "Gaia"
+role = "control"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("mixed")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_010"]
+script = ExtResource("2_data")
+id = "batch5-010"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Cosmos"
+force_secondary = "Gaia"
+role = "control"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("mixed")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_011"]
+script = ExtResource("2_data")
+id = "batch5-011"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Cosmos"
+force_secondary = "Gaia"
+role = "control"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("mixed")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_012"]
+script = ExtResource("2_data")
+id = "batch5-012"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Cosmos"
+force_secondary = "Gaia"
+role = "control"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("mixed")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_013"]
+script = ExtResource("2_data")
+id = "batch5-013"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Eros"
+force_secondary = "Cosmos"
+role = "support"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("radiant")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_014"]
+script = ExtResource("2_data")
+id = "batch5-014"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Eros"
+force_secondary = "Cosmos"
+role = "support"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("radiant")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_015"]
+script = ExtResource("2_data")
+id = "batch5-015"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Eros"
+force_secondary = "Cosmos"
+role = "support"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("radiant")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_016"]
+script = ExtResource("2_data")
+id = "batch5-016"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Eros"
+force_secondary = "Cosmos"
+role = "support"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("radiant")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_017"]
+script = ExtResource("2_data")
+id = "batch5-017"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Eros"
+force_secondary = "Cosmos"
+role = "support"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("radiant")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_018"]
+script = ExtResource("2_data")
+id = "batch5-018"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Eros"
+force_secondary = "Cosmos"
+role = "support"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("radiant")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_019"]
+script = ExtResource("2_data")
+id = "batch5-019"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Ouranos"
+force_secondary = "Cosmos"
+role = "striker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("frost")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_020"]
+script = ExtResource("2_data")
+id = "batch5-020"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Ouranos"
+force_secondary = "Cosmos"
+role = "striker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("frost")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_021"]
+script = ExtResource("2_data")
+id = "batch5-021"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Ouranos"
+force_secondary = "Cosmos"
+role = "striker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("frost")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_022"]
+script = ExtResource("2_data")
+id = "batch5-022"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Ouranos"
+force_secondary = "Cosmos"
+role = "striker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("frost")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_023"]
+script = ExtResource("2_data")
+id = "batch5-023"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Ouranos"
+force_secondary = "Cosmos"
+role = "striker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("frost")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_024"]
+script = ExtResource("2_data")
+id = "batch5-024"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Ouranos"
+force_secondary = "Cosmos"
+role = "striker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("frost")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_025"]
+script = ExtResource("2_data")
+id = "batch5-025"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Cosmos"
+force_secondary = "Ouranos"
+role = "control"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("celestial")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_026"]
+script = ExtResource("2_data")
+id = "batch5-026"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Cosmos"
+force_secondary = "Ouranos"
+role = "control"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("celestial")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_027"]
+script = ExtResource("2_data")
+id = "batch5-027"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Cosmos"
+force_secondary = "Ouranos"
+role = "control"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("celestial")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_028"]
+script = ExtResource("2_data")
+id = "batch5-028"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Cosmos"
+force_secondary = "Ouranos"
+role = "control"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("celestial")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_029"]
+script = ExtResource("2_data")
+id = "batch5-029"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Cosmos"
+force_secondary = "Ouranos"
+role = "control"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("celestial")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_030"]
+script = ExtResource("2_data")
+id = "batch5-030"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Cosmos"
+force_secondary = "Ouranos"
+role = "control"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("celestial")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_031"]
+script = ExtResource("2_data")
+id = "batch5-031"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T3"
+force_primary = "Chaos"
+force_secondary = "Gaia"
+role = "nuker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("fierce")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_032"]
+script = ExtResource("2_data")
+id = "batch5-032"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T3"
+force_primary = "Chaos"
+force_secondary = "Gaia"
+role = "nuker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("fierce")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_033"]
+script = ExtResource("2_data")
+id = "batch5-033"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T3"
+force_primary = "Chaos"
+force_secondary = "Gaia"
+role = "nuker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("fierce")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_034"]
+script = ExtResource("2_data")
+id = "batch5-034"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T3"
+force_primary = "Chaos"
+force_secondary = "Gaia"
+role = "nuker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("fierce")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_035"]
+script = ExtResource("2_data")
+id = "batch5-035"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T3"
+force_primary = "Chaos"
+force_secondary = "Gaia"
+role = "nuker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("fierce")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_036"]
+script = ExtResource("2_data")
+id = "batch5-036"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T3"
+force_primary = "Chaos"
+force_secondary = "Gaia"
+role = "nuker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("fierce")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_037"]
+script = ExtResource("2_data")
+id = "batch5-037"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Chaos"
+force_secondary = "Thanatos"
+role = "nuker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("demon")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_038"]
+script = ExtResource("2_data")
+id = "batch5-038"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Chaos"
+force_secondary = "Thanatos"
+role = "nuker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("demon")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_039"]
+script = ExtResource("2_data")
+id = "batch5-039"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Chaos"
+force_secondary = "Thanatos"
+role = "nuker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("demon")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_040"]
+script = ExtResource("2_data")
+id = "batch5-040"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Chaos"
+force_secondary = "Thanatos"
+role = "nuker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("demon")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_041"]
+script = ExtResource("2_data")
+id = "batch5-041"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Chaos"
+force_secondary = "Thanatos"
+role = "nuker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("demon")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_042"]
+script = ExtResource("2_data")
+id = "batch5-042"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Chaos"
+force_secondary = "Thanatos"
+role = "nuker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("demon")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_043"]
+script = ExtResource("2_data")
+id = "batch5-043"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T3"
+force_primary = "Thanatos"
+force_secondary = "Cosmos"
+role = "assassin"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("dark")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_044"]
+script = ExtResource("2_data")
+id = "batch5-044"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T3"
+force_primary = "Thanatos"
+force_secondary = "Cosmos"
+role = "assassin"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("dark")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_045"]
+script = ExtResource("2_data")
+id = "batch5-045"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T3"
+force_primary = "Thanatos"
+force_secondary = "Cosmos"
+role = "assassin"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("dark")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_046"]
+script = ExtResource("2_data")
+id = "batch5-046"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T3"
+force_primary = "Thanatos"
+force_secondary = "Cosmos"
+role = "assassin"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("dark")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_047"]
+script = ExtResource("2_data")
+id = "batch5-047"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T3"
+force_primary = "Thanatos"
+force_secondary = "Cosmos"
+role = "assassin"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("dark")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_048"]
+script = ExtResource("2_data")
+id = "batch5-048"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T3"
+force_primary = "Thanatos"
+force_secondary = "Cosmos"
+role = "assassin"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("dark")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_049"]
+script = ExtResource("2_data")
+id = "batch5-049"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Chaos"
+force_secondary = "Thanatos"
+role = "nuker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("demon")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_050"]
+script = ExtResource("2_data")
+id = "batch5-050"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Chaos"
+force_secondary = "Thanatos"
+role = "nuker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("demon")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_051"]
+script = ExtResource("2_data")
+id = "batch5-051"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Chaos"
+force_secondary = "Thanatos"
+role = "nuker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("demon")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_052"]
+script = ExtResource("2_data")
+id = "batch5-052"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Chaos"
+force_secondary = "Thanatos"
+role = "nuker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("demon")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_053"]
+script = ExtResource("2_data")
+id = "batch5-053"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Chaos"
+force_secondary = "Thanatos"
+role = "nuker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("demon")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_054"]
+script = ExtResource("2_data")
+id = "batch5-054"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Chaos"
+force_secondary = "Thanatos"
+role = "nuker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("demon")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_055"]
+script = ExtResource("2_data")
+id = "batch5-055"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Ouranos"
+force_secondary = "Thanatos"
+role = "striker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("aquatic")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_056"]
+script = ExtResource("2_data")
+id = "batch5-056"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Ouranos"
+force_secondary = "Thanatos"
+role = "striker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("aquatic")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_057"]
+script = ExtResource("2_data")
+id = "batch5-057"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Ouranos"
+force_secondary = "Thanatos"
+role = "striker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("aquatic")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_058"]
+script = ExtResource("2_data")
+id = "batch5-058"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Ouranos"
+force_secondary = "Thanatos"
+role = "striker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("aquatic")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_059"]
+script = ExtResource("2_data")
+id = "batch5-059"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Ouranos"
+force_secondary = "Thanatos"
+role = "striker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("aquatic")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_060"]
+script = ExtResource("2_data")
+id = "batch5-060"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Ouranos"
+force_secondary = "Thanatos"
+role = "striker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("aquatic")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_061"]
+script = ExtResource("2_data")
+id = "batch5-061"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T3"
+force_primary = "Gaia"
+force_secondary = "Thanatos"
+role = "tank"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("beast")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_062"]
+script = ExtResource("2_data")
+id = "batch5-062"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T3"
+force_primary = "Gaia"
+force_secondary = "Thanatos"
+role = "tank"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("beast")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_063"]
+script = ExtResource("2_data")
+id = "batch5-063"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T3"
+force_primary = "Gaia"
+force_secondary = "Thanatos"
+role = "tank"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("beast")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_064"]
+script = ExtResource("2_data")
+id = "batch5-064"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T3"
+force_primary = "Gaia"
+force_secondary = "Thanatos"
+role = "tank"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("beast")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_065"]
+script = ExtResource("2_data")
+id = "batch5-065"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T3"
+force_primary = "Gaia"
+force_secondary = "Thanatos"
+role = "tank"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("beast")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_066"]
+script = ExtResource("2_data")
+id = "batch5-066"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T3"
+force_primary = "Gaia"
+force_secondary = "Thanatos"
+role = "tank"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("beast")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_067"]
+script = ExtResource("2_data")
+id = "batch5-067"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Gaia"
+force_secondary = "Chaos"
+role = "tank"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("beast")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_068"]
+script = ExtResource("2_data")
+id = "batch5-068"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Gaia"
+force_secondary = "Chaos"
+role = "tank"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("beast")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_069"]
+script = ExtResource("2_data")
+id = "batch5-069"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Gaia"
+force_secondary = "Chaos"
+role = "tank"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("beast")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_070"]
+script = ExtResource("2_data")
+id = "batch5-070"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Gaia"
+force_secondary = "Chaos"
+role = "tank"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("beast")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_071"]
+script = ExtResource("2_data")
+id = "batch5-071"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Gaia"
+force_secondary = "Chaos"
+role = "tank"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("beast")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_072"]
+script = ExtResource("2_data")
+id = "batch5-072"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T2"
+force_primary = "Gaia"
+force_secondary = "Chaos"
+role = "tank"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("beast")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_073"]
+script = ExtResource("2_data")
+id = "batch5-073"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T3"
+force_primary = "Gaia"
+force_secondary = "Cosmos"
+role = "tank"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("metallic")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_074"]
+script = ExtResource("2_data")
+id = "batch5-074"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T3"
+force_primary = "Gaia"
+force_secondary = "Cosmos"
+role = "tank"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("metallic")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_075"]
+script = ExtResource("2_data")
+id = "batch5-075"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T3"
+force_primary = "Gaia"
+force_secondary = "Cosmos"
+role = "tank"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("metallic")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_076"]
+script = ExtResource("2_data")
+id = "batch5-076"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T3"
+force_primary = "Gaia"
+force_secondary = "Cosmos"
+role = "tank"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("metallic")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_077"]
+script = ExtResource("2_data")
+id = "batch5-077"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T3"
+force_primary = "Gaia"
+force_secondary = "Cosmos"
+role = "tank"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("metallic")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_078"]
+script = ExtResource("2_data")
+id = "batch5-078"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T3"
+force_primary = "Gaia"
+force_secondary = "Cosmos"
+role = "tank"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("metallic")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_079"]
+script = ExtResource("2_data")
+id = "batch5-079"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T3"
+force_primary = "Thanatos"
+force_secondary = "Chaos"
+role = "assassin"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("dark")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_080"]
+script = ExtResource("2_data")
+id = "batch5-080"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T3"
+force_primary = "Thanatos"
+force_secondary = "Chaos"
+role = "assassin"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("dark")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_081"]
+script = ExtResource("2_data")
+id = "batch5-081"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T3"
+force_primary = "Thanatos"
+force_secondary = "Chaos"
+role = "assassin"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("dark")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_082"]
+script = ExtResource("2_data")
+id = "batch5-082"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T3"
+force_primary = "Thanatos"
+force_secondary = "Chaos"
+role = "assassin"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("dark")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_083"]
+script = ExtResource("2_data")
+id = "batch5-083"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T3"
+force_primary = "Thanatos"
+force_secondary = "Chaos"
+role = "assassin"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("dark")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_084"]
+script = ExtResource("2_data")
+id = "batch5-084"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T3"
+force_primary = "Thanatos"
+force_secondary = "Chaos"
+role = "assassin"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("dark")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_085"]
+script = ExtResource("2_data")
+id = "batch5-085"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Thanatos"
+force_secondary = "Chaos"
+role = "assassin"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("dark")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_086"]
+script = ExtResource("2_data")
+id = "batch5-086"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Thanatos"
+force_secondary = "Chaos"
+role = "assassin"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("dark")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_087"]
+script = ExtResource("2_data")
+id = "batch5-087"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Thanatos"
+force_secondary = "Chaos"
+role = "assassin"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("dark")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_088"]
+script = ExtResource("2_data")
+id = "batch5-088"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Thanatos"
+force_secondary = "Chaos"
+role = "assassin"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("dark")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_089"]
+script = ExtResource("2_data")
+id = "batch5-089"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Thanatos"
+force_secondary = "Chaos"
+role = "assassin"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("dark")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_090"]
+script = ExtResource("2_data")
+id = "batch5-090"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Thanatos"
+force_secondary = "Chaos"
+role = "assassin"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("dark")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_091"]
+script = ExtResource("2_data")
+id = "batch5-091"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Ouranos"
+force_secondary = "Cosmos"
+role = "striker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("frost")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_092"]
+script = ExtResource("2_data")
+id = "batch5-092"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Ouranos"
+force_secondary = "Cosmos"
+role = "striker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("frost")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_093"]
+script = ExtResource("2_data")
+id = "batch5-093"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Ouranos"
+force_secondary = "Cosmos"
+role = "striker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("frost")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_094"]
+script = ExtResource("2_data")
+id = "batch5-094"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Ouranos"
+force_secondary = "Cosmos"
+role = "striker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("frost")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_095"]
+script = ExtResource("2_data")
+id = "batch5-095"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Ouranos"
+force_secondary = "Cosmos"
+role = "striker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("frost")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_096"]
+script = ExtResource("2_data")
+id = "batch5-096"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Ouranos"
+force_secondary = "Cosmos"
+role = "striker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("frost")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_097"]
+script = ExtResource("2_data")
+id = "batch5-097"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Chaos"
+force_secondary = "Cosmos"
+role = "nuker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("crystal")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_098"]
+script = ExtResource("2_data")
+id = "batch5-098"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Chaos"
+force_secondary = "Cosmos"
+role = "nuker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("crystal")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_099"]
+script = ExtResource("2_data")
+id = "batch5-099"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Chaos"
+force_secondary = "Cosmos"
+role = "nuker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("crystal")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_100"]
+script = ExtResource("2_data")
+id = "batch5-100"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Chaos"
+force_secondary = "Cosmos"
+role = "nuker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("crystal")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_101"]
+script = ExtResource("2_data")
+id = "batch5-101"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Chaos"
+force_secondary = "Cosmos"
+role = "nuker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("crystal")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_102"]
+script = ExtResource("2_data")
+id = "batch5-102"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Chaos"
+force_secondary = "Cosmos"
+role = "nuker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("crystal")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_103"]
+script = ExtResource("2_data")
+id = "batch5-103"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T3"
+force_primary = "Gaia"
+force_secondary = "Eros"
+role = "tank"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("earth")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_104"]
+script = ExtResource("2_data")
+id = "batch5-104"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T3"
+force_primary = "Gaia"
+force_secondary = "Eros"
+role = "tank"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("earth")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_105"]
+script = ExtResource("2_data")
+id = "batch5-105"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T3"
+force_primary = "Gaia"
+force_secondary = "Eros"
+role = "tank"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("earth")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_106"]
+script = ExtResource("2_data")
+id = "batch5-106"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T3"
+force_primary = "Gaia"
+force_secondary = "Eros"
+role = "tank"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("earth")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_107"]
+script = ExtResource("2_data")
+id = "batch5-107"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T3"
+force_primary = "Gaia"
+force_secondary = "Eros"
+role = "tank"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("earth")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_108"]
+script = ExtResource("2_data")
+id = "batch5-108"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T3"
+force_primary = "Gaia"
+force_secondary = "Eros"
+role = "tank"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("earth")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_109"]
+script = ExtResource("2_data")
+id = "batch5-109"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Eros"
+force_secondary = "Cosmos"
+role = "support"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("radiant")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_110"]
+script = ExtResource("2_data")
+id = "batch5-110"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Eros"
+force_secondary = "Cosmos"
+role = "support"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("radiant")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_111"]
+script = ExtResource("2_data")
+id = "batch5-111"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Eros"
+force_secondary = "Cosmos"
+role = "support"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("radiant")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_112"]
+script = ExtResource("2_data")
+id = "batch5-112"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Eros"
+force_secondary = "Cosmos"
+role = "support"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("radiant")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_113"]
+script = ExtResource("2_data")
+id = "batch5-113"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Eros"
+force_secondary = "Cosmos"
+role = "support"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("radiant")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_114"]
+script = ExtResource("2_data")
+id = "batch5-114"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "legendary"
+tier = ""
+force_primary = "Eros"
+force_secondary = "Cosmos"
+role = "support"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("radiant")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_115"]
+script = ExtResource("2_data")
+id = "batch5-115"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T3"
+force_primary = "Chaos"
+force_secondary = "Gaia"
+role = "nuker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("golden")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_116"]
+script = ExtResource("2_data")
+id = "batch5-116"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T3"
+force_primary = "Chaos"
+force_secondary = "Gaia"
+role = "nuker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("golden")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_117"]
+script = ExtResource("2_data")
+id = "batch5-117"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T3"
+force_primary = "Chaos"
+force_secondary = "Gaia"
+role = "nuker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("golden")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_118"]
+script = ExtResource("2_data")
+id = "batch5-118"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T3"
+force_primary = "Chaos"
+force_secondary = "Gaia"
+role = "nuker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("golden")
+
+[sub_resource type="Resource" id="SpeciesData_batch5_119"]
+script = ExtResource("2_data")
+id = "batch5-119"
+name = ""
+batch = "batch5"
+art_ref = ""
+species_class = "organic"
+rank = "wild"
+tier = "T3"
+force_primary = "Chaos"
+force_secondary = "Gaia"
+role = "nuker"
+evolution_line = ""
+stage = ""
+signature_skill = ""
+description = ""
+status = "reviewed"
+tags = PackedStringArray("golden")
+
+[resource]
+script = ExtResource("1_db")
+species = Array[ExtResource("2_data")]([SubResource("SpeciesData_AD01"), SubResource("SpeciesData_AD02"), SubResource("SpeciesData_AD03"), SubResource("SpeciesData_AD04"), SubResource("SpeciesData_AD05"), SubResource("SpeciesData_AD06"), SubResource("SpeciesData_AD07"), SubResource("SpeciesData_AD08"), SubResource("SpeciesData_AD09"), SubResource("SpeciesData_AD10"), SubResource("SpeciesData_DM01"), SubResource("SpeciesData_DM02"), SubResource("SpeciesData_DM03"), SubResource("SpeciesData_DM04"), SubResource("SpeciesData_DM05"), SubResource("SpeciesData_DM06"), SubResource("SpeciesData_DM07"), SubResource("SpeciesData_DM08"), SubResource("SpeciesData_DM09"), SubResource("SpeciesData_DM10"), SubResource("SpeciesData_SB04"), SubResource("SpeciesData_SB05"), SubResource("SpeciesData_SB06"), SubResource("SpeciesData_SB07"), SubResource("SpeciesData_SB08"), SubResource("SpeciesData_SB09"), SubResource("SpeciesData_SB10"), SubResource("SpeciesData_SB11"), SubResource("SpeciesData_SB12"), SubResource("SpeciesData_SB13"), SubResource("SpeciesData_SB14"), SubResource("SpeciesData_SB15"), SubResource("SpeciesData_SB16"), SubResource("SpeciesData_SB17"), SubResource("SpeciesData_SB18"), SubResource("SpeciesData_SB19"), SubResource("SpeciesData_SB20"), SubResource("SpeciesData_SB21"), SubResource("SpeciesData_SB22"), SubResource("SpeciesData_SB23"), SubResource("SpeciesData_SB24"), SubResource("SpeciesData_SB25"), SubResource("SpeciesData_SB26"), SubResource("SpeciesData_SB27"), SubResource("SpeciesData_SB28"), SubResource("SpeciesData_SB29"), SubResource("SpeciesData_SB30"), SubResource("SpeciesData_SB31"), SubResource("SpeciesData_SB32"), SubResource("SpeciesData_SB33"), SubResource("SpeciesData_S2_01"), SubResource("SpeciesData_S2_02"), SubResource("SpeciesData_S2_03"), SubResource("SpeciesData_S2_04"), SubResource("SpeciesData_S2_05"), SubResource("SpeciesData_S2_06"), SubResource("SpeciesData_S2_07"), SubResource("SpeciesData_S2_08"), SubResource("SpeciesData_S2_09"), SubResource("SpeciesData_S2_10"), SubResource("SpeciesData_S2_11"), SubResource("SpeciesData_S2_12"), SubResource("SpeciesData_S2_13"), SubResource("SpeciesData_S2_14"), SubResource("SpeciesData_S2_15"), SubResource("SpeciesData_S2_16"), SubResource("SpeciesData_S2_17"), SubResource("SpeciesData_S2_18"), SubResource("SpeciesData_S2_19"), SubResource("SpeciesData_S2_20"), SubResource("SpeciesData_S2_21"), SubResource("SpeciesData_S2_22"), SubResource("SpeciesData_S2_23"), SubResource("SpeciesData_S2_24"), SubResource("SpeciesData_S2_25"), SubResource("SpeciesData_S2_26"), SubResource("SpeciesData_S2_27"), SubResource("SpeciesData_S2_28"), SubResource("SpeciesData_S2_29"), SubResource("SpeciesData_S2_30"), SubResource("SpeciesData_S2_31"), SubResource("SpeciesData_S2_32"), SubResource("SpeciesData_S2_33"), SubResource("SpeciesData_S2_34"), SubResource("SpeciesData_S2_35"), SubResource("SpeciesData_S2_36"), SubResource("SpeciesData_S2_37"), SubResource("SpeciesData_S2_38"), SubResource("SpeciesData_S2_39"), SubResource("SpeciesData_S2_40"), SubResource("SpeciesData_S2_41"), SubResource("SpeciesData_S2_42"), SubResource("SpeciesData_S2_43"), SubResource("SpeciesData_S2_44"), SubResource("SpeciesData_S2_45"), SubResource("SpeciesData_S2_46"), SubResource("SpeciesData_S2_47"), SubResource("SpeciesData_S2_48"), SubResource("SpeciesData_S2_49"), SubResource("SpeciesData_S2_50"), SubResource("SpeciesData_S2_51"), SubResource("SpeciesData_S2_52"), SubResource("SpeciesData_S2_53"), SubResource("SpeciesData_S2_54"), SubResource("SpeciesData_S2_55"), SubResource("SpeciesData_S2_56"), SubResource("SpeciesData_S2_57"), SubResource("SpeciesData_S2_58"), SubResource("SpeciesData_S2_59"), SubResource("SpeciesData_S2_60"), SubResource("SpeciesData_batch3_001"), SubResource("SpeciesData_batch3_002"), SubResource("SpeciesData_batch3_003"), SubResource("SpeciesData_batch3_004"), SubResource("SpeciesData_batch3_005"), SubResource("SpeciesData_batch3_006"), SubResource("SpeciesData_batch3_007"), SubResource("SpeciesData_batch3_008"), SubResource("SpeciesData_batch3_009"), SubResource("SpeciesData_batch3_010"), SubResource("SpeciesData_batch3_011"), SubResource("SpeciesData_batch3_012"), SubResource("SpeciesData_batch3_013"), SubResource("SpeciesData_batch3_014"), SubResource("SpeciesData_batch3_015"), SubResource("SpeciesData_batch3_016"), SubResource("SpeciesData_batch3_017"), SubResource("SpeciesData_batch3_018"), SubResource("SpeciesData_batch3_019"), SubResource("SpeciesData_batch3_020"), SubResource("SpeciesData_batch3_021"), SubResource("SpeciesData_batch3_022"), SubResource("SpeciesData_batch3_023"), SubResource("SpeciesData_batch3_024"), SubResource("SpeciesData_batch3_025"), SubResource("SpeciesData_batch3_026"), SubResource("SpeciesData_batch3_027"), SubResource("SpeciesData_batch3_028"), SubResource("SpeciesData_batch3_029"), SubResource("SpeciesData_batch3_030"), SubResource("SpeciesData_batch3_031"), SubResource("SpeciesData_batch3_032"), SubResource("SpeciesData_batch3_033"), SubResource("SpeciesData_batch3_034"), SubResource("SpeciesData_batch3_035"), SubResource("SpeciesData_batch3_036"), SubResource("SpeciesData_batch3_037"), SubResource("SpeciesData_batch3_038"), SubResource("SpeciesData_batch3_039"), SubResource("SpeciesData_batch3_040"), SubResource("SpeciesData_batch3_041"), SubResource("SpeciesData_batch3_042"), SubResource("SpeciesData_batch3_043"), SubResource("SpeciesData_batch3_044"), SubResource("SpeciesData_batch3_045"), SubResource("SpeciesData_batch3_046"), SubResource("SpeciesData_batch3_047"), SubResource("SpeciesData_batch3_048"), SubResource("SpeciesData_batch3_049"), SubResource("SpeciesData_batch3_050"), SubResource("SpeciesData_batch3_051"), SubResource("SpeciesData_batch3_052"), SubResource("SpeciesData_batch3_053"), SubResource("SpeciesData_batch3_054"), SubResource("SpeciesData_batch3_055"), SubResource("SpeciesData_batch3_056"), SubResource("SpeciesData_batch3_057"), SubResource("SpeciesData_batch3_058"), SubResource("SpeciesData_batch3_059"), SubResource("SpeciesData_batch3_060"), SubResource("SpeciesData_batch3_061"), SubResource("SpeciesData_batch3_062"), SubResource("SpeciesData_batch3_063"), SubResource("SpeciesData_batch3_064"), SubResource("SpeciesData_batch3_065"), SubResource("SpeciesData_batch3_066"), SubResource("SpeciesData_batch3_067"), SubResource("SpeciesData_batch3_068"), SubResource("SpeciesData_batch3_069"), SubResource("SpeciesData_batch3_070"), SubResource("SpeciesData_batch3_071"), SubResource("SpeciesData_batch3_072"), SubResource("SpeciesData_batch3_073"), SubResource("SpeciesData_batch3_074"), SubResource("SpeciesData_batch3_075"), SubResource("SpeciesData_batch3_076"), SubResource("SpeciesData_batch3_077"), SubResource("SpeciesData_batch4_001"), SubResource("SpeciesData_batch4_002"), SubResource("SpeciesData_batch4_003"), SubResource("SpeciesData_batch4_004"), SubResource("SpeciesData_batch4_005"), SubResource("SpeciesData_batch4_006"), SubResource("SpeciesData_batch4_007"), SubResource("SpeciesData_batch4_008"), SubResource("SpeciesData_batch4_009"), SubResource("SpeciesData_batch4_010"), SubResource("SpeciesData_batch4_011"), SubResource("SpeciesData_batch4_012"), SubResource("SpeciesData_batch4_013"), SubResource("SpeciesData_batch4_014"), SubResource("SpeciesData_batch4_015"), SubResource("SpeciesData_batch4_016"), SubResource("SpeciesData_batch4_017"), SubResource("SpeciesData_batch4_018"), SubResource("SpeciesData_batch4_019"), SubResource("SpeciesData_batch4_020"), SubResource("SpeciesData_batch4_021"), SubResource("SpeciesData_batch4_022"), SubResource("SpeciesData_batch4_023"), SubResource("SpeciesData_batch4_024"), SubResource("SpeciesData_batch4_025"), SubResource("SpeciesData_batch4_026"), SubResource("SpeciesData_batch4_027"), SubResource("SpeciesData_batch4_028"), SubResource("SpeciesData_batch4_029"), SubResource("SpeciesData_batch4_030"), SubResource("SpeciesData_batch4_031"), SubResource("SpeciesData_batch4_032"), SubResource("SpeciesData_batch4_033"), SubResource("SpeciesData_batch4_034"), SubResource("SpeciesData_batch4_035"), SubResource("SpeciesData_batch4_036"), SubResource("SpeciesData_batch4_037"), SubResource("SpeciesData_batch4_038"), SubResource("SpeciesData_batch4_039"), SubResource("SpeciesData_batch4_040"), SubResource("SpeciesData_batch4_041"), SubResource("SpeciesData_batch4_042"), SubResource("SpeciesData_batch4_043"), SubResource("SpeciesData_batch4_044"), SubResource("SpeciesData_batch4_045"), SubResource("SpeciesData_batch4_046"), SubResource("SpeciesData_batch4_047"), SubResource("SpeciesData_batch4_048"), SubResource("SpeciesData_batch4_049"), SubResource("SpeciesData_batch4_050"), SubResource("SpeciesData_batch4_051"), SubResource("SpeciesData_batch4_052"), SubResource("SpeciesData_batch4_053"), SubResource("SpeciesData_batch4_054"), SubResource("SpeciesData_batch4_055"), SubResource("SpeciesData_batch4_056"), SubResource("SpeciesData_batch4_057"), SubResource("SpeciesData_batch4_058"), SubResource("SpeciesData_batch4_059"), SubResource("SpeciesData_batch4_060"), SubResource("SpeciesData_batch4_061"), SubResource("SpeciesData_batch4_062"), SubResource("SpeciesData_batch4_063"), SubResource("SpeciesData_batch4_064"), SubResource("SpeciesData_batch4_065"), SubResource("SpeciesData_batch4_066"), SubResource("SpeciesData_batch4_067"), SubResource("SpeciesData_batch4_068"), SubResource("SpeciesData_batch4_069"), SubResource("SpeciesData_batch4_070"), SubResource("SpeciesData_batch4_071"), SubResource("SpeciesData_batch4_072"), SubResource("SpeciesData_batch4_073"), SubResource("SpeciesData_batch4_074"), SubResource("SpeciesData_batch4_075"), SubResource("SpeciesData_batch4_076"), SubResource("SpeciesData_batch4_077"), SubResource("SpeciesData_batch4_078"), SubResource("SpeciesData_batch4_079"), SubResource("SpeciesData_batch4_080"), SubResource("SpeciesData_batch4_081"), SubResource("SpeciesData_batch4_082"), SubResource("SpeciesData_batch4_083"), SubResource("SpeciesData_batch4_084"), SubResource("SpeciesData_batch4_085"), SubResource("SpeciesData_batch4_086"), SubResource("SpeciesData_batch4_087"), SubResource("SpeciesData_batch4_088"), SubResource("SpeciesData_batch4_089"), SubResource("SpeciesData_batch4_090"), SubResource("SpeciesData_batch4_091"), SubResource("SpeciesData_batch4_092"), SubResource("SpeciesData_batch4_093"), SubResource("SpeciesData_batch4_094"), SubResource("SpeciesData_batch4_095"), SubResource("SpeciesData_batch4_096"), SubResource("SpeciesData_batch4_097"), SubResource("SpeciesData_batch4_098"), SubResource("SpeciesData_batch4_099"), SubResource("SpeciesData_batch4_100"), SubResource("SpeciesData_batch5_001"), SubResource("SpeciesData_batch5_002"), SubResource("SpeciesData_batch5_003"), SubResource("SpeciesData_batch5_004"), SubResource("SpeciesData_batch5_005"), SubResource("SpeciesData_batch5_006"), SubResource("SpeciesData_batch5_007"), SubResource("SpeciesData_batch5_008"), SubResource("SpeciesData_batch5_009"), SubResource("SpeciesData_batch5_010"), SubResource("SpeciesData_batch5_011"), SubResource("SpeciesData_batch5_012"), SubResource("SpeciesData_batch5_013"), SubResource("SpeciesData_batch5_014"), SubResource("SpeciesData_batch5_015"), SubResource("SpeciesData_batch5_016"), SubResource("SpeciesData_batch5_017"), SubResource("SpeciesData_batch5_018"), SubResource("SpeciesData_batch5_019"), SubResource("SpeciesData_batch5_020"), SubResource("SpeciesData_batch5_021"), SubResource("SpeciesData_batch5_022"), SubResource("SpeciesData_batch5_023"), SubResource("SpeciesData_batch5_024"), SubResource("SpeciesData_batch5_025"), SubResource("SpeciesData_batch5_026"), SubResource("SpeciesData_batch5_027"), SubResource("SpeciesData_batch5_028"), SubResource("SpeciesData_batch5_029"), SubResource("SpeciesData_batch5_030"), SubResource("SpeciesData_batch5_031"), SubResource("SpeciesData_batch5_032"), SubResource("SpeciesData_batch5_033"), SubResource("SpeciesData_batch5_034"), SubResource("SpeciesData_batch5_035"), SubResource("SpeciesData_batch5_036"), SubResource("SpeciesData_batch5_037"), SubResource("SpeciesData_batch5_038"), SubResource("SpeciesData_batch5_039"), SubResource("SpeciesData_batch5_040"), SubResource("SpeciesData_batch5_041"), SubResource("SpeciesData_batch5_042"), SubResource("SpeciesData_batch5_043"), SubResource("SpeciesData_batch5_044"), SubResource("SpeciesData_batch5_045"), SubResource("SpeciesData_batch5_046"), SubResource("SpeciesData_batch5_047"), SubResource("SpeciesData_batch5_048"), SubResource("SpeciesData_batch5_049"), SubResource("SpeciesData_batch5_050"), SubResource("SpeciesData_batch5_051"), SubResource("SpeciesData_batch5_052"), SubResource("SpeciesData_batch5_053"), SubResource("SpeciesData_batch5_054"), SubResource("SpeciesData_batch5_055"), SubResource("SpeciesData_batch5_056"), SubResource("SpeciesData_batch5_057"), SubResource("SpeciesData_batch5_058"), SubResource("SpeciesData_batch5_059"), SubResource("SpeciesData_batch5_060"), SubResource("SpeciesData_batch5_061"), SubResource("SpeciesData_batch5_062"), SubResource("SpeciesData_batch5_063"), SubResource("SpeciesData_batch5_064"), SubResource("SpeciesData_batch5_065"), SubResource("SpeciesData_batch5_066"), SubResource("SpeciesData_batch5_067"), SubResource("SpeciesData_batch5_068"), SubResource("SpeciesData_batch5_069"), SubResource("SpeciesData_batch5_070"), SubResource("SpeciesData_batch5_071"), SubResource("SpeciesData_batch5_072"), SubResource("SpeciesData_batch5_073"), SubResource("SpeciesData_batch5_074"), SubResource("SpeciesData_batch5_075"), SubResource("SpeciesData_batch5_076"), SubResource("SpeciesData_batch5_077"), SubResource("SpeciesData_batch5_078"), SubResource("SpeciesData_batch5_079"), SubResource("SpeciesData_batch5_080"), SubResource("SpeciesData_batch5_081"), SubResource("SpeciesData_batch5_082"), SubResource("SpeciesData_batch5_083"), SubResource("SpeciesData_batch5_084"), SubResource("SpeciesData_batch5_085"), SubResource("SpeciesData_batch5_086"), SubResource("SpeciesData_batch5_087"), SubResource("SpeciesData_batch5_088"), SubResource("SpeciesData_batch5_089"), SubResource("SpeciesData_batch5_090"), SubResource("SpeciesData_batch5_091"), SubResource("SpeciesData_batch5_092"), SubResource("SpeciesData_batch5_093"), SubResource("SpeciesData_batch5_094"), SubResource("SpeciesData_batch5_095"), SubResource("SpeciesData_batch5_096"), SubResource("SpeciesData_batch5_097"), SubResource("SpeciesData_batch5_098"), SubResource("SpeciesData_batch5_099"), SubResource("SpeciesData_batch5_100"), SubResource("SpeciesData_batch5_101"), SubResource("SpeciesData_batch5_102"), SubResource("SpeciesData_batch5_103"), SubResource("SpeciesData_batch5_104"), SubResource("SpeciesData_batch5_105"), SubResource("SpeciesData_batch5_106"), SubResource("SpeciesData_batch5_107"), SubResource("SpeciesData_batch5_108"), SubResource("SpeciesData_batch5_109"), SubResource("SpeciesData_batch5_110"), SubResource("SpeciesData_batch5_111"), SubResource("SpeciesData_batch5_112"), SubResource("SpeciesData_batch5_113"), SubResource("SpeciesData_batch5_114"), SubResource("SpeciesData_batch5_115"), SubResource("SpeciesData_batch5_116"), SubResource("SpeciesData_batch5_117"), SubResource("SpeciesData_batch5_118"), SubResource("SpeciesData_batch5_119")])

@@ -49,6 +49,8 @@ jobs:
           M=$(git ls-files 'client/domain/**/*.gd' | xargs -r grep -nE '(\bTime\.|\brandf\(|\brandi\(|\brandomize\(|Engine\.get_process_frames|extends (Node|Node2D|Node3D|Control)|res://addons)' || true)
           if [ -n "$M" ]; then echo "$M"; echo "domain/ purity violation (see TDD §3.1)"; exit 1; fi
           echo "domain purity: clean"
+      - name: Catalog parity (Cluster 2 — CSV cols + client catalog/Resource/seed id-set ≡, ADR-006)
+        run: node tools/test_catalog_parity.mjs
 
   oracle:
     name: Oracle — constants + RNG parity + determinism + golden (D4/P1)

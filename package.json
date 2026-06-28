@@ -7,8 +7,10 @@
   "scripts": {
     "gen:constants": "node tools/gen_constants.mjs",
     "gen:catalog": "node tools/gen_catalog.mjs",
+    "gen:species-db": "node tools/gen_species_db.mjs",
     "gen:seed": "node tools/gen_seed.mjs",
     "gen:all": "node tools/gen_constants.mjs && node tools/gen_catalog.mjs && node tools/gen_seed.mjs",
+    "test:catalog-parity": "node tools/test_catalog_parity.mjs",
     "lint:js": "eslint tools supabase/tests"
   },
   "devDependencies": {

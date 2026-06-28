@@ -18,6 +18,7 @@ of these (TDD §3.1 determinism boundary) — they are used from `infrastructure
 | **LimboConsole** | tag `v0.8.0` (`addons/limbo_console`) | MIT | https://github.com/limbonaut/limbo_console | Dev-only in-game console (state pokes + parity probes) — behind the `DevConsole` facade, gated by DEV_TOOLS (D3, ADR-018) |
 | **Maaack's Game Template** | tag `v1.4.6` (`addons/maaacks_game_template`) | MIT | https://github.com/Maaack/Godot-Game-Template | Menu/settings/loading backbone (base components). Demo `media/` + `docs/` trimmed (unused at runtime). Editor *installer* plugin NOT enabled (our screens use its `base/` directly). (D5) |
 | **sentry-godot** | tag `2.0.0` (`addons/sentry`, GDScript layer only) | MIT | https://github.com/getsentry/sentry-godot | Crash/error reporting — behind the `CrashReporter` facade (D2). Native GDExtension binaries are NOT committed (see `addons/sentry/bin/.gitignore`); the facade detects the `SentrySDK` singleton at runtime and no-ops when absent. |
+| **CSV Data Importer** | tag `2.1` @ commit `cb6e945033f25459661af40633b31ed9cca65eca` (`plugin.cfg` reports `2.0`; `addons/csv-data-importer`) | MIT | https://github.com/timothyqiu/godot-csv-data-importer | In-editor import path for the creature registry → typed Resources (Cluster 2, ADR-006). The `examples/`, demo `project.godot`, and icons are NOT vendored (editor-import addon only). Behind the `SpeciesCatalog` facade; the build-time path is `tools/gen_species_db.mjs`. |
 
 ### Cluster 1 facades (the only files that touch these addons)
 | Facade | File | Wraps |
@@ -77,6 +78,17 @@ vendor the addon for its actual (tile-collapse) purpose.
   makes the importer attempt EVERY `.json` in the project (`catalog/*.json`, `tests/*.json`) and flag
   the non-ink ones as failed imports. Restricting it to a dedicated `.inkjson` extension leaves plain
   data `.json` files untouched. Compiled stories are therefore named `<name>.inkjson` (ADR-017).
+
+- **CSV Data Importer** `addons/csv-data-importer/import_plugin.gd` — `_get_recognized_extensions()`
+  now returns `["csvdata"]` (not the generic `["csv", "tsv"]`) and `_get_priority()` is lowered to
+  `1.0`. Upstream claims plain `.csv` at priority `2.0`, which OUTRANKS and hijacks Godot's built-in
+  Translation importer — but the project ships a translation CSV
+  (`addons/maaacks_game_template/base/translations/menus_translations.csv`) that must stay a
+  translation. Restricting this importer to a dedicated `.csvdata` extension (mirrors the inkgd
+  `.inkjson` precedent above) leaves all plain `.csv` files untouched. The creature registry itself
+  lives at `docs/creature_registry.csv` (OUTSIDE `res://`) and is packed into the committed
+  `res://catalog/species/species_db.tres` by `tools/gen_species_db.mjs` at build time. The upstream
+  `examples/`, demo `project.godot`, and icons are not vendored (editor-import addon only).
 
 - **inkgd** `editor/ink_editor_plugin.gd` — guarded `_remove_autoloads()` with
   `if ProjectSettings.has_setting("autoload/__InkRuntime")`. The 0.6.0 line no longer auto-registers
