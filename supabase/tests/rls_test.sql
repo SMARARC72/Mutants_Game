@@ -8,7 +8,7 @@
 -- so auth.uid() resolves to the acting user and RLS is actually enforced.
 
 begin;
-select plan(54);
+select plan(55);
 
 -- ---- fixtures (as superuser) ---------------------------------------------
 \set uA '00000000-0000-0000-0000-00000000000a'
@@ -141,6 +141,8 @@ select is((select count(*)::int from god_snapshots where id = '00000000-0000-000
 select is((select count(*)::int from god_snapshots where id = '00000000-0000-0000-0000-0000000000b7'), 0, 'god_snapshots: A cannot read B''s private');
 select lives_ok($$ insert into god_snapshots (source_run, source_player, name) values ('00000000-0000-0000-0000-0000000000a1', '00000000-0000-0000-0000-00000000000a', 'mine') $$, 'god_snapshots: A inserts own');
 select throws_ok($$ insert into god_snapshots (source_run, source_player, name) values ('00000000-0000-0000-0000-0000000000a1', '00000000-0000-0000-0000-00000000000b', 'forged') $$, '42501', NULL, 'god_snapshots: A cannot insert as B');
+-- Codex PR#1: A cannot attach a snapshot to B's run (source_run must be own or null)
+select throws_ok($$ insert into god_snapshots (source_run, source_player, name) values ('00000000-0000-0000-0000-0000000000b1', '00000000-0000-0000-0000-00000000000a', 'forged-run') $$, '42501', NULL, 'god_snapshots: A cannot point source_run at B''s run');
 
 -- ==========================================================================
 -- WRITE-OWN (allow) for the remaining child tables — completes "owner can write".
