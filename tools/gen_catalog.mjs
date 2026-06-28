@@ -55,7 +55,16 @@ const species = [];
 let skipped = 0;
 for (let r = 1; r < csv.length; r++) {
   const row = csv[r];
-  if (!row || row.length < header.length) continue;
+  // A truly blank line (the parser yields [""]) is the only benign skip; ANY other column-count
+  // mismatch is a malformed registry edit -> fail the build loudly (don't silently lose a row).
+  if (!row || (row.length === 1 && row[0].trim() === "")) continue;
+  if (row.length !== header.length) {
+    const rid = idx.id != null ? (row[idx.id] ?? "").trim() : "";
+    throw new Error(
+      `gen_catalog: malformed CSV row ${r + 1} (id="${rid}") has ${row.length} columns, ` +
+        `expected ${header.length}. Fix docs/creature_registry.csv.`
+    );
+  }
   const get = (k) => row[idx[k]];
   const force_primary = nn(get("force_primary"));
   if (!force_primary) { skipped++; continue; } // force_primary is NOT NULL + force CHECK

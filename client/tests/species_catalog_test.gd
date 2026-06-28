@@ -34,7 +34,7 @@ func test_all_entries_are_typed_species_data() -> void:
 
 
 func test_get_by_id_returns_expected_row() -> void:
-	var ruinmaw: SpeciesData = _catalog.get("AD01")
+	var ruinmaw: SpeciesData = _catalog.get_by_id("AD01")
 	assert_object(ruinmaw).is_not_null()
 	assert_str(ruinmaw.name).is_equal("Ruinmaw")
 	assert_str(ruinmaw.force_primary).is_equal("Chaos")
@@ -46,12 +46,12 @@ func test_get_by_id_returns_expected_row() -> void:
 
 
 func test_get_unknown_id_returns_null() -> void:
-	assert_object(_catalog.get("NOPE-does-not-exist")).is_null()
+	assert_object(_catalog.get_by_id("NOPE-does-not-exist")).is_null()
 
 
 func test_tags_are_packed_string_array() -> void:
 	# AD02 (Worldback) carries a single tag "apex" in the registry.
-	var worldback: SpeciesData = _catalog.get("AD02")
+	var worldback: SpeciesData = _catalog.get_by_id("AD02")
 	assert_object(worldback).is_not_null()
 	assert_bool(worldback.tags is PackedStringArray).is_true()
 	assert_int(worldback.tags.size()).is_equal(1)

@@ -35,15 +35,16 @@ the determinism boundary and its CI grep gate are untouched. The catalog facade 
 |---|---|
 | `species_data.gd` (`class_name SpeciesData`) | one registry row as a typed `Resource`; mirrors the `species` table contract |
 | `species_db.gd` (`class_name SpeciesDB`) | packed `@export var species: Array[SpeciesData]` |
-| `species_catalog.gd` (`class_name SpeciesCatalog`) | the **only** read surface: `get(id)`, `all()`, `count()`, `by_force(f)`, `by_tier(t)`, `by_rank(r)` |
+| `species_catalog.gd` (`class_name SpeciesCatalog`) | the **only** read surface: `get_by_id(id)`, `all()`, `count()`, `by_force(f)`, `by_tier(t)`, `by_rank(r)` |
 
 - `SpeciesData` fields = `id, name, batch, art_ref, species_class, rank, tier, force_primary,
   force_secondary, role, evolution_line, stage, signature_skill, tags:PackedStringArray, description,
   status`. No derived/stat fields. Note `class` is a GDScript keyword → the export var is
   `species_class` (maps to the `species.class` column); `tags` is a `PackedStringArray`.
-- `SpeciesCatalog.get()` deliberately matches `Object.get`'s native signature
-  (`get(id: StringName) -> Variant`) with `@warning_ignore("native_method_override")` so GDScript
-  accepts the override while still honoring the spec's `get(id)` contract.
+- The lookup method is `get_by_id(id)`, NOT `get(id)`. Overriding the native `Object.get(property)`
+  does not work — Godot never dispatches `catalog.get("AD01")` to a user override; it calls the
+  built-in property getter (returns null). So the facade uses a distinct name the engine never
+  shadows.
 
 ### Imported Resources (D2) — `client/catalog/species/species_db.tres`
 - A single **packed `SpeciesDB`** text Resource with **406** typed `SpeciesData` sub-resources, one
@@ -77,8 +78,8 @@ the determinism boundary and its CI grep gate are untouched. The catalog facade 
 
 ### Smoke test (D7, GdUnit4) — `client/tests/species_catalog_test.gd`
 - `extends GdUnitTestSuite`, house style. Asserts the catalog loads, `count()==406`, all entries are
-  typed `SpeciesData` with non-empty `id`/`force_primary`, `get("AD01")` returns Ruinmaw
-  (Chaos/Thanatos, T2, wild, organic, Ruin Wolf), `get(unknown)==null`, `tags` is a
+  typed `SpeciesData` with non-empty `id`/`force_primary`, `get_by_id("AD01")` returns Ruinmaw
+  (Chaos/Thanatos, T2, wild, organic, Ruin Wolf), `get_by_id(unknown)==null`, `tags` is a
   `PackedStringArray`, and `by_force`/`by_tier`/`by_rank` filter correctly. **CI-only** (requires the
   `godot-tests` job; Godot is not installed locally).
 

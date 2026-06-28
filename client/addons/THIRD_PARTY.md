@@ -61,9 +61,8 @@ each file documents the clean seam to drop in the upstream addon later without t
   translation. Restricting this importer to a dedicated `.csvdata` extension (mirrors the inkgd
   `.inkjson` precedent above) leaves all plain `.csv` files untouched. The creature registry itself
   lives at `docs/creature_registry.csv` (OUTSIDE `res://`) and is packed into the committed
-  `res://catalog/species/species_db.tres` by `tools/gen_species_db.mjs` at build time. Also renamed
-  a shadowing local `name`/`headers` loop var in `_import` for gdlint cleanliness; `examples/`, the
-  demo `project.godot`, and icons are not vendored.
+  `res://catalog/species/species_db.tres` by `tools/gen_species_db.mjs` at build time. The upstream
+  `examples/`, demo `project.godot`, and icons are not vendored (editor-import addon only).
 
 - **inkgd** `editor/ink_editor_plugin.gd` — guarded `_remove_autoloads()` with
   `if ProjectSettings.has_setting("autoload/__InkRuntime")`. The 0.6.0 line no longer auto-registers

@@ -147,9 +147,9 @@ func _import(source_file, save_path, options, platform_variants, gen_files):
 				return ERR_PARSE_ERROR
 			var dict = {}
 			for j in headers.size():
-				var key = headers[j]
+				var name = headers[j]
 				var value = fields[j] if j < fields.size() else null
-				dict[key] = value
+				dict[name] = value
 			data.records.append(dict)
 	else:
 		data.records = lines

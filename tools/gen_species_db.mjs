@@ -78,6 +78,21 @@ function subId(id) {
 
 const species = JSON.parse(readFileSync(join(CAT, "species.json"), "utf8")).species;
 
+// Guard: every species.json key must be handled (FIELDS scalars + the `tags` array), so the .tres
+// stays in lock-step with the JSON bundle / seed and a future schema change can't silently drop a
+// field. `tags` is handled separately as a PackedStringArray.
+const HANDLED_KEYS = new Set([...FIELDS.map(([k]) => k), "tags"]);
+for (const s of species) {
+  for (const k of Object.keys(s)) {
+    if (!HANDLED_KEYS.has(k)) {
+      throw new Error(
+        `gen_species_db: species.json field "${k}" (id="${s.id}") is not packed into the .tres. ` +
+          `Add it to FIELDS so the client Resource stays in lock-step with the JSON/seed.`
+      );
+    }
+  }
+}
+
 // load_steps = ext_resources (2) + sub_resources (one per species) + 1.
 const loadSteps = 2 + species.length + 1;
 

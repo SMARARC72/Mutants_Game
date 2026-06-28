@@ -105,9 +105,42 @@ if (setEq(mappedFromCsv, tableSet)) {
 }
 
 // ===========================================================================
-// B. client catalog (JSON) == client Resource (.tres) == Postgres seed
+// B. registry CSV (SOURCE) == client catalog (JSON) == client Resource (.tres) == Postgres seed
 // ===========================================================================
-console.log("B. client catalog == client Resource == Postgres seed (count + id-set)");
+console.log("B. registry CSV (source) == client catalog == client Resource == Postgres seed");
+
+// --- B0. registry CSV (the SOURCE) — replay gen_catalog.mjs's exact predicate ---
+// gen_catalog: skip a truly-blank line; ANY other column-count mismatch is malformed; otherwise
+// skip rows with empty trimmed force_primary (NOT NULL + force CHECK), keep the rest.
+const csvIdx = Object.fromEntries(csvHeader.map((h, i) => [h, i]));
+const expectedIds = new Set(); // ids gen_catalog SHOULD emit
+const skippedIds = []; // rows skipped for empty force_primary
+for (let r = 1; r < csv.length; r++) {
+  const row = csv[r];
+  if (!row || (row.length === 1 && row[0].trim() === "")) continue; // benign blank line
+  if (row.length !== csvHeader.length) {
+    const rid = csvIdx.id != null ? (row[csvIdx.id] ?? "").trim() : "";
+    fail(`CSV row ${r + 1} (id="${rid}") has ${row.length} columns, expected ${csvHeader.length}`);
+    continue;
+  }
+  const fp = (row[csvIdx.force_primary] ?? "").trim();
+  const rid = (row[csvIdx.id] ?? "").trim();
+  if (fp === "") { skippedIds.push(rid); continue; }
+  expectedIds.add(rid);
+}
+console.log(
+  `  CSV: ${csv.length - 1} data rows -> ${expectedIds.size} seedable, ` +
+    `${skippedIds.length} skipped (empty force_primary): [${skippedIds.join(", ")}]`
+);
+// The documented 407->406 asymmetry: exactly one row (batch3-078) is dropped for empty force_primary.
+if (skippedIds.length === 1 && skippedIds[0] === "batch3-078") {
+  ok("407->406 asymmetry: exactly 1 row skipped (batch3-078, empty force_primary)");
+} else {
+  fail(
+    `expected exactly 1 skipped row (batch3-078, empty force_primary), got ` +
+      `${skippedIds.length}: [${skippedIds.join(", ")}]`
+  );
+}
 
 // --- B1. client bundle: client/catalog/species.json ---
 const jsonSpecies = JSON.parse(
@@ -116,6 +149,20 @@ const jsonSpecies = JSON.parse(
 const jsonIds = new Set(jsonSpecies.map((s) => s.id));
 if (jsonIds.size !== jsonSpecies.length) {
   fail(`species.json has duplicate ids (${jsonSpecies.length} rows, ${jsonIds.size} unique)`);
+}
+
+// Anchor the consumers to the SOURCE: if gen_catalog silently drops a row, json shrinks below the
+// CSV's seedable set and this catches it (consumer<->consumer parity alone would not).
+if (setEq(jsonIds, expectedIds) && jsonIds.size === expectedIds.size) {
+  ok(`species.json id-set == CSV seedable id-set (${expectedIds.size})`);
+} else {
+  const onlyCsv = diff(expectedIds, jsonIds).slice(0, 10);
+  const onlyJson = diff(jsonIds, expectedIds).slice(0, 10);
+  fail(
+    "species.json diverged from the registry CSV source.\n" +
+      (onlyCsv.length ? `    in CSV but not species.json: ${onlyCsv.join(", ")}\n` : "") +
+      (onlyJson.length ? `    in species.json but not CSV: ${onlyJson.join(", ")}` : "")
+  );
 }
 
 // --- B2. client Resource: client/catalog/species/species_db.tres ---

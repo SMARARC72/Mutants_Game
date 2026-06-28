@@ -9,9 +9,13 @@ extends RefCounted
 ##
 ## Usage:
 ##   var catalog := SpeciesCatalog.new()
-##   var s := catalog.get("AD01")            # SpeciesData or null
+##   var s := catalog.get_by_id("AD01")      # SpeciesData or null
 ##   for sp in catalog.all(): ...
 ##   catalog.by_force("Chaos"); catalog.by_tier("T2"); catalog.by_rank("wild")
+##
+## NOTE: the lookup is `get_by_id`, NOT `get`. Overriding the native Object.get(property) does not
+## work — Godot never dispatches `catalog.get("AD01")` to a user override; it calls the built-in
+## property getter (returns null). So we use a distinct name the engine never shadows.
 
 const DB_PATH := "res://catalog/species/species_db.tres"
 
@@ -35,11 +39,9 @@ func _load(db_path: String) -> void:
 		_by_id[sp.id] = sp
 
 
-## Lookup a single species by id (e.g. "AD01"). Returns SpeciesData or null if absent.
-## Signature matches Object.get exactly (StringName -> Variant) so GDScript accepts the override.
-@warning_ignore("native_method_override")
-func get(id: StringName) -> Variant:
-	return _by_id.get(String(id))
+## Lookup a single species by id (e.g. "AD01"). Returns the SpeciesData, or null if absent.
+func get_by_id(id: String) -> SpeciesData:
+	return _by_id.get(id)
 
 
 ## Every species, in registry order. Returns Array[SpeciesData].
