@@ -2,8 +2,9 @@ class_name FakeDal
 extends RefCounted
 ## In-memory FAKE of the DAL repositories (ADR-004). Keeps everything unit-testable OFFLINE:
 ## no addon, no network, no SceneTree. The save_version conflict logic (TDD §10.3) is
-## implemented here exactly as the real store must behave, so the DAL-contract test exercises
-## the same rule the Supabase implementation enforces.
+## implemented here exactly as the real store must behave. The DAL-contract test runs the SAME
+## assertions against BOTH this fake AND the Supabase implementation (the latter via a scripted
+## fake gateway), so the two independent conflict implementations are both verified.
 ##
 ## Each inner class extends the matching interface in `repositories.gd`. A `FakeStore` holds
 ## the shared state so the repositories see a consistent world (one run aggregate, its
@@ -39,6 +40,8 @@ class FakeStore:
 	var instances: Dictionary = {}
 	## snapshot_id -> snapshot dict.
 	var snapshots: Dictionary = {}
+	## Monotonic counter for ordering shareable snapshots newest-first (created_at DESC analogue).
+	var snapshot_publish_seq: int = 0
 	var _snapshot_seq: int = 0
 
 	func next_snapshot_id() -> String:
@@ -130,6 +133,10 @@ class FakeGodSnapshotRepository:
 		to_store["id"] = snapshot_id
 		if not to_store.has("shareable"):
 			to_store["shareable"] = true
+		# Stamp a monotonic publish seq so list_shareable can return newest-first deterministically
+		# (mirrors created_at DESC on the live store).
+		_store.snapshot_publish_seq += 1
+		to_store["_publish_seq"] = _store.snapshot_publish_seq
 		_store.snapshots[snapshot_id] = to_store
 		return snapshot_id
 
@@ -137,15 +144,19 @@ class FakeGodSnapshotRepository:
 		var snap: Dictionary = _store.snapshots.get(snapshot_id, {})
 		return snap.duplicate(true)
 
+	## Newest-first (the contract in repositories.gd), capped at `limit`. Sorts by the monotonic
+	## publish seq descending — equivalent to created_at DESC on the live store.
 	func list_shareable(limit: int = 20) -> Array:
-		var out: Array = []
+		var shareable: Array = []
 		for snapshot_id in _store.snapshots:
 			var snap: Dictionary = _store.snapshots[snapshot_id]
 			if bool(snap.get("shareable", false)):
-				out.append(snap.duplicate(true))
-			if out.size() >= limit:
-				break
-		return out
+				shareable.append(snap.duplicate(true))
+		shareable.sort_custom(
+			func(a: Dictionary, b: Dictionary) -> bool:
+				return int(a.get("_publish_seq", 0)) > int(b.get("_publish_seq", 0))
+		)
+		return shareable.slice(0, limit) if shareable.size() > limit else shareable
 
 
 ## Reads the same catalog JSON as production (ADR-006 single source of truth). Lazy-loads and
@@ -164,17 +175,18 @@ class FakeCatalogRepository:
 
 	var _cache: Dictionary = {}
 
+	# Each accessor returns a DEEP COPY so a caller cannot mutate the shared cache (Codex finding).
 	func species() -> Array:
-		return _load("species")
+		return _load("species").duplicate(true)
 
 	func gear() -> Array:
-		return _load("gear")
+		return _load("gear").duplicate(true)
 
 	func skills() -> Array:
-		return _load("skills")
+		return _load("skills").duplicate(true)
 
 	func factions() -> Array:
-		return _load("factions")
+		return _load("factions").duplicate(true)
 
 	func by_id(kind: String, id: String) -> Dictionary:
 		for entry in _load(kind):

@@ -12,8 +12,17 @@ extends RefCounted
 ## save_version conflict (TDD §10.3): `save_run` enforces the SOLE conflict key. The robust
 ## path is an atomic compare-and-swap in Postgres (an RPC: update ... where save_version =
 ## base returning save_version). Until that RPC ships we do a read-check-write here and DOCUMENT
-## the race window; the FAKE models the authoritative (atomic) behavior the RPC will provide, so
-## the DAL-contract test pins the contract regardless of transport.
+## the race window below. This implementation is exercised by `dal_contract_test.gd` against a
+## SCRIPTED FAKE GATEWAY (emulating PostgREST return=representation) under the same shared
+## save/sequential/stale-conflict/list_shareable assertions as the FakeDal — so both conflict
+## implementations are actually tested, not just one.
+##
+## KNOWN DIVERGENCE (P3, pending the atomic CAS RPC): on the UPDATE path a concurrent writer that
+## advanced save_version between our read and write is caught (the optimistic `where save_version =
+## server_version` guard returns no rows -> CONFLICT). On the INSERT path (a brand-new run) two
+## concurrent creates race; the loser hits the PK/unique constraint and the gateway surfaces an
+## empty result, which we report as ERROR (not CONFLICT). The fix is the same atomic RPC; a lost
+## concurrent create is vanishingly rare for client-generated run ids.
 
 const RepositoriesScript := preload("res://infrastructure/dal/repositories.gd")
 const SaveResultScript := preload("res://infrastructure/dal/save_result.gd")
@@ -33,8 +42,15 @@ class SupabaseRunRepository:
 		var rows: Array = await _gateway.select("runs", {"id": run_id})
 		if rows.is_empty():
 			return {}
-		var row: Variant = rows[0]
-		return row if row is Dictionary else {}
+		if not (rows[0] is Dictionary):
+			return {}
+		# The `runs` row keys its primary key `id`, but the in-memory aggregate / RunContext use
+		# `run_id`. Map id -> run_id so the loaded aggregate round-trips through RunContext.
+		var aggregate: Dictionary = (rows[0] as Dictionary).duplicate(true)
+		if aggregate.has("id") and not aggregate.has("run_id"):
+			aggregate["run_id"] = aggregate["id"]
+			aggregate.erase("id")
+		return aggregate
 
 	func current_save_version(run_id: String) -> int:
 		var rows: Array = await _gateway.select(
@@ -172,7 +188,11 @@ class SupabaseGodSnapshotRepository:
 
 	func list_shareable(limit: int = 20) -> Array:
 		# RLS already scopes reads to shareable-or-owned; we additionally filter shareable=true.
-		var rows: Array = await _gateway.select("god_snapshots", {"shareable": true})
+		# Order by created_at DESC so the result is newest-first (the contract in repositories.gd),
+		# matching the FAKE; god_snapshots.created_at exists since 0001_init.sql.
+		var rows: Array = await _gateway.select(
+			"god_snapshots", {"shareable": true}, PackedStringArray(["*"]), ["created_at", true]
+		)
 		return rows.slice(0, limit) if rows.size() > limit else rows
 
 

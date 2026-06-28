@@ -30,8 +30,17 @@ static func _db() -> Object:
 
 ## SELECT rows from `table` matching `eq` (column -> value). Returns an Array of row dicts.
 ## `await`-able: awaits the addon task and returns its data (or [] on error/absent addon).
+##
+## `eq` values are rendered to their PostgREST FILTER form via `_filter_value` — booleans become
+## "true"/"false", ints stay numeric, floats keep full precision. The addon's `query.eq` requires
+## a String (PostgREST filters are URL strings), so naive `str()` is wrong for floats (str(1.0) ->
+## "1"); `_filter_value` preserves them. `order_by` is an optional `[column, descending]` pair;
+## descending=true sorts newest-first for created_at-style columns.
 func select(
-	table: String, eq: Dictionary = {}, select_cols: PackedStringArray = PackedStringArray(["*"])
+	table: String,
+	eq: Dictionary = {},
+	select_cols: PackedStringArray = PackedStringArray(["*"]),
+	order_by: Array = []
 ) -> Array:
 	var db: Object = _db()
 	if db == null:
@@ -42,7 +51,11 @@ func select(
 		return []
 	query.from(table).select(select_cols)
 	for col in eq:
-		query.eq(str(col), str(eq[col]))
+		query.eq(str(col), _filter_value(eq[col]))
+	if order_by.size() >= 1:
+		# Directions enum on the addon query: Ascending = 0, Descending = 1.
+		var descending: bool = order_by.size() >= 2 and bool(order_by[1])
+		query.order(str(order_by[0]), 1 if descending else 0)
 	var task: Object = db.query(query)
 	var data: Variant = await _await_task(task)
 	return data if data is Array else []
@@ -74,7 +87,7 @@ func update(table: String, eq: Dictionary, changes: Dictionary) -> Array:
 		return []
 	query.from(table)
 	for col in eq:
-		query.eq(str(col), str(eq[col]))
+		query.eq(str(col), _filter_value(eq[col]))
 	query.update(changes)
 	var task: Object = db.query(query)
 	var data: Variant = await _await_task(task)
@@ -89,6 +102,20 @@ func rpc(function_name: String, args: Dictionary = {}) -> Variant:
 		return null
 	var task: Object = db.Rpc(function_name, args)
 	return await _await_task(task)
+
+
+## Renders a filter value to its PostgREST string form (the addon's `eq` needs a String, and
+## PostgREST filters are URL strings). bool -> "true"/"false"; int -> "%d"; float -> full
+## precision via `String.num` (so str(1.0) == "1" can't truncate a real fractional id); other
+## types -> `str(...)`. Keeps numeric/bool/float queries correct (Codex finding).
+static func _filter_value(value: Variant) -> String:
+	if value is bool:
+		return "true" if value else "false"
+	if value is int:
+		return str(value)
+	if value is float:
+		return String.num(value, 17)
+	return str(value)
 
 
 # --- addon plumbing (the ONLY addon-shaped code in the project) -------------- #
