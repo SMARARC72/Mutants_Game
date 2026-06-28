@@ -9,6 +9,7 @@ const StatusContainerScript := preload("res://application/status/status_containe
 const AbilityContainerScript := preload("res://application/status/ability_container.gd")
 const RunContextScript := preload("res://application/persistence/run_context.gd")
 const SaveEnvelopeScript := preload("res://application/persistence/save_envelope.gd")
+const SkillEngineScript := preload("res://domain/skill_engine.gd")
 
 
 func test_inventory_round_trips_as_pure_data() -> void:
@@ -84,6 +85,34 @@ func test_ability_container_round_trips_live_state() -> void:
 	assert_int(back.max_hp()).is_equal(ac.max_hp())
 	assert_bool(back.is_alive()).is_equal(ac.is_alive())
 	assert_array(back.abilities()).contains(["Riot Fang", "Aegis"])
+
+
+# Pins the bug_risk fix (Sourcery): maxhp is NOT persisted; it is RE-DERIVED from the persisted
+# identity (rank/tier) on load through the oracle. The serialized dict omits maxhp and carries
+# rank/tier; load_from rebuilds the Mon from the SAVED identity (not the constructor args of `back`),
+# so even a placeholder built with a DIFFERENT identity ends up with the oracle's correct maxhp.
+func test_ability_container_rederives_maxhp_not_persisted() -> void:
+	var kit := ["Riot Fang", "Aegis"]
+	var ac := AbilityContainerScript.new("Brute", "Chaos", "Gaia", "wild", "T2", kit)
+	var data := ac.to_dict()
+
+	# maxhp is intentionally NOT in the snapshot; rank/tier (the stat sources) ARE.
+	assert_bool(data.has("maxhp")).is_false()
+	assert_bool(data.has("rank")).is_true()
+	assert_bool(data.has("tier")).is_true()
+	assert_str(str(data["rank"])).is_equal("wild")
+	assert_str(str(data["tier"])).is_equal("T2")
+
+	# Build `back` with a DELIBERATELY DIFFERENT identity (different forces + tier => different stats).
+	# load_from must REBUILD from the saved identity and re-derive maxhp through the oracle, so back's
+	# maxhp equals a fresh Mon built from the SAVED identity — NOT the placeholder's maxhp.
+	var back := AbilityContainerScript.new("placeholder", "Eros", "Cosmos", "wild", "T1", [])
+	var placeholder_maxhp := back.max_hp()
+	back.load_from(JSON.parse_string(JSON.stringify(data)))
+	var oracle := SkillEngineScript.Mon.new("Brute", "Chaos", "Gaia", "wild", "T2", kit)
+	assert_int(back.max_hp()).is_equal(oracle.maxhp)
+	assert_int(back.max_hp()).is_equal(ac.max_hp())
+	assert_int(back.max_hp()).is_not_equal(placeholder_maxhp)  # proves it re-derived, not kept
 
 
 func test_inventory_embeds_in_run_context_and_save_envelope() -> void:

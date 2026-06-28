@@ -24,6 +24,11 @@ const SkillEngineScript := preload("res://domain/skill_engine.gd")
 
 ## The oracle combatant this container fronts. data-only state (stats/hp/kit/ranks); NEVER a Node.
 var _mon: SkillEngine.Mon
+## The IDENTITY the oracle derives stats + maxhp from. Kept on the container because SkillEngine.Mon
+## does not retain rank/tier — persisting them lets load_from REBUILD a fresh Mon (re-deriving stats
+## and maxhp from the CURRENT rules), so a stat-rules change is always reflected after a load.
+var _rank: String = ""
+var _tier: String = ""
 var _log: Array = []
 
 
@@ -37,6 +42,8 @@ func _init(
 	ranks: Dictionary = {}
 ) -> void:
 	# stats + HP come from the ORACLE (Mon -> StatEngine.stat_block). The shell computes none of them.
+	_rank = rank
+	_tier = tier
 	_mon = SkillEngineScript.Mon.new(c_name, prim, sec, rank, tier, kit, ranks)
 
 
@@ -116,18 +123,23 @@ func log_lines() -> Array:
 # --- persistence (data-only JSON; ADR-012) --------------------------------------------------- #
 
 
-## Snapshot the container's live battle state (hp/shield/buff/defdown/alive) + its identity kit/ranks
-## as a plain dict (NEVER a Node/Resource). Stats/maxhp are oracle-derived and re-derived on load from
-## the persisted identity (prim/sec/rank/tier), so we don't store the stat table redundantly.
+## Snapshot the container's IDENTITY (name/prim/sec/rank/tier/kit/ranks) + its mutable LIVE battle
+## state (hp/shield/buff/defdown/alive) as a plain dict (NEVER a Node/Resource). We persist `rank`/
+## `tier` (the stat sources) but NOT `maxhp` or the stat table: those are oracle-derived and are
+## REBUILT on load from the identity (load_from), so if the stat rules/constants change between save
+## and load the restored container reflects the NEW rules. `hp` IS persisted because it is mutable
+## live state (damage/heal during battle); `maxhp` is a pure function of the identity, so re-deriving
+## it is always correct and never goes stale.
 func to_dict() -> Dictionary:
 	return {
 		"name": _mon.name,
 		"prim": _mon.prim,
 		"sec": _mon.sec,
+		"rank": _rank,
+		"tier": _tier,
 		"kit": _mon.kit.duplicate(),
 		"ranks": _mon.ranks.duplicate(true),
 		"hp": _mon.hp,
-		"maxhp": _mon.maxhp,
 		"shield": _mon.shield,
 		"buff": _mon.buff,
 		"defdown": _mon.defdown,
@@ -135,19 +147,34 @@ func to_dict() -> Dictionary:
 	}
 
 
-## Restore the LIVE battle state IN PLACE. int()/float()-wrap numerics (JSON decodes bare numbers as
-## float). The identity (name/prim/sec/kit/ranks) is restored too so the container is self-consistent;
-## the stat table itself stays the oracle-derived one from _init's prim/sec/rank/tier (unchanged).
+## Restore IN PLACE. The identity is REBUILT through the oracle: a fresh SkillEngine.Mon is constructed
+## from the persisted (name/prim/sec/rank/tier/kit/ranks), which RE-DERIVES the stat table + maxhp from
+## the CURRENT rules (so a rules change is reflected — the bug_risk fix). Then the mutable live state
+## (hp/shield/buff/defdown/alive) is re-applied on top. int()/float()-wrap numerics (JSON decodes bare
+## numbers as float). maxhp is NEVER read from the save — it is whatever the rebuilt Mon computed.
 func load_from(data: Dictionary) -> void:
-	_mon.name = str(data.get("name", _mon.name))
-	_mon.prim = str(data.get("prim", _mon.prim))
-	_mon.sec = str(data.get("sec", _mon.sec))
-	if data.get("kit", null) is Array:
-		_mon.kit = (data["kit"] as Array).duplicate()
-	if data.get("ranks", null) is Dictionary:
-		_mon.ranks = (data["ranks"] as Dictionary).duplicate(true)
+	_rank = str(data.get("rank", _rank))
+	_tier = str(data.get("tier", _tier))
+	var kit: Array = (
+		(data["kit"] as Array).duplicate() if data.get("kit", null) is Array else _mon.kit
+	)
+	var ranks: Dictionary = (
+		(data["ranks"] as Dictionary).duplicate(true)
+		if data.get("ranks", null) is Dictionary
+		else _mon.ranks
+	)
+	# Rebuild via the oracle -> stats + maxhp re-derived from the identity under the CURRENT rules.
+	_mon = SkillEngineScript.Mon.new(
+		str(data.get("name", _mon.name)),
+		str(data.get("prim", _mon.prim)),
+		str(data.get("sec", _mon.sec)),
+		_rank,
+		_tier,
+		kit,
+		ranks
+	)
+	# Re-apply the mutable live battle state on top of the freshly-derived stat block.
 	_mon.hp = int(data.get("hp", _mon.hp))
-	_mon.maxhp = int(data.get("maxhp", _mon.maxhp))
 	_mon.shield = int(data.get("shield", 0))
 	_mon.buff = float(data.get("buff", 0.0))
 	_mon.defdown = float(data.get("defdown", 0.0))
