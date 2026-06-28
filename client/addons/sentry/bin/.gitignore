@@ -1,0 +1,15 @@
+# sentry-godot native GDExtension binaries (per-platform .dll/.so/.dylib + crashpad_handler).
+# NOT committed: they are large, platform-specific, and re-fetched per build from the pinned
+# release. The CrashReporter facade (client/infrastructure/ops/crash_reporter.gd) detects the
+# SentrySDK singleton at runtime and no-ops cleanly when these are absent (headless CI, this
+# worktree), so the project always imports with zero addon errors.
+#
+# To ENABLE real crash reporting in a dev/playtest build:
+#   1. Download sentry-godot 2.0.0 from the pinned release:
+#      https://github.com/getsentry/sentry-godot/releases/tag/2.0.0
+#   2. Unzip its addons/sentry/bin/** into this folder.
+#   3. Rename ../sentry.gdextension.template -> ../sentry.gdextension
+#      (set compatibility_minimum = "4.5").
+#   4. export SENTRY_DSN=<your self-hosted dsn>  (env only; never commit it).
+*
+!.gitignore
