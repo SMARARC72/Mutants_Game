@@ -90,6 +90,78 @@ single source of gameplay numbers. **Better Terrain** autotiling is a render-tim
 the persisted grid (documented in `world_generator.gd`), not vendored — it adds no traversability-
 changing tile, so the persisted `Layout` remains canonical. If a future need arises to vendor the
 upstream WFC addon for its editor tooling, the facade is the only file that would change.
+## Cluster 4 — CombatBrain (D1): LimboAI NOT vendored (self-contained BT/HSM)
+
+**LimboAI was evaluated and deliberately NOT vendored for the CombatBrain.** The Cluster 4 spec (D1)
+and `Mutants_Game_Integrations.md` §A2 permit a self-contained GDScript BT/HSM "if a clean 4.7 binary
+can't be vendored here ... the SELECTION/determinism semantics matter more than the specific lib, same
+precedent as the lab CSP." Two reasons:
+
+1. **LimboAI ships a GDExtension (native binary).** A clean, verified Godot-4.7 build could not be
+   vendored here (Godot is not installable in this environment to confirm the binary loads), and
+   committing an unverifiable native blob would break the "build is reproducible / CI green on a clean
+   clone" guarantee.
+2. **The vendored Beehave (pure GDScript, already present) is the wrong shape for the in-loop kernel.**
+   Beehave's `BeehaveTree` is a frame-ticked SceneTree `Node` (`set_physics_process` /
+   `actor_node_path` / `tick_rate`) and ships **no HSM**. A per-turn, synchronous,
+   replay-deterministic `choose_action()` needs a value-type tree it can run to completion in ONE
+   headless call — not a node that ticks across frames. Beehave remains the right tool for
+   free-running **overworld NPC** behaviour (its documented role), but not for the deterministic battle
+   selection path.
+
+We therefore ship a small, self-contained, synchronous, parity-irrelevant BT + HSM with the SAME
+selection semantics (Selector/Sequence/Condition/Action; HSM phases with `_enter`/transition guards)
+and the SAME Blackboard→RngService determinism rule (ADR-016):
+
+| Component | File | Role |
+|---|---|---|
+| `RngService` | `application/ai/rng_service.gd` | the ONLY randomness source; wraps an injected CanonicalRNG sub-stream (ADR-016) |
+| `AiBlackboard` | `application/ai/blackboard.gd` | data exchange + the BBNode→RngService handle (named `AiBlackboard` to avoid colliding with Beehave's `Blackboard`) |
+| `BehaviorTree` | `application/ai/behavior_tree.gd` | synchronous BT kernel (Selector/Sequence/Condition/Action/Inverter) |
+| `Hsm` | `application/ai/hsm.gd` | hierarchical state machine (LimboState-equivalent: states + blackboard-gated transitions) |
+| `RoleBrains` | `application/ai/role_brains.gd` | aggressor / support / controller / neutral target-selection BTs |
+| `SuccessionBoss` | `application/ai/succession_boss.gd` | Opening→Pressure→Desperation→Apotheosis HSM over the `god_snapshot` kit |
+| `CombatBrain` | `application/ai/combat_brain.gd` | THE FACADE: `choose_action(battle_state, rng) -> Action` |
+| `BattleController` | `application/battle/battle_controller.gd` | drives the turn loop; SELECTS via CombatBrain, RESOLVES via `client/domain/battle_engine.gd` |
+
+The brain carries **no outcome math** (ADR-016): it SELECTS the target/offense; `BattleEngine.attack`
+computes every number. `BattleEngine.simulate` is untouched and remains the auto/parity oracle. If a
+clean 4.7 LimboAI binary becomes available, the swap is local: reimplement `CombatBrain` (the facade);
+the controller and the determinism contract are unchanged.
+## Cluster 4 — Inventory + ability/status adapters (D4): expressobits + OctoD (self-contained)
+
+**expressobits/inventory-system (🟢 MIT) and OctoD godot-gameplay-systems (🟢 MIT) were evaluated
+and NOT vendored as runtime addons for D4.** The brief permits a self-contained fallback when a lib
+"doesn't fit cleanly on 4.7 … the adapter contract matters more than the lib." Both decisions follow
+the same precedent as the D3 CSP solver above, for two reasons specific to D4:
+
+1. **ADR-015 (the prime directive): addons never own outcome math.** Both libraries ship their OWN
+   gameplay math — expressobits computes a crafted OUTPUT item from a recipe; OctoD computes
+   attribute/buff/ability VALUES. In Mutants_Game the oracle (`client/domain/lab_engine.gd`,
+   `status_engine.gd`, `skill_engine.gd`) is the SOLE source of every number. Adopting either
+   library's math would create a second source of truth and break parity (TDD §6). We therefore adopt
+   each only for its STRUCTURE/STORAGE/CONTAINER role behind a thin adapter, computing nothing.
+2. **Godot is not installable in this environment**, so a 4.7 vendor cannot be smoke-tested here
+   (`godot --headless --import`) — the same blocker recorded for the CSP solver. Shipping a small,
+   self-contained, parity-irrelevant adapter that fulfils the SAME contract is lower-risk than
+   committing an unverified vendor. The adapter seam is documented in each file so the upstream addon
+   can be dropped in later WITHOUT touching callers (ADR-015 P3: swap an addon = reimplement one facade).
+
+| Component | File | Role (the contract) |
+|---|---|---|
+| `InventoryItem` | `infrastructure/inventory/inventory_item.gd` | data-only item DTO (categories = Lab ingredient types + run items); maps expressobits ItemDefinition/ItemStack → versioned-JSON, never `.tres` (ADR-012) |
+| `InventoryAdapter` | `infrastructure/inventory/inventory_adapter.gd` | the parts/kits/consumables/vials inventory facade — add / stack / consume / query + `to_dict`/`load_from`. The ONLY file callers touch; expressobits `Inventory` would back it 1:1 |
+| `LabRecipe` | `infrastructure/inventory/lab_recipe.gd` | the recipe REPRESENTATION (op + creature inputs + ingredient ids + method) the expressobits crafting GRAPH authors. Stores inputs only; computes no output |
+| `LabRecipeBench` | `application/lab/lab_recipe_bench.gd` | wires inventory + recipe → `LabBench` → `lab_engine`; debits the inventory by `splice_config["consumed"]` ONLY on a LEGAL commit, AFTER the oracle ran. The creature is `lab_engine`'s verbatim |
+| `StatusContainer` | `application/status/status_container.gd` | OctoD-style buff/debuff effect-container SHELL; delegates apply/tick/cleanse/corruption to `status_engine` and reads back state. Owns no number |
+| `AbilityContainer` | `application/status/ability_container.gd` | OctoD-style ability-container SHELL; delegates damage/support/act to `skill_engine`. Owns no number |
+
+**The contamination boundary (ADR-015 / DoD item 4):** `inventory_contamination_guard_test.gd` proves a
+splice driven through inventory → `LabRecipeBench` → `LabBench` yields a creature EQUAL field-for-field to
+`LabEngine.fuse(...)` on the same config + seed — the inventory/recipe contributed storage + recipe
+representation only, NOT a single number. `status_ability_shell_test.gd` proves the OctoD shells reflect
+`status_engine`/`skill_engine` values exactly. The upstream URLs (for a future runtime vendor):
+expressobits https://github.com/expressobits/inventory-system · OctoD https://github.com/OctoD/godot-gameplay-systems.
 
 ## Local modifications (4.7 compatibility)
 
