@@ -43,7 +43,10 @@ var _auto_hand_off: bool = true
 
 
 func _ready() -> void:
-	_game = get_node_or_null("/root/GameController")
+	# An injected _game (set_game before add_child) MUST win; only fall back to the autoload when
+	# nothing was injected, so the test harness is never clobbered.
+	if _game == null:
+		_game = get_node_or_null("/root/GameController")
 	_transition = get_node_or_null("/root/Transition")
 	_input = get_node_or_null("/root/InputService")
 	if _input != null and _input.has_method("switch_context"):

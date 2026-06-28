@@ -21,10 +21,16 @@ var _transition: Node = null
 var _input: Node = null
 var _result: Dictionary = {}
 var _continue_button: Button = null
+## When false, _ready does NOT auto-run the pending battle (a headless test drives
+## run_pending_battle() once explicitly). Default true so production auto-runs on scene entry.
+var _auto_run: bool = true
 
 
 func _ready() -> void:
-	_game = get_node_or_null("/root/GameController")
+	# An injected _game (set_game before add_child) MUST win; only fall back to the autoload when
+	# nothing was injected, so the test harness is never clobbered (mirrors overworld_screen).
+	if _game == null:
+		_game = get_node_or_null("/root/GameController")
 	_transition = get_node_or_null("/root/Transition")
 	_input = get_node_or_null("/root/InputService")
 	var theme_service := get_node_or_null("/root/ThemeService")
@@ -32,13 +38,18 @@ func _ready() -> void:
 		theme_service.call("apply_to", self)
 	if _input != null and _input.has_method("switch_context"):
 		_input.call("switch_context", InputActions.CTX_BATTLE)
-	if _game != null and _game.has_method("has_run") and _game.call("has_run"):
+	if _auto_run and _game != null and _game.has_method("has_run") and _game.call("has_run"):
 		run_pending_battle()
 
 
-## Inject the GameController (tests / non-autoload contexts). Call BEFORE run_pending_battle().
+## Inject the GameController (tests / non-autoload contexts). Call BEFORE add_child/run_pending.
 func set_game(game: Node) -> void:
 	_game = game
+
+
+## Disable the automatic battle run on _ready (tests drive run_pending_battle() once explicitly).
+func set_auto_run(enabled: bool) -> void:
+	_auto_run = enabled
 
 
 ## Run the battle GameController stashed in run.flags.pending_battle, render it, apply the result.
@@ -50,6 +61,11 @@ func run_pending_battle() -> Dictionary:
 	var run: RunContext = _game.call("run")
 	if run == null:
 		return {}
+	# Re-entrancy guard: a battle runs ONCE per pending_battle. A stray second call (e.g. _ready
+	# auto-run + an explicit drive) finds no pending flag and returns the cached result rather than
+	# running a degenerate empty-enemy battle that would re-apply / zero xp and corrupt state.
+	if not run.flags.has("pending_battle"):
+		return _result
 	var pending: Dictionary = run.flags.get("pending_battle", {})
 	var enemy_party: Array = pending.get("enemy_party", [])
 	var battle_seed := int(pending.get("battle_seed", 0))

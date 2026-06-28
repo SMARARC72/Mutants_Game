@@ -27,11 +27,20 @@ func _make_game_with_pending_battle() -> Node:
 	return gc
 
 
-func test_battle_screen_runs_pending_battle_and_returns_result() -> void:
-	var gc := _make_game_with_pending_battle()
+## A battle screen wired to `gc` with auto-run DISABLED, so _ready does NOT fire the battle and the
+## test drives run_pending_battle() exactly once (xp applied exactly once). Injection wins because
+## set_game runs before add_child (the _ready autoload grab only fills a null _game).
+func _make_screen(gc: Node) -> Control:
 	var screen: Control = BattleScreenScript.new()
 	screen.call("set_game", gc)
+	screen.call("set_auto_run", false)
 	add_child(screen)
+	return screen
+
+
+func test_battle_screen_runs_pending_battle_and_returns_result() -> void:
+	var gc := _make_game_with_pending_battle()
+	var screen := _make_screen(gc)
 	var result: Dictionary = screen.call("run_pending_battle")
 	assert_bool(bool(result["valid"])).is_true()
 	assert_str(str(result["winner"])).is_not_empty()
@@ -47,9 +56,7 @@ func test_battle_screen_runs_pending_battle_and_returns_result() -> void:
 
 func test_battle_screen_builds_result_banner_and_log() -> void:
 	var gc := _make_game_with_pending_battle()
-	var screen: Control = BattleScreenScript.new()
-	screen.call("set_game", gc)
-	add_child(screen)
+	var screen := _make_screen(gc)
 	screen.call("run_pending_battle")
 	# The code-built UI exists: a result banner + a transcript log node.
 	var banner := screen.find_child("ResultBanner", true, false)
@@ -63,16 +70,20 @@ func test_battle_screen_builds_result_banner_and_log() -> void:
 
 func test_win_awards_xp_to_run() -> void:
 	var gc := _make_game_with_pending_battle()
-	var screen: Control = BattleScreenScript.new()
-	screen.call("set_game", gc)
-	add_child(screen)
+	var screen := _make_screen(gc)
 	var run: RunContext = gc.call("run")
+	# Captured BEFORE the single explicit run (auto-run is off, so _ready did not consume xp).
 	var essence_before := run.essence
 	var result: Dictionary = screen.call("run_pending_battle")
-	# apply_battle_result folds xp into essence (Slice 1 growth stand-in).
+	# apply_battle_result folds xp into essence (Slice 1 growth stand-in) — applied EXACTLY once.
 	if bool(result["player_won"]):
 		assert_int(run.essence).is_equal(essence_before + int(result["xp"]))
 	else:
 		assert_int(run.essence).is_equal(essence_before)
+	# A stray second call is a no-op (re-entrancy guard): essence + result unchanged.
+	var essence_after := run.essence
+	var second: Dictionary = screen.call("run_pending_battle")
+	assert_int(run.essence).is_equal(essence_after)
+	assert_str(str(second["winner"])).is_equal(str(result["winner"]))
 	screen.queue_free()
 	gc.queue_free()
