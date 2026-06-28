@@ -42,8 +42,13 @@ battle mode is a NEW application-layer controller — the oracle is never modifi
   (`application/ai/behavior_tree.gd`) selecting moves from the imported `god_snapshot` kit (supabase
   `god_snapshots`). Phase transitions are **Blackboard-gated** on own HP%, turn count, squad losses,
   and the entropy clock (`application/ai/succession_boss.gd`). Creature/role brains
-  (`application/ai/role_brains.gd`: aggressor / support / controller) are lightweight BTs on the same
-  Blackboard. Overworld NPC brains may be free-running (not simulation).
+  (`application/ai/role_brains.gd`: aggressor / support / controller / unpredictable) are lightweight
+  BTs on the same Blackboard. These non-neutral policies make REAL canonical draws via the Blackboard
+  `RngService` — a `choice` to break a tie among equally-best targets, and a per-turn `chance` +
+  `choice` for the boss's Apotheosis "unpredictable" phase — so ADR-016's selection path is genuinely
+  exercised. A draw is consumed ONLY when there is a real choice (a single best target draws nothing),
+  and the **neutral** policy is RNG-free by design (it draws nothing, preserving simulate parity).
+  Overworld NPC brains may be free-running (not simulation).
 
 ### LimboAI was not vendored — a self-contained BT/HSM ships instead
 LimboAI ships a **GDExtension (native binary)** and a clean Godot-4.7 binary could not be vendored or
@@ -64,11 +69,17 @@ semantics and the SAME Blackboard→RngService rule. See `client/addons/THIRD_PA
   oracle for 39 golden cases).
 - **Boss HSM test** (`succession_boss_hsm_test.gd`): every phase transition fires on its Blackboard
   gate (turn / HP% / squad-loss / entropy), and the phase path is deterministic.
-- **Selection-purity test** (`combat_brain_selection_purity_test.gd`): a committed grep over
-  `application/ai/` + `application/battle/` proves no `randf`/`randi`/`randomize`/addon-RNG appears,
-  and decisions are driven only by the injected canonical stream. A matching CI grep gate enforces it.
+- **Selection-purity test** (`combat_brain_selection_purity_test.gd`): (a) a committed grep over
+  `application/ai/` + `application/battle/` proves no `randf`/`randi`/`randomize`/addon-RNG appears
+  (a matching CI grep gate enforces it); (b) a RUNTIME test builds a real `CombatBrain`, assigns an
+  RNG-consuming brain, and calls `choose_action(state, CanonicalRNG.new(seed))` over a fixed turn
+  script — asserting same-seed ⇒ identical decision sequence AND different-seed ⇒ the decisions CAN
+  differ (so the canonical path is genuinely exercised, not paper-only); (c) the neutral brain's
+  decision sequence is asserted seed-independent (it draws nothing).
 - **D6 parity probe**: the dev-only LimboConsole `parity_battle` command (ADR-018) runs the GDScript
   `BattleEngine` on a golden seed, hashes the transcript, and diffs it against the committed Python
-  golden vector — the manual counterpart to the automated parity gate (`parity_probe_test.gd`).
+  golden vector, reporting the non-overlapping marker `PARITY_OK` / `PARITY_DRIFT` (never the
+  substring-ambiguous MATCH/MISMATCH) — the manual counterpart to the automated parity gate
+  (`parity_probe_test.gd`).
 - **Nothing added to `client/domain/`**; the CI domain-purity grep gate stays green. The existing
   `battle_engine_parity_test.gd` (auto-sim) is unaffected — the oracle was not touched.

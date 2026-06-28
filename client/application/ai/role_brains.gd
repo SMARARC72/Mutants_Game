@@ -17,11 +17,18 @@ extends RefCounted
 
 const Bt := preload("res://application/ai/behavior_tree.gd")
 
-# --- target-selection policies (pure reads; ties resolve FIRST-wins = team order, matching the
-#     oracle's _first_alive stability) -------------------------------------------------------------
+# --- target-selection policies -----------------------------------------------------------------
+#
+# ADR-016 SELECTION RNG: the role policies draw from the injected canonical SEL sub-stream ONLY to
+# break a TIE among equally-best targets (a pure selection choice, never a resolution number). A draw
+# happens ONLY when 2+ candidates are equally best — a single best target consumes NO randomness, so
+# replay stays a clean function of (seed, teams). The NEUTRAL policy (first_alive) is RNG-free by
+# design, so the controller-vs-simulate parity for a neutral brain is byte-identical (it draws
+# nothing from SEL, exactly like simulate's hardcoded _first_alive). Tie-break uses rng.choice over
+# the equally-best set in TEAM ORDER, so the candidate list is itself deterministic.
 
 
-## First alive foe in team order — the oracle's default (_first_alive). The neutral baseline policy.
+## First alive foe in team order — the oracle's default (_first_alive). RNG-FREE (neutral baseline).
 static func first_alive(foes: Array) -> BattleEngine.Mon:
 	for f in foes:
 		if (f as BattleEngine.Mon).alive:
@@ -29,29 +36,57 @@ static func first_alive(foes: Array) -> BattleEngine.Mon:
 	return null
 
 
-## Lowest absolute HP alive foe (FIRST-wins on ties) — the "finisher" policy (mirrors
-## skill_engine._min_by_hp). Presses a kill to remove an enemy action economy.
-static func lowest_hp(foes: Array) -> BattleEngine.Mon:
-	var best: BattleEngine.Mon = null
+## All alive foes tied at the minimum HP, in team order. >1 element ⇒ a genuine tie to break.
+static func lowest_hp_candidates(foes: Array) -> Array:
+	var best := first_alive(foes)
+	if best == null:
+		return []
+	var min_hp := best.hp
 	for f in foes:
 		var m := f as BattleEngine.Mon
-		if not m.alive:
-			continue
-		if best == null or m.hp < best.hp:
-			best = m
-	return best
+		if m.alive and m.hp < min_hp:
+			min_hp = m.hp
+	var out: Array = []
+	for f in foes:
+		var m := f as BattleEngine.Mon
+		if m.alive and m.hp == min_hp:
+			out.append(m)
+	return out
 
 
-## Foe the actor's primary force OVERWHELMS (opposed pole, force_mult 1.5), else first alive. The
-## "exploit weakness" policy: pick the matchup the oracle will score hardest.
-static func best_matchup(actor: BattleEngine.Mon, foes: Array) -> BattleEngine.Mon:
+## Lowest-HP foe, canonical tie-break among equals via the SEL sub-stream (rng). FIRST-wins only
+## when there is no tie. A draw is consumed ONLY when 2+ foes share the minimum HP.
+static func lowest_hp(foes: Array, rng: RngService) -> BattleEngine.Mon:
+	var cands := lowest_hp_candidates(foes)
+	if cands.is_empty():
+		return null
+	if cands.size() == 1:
+		return cands[0] as BattleEngine.Mon
+	return rng.choice(cands) as BattleEngine.Mon
+
+
+## All alive foes whose pole the actor's primary force OVERWHELMS (opposed pole), in team order.
+static func overwhelmed_candidates(actor: BattleEngine.Mon, foes: Array) -> Array:
 	var opposed: Variant = BattleEngine.OPP.get(actor.prim, null)
-	if opposed != null:
-		for f in foes:
-			var m := f as BattleEngine.Mon
-			if m.alive and m.prim == opposed:
-				return m
-	return first_alive(foes)
+	var out: Array = []
+	if opposed == null:
+		return out
+	for f in foes:
+		var m := f as BattleEngine.Mon
+		if m.alive and m.prim == opposed:
+			out.append(m)
+	return out
+
+
+## A foe the actor overwhelms (opposed pole, force_mult 1.5), canonical tie-break among equals via
+## the SEL sub-stream; else first alive. A draw is consumed ONLY when 2+ overwhelmed foes exist.
+static func best_matchup(actor: BattleEngine.Mon, foes: Array, rng: RngService) -> BattleEngine.Mon:
+	var cands := overwhelmed_candidates(actor, foes)
+	if cands.is_empty():
+		return first_alive(foes)
+	if cands.size() == 1:
+		return cands[0] as BattleEngine.Mon
+	return rng.choice(cands) as BattleEngine.Mon
 
 
 # --- the Action a role commits (target + offense), or null when no foe is alive ------------------
@@ -66,13 +101,14 @@ static func _commit(actor: BattleEngine.Mon, target: BattleEngine.Mon) -> Varian
 # --- role trees ---------------------------------------------------------------------------------
 
 
-## Aggressor: go for the kill — target lowest-HP foe; fall back to first-alive.
+## Aggressor: go for the kill — target lowest-HP foe (canonical tie-break via ctx.rng among equals);
+## fall back to first-alive. Draws from the SEL sub-stream ONLY when foes tie at minimum HP.
 static func aggressor() -> BehaviorTree.BtNode:
 	var act: BehaviorTree.Action = Bt.Action.new(
 		func(ctx: AiBlackboard) -> Variant:
 			var actor := ctx.get_value("actor") as BattleEngine.Mon
 			var foes: Array = ctx.get_value("foes", [])
-			var tgt := lowest_hp(foes)
+			var tgt := lowest_hp(foes, ctx.rng)
 			if tgt == null:
 				tgt = first_alive(foes)
 			return _commit(actor, tgt)
@@ -80,27 +116,28 @@ static func aggressor() -> BehaviorTree.BtNode:
 	return act
 
 
-## Controller: exploit force matchups — target a pole this actor overwhelms; else first-alive.
+## Controller: exploit force matchups — target a pole this actor overwhelms (canonical tie-break via
+## ctx.rng among equals); else first-alive. Draws from SEL ONLY when 2+ overwhelmed foes exist.
 static func controller() -> BehaviorTree.BtNode:
 	var act: BehaviorTree.Action = Bt.Action.new(
 		func(ctx: AiBlackboard) -> Variant:
 			var actor := ctx.get_value("actor") as BattleEngine.Mon
 			var foes: Array = ctx.get_value("foes", [])
-			return _commit(actor, best_matchup(actor, foes))
+			return _commit(actor, best_matchup(actor, foes, ctx.rng))
 	)
 	return act
 
 
 ## Support: in the auto-battler strike model there is no heal verb (battle_engine.attack only
-## strikes), so the support role plays conservatively — protect tempo by finishing the weakest foe,
-## else strike first-alive. (When a skill-based controller is wired, this is where a Mend/Ward
-## selection BT slots in, still SELECTING only.)
+## strikes), so the support role plays conservatively — protect tempo by finishing the weakest foe
+## (canonical tie-break via ctx.rng among equals), else strike first-alive. (When a skill-based
+## controller is wired, this is where a Mend/Ward selection BT slots in, still SELECTING only.)
 static func support() -> BehaviorTree.BtNode:
 	var act: BehaviorTree.Action = Bt.Action.new(
 		func(ctx: AiBlackboard) -> Variant:
 			var actor := ctx.get_value("actor") as BattleEngine.Mon
 			var foes: Array = ctx.get_value("foes", [])
-			var tgt := lowest_hp(foes)
+			var tgt := lowest_hp(foes, ctx.rng)
 			if tgt == null:
 				tgt = first_alive(foes)
 			return _commit(actor, tgt)
@@ -109,14 +146,44 @@ static func support() -> BehaviorTree.BtNode:
 
 
 ## Default/neutral brain: parity with the oracle's hardcoded selection (first-alive + native
-## offense). The BattleController uses THIS to reproduce simulate()'s target choices exactly while
-## still routing every strike through the brain->oracle path (the determinism showcase).
+## offense). RNG-FREE by design — it draws NOTHING from SEL, so the BattleController reproduces
+## simulate()'s target choices byte-for-byte while still routing every strike through the
+## brain->oracle path (the determinism showcase).
 static func neutral() -> BehaviorTree.BtNode:
 	var act: BehaviorTree.Action = Bt.Action.new(
 		func(ctx: AiBlackboard) -> Variant:
 			var actor := ctx.get_value("actor") as BattleEngine.Mon
 			var foes: Array = ctx.get_value("foes", [])
 			return _commit(actor, first_alive(foes))
+	)
+	return act
+
+
+## All alive foes in team order (a deterministic candidate list to draw over).
+static func alive_foes(foes: Array) -> Array:
+	var out: Array = []
+	for f in foes:
+		if (f as BattleEngine.Mon).alive:
+			out.append(f)
+	return out
+
+
+## Unpredictable: with probability `lash_chance` (a SEL `chance` roll EVERY decision) the actor
+## "lashes out" at a canonically-chosen random alive foe (a SEL `choice` draw); otherwise it exploits
+## the best force matchup. Used by the boss's Apotheosis phase so the HSM path genuinely consumes the
+## canonical sub-stream on every turn (ADR-016), not only on ties. Selection-only: it picks WHO, never
+## a damage number. Two equal seeds ⇒ identical picks; different seeds ⇒ the picks CAN differ.
+static func unpredictable(lash_chance: float = 0.5) -> BehaviorTree.BtNode:
+	var act: BehaviorTree.Action = Bt.Action.new(
+		func(ctx: AiBlackboard) -> Variant:
+			var actor := ctx.get_value("actor") as BattleEngine.Mon
+			var foes: Array = ctx.get_value("foes", [])
+			var living := alive_foes(foes)
+			if living.is_empty():
+				return null
+			if ctx.rng.chance(lash_chance):
+				return _commit(actor, ctx.rng.choice(living) as BattleEngine.Mon)
+			return _commit(actor, best_matchup(actor, foes, ctx.rng))
 	)
 	return act
 
@@ -130,5 +197,7 @@ static func for_role(role: String) -> BehaviorTree.BtNode:
 			return support()
 		"controller":
 			return controller()
+		"unpredictable":
+			return unpredictable()
 		_:
 			return neutral()

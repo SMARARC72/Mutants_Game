@@ -52,9 +52,12 @@ static func build(gates: Dictionary = {}) -> Hsm:
 	var pressure_tree: BehaviorTree.BtNode = RoleBrainsScript.controller()
 	# Desperation: finisher — collapse onto the weakest target to claw back tempo.
 	var desperation_tree: BehaviorTree.BtNode = RoleBrainsScript.aggressor()
-	# Apotheosis: the ascended turn — exploit force weakness, then finish (Selector: matchup else kill).
+	# Apotheosis: the ascended turn — UNPREDICTABLE. A canonical SEL roll EVERY turn either lashes out
+	# at a random foe or exploits the best matchup, so the ascended boss reads as erratic-but-replayable
+	# (ADR-016: the draw is selection-only and comes from the injected sub-stream). Wrapped in a
+	# Selector with an aggressor fallback for the (no-foe) edge.
 	var apotheosis_tree: BehaviorTree.Selector = Bt.Selector.new()
-	apotheosis_tree.add(RoleBrainsScript.controller())
+	apotheosis_tree.add(RoleBrainsScript.unpredictable(0.5))
 	apotheosis_tree.add(RoleBrainsScript.aggressor())
 
 	var opening: Hsm.State = HsmScript.State.new(PHASE_OPENING, opening_tree)

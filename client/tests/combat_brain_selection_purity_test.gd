@@ -67,24 +67,84 @@ func test_ai_path_has_no_global_or_addon_rng() -> void:
 	assert_array(violations).is_empty()
 
 
-func test_brain_decisions_are_driven_only_by_injected_rng() -> void:
-	# Same seed -> identical decision sequence; different seed -> different sequence. If any global
-	# randomness leaked in, the "same seed" runs would diverge; if the brain ignored the injected
-	# stream, the "different seed" runs would NOT diverge.
-	var seq_seed_a1 := _decision_sequence(123)
-	var seq_seed_a2 := _decision_sequence(123)
-	var seq_seed_b := _decision_sequence(456)
+func test_brain_choose_action_is_driven_only_by_injected_rng() -> void:
+	# The REAL test of ADR-016 (not the RNG primitive): build a CombatBrain, assign an RNG-consuming
+	# brain, and call choose_action(state, CanonicalRNG.new(seed)) over a FIXED turn script. The chosen
+	# TARGET sequence must be:
+	#   - identical for the same seed (no hidden/global randomness leaked in), AND
+	#   - able to DIFFER for a different seed (the brain genuinely draws from the injected stream).
+	# If the brain never touched ctx.rng, the "different seed" sequences could never differ.
+	var seq_a1 := _boss_target_sequence(123)
+	var seq_a2 := _boss_target_sequence(123)
+	var seq_b := _boss_target_sequence(456)
 
-	assert_array(seq_seed_a1).is_equal(seq_seed_a2)
-	assert_bool(seq_seed_a1 == seq_seed_b).is_false()
+	# A real sequence was produced (the script ran), and it actually consumed the stream (the boss
+	# Apotheosis phase rolls chance()+choice() every turn).
+	assert_int(seq_a1.size()).is_greater(0)
+	# Same seed -> byte-identical decision sequence.
+	assert_array(seq_a1).is_equal(seq_a2)
+	# Different seed -> the decisions CAN differ. (If they didn't, the RNG path would be paper-only.)
+	assert_bool(seq_a1 == seq_b).is_false()
 
 
-func _decision_sequence(seed: int) -> Array:
-	# Drive a Rouse-style chance gate many times so the injected stream is actually consumed: we use
-	# the RngService chance() directly (the same primitive BT conditions use) to make the dependence
-	# on the injected stream observable and order-stable.
-	var rng := RngServiceScript.new(CanonicalRNG.new(seed))
+func test_neutral_brain_consumes_no_rng_and_is_seed_independent() -> void:
+	# The flip side of the guarantee: the NEUTRAL (first-alive) brain draws NOTHING, so its decisions
+	# are identical REGARDLESS of seed. This is what keeps controller-vs-simulate parity byte-identical.
+	var seq_seed_1 := _neutral_target_sequence(123)
+	var seq_seed_2 := _neutral_target_sequence(999)
+	assert_array(seq_seed_1).is_equal(seq_seed_2)
+
+
+func _three_foes() -> Array:
+	# Three live foes, distinct names; the unpredictable/choice draws have real options to differ on.
+	return [
+		BattleEngine.Mon.new("Foe_A", "Gaia", "Ouranos", "wild", "T2"),
+		BattleEngine.Mon.new("Foe_B", "Cosmos", "Eros", "wild", "T2"),
+		BattleEngine.Mon.new("Foe_C", "Chaos", "Thanatos", "wild", "T2"),
+	]
+
+
+# Drive the boss brain (Apotheosis phase = unpredictable: a chance()+choice() draw every turn) over a
+# fixed 6-turn script and collect the chosen target name each turn. ONE CanonicalRNG instance is
+# threaded across the turns (exactly how BattleController feeds its SEL sub-stream), so the stream
+# advances naturally. Gates are set so the HSM is in Apotheosis from turn 1 (low HP / high entropy).
+func _boss_target_sequence(seed: int) -> Array:
+	var brain := CombatBrainScript.new({"name": "Ascended"})
+	var boss := BattleEngine.Mon.new("Boss", "Chaos", "Thanatos", "god", "god")
+	brain.assign_boss(boss)
+	var foes := _three_foes()
+	var sel_rng := CanonicalRNG.new(seed)
 	var out: Array = []
-	for _i in range(32):
-		out.append(rng.chance(0.5))
+	for turn in range(1, 7):
+		var st := {
+			"actor": boss,
+			"allies": [boss],
+			"foes": foes,
+			"turn": turn,
+			"entropy": 2.0,  # past apotheosis_entropy -> Apotheosis from the first decision
+			"boss_hp_frac": 0.1,  # past apotheosis_hp_frac -> Apotheosis
+			"boss_squad_losses": 0,
+		}
+		var action := brain.choose_action(st, sel_rng)
+		out.append(_target_name(action))
 	return out
+
+
+func _neutral_target_sequence(seed: int) -> Array:
+	var brain := CombatBrainScript.new()  # default = neutral brain (RNG-free)
+	var actor := BattleEngine.Mon.new("Hero", "Gaia", "Ouranos", "wild", "T2")
+	var foes := _three_foes()
+	var sel_rng := CanonicalRNG.new(seed)
+	var out: Array = []
+	for turn in range(1, 7):
+		var st := {"actor": actor, "allies": [actor], "foes": foes, "turn": turn, "entropy": 1.0}
+		var action := brain.choose_action(st, sel_rng)
+		out.append(_target_name(action))
+	return out
+
+
+func _target_name(action: Dictionary) -> String:
+	if action.is_empty():
+		return "<none>"
+	var tgt := action.get("target") as BattleEngine.Mon
+	return tgt.name if tgt != null else "<none>"

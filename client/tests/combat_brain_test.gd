@@ -7,10 +7,15 @@ extends GdUnitTestSuite
 
 const CombatBrainScript := preload("res://application/ai/combat_brain.gd")
 const RoleBrainsScript := preload("res://application/ai/role_brains.gd")
+const RngServiceScript := preload("res://application/ai/rng_service.gd")
 
 
 func _mon(name: String, prim: String, sec: String) -> BattleEngine.Mon:
 	return BattleEngine.Mon.new(name, prim, sec, "wild", "T2")
+
+
+func _rng() -> RngService:
+	return RngServiceScript.new(CanonicalRNG.new(1))
 
 
 func test_choose_action_returns_action_shape() -> void:
@@ -56,18 +61,42 @@ func test_no_foe_alive_returns_empty_action() -> void:
 
 
 func test_aggressor_targets_lowest_hp() -> void:
+	# Distinct HP -> a single best target, so NO RNG draw is consumed (tie-break only fires on ties).
 	var foes: Array = [_mon("Full", "Gaia", "Ouranos"), _mon("Hurt", "Cosmos", "Eros")]
 	(foes[1] as BattleEngine.Mon).hp = 1  # the weakest
-	var tgt := RoleBrainsScript.lowest_hp(foes)
+	var tgt := RoleBrainsScript.lowest_hp(foes, _rng())
 	assert_object(tgt).is_same(foes[1])
+
+
+func test_lowest_hp_tie_break_is_canonical_and_within_candidates() -> void:
+	# Two foes tied at the minimum HP -> the canonical SEL draw picks one of them, and the SAME seed
+	# always picks the SAME one (deterministic selection RNG, ADR-016).
+	var make: Callable = func() -> Array:
+		var foes: Array = [
+			_mon("A", "Gaia", "Ouranos"),
+			_mon("B", "Cosmos", "Eros"),
+			_mon("C", "Chaos", "Thanatos")
+		]
+		(foes[0] as BattleEngine.Mon).hp = 5  # tied-low
+		(foes[2] as BattleEngine.Mon).hp = 5  # tied-low
+		# foes[1] keeps full HP, so the candidate set is {A, C}.
+		return foes
+	var foes1: Array = make.call()
+	var foes2: Array = make.call()
+	var t1 := RoleBrainsScript.lowest_hp(foes1, RngServiceScript.new(CanonicalRNG.new(42)))
+	var t2 := RoleBrainsScript.lowest_hp(foes2, RngServiceScript.new(CanonicalRNG.new(42)))
+	# Same seed -> same name picked (object identity differs across the two arrays, compare by name).
+	assert_str(t1.name).is_equal(t2.name)
+	# And it is one of the tied-low candidates, never the full-HP foe.
+	assert_bool(t1.name == "A" or t1.name == "C").is_true()
 
 
 func test_controller_targets_opposed_force() -> void:
 	# A Chaos actor overwhelms Cosmos (opposed pole) — controller should pick the Cosmos foe even
-	# though it is not first in team order.
+	# though it is not first in team order. Single overwhelmed foe -> no RNG draw consumed.
 	var actor := _mon("Caster", "Chaos", "Thanatos")
 	var foes: Array = [_mon("Neutral", "Gaia", "Ouranos"), _mon("Weak", "Cosmos", "Eros")]
-	var tgt := RoleBrainsScript.best_matchup(actor, foes)
+	var tgt := RoleBrainsScript.best_matchup(actor, foes, _rng())
 	assert_object(tgt).is_same(foes[1])
 
 
