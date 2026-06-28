@@ -23,6 +23,7 @@ const EncounterDirectorScript := preload("res://application/overworld/encounter_
 const OverworldTileSetScript := preload("res://presentation/overworld/overworld_tileset.gd")
 const InputActions := preload("res://infrastructure/input/input_actions.gd")
 const BATTLE_SCENE := "res://presentation/battle/battle_screen.tscn"
+const CAMP_SCENE := "res://presentation/camp/camp_menu.tscn"
 
 const STEP_COOLDOWN := 0.14  # seconds between grid steps while a direction is held
 
@@ -40,6 +41,11 @@ var _busy: bool = false  # true while a battle hand-off / transition is mid-flig
 ## When false, an encounter still emits encounter_started + autosaves but skips the scene swap
 ## (lets a headless test drive the encounter flow without changing the SceneTree).
 var _auto_hand_off: bool = true
+## Slice 3b: when true (default) the OPEN_MENU/PAUSE action opens the camp menu overlay. Behind a
+## flag so the Slice-1 try_move tests (which never pump _process) are completely unaffected, and a
+## test can disable it. The camp overlay is added as a CanvasLayer child (no scene swap).
+var _camp_enabled: bool = true
+var _camp_overlay: Node = null
 
 
 func _ready() -> void:
@@ -63,6 +69,49 @@ func set_game(game: Node) -> void:
 ## Disable the automatic scene swap on encounter (tests). The encounter still emits + autosaves.
 func set_auto_hand_off(enabled: bool) -> void:
 	_auto_hand_off = enabled
+
+
+## Enable/disable the camp-menu trigger (Slice 3b). Default enabled; a test can turn it off.
+func set_camp_enabled(enabled: bool) -> void:
+	_camp_enabled = enabled
+
+
+## Open the camp/pause menu as an OVERLAY (a CanvasLayer above the overworld, NOT a scene swap, so
+## the overworld stays live beneath it). Idempotent: a second call while open is a no-op. Returns the
+## opened camp menu node (or the existing one). Public so input + a test both drive it.
+func open_camp() -> Node:
+	if _camp_overlay != null and is_instance_valid(_camp_overlay):
+		return _camp_overlay
+	if not ResourceLoader.exists(CAMP_SCENE):
+		push_warning("OverworldScreen.open_camp: missing camp scene '%s'" % CAMP_SCENE)
+		return null
+	var packed: PackedScene = load(CAMP_SCENE)
+	if packed == null:
+		return null
+	var layer := CanvasLayer.new()
+	layer.name = "CampOverlay"
+	layer.layer = 50  # above gameplay, below Transition (100) + Toast (128)
+	var menu := packed.instantiate()
+	layer.add_child(menu)
+	add_child(layer)
+	_camp_overlay = layer
+	# Resume tears the overlay down + restores the overworld input context.
+	if menu.has_signal("resumed"):
+		menu.connect("resumed", _on_camp_resumed)
+	return menu
+
+
+func _on_camp_resumed() -> void:
+	if _camp_overlay != null and is_instance_valid(_camp_overlay):
+		_camp_overlay.queue_free()
+	_camp_overlay = null
+	if _input != null and _input.has_method("switch_context"):
+		_input.call("switch_context", InputActions.CTX_OVERWORLD)
+
+
+## The live camp overlay node, or null when closed (for tests).
+func camp_overlay() -> Node:
+	return _camp_overlay
 
 
 ## Build the overworld from the active GameController run. Public so a test can drive it after
@@ -146,6 +195,14 @@ func _hand_off_to_battle() -> void:
 func _process(delta: float) -> void:
 	if _busy or _input == null or _layout == null:
 		return
+	# Slice 3b: open the camp/pause menu on the menu action (guarded by the flag + overlay state).
+	if _camp_enabled and _camp_overlay == null and _input.has_method("just_pressed"):
+		if (
+			bool(_input.call("just_pressed", InputActions.OPEN_MENU))
+			or bool(_input.call("just_pressed", InputActions.PAUSE))
+		):
+			open_camp()
+			return
 	_step_timer = maxf(0.0, _step_timer - delta)
 	if _step_timer > 0.0:
 		return
