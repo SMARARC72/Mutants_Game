@@ -24,6 +24,8 @@ Dialogic="*res://addons/dialogic/Core/DialogicGameHandler.gd"
 PhantomCameraManager="*res://addons/phantom_camera/scripts/managers/phantom_camera_manager.gd"
 BeehaveGlobalMetrics="*res://addons/beehave/metrics/beehave_global_metrics.gd"
 BeehaveGlobalDebugger="*res://addons/beehave/debug/global_debugger.gd"
+Questify="*res://addons/questify/quest_manager.gd"
+__InkRuntime="*res://addons/inkgd/ink_runtime.gd"
 GUIDE="*res://addons/guide/guide.gd"
 LimboConsole="*res://addons/limbo_console/limbo_console.gd"
 Settings="*res://autoload/settings.gd"
@@ -37,6 +39,7 @@ DevConsole="*res://presentation/devtools/dev_console.gd"
 
 directories/dch_directory={}
 directories/dtl_directory={
+"marsh_encounter": "res://presentation/dialogue/marsh_encounter.dtl",
 "smoke": "res://presentation/dialogue/smoke.dtl"
 }
 layout/style_directory={}
@@ -47,7 +50,17 @@ project/assembly_name="Mutants_Game"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/beehave/plugin.cfg", "res://addons/dialogic/plugin.cfg", "res://addons/gdUnit4/plugin.cfg", "res://addons/guide/plugin.cfg", "res://addons/limbo_console/plugin.cfg", "res://addons/phantom_camera/plugin.cfg", "res://addons/supabase/plugin.cfg")
+enabled=PackedStringArray("res://addons/beehave/plugin.cfg", "res://addons/dialogic/plugin.cfg", "res://addons/gdUnit4/plugin.cfg", "res://addons/guide/plugin.cfg", "res://addons/inkgd/plugin.cfg", "res://addons/limbo_console/plugin.cfg", "res://addons/phantom_camera/plugin.cfg", "res://addons/questify/plugin.cfg", "res://addons/supabase/plugin.cfg")
+
+[inkgd]
+
+register_templates=true
+
+[questify]
+
+general/update_polling=false
+general/update_interval=0.5
+general/add_quests_to_pot_generation=false
 
 [input]
 

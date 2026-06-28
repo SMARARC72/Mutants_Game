@@ -12,6 +12,8 @@ of these (TDD §3.1 determinism boundary) — they are used from `infrastructure
 | **gdUnit4** | tag `v6.1.3` (`addons/gdUnit4`) | MIT | https://github.com/MikeSchulze/gdUnit4 | **Primary** GDScript unit + parity test harness + CI runner (TDD §11) |
 | **Beehave** | tag `v2.9.2` (`addons/beehave`) | MIT | https://github.com/bitbrain/beehave | Battle AI + overworld NPC behavior (behavior trees) |
 | **Phantom Camera** | tag `v0.11.0.2` (`addons/phantom_camera`) | MIT | https://github.com/ramokz/phantom-camera | Overworld + battle camera (follow, framing, push-in juice) |
+| **inkgd** | branch `godot4` @ commit `fea9098ee18d6cdbe9a5e25f8f0296bcdf0fd96a` (plugin.cfg `0.6.0`; `addons/inkgd`) | MIT | https://github.com/ephread/inkgd | Ink runtime — branching lore/quest narrative (ADR-017). *Pinned to the exact commit because the Godot-4 port lives on the `godot4` branch with no release tag; the `0.5.0` tag is the Godot-3 line.* `mono/` (C# variant) removed. |
+| **Questify** | tag `1.6.0` @ commit `819ea79764da7861cce75d58b012600bd379fd19` (`addons/questify`) | MIT | https://github.com/TheWalruzz/godot-questify | Resource-driven quest/objective tracker (ADR-017). `Questify.cs` (C# variant) + the editor-only `quest_resource_translation_parser` POT addon removed. |
 | **G.U.I.D.E** | tag `v0.13.0` (`addons/guide`) | MIT | https://github.com/godotneers/G.U.I.D.E | Unified input + contexts + runtime rebinding + gamepad — behind the `InputService` facade (D4) |
 | **LimboConsole** | tag `v0.8.0` (`addons/limbo_console`) | MIT | https://github.com/limbonaut/limbo_console | Dev-only in-game console (state pokes + parity probes) — behind the `DevConsole` facade, gated by DEV_TOOLS (D3, ADR-018) |
 | **Maaack's Game Template** | tag `v1.4.6` (`addons/maaacks_game_template`) | MIT | https://github.com/Maaack/Godot-Game-Template | Menu/settings/loading backbone (base components). Demo `media/` + `docs/` trimmed (unused at runtime). Editor *installer* plugin NOT enabled (our screens use its `base/` directly). (D5) |
@@ -43,6 +45,18 @@ each file documents the clean seam to drop in the upstream addon later without t
 - **sentry-godot** — only the addon's GDScript layer + descriptor template are vendored; native
   binaries are intentionally absent (re-fetched per build). The `CrashReporter` facade tolerates this.
 - **G.U.I.D.E v0.13.0 / LimboConsole v0.8.0** — vendored unmodified; both compile clean on Godot 4.7.
+
+- **inkgd** `editor/import_plugins/ink_json_import_plugin.gd` — `_get_recognized_extensions()` now
+  returns `["inkjson"]` instead of `["json"]`. Upstream claims the generic `.json` extension, which
+  makes the importer attempt EVERY `.json` in the project (`catalog/*.json`, `tests/*.json`) and flag
+  the non-ink ones as failed imports. Restricting it to a dedicated `.inkjson` extension leaves plain
+  data `.json` files untouched. Compiled stories are therefore named `<name>.inkjson` (ADR-017).
+
+- **inkgd** `editor/ink_editor_plugin.gd` — guarded `_remove_autoloads()` with
+  `if ProjectSettings.has_setting("autoload/__InkRuntime")`. The 0.6.0 line no longer auto-registers
+  that autoload, so removing it on `_exit_tree` raised "nonexistent project setting" during headless
+  import teardown. (We register `__InkRuntime` ourselves in `project.godot`, the inkgd-recommended
+  setup, so the runtime exists without a per-`InkPlayer` "Node not found" warning.)
 
 ## Determinism note (Beehave — critical, ADR-013)
 
