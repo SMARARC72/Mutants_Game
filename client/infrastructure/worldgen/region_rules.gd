@@ -63,8 +63,11 @@ func wfc_rules(region_id: String) -> Dictionary:
 	var region: Dictionary = regions[region_id]
 	var tiles: Array = _int_array(region.get("tiles", defaults.get("tiles", [0, 1, 2])))
 	var weights: Dictionary = region.get("weights", defaults.get("weights", {}))
+	# Deep-MERGE region adjacency over defaults (per-direction, and per-tile within a direction) so a
+	# region that overrides ONE direction (or one tile's rule) keeps the defaults for the rest — the
+	# docstring's "defaults merged" behavior. A wholesale .get() would silently drop the others.
 	var adjacency: Dictionary = _normalise_adjacency(
-		region.get("adjacency", defaults.get("adjacency", {}))
+		_merge_adjacency(defaults.get("adjacency", {}), region.get("adjacency", {}))
 	)
 	return {
 		"tiles": tiles,
@@ -107,6 +110,29 @@ func _int_keyed_weights(weights: Variant) -> Dictionary:
 		for k in weights as Dictionary:
 			out[int(str(k))] = float((weights as Dictionary)[k])
 	return out
+
+
+## Deep-merge a region's adjacency over the defaults: start from a copy of the defaults, then for
+## each direction the region overrides, merge its per-tile rules over the default direction's rules
+## (a tile present in BOTH takes the region's list; tiles only in defaults are kept). Operates on the
+## raw (string-keyed) JSON form, before _normalise_adjacency rekeys to ints. Returns a new dict.
+func _merge_adjacency(defaults_adj: Variant, region_adj: Variant) -> Dictionary:
+	var merged: Dictionary = {}
+	if defaults_adj is Dictionary:
+		for dir in defaults_adj as Dictionary:
+			merged[str(dir)] = ((defaults_adj as Dictionary)[dir] as Dictionary).duplicate()
+	if not (region_adj is Dictionary):
+		return merged
+	for dir in region_adj as Dictionary:
+		var dir_key: String = str(dir)
+		var region_dir: Dictionary = (region_adj as Dictionary)[dir]
+		if not merged.has(dir_key):
+			merged[dir_key] = {}
+		var base_dir: Dictionary = merged[dir_key]
+		for tile_key in region_dir:
+			base_dir[tile_key] = region_dir[tile_key]
+		merged[dir_key] = base_dir
+	return merged
 
 
 ## Adjacency: { dir: { "<tile_id>": [neighbour ids...] } } -> { dir: { tile_id(int): [ints] } }.

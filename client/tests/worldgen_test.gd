@@ -19,6 +19,12 @@ const DungeonAssemblerScript := preload("res://infrastructure/worldgen/dungeon_a
 const TEST_SEED := 0x5EED_1234
 const REGION := "verdant_glut"
 
+# Backtracking fixture (see test_backtracking_path_actually_fires): seeds 1/4/7 are pre-verified
+# against the canonical PCG32 to UNWIND on a 16x16 grid with the frustrated ruleset below.
+const BACKTRACK_SEEDS := [1, 4, 7]
+const BACKTRACK_W := 16
+const BACKTRACK_H := 16
+
 
 func _gen() -> WorldGenerator:
 	var rules: RegionRules = RegionRulesScript.load_default()
@@ -145,20 +151,31 @@ func test_generator_without_catalog_still_returns_layout() -> void:
 
 # === D5 — SimpleDungeons set-pieces ========================================================== #
 func test_setpiece_rooms_are_stitched_and_persisted() -> void:
-	# threshold (the hub) authors 3 set-piece rooms (lab/market/arena). They must appear on the
-	# layout AND survive the world_state round-trip.
+	# threshold (the hub) authors 3 set-piece rooms (lab/market/arena) and is sized so all THREE fit.
+	# Assert all three are present (not just one) — a silently-dropped market/arena must fail — and
+	# that they survive the world_state round-trip FIELD-BY-FIELD (kind/x/y/w/h), not count-only.
 	var gen := _gen()
 	var world_state: Dictionary = {}
 	var layout: Layout = gen.get_or_generate("threshold", TEST_SEED, world_state)
-	assert_int(layout.rooms.size()).is_greater(0)
+	assert_int(layout.rooms.size()).is_equal(3)
 	var kinds: Array = []
 	for r in layout.rooms:
 		kinds.append(str((r as Dictionary).get("kind", "")))
 	assert_bool(kinds.has("lab")).is_true()
-	# Persisted rooms survive reload.
+	assert_bool(kinds.has("market")).is_true()
+	assert_bool(kinds.has("arena")).is_true()
+	# Persisted rooms survive reload — compare each room dict field-by-field, not just the count.
 	var loader: WorldGenerator = WorldGeneratorScript.new(null)
 	var reloaded: Layout = loader.load_layout("threshold", world_state)
 	assert_int(reloaded.rooms.size()).is_equal(layout.rooms.size())
+	for i in layout.rooms.size():
+		var orig: Dictionary = layout.rooms[i]
+		var back: Dictionary = reloaded.rooms[i]
+		assert_str(str(back["kind"])).is_equal(str(orig["kind"]))
+		assert_int(int(back["x"])).is_equal(int(orig["x"]))
+		assert_int(int(back["y"])).is_equal(int(orig["y"]))
+		assert_int(int(back["w"])).is_equal(int(orig["w"]))
+		assert_int(int(back["h"])).is_equal(int(orig["h"]))
 
 
 # Stitched rooms never overlap (the assembler rejects overlapping placements, +margin).
@@ -214,6 +231,90 @@ func test_wfc_solver_zero_budget_fails_cleanly() -> void:
 	assert_int(solver.last_result()).is_equal(WfcSolverScript.Result.BUDGET_EXHAUSTED)
 
 
+# === BACKTRACKING is actually exercised (the determinism-fragile path) ======================= #
+# The permissive rulesets above never make a cell dead-end, so the unwind code (_retry_or_backtrack
+# / _backtrack — the part that RE-DRAWS from the canonical RNG on retry) never runs. A "frustrated"
+# ruleset (tile 3 has no horizontal neighbours; tile 0 has no vertical neighbours) forces the solver
+# to paint itself into corners and UNWIND. We assert backtracking genuinely fired (backtracks_used()
+# > 0, a direct signal — not just attempts > w*h) AND that the result is still bit-identical for the
+# same seed and differs for a different seed. This gives the reproducibility contract teeth over the
+# backtrack path. (BACKTRACK_SEEDS / BACKTRACK_W / BACKTRACK_H are declared in the consts block.)
+func test_backtracking_path_fires_and_is_reproducible() -> void:
+	var rules := _backtrack_forcing_rules()
+	# (a) The fragile unwind path ACTUALLY RUNS for each pre-verified seed, still solving a valid,
+	# fully-tiled grid. backtracks_used() > 0 is the direct proof; attempts > w*h corroborates.
+	for seed in BACKTRACK_SEEDS:
+		var solver: WfcSolver = WfcSolverScript.new(BACKTRACK_W, BACKTRACK_H, rules, 1_000_000)
+		var grid: PackedInt32Array = solver.solve(CanonicalRNG.new(seed))
+		assert_int(grid.size()).is_equal(BACKTRACK_W * BACKTRACK_H)
+		assert_int(solver.last_result()).is_equal(WfcSolverScript.Result.OK)
+		assert_int(solver.backtracks_used()).is_greater(0)
+		assert_int(solver.attempts_used()).is_greater(BACKTRACK_W * BACKTRACK_H)
+	# (b) Reproducibility OVER the backtrack path: same seed -> bit-identical grid (the re-draw +
+	# snapshot/restore on unwind are deterministic); different seed -> a different grid; and the
+	# produced grid satisfies every adjacency rule (validity survives the unwind path).
+	var a: PackedInt32Array = WfcSolverScript.new(BACKTRACK_W, BACKTRACK_H, rules, 1_000_000).solve(
+		CanonicalRNG.new(7)
+	)
+	var b: PackedInt32Array = WfcSolverScript.new(BACKTRACK_W, BACKTRACK_H, rules, 1_000_000).solve(
+		CanonicalRNG.new(7)
+	)
+	var c: PackedInt32Array = WfcSolverScript.new(BACKTRACK_W, BACKTRACK_H, rules, 1_000_000).solve(
+		CanonicalRNG.new(8)
+	)
+	assert_bool(a == b).is_true()
+	assert_bool(a == c).is_false()
+	assert_bool(_grid_satisfies_rules(a, BACKTRACK_W, BACKTRACK_H, rules)).is_true()
+
+
+# === malformed ruleset never crashes (bug_risk guard) ======================================== #
+func test_malformed_adjacency_referencing_unknown_tile_fails_cleanly() -> void:
+	# Adjacency references tile 9 (not in the palette) — and tile 0 may ONLY sit next to 9, so once a
+	# cell needs a 0-neighbour, the only candidate is the absent tile 9. _weighted_pick must not index
+	# an empty array (a crash); the solver returns a clean CONTRADICTION (-> the facade fallback).
+	var rules := {
+		"tiles": [0, 1],
+		"weights": {0: 1.0, 1: 1.0},
+		"adjacency":
+		{
+			"N": {0: [9], 1: [9]},
+			"E": {0: [9], 1: [9]},
+			"S": {0: [9], 1: [9]},
+			"W": {0: [9], 1: [9]},
+		},
+	}
+	var solver: WfcSolver = WfcSolverScript.new(6, 6, rules, 10000)
+	var grid: PackedInt32Array = solver.solve(CanonicalRNG.new(TEST_SEED))
+	assert_int(grid.size()).is_equal(0)  # clean empty result, not a crash.
+	assert_int(solver.last_result()).is_equal(WfcSolverScript.Result.CONTRADICTION)
+
+
+# === RegionRules adjacency DEFAULTS are MERGED, not overridden (P2 Codex) ===================== #
+func test_region_adjacency_partial_override_merges_with_defaults() -> void:
+	# A region overrides adjacency for ONE direction (N) and within it ONE tile (1). The other
+	# directions (E/S/W) and the other N tiles (0/2) must keep the DEFAULTS — not be dropped.
+	var text := (
+		'{"schema_version":1,'
+		+ '"defaults":{"width":8,"height":8,"attempt_limit":1000,"tiles":[0,1,2],'
+		+ '"weights":{"0":1,"1":1,"2":1},'
+		+ '"adjacency":{"N":{"0":[0,1,2],"1":[0,1],"2":[0,2]},"E":{"0":[0,1,2],"1":[0,1],"2":[0,2]},'
+		+ '"S":{"0":[0,1,2],"1":[0,1],"2":[0,2]},"W":{"0":[0,1,2],"1":[0,1],"2":[0,2]}}},'
+		+ '"regions":{"r":{"adjacency":{"N":{"1":[2]}}}}}'
+	)
+	var rules: RegionRules = RegionRulesScript.load_text(text)
+	assert_object(rules).is_not_null()
+	var adj: Dictionary = rules.wfc_rules("r")["adjacency"]
+	# N tile 1 took the region override...
+	assert_array(adj["N"][1]).contains_exactly([2])
+	# ...but N tiles 0 and 2 kept the defaults (NOT dropped).
+	assert_array(adj["N"][0]).contains_exactly([0, 1, 2])
+	assert_array(adj["N"][2]).contains_exactly([0, 2])
+	# ...and the other directions kept the defaults entirely.
+	assert_array(adj["E"][1]).contains_exactly([0, 1])
+	assert_array(adj["S"][2]).contains_exactly([0, 2])
+	assert_array(adj["W"][0]).contains_exactly([0, 1, 2])
+
+
 # === canonical RNG derivation =============================================================== #
 func test_region_rng_is_pure_and_reproducible() -> void:
 	# The facade's sub-stream is rebuildable from (seed, region_id) — the property a replay/parity
@@ -244,6 +345,47 @@ func _toy_wfc_rules() -> Dictionary:
 			"W": {0: [0, 1, 2], 1: [0, 1], 2: [0, 2]},
 		},
 	}
+
+
+func _backtrack_forcing_rules() -> Dictionary:
+	# A "frustrated" 4-tile ruleset that is locally satisfiable but makes greedy collapses dead-end,
+	# forcing the solver to UNWIND. Symmetric H/V (E==W, N==S). tile 3 has NO horizontal neighbour;
+	# tile 0 has NO vertical neighbour — so a 0 above a 3 (or similar) strands a cell, triggering the
+	# retry/backtrack path. Verified (canonical PCG32) to solve every seed yet unwind on seeds 1/4/7.
+	return {
+		"tiles": [0, 1, 2, 3],
+		"weights": {0: 1.0, 1: 1.0, 2: 1.0, 3: 1.0},
+		"adjacency":
+		{
+			"E": {0: [1, 2], 1: [0, 1, 2], 2: [0, 1, 2], 3: []},
+			"W": {0: [1, 2], 1: [0, 1, 2], 2: [0, 1, 2], 3: []},
+			"N": {0: [], 1: [1, 2], 2: [1, 2, 3], 3: [2]},
+			"S": {0: [], 1: [1, 2], 2: [1, 2, 3], 3: [2]},
+		},
+	}
+
+
+## True if every cell's 4 edges in `grid` are permitted by `rules.adjacency` (validity over the
+## backtrack path). Mirrors the solver's direction deltas; ignores out-of-bounds edges.
+func _grid_satisfies_rules(grid: PackedInt32Array, w: int, h: int, rules: Dictionary) -> bool:
+	var adj: Dictionary = rules["adjacency"]
+	var deltas := {
+		"N": Vector2i(0, -1), "E": Vector2i(1, 0), "S": Vector2i(0, 1), "W": Vector2i(-1, 0)
+	}
+	for y in h:
+		for x in w:
+			var t: int = grid[y * w + x]
+			for dir in deltas:
+				var d: Vector2i = deltas[dir]
+				var nx: int = x + d.x
+				var ny: int = y + d.y
+				if nx < 0 or ny < 0 or nx >= w or ny >= h:
+					continue
+				var nt: int = grid[ny * w + nx]
+				var allowed: Array = (adj[dir] as Dictionary).get(t, [])
+				if not allowed.has(nt):
+					return false
+	return true
 
 
 func _rules_with_zero_attempts() -> RegionRules:

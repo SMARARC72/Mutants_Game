@@ -93,6 +93,8 @@
 			"force": "neutral",
 			"biome": "the last mortal city (hub: Lab, market, Arena)",
 			"tiles": [0, 1, 2],
+			"width": 20,
+			"height": 20,
 			"weights": {"0": 8.0, "1": 1.0, "2": 4.0},
 			"setpiece": {
 				"tile_floor": 0,

@@ -49,6 +49,11 @@ var _adjacency: Dictionary = {}  # dir -> { tile_id -> Array[int] allowed neighb
 var _attempt_limit: int = 0
 var _last_result: int = Result.OK
 var _attempts_used: int = 0
+# How many times the solver had to UNWIND a collapse — i.e. a propagation dead-ended and we re-tried
+# a different tile (_retry_or_backtrack) or popped the decision stack (_backtrack). Zero means the
+# grid collapsed greedily with no contradiction; >0 proves the backtracking path actually fired
+# (the determinism-fragile code is exercised). Read via backtracks_used().
+var _backtracks_used: int = 0
 
 # Per-cell option sets: Array of Dictionary acting as an ordered int-set (tile_id -> true).
 var _cells: Array = []
@@ -71,6 +76,11 @@ func attempts_used() -> int:
 	return _attempts_used
 
 
+## Count of collapse UNWINDS (retries + decision-stack pops). >0 proves the backtracking path ran.
+func backtracks_used() -> int:
+	return _backtracks_used
+
+
 ## Solve the grid. `rng` is the injected canonical sub-stream (NEVER global RNG). On success
 ## returns a row-major PackedInt32Array of length width*height; on failure returns an empty array
 ## and last_result() explains why (CONTRADICTION = over-constrained ruleset, BUDGET_EXHAUSTED =
@@ -78,6 +88,7 @@ func attempts_used() -> int:
 ## return point: the observe/propagate loop lives in _run_loop so this stays under max-returns.
 func solve(rng: CanonicalRNG) -> PackedInt32Array:
 	_attempts_used = 0
+	_backtracks_used = 0
 	var grid := PackedInt32Array()
 	if _width <= 0 or _height <= 0:
 		_last_result = Result.CONTRADICTION
@@ -109,16 +120,22 @@ func _run_loop(rng: CanonicalRNG) -> int:
 		var options := _options_of(cell_index)
 		if options.is_empty():
 			# Contradiction at observe time: unwind to the most recent collapse with an untried tile.
+			_backtracks_used += 1
 			if not _backtrack(decisions):
 				return Result.CONTRADICTION
 			continue
 		var snapshot := _snapshot_cells()
 		var chosen := _weighted_pick(options, rng)
+		if chosen == Layout.EMPTY:
+			# Malformed ruleset: this cell's options are all outside the palette -> contradiction.
+			return Result.CONTRADICTION
 		_set_single(cell_index, chosen)
 		if _propagate(cell_index):
 			decisions.append({"cell": cell_index, "tried": [chosen], "snapshot": snapshot})
 		else:
-			# Propagation produced a zero-option cell: restore, mark `chosen` tried, retry here.
+			# Propagation dead-ended (a cell lost every option): restore, then unwind — re-try a
+			# different tile here, or pop the decision stack. This is the determinism-fragile path.
+			_backtracks_used += 1
 			_restore_cells(snapshot)
 			if not _retry_or_backtrack(cell_index, chosen, snapshot, decisions, rng):
 				return Result.CONTRADICTION
@@ -150,16 +167,23 @@ func _pick_min_entropy_cell() -> int:
 
 ## Weighted choice among `options` using the canonical RNG. Walks the palette in its STABLE order
 ## (not the option-dict order) so the cumulative bands are reproducible; draws ONE float in [0,1).
+## Returns Layout.EMPTY (-1) when NO option survives the palette filter — i.e. a malformed ruleset
+## left a cell whose only options are tiles absent from `tiles`/the palette. The caller treats EMPTY
+## as a contradiction (clean CONTRADICTION result), never indexing into an empty array (a crash).
 func _weighted_pick(options: Array, rng: CanonicalRNG) -> int:
+	# Keep only options that actually exist in the palette (defensive against malformed adjacency
+	# that references an undeclared tile). In well-formed rules every option is already in _palette.
 	var ordered: Array = []
 	for tile in _palette:
 		if options.has(tile):
 			ordered.append(tile)
+	if ordered.is_empty():
+		return Layout.EMPTY
 	var total := 0.0
 	for tile in ordered:
 		total += _weight_of(tile)
 	if total <= 0.0:
-		# All-zero weights: fall back to a uniform canonical pick over the stable order.
+		# All-zero (or missing) weights: fall back to a uniform canonical pick over the stable order.
 		return int(ordered[rng.randint(0, ordered.size() - 1)])
 	var roll := rng.next_float() * total
 	var acc := 0.0
@@ -242,6 +266,9 @@ func _retry_or_backtrack(
 		if remaining.is_empty():
 			return _backtrack(decisions)
 		var next_tile := _weighted_pick(remaining, rng)
+		if next_tile == Layout.EMPTY:
+			# Defensive: malformed options with nothing in-palette -> unwind the decision stack.
+			return _backtrack(decisions)
 		tried.append(next_tile)
 		_set_single(cell_index, next_tile)
 		if _propagate(cell_index):

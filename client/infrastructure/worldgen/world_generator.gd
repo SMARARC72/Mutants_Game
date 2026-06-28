@@ -58,11 +58,18 @@ func generate(region_id: String, seed: int) -> Layout:
 	return _generate_with_rng(region_id, seed, rng)
 
 
-## The WorkerThreadPool path (ADR-014: "Runs on a WorkerThreadPool task → no frame hitch"). Submits
-## the solve as a task, waits for it, and returns the SAME Layout generate() would (the canonical RNG
-## makes the result thread-order-independent). Use this to keep a large region off the main thread.
+## The WorkerThreadPool path (ADR-014: "Runs on a WorkerThreadPool task → no frame hitch").
+## IMPORTANT: this is a BLOCKING call — it runs the CPU-heavy solve on a worker thread and WAITS for
+## it, so the work happens OFF the calling thread (no frame hitch from the solve itself) but the
+## caller does not return until the layout is ready. This matches the intended generate-once-at-
+## region-load usage (the overworld needs the Layout before it can place anything). For a truly
+## non-blocking flow, a caller can run THIS method itself on a worker / coroutine; the result is
+## identical regardless, because randomness is the injected canonical sub-stream (thread-order-
+## independent). Returns the SAME Layout generate() would.
 func generate_threaded(region_id: String, seed: int) -> Layout:
-	var ctx := {"gen": self, "region_id": region_id, "seed": seed, "result": null}
+	# Only plain data crosses into the task closure (region_id/seed/result) — never `self` — to avoid
+	# any thread-safety confusion about shared mutable state. The result slot is written by the task.
+	var ctx := {"region_id": region_id, "seed": seed, "result": null}
 	var task_id := WorkerThreadPool.add_task(func() -> void: _threaded_task(ctx))
 	WorkerThreadPool.wait_for_task_completion(task_id)
 	var out: Variant = ctx["result"]
