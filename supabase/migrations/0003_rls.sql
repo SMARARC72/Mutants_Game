@@ -82,15 +82,21 @@ create policy art_assets_owner on art_assets for all
                  where ci.id = instance_id and r.player_id = auth.uid()));
 
 -- ============================================================================
--- GOD_SNAPSHOTS (the Succession) — read shareable OR own; write only your own.
+-- GOD_SNAPSHOTS (the Succession) — read shareable OR own; write only your own. The
+-- WITH CHECK also requires source_run to be NULL or a run OWNED by the caller, so a player
+-- cannot attach forged Succession data to another player's run (Codex review, PR #1).
 -- ============================================================================
 alter table god_snapshots enable row level security;
 create policy god_snapshots_read on god_snapshots for select
   using (shareable or source_player = auth.uid());
 create policy god_snapshots_insert on god_snapshots for insert
-  with check (source_player = auth.uid());
+  with check (source_player = auth.uid()
+    and (source_run is null or exists (
+      select 1 from runs r where r.id = source_run and r.player_id = auth.uid())));
 create policy god_snapshots_update on god_snapshots for update
   using (source_player = auth.uid())
-  with check (source_player = auth.uid());
+  with check (source_player = auth.uid()
+    and (source_run is null or exists (
+      select 1 from runs r where r.id = source_run and r.player_id = auth.uid())));
 create policy god_snapshots_delete on god_snapshots for delete
   using (source_player = auth.uid());
