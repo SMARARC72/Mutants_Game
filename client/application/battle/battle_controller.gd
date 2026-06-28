@@ -265,6 +265,10 @@ class InteractiveSession:
 	var _sideprev: Dictionary = {"A": null, "B": null}
 	var _ended: bool = false
 	var _end_reason: String = ""
+	# True while the CURRENT turn still owes its trailing blank line. run() appends ONE "" after every
+	# turn's actors; the pump must emit that same separator at each turn boundary (and before the
+	# RESULT line) so the interactive transcript stays element-for-element identical to run().
+	var _turn_open: bool = false
 	# The actor currently awaiting a player action (set on an AWAIT_PLAYER step, consumed by the
 	# player verbs). null whenever no player decision is pending.
 	var _pending_actor: BattleEngine.Mon = null
@@ -296,9 +300,11 @@ class InteractiveSession:
 		# `step` and breaks. Each iteration consumes one actor (or starts a turn / ends the battle).
 		var step: Dictionary = {}
 		while step.is_empty():
-			# At a TURN boundary (no actors left in this turn's order) apply the auto loop's while-head:
-			# both sides must be alive AND turn < turn_cap to begin another turn; else the battle ends.
+			# At a TURN boundary (no actors left in this turn's order): first emit run()'s trailing ""
+			# for the turn that just finished, THEN apply the auto loop's while-head (both sides alive
+			# AND turn < turn_cap to begin another turn; else the battle ends).
 			if _order_idx >= _order.size():
+				_close_turn()
 				if not _both_sides_alive() or _turn >= _turn_cap:
 					step = _finish(END_DEFEAT_ENEMY)
 					break
@@ -402,6 +408,14 @@ class InteractiveSession:
 		_order = BattleController._initiative_order(_team_a, _team_b)
 		_order_idx = 0
 		_sideprev = {"A": null, "B": null}
+		_turn_open = true
+
+	## Emit run()'s per-turn trailing blank line ONCE for the current turn (idempotent: a no-op when
+	## the turn is already closed). Keeps the pump's blank-line placement identical to run().
+	func _close_turn() -> void:
+		if _turn_open:
+			_log.append("")
+			_turn_open = false
 
 	func _resolve_brain(mon: BattleEngine.Mon) -> Dictionary:
 		var foes := _foes_of(mon)
@@ -424,8 +438,8 @@ class InteractiveSession:
 	func _finish(reason: String) -> Dictionary:
 		if _ended:
 			return _ended_step()
-		# Close the current turn block with the blank separator the auto loop appends per turn.
-		_log.append("")
+		# Close the current turn block (run()'s one trailing "" for this turn), then the RESULT line.
+		_close_turn()
 		_log.append(BattleController._result_line(_team_a, _team_b, _turn))
 		_ended = true
 		_end_reason = reason

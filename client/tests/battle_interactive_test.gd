@@ -72,6 +72,56 @@ func test_interactive_neutral_player_matches_auto_run() -> void:
 		assert_str(str(int_log[i])).is_equal(str(auto_log[i]))
 
 
+## Parity must hold ACROSS battle shapes (not just one seed): the per-turn blank-line separator is
+## the easy thing to get wrong, and a one-off shift only shows on some seeds. Sweep several seeds and
+## assert the interactive (neutral-player) transcript is element-for-element equal to run().
+func test_interactive_matches_run_across_seeds() -> void:
+	for seed in [0, 1, 7, 42, 0xC0FFEE, 0xBEEF, 12345]:
+		var auto_log: Array = (
+			BattleControllerScript
+			. new(CombatBrainScript.new(), CanonicalRNG.new(seed))
+			. run(_player_team(), _enemy_team())
+		)
+		var session := (
+			BattleControllerScript
+			. new(CombatBrainScript.new(), CanonicalRNG.new(seed))
+			. interactive(_player_team(), _enemy_team(), "A")
+		)
+		var int_log := _play_neutral(session)
+		assert_int(int_log.size()).is_equal(auto_log.size())
+		for i in range(mini(int_log.size(), auto_log.size())):
+			assert_str(str(int_log[i])).is_equal(str(auto_log[i]))
+
+
+## A battle that ends MID-TURN (a killing strike wipes the foe before the turn's remaining actors
+## act) must still match run() — the in-progress turn gets exactly ONE trailing blank then RESULT,
+## with no extra/missing separator. A strong player team vs a single weak foe forces an early wipe.
+func test_interactive_matches_run_on_midturn_kill() -> void:
+	var strong := MonFactoryScript.team_from_creatures(
+		[{"species_id": "AD10"}, {"species_id": "AD10"}], _catalog
+	)
+	var weak := MonFactoryScript.team_from_creatures([{"species_id": "SB33"}], _catalog)
+	var strong2 := MonFactoryScript.team_from_creatures(
+		[{"species_id": "AD10"}, {"species_id": "AD10"}], _catalog
+	)
+	var weak2 := MonFactoryScript.team_from_creatures([{"species_id": "SB33"}], _catalog)
+
+	var auto_log: Array = (
+		BattleControllerScript
+		. new(CombatBrainScript.new(), CanonicalRNG.new(SEED))
+		. run(strong, weak)
+	)
+	var session := (
+		BattleControllerScript
+		. new(CombatBrainScript.new(), CanonicalRNG.new(SEED))
+		. interactive(strong2, weak2, "A")
+	)
+	var int_log := _play_neutral(session)
+	assert_int(int_log.size()).is_equal(auto_log.size())
+	for i in range(mini(int_log.size(), auto_log.size())):
+		assert_str(str(int_log[i])).is_equal(str(auto_log[i]))
+
+
 func test_interactive_scripted_choices_are_deterministic() -> void:
 	var brain_a := CombatBrainScript.new()
 	var sess_a := BattleControllerScript.new(brain_a, CanonicalRNG.new(SEED)).interactive(
