@@ -45,7 +45,8 @@ var _auto_hand_off: bool = true
 ## flag so the Slice-1 try_move tests (which never pump _process) are completely unaffected, and a
 ## test can disable it. The camp overlay is added as a CanvasLayer child (no scene swap).
 var _camp_enabled: bool = true
-var _camp_overlay: Node = null
+var _camp_overlay: CanvasLayer = null
+var _camp_menu: Node = null
 
 
 func _ready() -> void:
@@ -77,11 +78,12 @@ func set_camp_enabled(enabled: bool) -> void:
 
 
 ## Open the camp/pause menu as an OVERLAY (a CanvasLayer above the overworld, NOT a scene swap, so
-## the overworld stays live beneath it). Idempotent: a second call while open is a no-op. Returns the
-## opened camp menu node (or the existing one). Public so input + a test both drive it.
+## the overworld stays live beneath it). Idempotent: a second call while open returns the SAME live
+## camp menu (no duplicate). Returns the camp menu node (or null if the scene is missing). Public so
+## input + a test both drive it.
 func open_camp() -> Node:
 	if _camp_overlay != null and is_instance_valid(_camp_overlay):
-		return _camp_overlay
+		return _camp_menu
 	if not ResourceLoader.exists(CAMP_SCENE):
 		push_warning("OverworldScreen.open_camp: missing camp scene '%s'" % CAMP_SCENE)
 		return null
@@ -95,6 +97,7 @@ func open_camp() -> Node:
 	layer.add_child(menu)
 	add_child(layer)
 	_camp_overlay = layer
+	_camp_menu = menu
 	# Resume tears the overlay down + restores the overworld input context.
 	if menu.has_signal("resumed"):
 		menu.connect("resumed", _on_camp_resumed)
@@ -105,11 +108,12 @@ func _on_camp_resumed() -> void:
 	if _camp_overlay != null and is_instance_valid(_camp_overlay):
 		_camp_overlay.queue_free()
 	_camp_overlay = null
+	_camp_menu = null
 	if _input != null and _input.has_method("switch_context"):
 		_input.call("switch_context", InputActions.CTX_OVERWORLD)
 
 
-## The live camp overlay node, or null when closed (for tests).
+## The live camp overlay CanvasLayer, or null when closed (for tests).
 func camp_overlay() -> Node:
 	return _camp_overlay
 

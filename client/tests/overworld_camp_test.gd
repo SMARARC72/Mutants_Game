@@ -48,10 +48,8 @@ func test_open_camp_is_idempotent() -> void:
 	var ow := _make_overworld(gc)
 	var first: Node = ow.call("open_camp")
 	var second: Node = ow.call("open_camp")
-	# A second open while the menu is up returns the SAME overlay (no duplicate).
-	assert_object(ow.call("camp_overlay")).is_same(ow.call("camp_overlay"))
-	assert_bool(is_instance_valid(first)).is_true()
-	assert_bool(is_instance_valid(second)).is_true()
+	# A second open while the menu is up returns the SAME camp menu (no duplicate overlay).
+	assert_object(second).is_same(first)
 	ow.queue_free()
 	gc.queue_free()
 
