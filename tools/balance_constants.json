@@ -8,9 +8,9 @@
       "oracle/battle_engine.py", "oracle/skill_engine.py", "oracle/status_engine.py",
       "oracle/loot_engine.py", "oracle/character_engine.py"
     ],
-    "known_divergences_phase1": {
-      "entropy_step_skill_engine": "skill_engine uses +0.08/turn; battle_engine uses +0.12/turn. TDD §6.5 #2 ratifies 0.12 as canonical; skill_engine unifies to 0.12 in Phase 1. Recorded per-engine below so the parity test stays faithful to today's source.",
-      "skill_engine_global_rng": "skill_engine.battle seeds both random.Random(seed) AND random.seed(seed); act()/Rouse use global random.random(). TDD §6.5 #1: thread the injected canonical RNG in Phase 1 (not a constant; noted here for completeness)."
+    "resolved_phase1": {
+      "entropy_step_skill_engine": "RESOLVED (Phase 1): skill_engine entropy step unified 0.08 -> 0.12 (canonical, TDD §6.5 #2). All engines now use 0.12.",
+      "skill_engine_global_rng": "RESOLVED (Phase 1): skill_engine now threads the injected canonical RNG through act()/Rouse; the global random.Random/random.seed/random.random() are gone (TDD §6.5 #1)."
     }
   },
 
@@ -107,7 +107,7 @@
     "damage_k": 1.5,
     "rank_mult_step": 0.25,
     "combo_mult": 1.4,
-    "entropy_step_per_turn": 0.08,
+    "entropy_step_per_turn": 0.12,
     "entropy_step_per_turn_canonical": 0.12,
     "act_mend_hp_threshold": 0.78,
     "act_ward_hp_threshold": 0.60,

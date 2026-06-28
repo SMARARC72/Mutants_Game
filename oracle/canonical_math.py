@@ -20,3 +20,11 @@ def rnd(x: float) -> int:
     # exact .5 tie -> round to even
     fi = int(f)
     return fi if (fi % 2 == 0) else fi + 1
+
+
+def rnd_dp(x: float, n: int) -> float:
+    """Round to n decimal places via canonical half-to-even (replaces round(x, n)).
+    Same algorithm in client/domain/math.gd so fixed-precision values (e.g. genome at
+    3 dp, entropy multiplier at 2 dp) are bit-matched across languages."""
+    factor = 10 ** n
+    return rnd(x * factor) / factor

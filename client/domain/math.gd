@@ -15,3 +15,10 @@ static func rnd(x: float) -> int:
 		return f + 1
 	# exact .5 tie -> round to even
 	return f if (f % 2 == 0) else f + 1
+
+
+static func rnd_dp(x: float, n: int) -> float:
+	# Round to n decimal places via canonical half-to-even (replaces round(x, n)).
+	var factor := pow(10, n)
+	return float(rnd(x * factor)) / factor
+

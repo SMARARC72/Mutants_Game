@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Mutants_Game - STAT SPINE (v0.2.1). HYBRID 6 pole-stats + Luck/Focus; WIDE +/-35% genome;
 BRUTAL scaling. Balance pass: HP is Vitality-driven (Bulk = mitigation only)."""
-import random
+from canonical_math import rnd, rnd_dp
 
 POLES = ["Gaia", "Ouranos", "Cosmos", "Chaos", "Eros", "Thanatos"]
 STAT_OF = {"Gaia": "Bulk", "Ouranos": "Celerity", "Cosmos": "Ward",
@@ -42,9 +42,9 @@ def class_mod(stats, cls):
     if cls != "construct":
         return stats
     m = dict(stats)
-    m["Bulk"] = round(m["Bulk"] * 1.25)
-    m["Ward"] = round(m["Ward"] * 1.20)
-    m["Vitality"] = round(m["Vitality"] * 0.40)
+    m["Bulk"] = rnd(m["Bulk"] * 1.25)
+    m["Ward"] = rnd(m["Ward"] * 1.20)
+    m["Vitality"] = rnd(m["Vitality"] * 0.40)
     return m
 
 
@@ -57,20 +57,20 @@ def stat_block(primary, secondary, rank, tier, cls="organic", genome=None):
     stats = {}
     for p in POLES:
         s = STAT_OF[p]
-        stats[s] = round((floor + bonus * f[p]) * g.get(s, 1.0))
+        stats[s] = rnd((floor + bonus * f[p]) * g.get(s, 1.0))
     key = rank_tier_key(rank, tier)
     luck_b, focus_b = UNIV_BASE[key]
-    stats["Luck"] = round(luck_b * g.get("Luck", 1.0))
-    stats["Focus"] = round(focus_b * g.get("Focus", 1.0))
+    stats["Luck"] = rnd(luck_b * g.get("Luck", 1.0))
+    stats["Focus"] = rnd(focus_b * g.get("Focus", 1.0))
     stats = class_mod(stats, cls)
-    hp = round(HPBASE[key] + 3 * stats["Vitality"])   # balance: HP from Vitality; Bulk = mitigation only
+    hp = rnd(HPBASE[key] + 3 * stats["Vitality"])   # balance: HP from Vitality; Bulk = mitigation only
     bst_total = sum(stats[s] for s in POLE_STATS)
     return stats, hp, bst_total
 
 
-def roll_genome(seed):
-    r = random.Random(seed)
-    return {s: round(r.uniform(GENOME_LO, GENOME_HI), 3) for s in ALL_STATS}
+def roll_genome(rng):
+    r = rng
+    return {s: rnd_dp(r.uniform(GENOME_LO, GENOME_HI), 3) for s in ALL_STATS}
 
 
 def main():

@@ -7,7 +7,7 @@ Costs: routine -> creature ENTROPY (instability); big/taboo -> PLAYER CORRUPTION
 Methods: precise (Cosmos: deterministic, costly) | wild (Chaos: cheaper, variance).
 Parts = ingredients (organs/genes/cores/scrap), harvested 4 ways, cooked freeform or by recipe.
 """
-import random
+from canonical_rng import RNG
 import stat_engine as se
 
 OPPOSED = {"Cosmos": "Chaos", "Chaos": "Cosmos", "Eros": "Thanatos",
@@ -25,8 +25,7 @@ def blend(parts):
     return order[0], (order[1] if w[order[1]] > 0 else "")
 
 
-def fuse(a, b, method, seed):
-    rng = random.Random(seed)
+def fuse(a, b, method, rng):
     nA, pA, sA, tA = a
     nB, pB, sB, tB = b
     prim, sec = blend([(pA, sA), (pB, sB)])
@@ -54,10 +53,10 @@ if __name__ == "__main__":
     print("=== LAB SESSION ===")
     print()
     print("[FUSE] Ruinmaw (Chaos/Thanatos T2) x Gloamcat (Thanatos/Ouranos T2)  -- compatible, precise")
-    show(fuse(("Ruinmaw", "Chaos", "Thanatos", "T2"), ("Gloamcat", "Thanatos", "Ouranos", "T2"), "precise", 1))
+    show(fuse(("Ruinmaw", "Chaos", "Thanatos", "T2"), ("Gloamcat", "Thanatos", "Ouranos", "T2"), "precise", RNG(1)))
     print()
     print("[FUSE] Palehart (Cosmos/Eros T2) x Emberwyrm (Chaos/Ouranos T3)  -- OPPOSED forces, wild")
-    show(fuse(("Palehart", "Cosmos", "Eros", "T2"), ("Emberwyrm", "Chaos", "Ouranos", "T3"), "wild", 2))
+    show(fuse(("Palehart", "Cosmos", "Eros", "T2"), ("Emberwyrm", "Chaos", "Ouranos", "T3"), "wild", RNG(2)))
     print()
     print("[SELF-SPLICE] graft a Thanatos god-organ into the PLAYER (forbidden)")
     print("  -> you gain force-power: Deathtouch (Thanatos lifesteal aura)")

@@ -6,7 +6,8 @@ Verbs: Strike Drain Ward Mend Hex Rouse Summon Gambit. Cost AP (+Focus).
 Skills rank up (resource invest). Team combos discovered by same-force pairing.
 Proves supports have a real job (Mend/Ward/Rouse/Hex), not chip damage.
 """
-import random
+from canonical_rng import RNG
+from canonical_math import rnd, rnd_dp
 import stat_engine as se
 
 OPP = {"Cosmos": "Chaos", "Chaos": "Cosmos", "Eros": "Thanatos",
@@ -66,7 +67,7 @@ def damage(user, skill, tgt, ent, combo, log):
     off = off * sk.get("power", 1.0) * rank_mult(user, skill) * (1 + user.buff)
     mit = tgt.stats[defstat] * (1 - tgt.defdown)
     fm = force_mult(user.prim, tgt.prim)
-    dmg = round(1.5 * off * off / (off + mit) * fm * ent * combo)
+    dmg = rnd(1.5 * off * off / (off + mit) * fm * ent * combo)
     absorbed = min(tgt.shield, dmg); tgt.shield -= absorbed; dmg -= absorbed
     tgt.hp -= dmg
     tag = "  [" + user.prim + ">" + tgt.prim + "]" if fm > 1 else ""
@@ -74,7 +75,7 @@ def damage(user, skill, tgt, ent, combo, log):
     sh = "  (" + str(absorbed) + " absorbed)" if absorbed else ""
     log.append("   " + user.name.ljust(9) + skill.ljust(13) + "-> " + tgt.name.ljust(9) + str(dmg) + " dmg" + tag + cm + sh + "   (" + tgt.name + " " + str(max(0, tgt.hp)) + "/" + str(tgt.maxhp) + ")")
     if sk.get("lifesteal") and dmg > 0:
-        heal = round(dmg * sk["lifesteal"]); user.hp = min(user.maxhp, user.hp + heal)
+        heal = rnd(dmg * sk["lifesteal"]); user.hp = min(user.maxhp, user.hp + heal)
         log.append("      " + user.name + " drains " + str(heal) + " HP (now " + str(user.hp) + ")")
     if sk.get("defdown"):
         tgt.defdown = max(tgt.defdown, sk["defdown"]); log.append("      " + tgt.name + " WITHERED (-" + str(int(sk["defdown"] * 100)) + "% def)")
@@ -86,12 +87,12 @@ def support(user, skill, allies, log):
     sk = SKILLS[skill]; rm = rank_mult(user, skill)
     if sk["verb"] == "Mend":
         tgt = min([a for a in allies if a.alive], key=lambda a: a.hp / a.maxhp)
-        heal = round(user.stats["Vitality"] * sk["heal"] * rm)
+        heal = rnd(user.stats["Vitality"] * sk["heal"] * rm)
         tgt.hp = min(tgt.maxhp, tgt.hp + heal)
         log.append("   " + user.name.ljust(9) + skill.ljust(13) + "~> heals " + tgt.name + " +" + str(heal) + " HP  (" + str(tgt.hp) + "/" + str(tgt.maxhp) + ")")
     elif sk["verb"] == "Ward":
         tgt = min([a for a in allies if a.alive], key=lambda a: a.hp / a.maxhp)
-        tgt.shield += round(tgt.maxhp * sk["shield"] * rm)
+        tgt.shield += rnd(tgt.maxhp * sk["shield"] * rm)
         log.append("   " + user.name.ljust(9) + skill.ljust(13) + "~> shields " + tgt.name + " (" + str(tgt.shield) + " shield)")
     elif sk["verb"] == "Rouse":
         tgt = max([a for a in allies if a.alive and a is not user], key=lambda a: a.stats["Spike"] + a.stats["Bane"])
@@ -99,7 +100,7 @@ def support(user, skill, allies, log):
         log.append("   " + user.name.ljust(9) + skill.ljust(13) + "~> rouses " + tgt.name + " (+" + str(int(tgt.buff * 100)) + "% offense)")
 
 
-def act(user, allies, foes, ent, prevforce, log):
+def act(user, allies, foes, ent, prevforce, rng, log):
     low = [a for a in allies if a.alive and a.hp < a.maxhp * 0.78]
     mend = user.has("Mend")
     if mend and low:
@@ -108,7 +109,7 @@ def act(user, allies, foes, ent, prevforce, log):
     if ward and any(a.alive and a.hp < a.maxhp * 0.60 for a in allies):
         support(user, ward, allies, log); return user.prim
     rouse = user.has("Rouse")
-    if rouse and random.random() < 0.3:
+    if rouse and rng.random() < 0.3:
         support(user, rouse, allies, log); return user.prim
     # damaging
     dmg_skill = user.has("Drain") or user.has("Gambit") or user.has("Strike")
@@ -122,11 +123,11 @@ def act(user, allies, foes, ent, prevforce, log):
     return user.prim
 
 
-def battle(A, B, seed):
-    rng = random.Random(seed); random.seed(seed); log = []; turn = 0
+def battle(A, B, rng):
+    log = []; turn = 0
     while any(m.alive for m in A) and any(m.alive for m in B) and turn < 10:
         turn += 1
-        ent = round(1.0 + (turn - 1) * 0.08, 2)
+        ent = rnd_dp(1.0 + (turn - 1) * 0.12, 2)
         log.append("== TURN " + str(turn) + "   entropy x" + str(ent) + " ==")
         order = sorted([m for m in A + B if m.alive], key=lambda m: -m.stats["Celerity"])
         prev = {"A": None, "B": None}
@@ -137,7 +138,7 @@ def battle(A, B, seed):
             side = "A" if m in A else "B"
             if not any(f.alive for f in foes):
                 break
-            prev[side] = act(m, allies, foes, ent, prev[side], log)
+            prev[side] = act(m, allies, foes, ent, prev[side], rng, log)
         log.append("")
     log.append("RESULT: " + ("TEAM A" if any(m.alive for m in A) else "TEAM B") + " wins (turn " + str(turn) + ")")
     return log
@@ -158,5 +159,5 @@ if __name__ == "__main__":
          Mon("Augurwing", "Ouranos", "Eros", "wild", "T2", ["Gale Slash", "Tailwind"])]
     print("(Ruinmaw's Riot Fang is RANK 3 -- mastery demo)")
     print()
-    for line in battle(A, B, seed=4):
+    for line in battle(A, B, RNG(4)):
         print(line)

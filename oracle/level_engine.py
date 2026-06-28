@@ -7,7 +7,8 @@ maybe a branch). Stall -> OVERCLOCK to force it, banking ENTROPY (= instability)
 Entropy >= 100 -> BURNOUT (harsh, recoverable). REGRESS to purge entropy + unlock a
 lesser-form trick. Ceiling raisable; world scales to deeds. Stats = ceiling x expression.
 """
-import random
+from canonical_rng import RNG
+from canonical_math import rnd, rnd_dp
 import stat_engine as se
 
 BURNOUT = 100
@@ -16,13 +17,13 @@ GENES = {"Ironblood": "Bulk", "Venomous": "Bane", "Quickstep": "Celerity",
 
 
 def current_stats(ceiling, expression, gene_bonus):
-    return {k: round(v * (expression + gene_bonus.get(k, 0.0))) for k, v in ceiling.items()}
+    return {k: rnd(v * (expression + gene_bonus.get(k, 0.0))) for k, v in ceiling.items()}
 
 
 def awaken(rng, expression, gene_bonus, genes):
     surge = rng.uniform(0.10, 0.22)
     expression = min(1.0, expression + surge)
-    events = ["surge +" + str(round(surge * 100)) + "%"]
+    events = ["surge +" + str(rnd(surge * 100)) + "%"]
     if rng.random() < 0.35:
         avail = [g for g in GENES if g not in genes] or list(GENES)
         g = rng.choice(avail)
@@ -35,7 +36,7 @@ def awaken(rng, expression, gene_bonus, genes):
 
 
 def simulate(name, primary, secondary, rank, tier, cls, seed, thresholds=14, reckless=False):
-    rng = random.Random(seed)
+    rng = RNG(seed)
     ceiling, hp, bst = se.stat_block(primary, secondary, rank, tier, cls)
     expression, entropy, awakenings, attempts, burnouts = 0.30, 0, 0, 0, 0
     genes, gene_bonus = [], {}
@@ -55,18 +56,18 @@ def simulate(name, primary, secondary, rank, tier, cls, seed, thresholds=14, rec
             attempts = 0
             tag = "OVERCLOCK " if forced else "resonance "
             extra = ("  [entropy " + str(entropy) + "]") if forced else ""
-            print(" T" + str(t).rjust(2) + "  " + tag + "AWAKEN #" + str(awakenings) + ": " + ", ".join(events) + " -> expr " + str(round(expression * 100)) + "%" + extra)
+            print(" T" + str(t).rjust(2) + "  " + tag + "AWAKEN #" + str(awakenings) + ": " + ", ".join(events) + " -> expr " + str(rnd(expression * 100)) + "%" + extra)
         else:
-            print(" T" + str(t).rjust(2) + "  resonance STALL (rolled " + str(round(roll, 2)) + " vs " + str(round(chance, 2)) + ")")
+            print(" T" + str(t).rjust(2) + "  resonance STALL (rolled " + str(rnd_dp(roll, 2)) + " vs " + str(rnd_dp(chance, 2)) + ")")
         if entropy >= BURNOUT:
             burnouts += 1
             print("    >>> BURNOUT (entropy " + str(entropy) + "): crippled + corrupted!")
             expression = max(0.30, expression - 0.18)
             entropy -= 45
             trick = rng.choice(["Feral Bite", "Shrunken Step", "Last Gasp"])
-            print("    >>> REGRESS: entropy -45 (now " + str(entropy) + "), expr -18% -> " + str(round(expression * 100)) + "%, unlock lesser-form: " + trick)
+            print("    >>> REGRESS: entropy -45 (now " + str(entropy) + "), expr -18% -> " + str(rnd(expression * 100)) + "%, unlock lesser-form: " + trick)
     cur = current_stats(ceiling, expression, gene_bonus)
-    print(" FINAL: " + str(awakenings) + " awakenings | expr " + str(round(expression * 100)) + "% | entropy " + str(entropy) + " | burnouts " + str(burnouts) + " | genes: " + (", ".join(genes) if genes else "none"))
+    print(" FINAL: " + str(awakenings) + " awakenings | expr " + str(rnd(expression * 100)) + "% | entropy " + str(entropy) + " | burnouts " + str(burnouts) + " | genes: " + (", ".join(genes) if genes else "none"))
     print(" stats vs ceiling:  " + "  ".join(k + " " + str(cur[k]) + "/" + str(ceiling[k]) for k in se.POLE_STATS))
     print()
 

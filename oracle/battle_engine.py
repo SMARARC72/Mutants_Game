@@ -6,7 +6,8 @@ Layers: shared AP economy | ENTROPY escalation clock | RESONANCE (same-force cha
 cross-force overload) | vector-clash damage with simple cues | real permadeath -> parts/Graveyard.
 Everything resolves to stat-spine numbers.
 """
-import random
+from canonical_rng import RNG
+from canonical_math import rnd, rnd_dp
 import stat_engine as se
 
 OPP = {"Cosmos": "Chaos", "Chaos": "Cosmos", "Eros": "Thanatos",
@@ -39,8 +40,8 @@ def attack(att, dfn, ent, chain, overload, rng, log):
     fm = force_mult(att.prim, dfn.prim) * (1.4 if overload else 1.0)
     crit = 1.5 if rng.random() < att.stats["Luck"] / 180.0 else 1.0
     K = 1.5  # global damage constant (balance dial)
-    dmg = round(K * power * power / (power + mit) * fm * ent * chain * crit)
-    dmg = min(dmg, round(dfn.maxhp * 0.55))   # anti-one-shot cap (balance pass)
+    dmg = rnd(K * power * power / (power + mit) * fm * ent * chain * crit)
+    dmg = min(dmg, rnd(dfn.maxhp * 0.55))   # anti-one-shot cap (balance pass)
     dfn.hp -= dmg
     cue = ""
     if fm >= 1.4:
@@ -55,11 +56,11 @@ def attack(att, dfn, ent, chain, overload, rng, log):
         log.append("   ** " + dfn.name + " DIES -> harvestable parts + Graveyard (reanimatable at a cost) **")
 
 
-def simulate(teamA, teamB, seed):
-    rng = random.Random(seed); log = []; turn = 0
+def simulate(teamA, teamB, rng):
+    log = []; turn = 0
     while any(m.alive for m in teamA) and any(m.alive for m in teamB) and turn < 10:
         turn += 1
-        ent = round(1.0 + (turn - 1) * 0.12, 2)
+        ent = rnd_dp(1.0 + (turn - 1) * 0.12, 2)
         log.append("== TURN " + str(turn) + "   entropy x" + str(ent) + " (escalating) ==")
         order = sorted([m for m in teamA + teamB if m.alive], key=lambda m: -m.stats["Celerity"])
         sideprev = {"A": None, "B": None}
@@ -91,5 +92,5 @@ if __name__ == "__main__":
          Mon("Emberwyrm", "Chaos", "Ouranos", "wild", "T3")]
     print("SQUAD A: Ruinmaw, Gloamcat, Worldback   vs   SQUAD B: Palehart, Augurwing, Emberwyrm")
     print()
-    for line in simulate(A, B, seed=7):
+    for line in simulate(A, B, RNG(7)):
         print(line)
