@@ -21,4 +21,3 @@ static func rnd_dp(x: float, n: int) -> float:
 	# Round to n decimal places via canonical half-to-even (replaces round(x, n)).
 	var factor := pow(10, n)
 	return float(rnd(x * factor)) / factor
-
