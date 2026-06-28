@@ -61,6 +61,45 @@ config + chooses among legal variants; `lab_engine` computes every number. The W
 `godot-constraint-solving` for `WorldGenerator` (D2) is a separate, later deliverable and may still
 vendor the addon for its actual (tile-collapse) purpose.
 
+## Cluster 4 — CombatBrain (D1): LimboAI NOT vendored (self-contained BT/HSM)
+
+**LimboAI was evaluated and deliberately NOT vendored for the CombatBrain.** The Cluster 4 spec (D1)
+and `Mutants_Game_Integrations.md` §A2 permit a self-contained GDScript BT/HSM "if a clean 4.7 binary
+can't be vendored here ... the SELECTION/determinism semantics matter more than the specific lib, same
+precedent as the lab CSP." Two reasons:
+
+1. **LimboAI ships a GDExtension (native binary).** A clean, verified Godot-4.7 build could not be
+   vendored here (Godot is not installable in this environment to confirm the binary loads), and
+   committing an unverifiable native blob would break the "build is reproducible / CI green on a clean
+   clone" guarantee.
+2. **The vendored Beehave (pure GDScript, already present) is the wrong shape for the in-loop kernel.**
+   Beehave's `BeehaveTree` is a frame-ticked SceneTree `Node` (`set_physics_process` /
+   `actor_node_path` / `tick_rate`) and ships **no HSM**. A per-turn, synchronous,
+   replay-deterministic `choose_action()` needs a value-type tree it can run to completion in ONE
+   headless call — not a node that ticks across frames. Beehave remains the right tool for
+   free-running **overworld NPC** behaviour (its documented role), but not for the deterministic battle
+   selection path.
+
+We therefore ship a small, self-contained, synchronous, parity-irrelevant BT + HSM with the SAME
+selection semantics (Selector/Sequence/Condition/Action; HSM phases with `_enter`/transition guards)
+and the SAME Blackboard→RngService determinism rule (ADR-016):
+
+| Component | File | Role |
+|---|---|---|
+| `RngService` | `application/ai/rng_service.gd` | the ONLY randomness source; wraps an injected CanonicalRNG sub-stream (ADR-016) |
+| `AiBlackboard` | `application/ai/blackboard.gd` | data exchange + the BBNode→RngService handle (named `AiBlackboard` to avoid colliding with Beehave's `Blackboard`) |
+| `BehaviorTree` | `application/ai/behavior_tree.gd` | synchronous BT kernel (Selector/Sequence/Condition/Action/Inverter) |
+| `Hsm` | `application/ai/hsm.gd` | hierarchical state machine (LimboState-equivalent: states + blackboard-gated transitions) |
+| `RoleBrains` | `application/ai/role_brains.gd` | aggressor / support / controller / neutral target-selection BTs |
+| `SuccessionBoss` | `application/ai/succession_boss.gd` | Opening→Pressure→Desperation→Apotheosis HSM over the `god_snapshot` kit |
+| `CombatBrain` | `application/ai/combat_brain.gd` | THE FACADE: `choose_action(battle_state, rng) -> Action` |
+| `BattleController` | `application/battle/battle_controller.gd` | drives the turn loop; SELECTS via CombatBrain, RESOLVES via `client/domain/battle_engine.gd` |
+
+The brain carries **no outcome math** (ADR-016): it SELECTS the target/offense; `BattleEngine.attack`
+computes every number. `BattleEngine.simulate` is untouched and remains the auto/parity oracle. If a
+clean 4.7 LimboAI binary becomes available, the swap is local: reimplement `CombatBrain` (the facade);
+the controller and the determinism contract are unchanged.
+
 ## Local modifications (4.7 compatibility)
 
 - **Dialogic** `Modules/Variable/subsystem_variables.gd` — added `return null` to the two `_get()`

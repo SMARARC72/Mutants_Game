@@ -49,6 +49,12 @@ jobs:
           M=$(git ls-files 'client/domain/**/*.gd' | xargs -r grep -nE '(\bTime\.|\brandf\(|\brandi\(|\brandomize\(|Engine\.get_process_frames|extends (Node|Node2D|Node3D|Control)|res://addons)' || true)
           if [ -n "$M" ]; then echo "$M"; echo "domain/ purity violation (see TDD §3.1)"; exit 1; fi
           echo "domain purity: clean"
+      - name: AI selection purity (ADR-016 — selection RNG is canonical-only; no global/addon RNG)
+        run: |
+          AI_FILES=$(git ls-files 'client/application/ai' 'client/application/battle' | grep '\.gd$' || true)
+          M=$(echo "$AI_FILES" | xargs -r grep -nE '(\brandf\(|\brandi\(|\brandf_range\(|\brandi_range\(|\brandomize\(|RandomNumberGenerator)' || true)
+          if [ -n "$M" ]; then echo "$M"; echo "AI path RNG violation (ADR-016: draw only from the injected CanonicalRNG via the Blackboard)"; exit 1; fi
+          echo "AI selection purity: clean"
       - name: Catalog parity (Cluster 2 — CSV cols + client catalog/Resource/seed id-set ≡, ADR-006)
         run: node tools/test_catalog_parity.mjs
 
