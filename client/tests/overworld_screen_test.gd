@@ -98,11 +98,11 @@ func test_try_move_blocks_walls_and_advances_steps() -> void:
 	var before := int(gc.call("current_step"))
 	# A move into an impossible direction (large) is rejected; pick a definitely-out-of-bounds step
 	# by moving up-left repeatedly until blocked, asserting blocked moves never advance the counter.
-	var blocked := ow.call("try_move", Vector2i(-1, 0))
+	var blocked: Dictionary = ow.call("try_move", Vector2i(-1, 0))
 	if not bool(blocked.get("moved", false)):
 		assert_int(int(gc.call("current_step"))).is_equal(before)
 	# A valid move (right, into open ground in the fallback/solved grid) advances exactly one step.
-	var moved := ow.call("try_move", Vector2i(1, 0))
+	var moved: Dictionary = ow.call("try_move", Vector2i(1, 0))
 	if bool(moved.get("moved", false)):
 		assert_int(int(gc.call("current_step"))).is_equal(before + 1)
 	ow.queue_free()
