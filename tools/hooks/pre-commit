@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# Portable git pre-commit hook (D1, TDD §15) — gdformat --check + gdlint on STAGED hand-written
+# GDScript, without needing the `pre-commit` framework. Install once:
+#   git config core.hooksPath tools/hooks      (repo root)
+# Runs without the Godot binary. Vendored addons + the generated constants are excluded, exactly
+# like the CI lint job.
+set -uo pipefail
+
+# Staged .gd files under client/, minus addons + the generated constants module.
+mapfile -t GD < <(git diff --cached --name-only --diff-filter=ACM \
+  | grep -E '^client/.*\.gd$' \
+  | grep -vE '^client/addons/|^client/domain/constants\.gd$' || true)
+
+if [ ${#GD[@]} -eq 0 ]; then
+  exit 0
+fi
+
+echo "pre-commit: gdformat --check + gdlint on ${#GD[@]} file(s)"
+
+if ! gdformat --check "${GD[@]}"; then
+  echo "✗ gdformat: files are not formatted. Run: gdformat ${GD[*]}"
+  exit 1
+fi
+
+if ! gdlint "${GD[@]}"; then
+  echo "✗ gdlint: lint errors above."
+  exit 1
+fi
+
+echo "✓ GDScript lint/format clean"
+exit 0

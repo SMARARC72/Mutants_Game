@@ -12,6 +12,8 @@ config_version=5
 
 config/name="Mutants_Game"
 config/description="A funny-grim, mature-occult creature-collection RPG."
+config/version="0.1.0"
+run/main_scene="res://presentation/screens/main_menu.tscn"
 config/features=PackedStringArray("4.7", "Forward Plus")
 config/icon="res://icon.svg"
 
@@ -22,6 +24,14 @@ Dialogic="*res://addons/dialogic/Core/DialogicGameHandler.gd"
 PhantomCameraManager="*res://addons/phantom_camera/scripts/managers/phantom_camera_manager.gd"
 BeehaveGlobalMetrics="*res://addons/beehave/metrics/beehave_global_metrics.gd"
 BeehaveGlobalDebugger="*res://addons/beehave/debug/global_debugger.gd"
+GUIDE="*res://addons/guide/guide.gd"
+LimboConsole="*res://addons/limbo_console/limbo_console.gd"
+Settings="*res://autoload/settings.gd"
+ThemeService="*res://autoload/theme_service.gd"
+InputService="*res://infrastructure/input/input_service.gd"
+Toast="*res://presentation/ui/toast/toast.gd"
+Transition="*res://presentation/ui/transition/transition.gd"
+DevConsole="*res://presentation/devtools/dev_console.gd"
 
 [dialogic]
 
@@ -37,4 +47,12 @@ project/assembly_name="Mutants_Game"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/beehave/plugin.cfg", "res://addons/dialogic/plugin.cfg", "res://addons/gdUnit4/plugin.cfg", "res://addons/phantom_camera/plugin.cfg", "res://addons/supabase/plugin.cfg")
+enabled=PackedStringArray("res://addons/beehave/plugin.cfg", "res://addons/dialogic/plugin.cfg", "res://addons/gdUnit4/plugin.cfg", "res://addons/guide/plugin.cfg", "res://addons/limbo_console/plugin.cfg", "res://addons/phantom_camera/plugin.cfg", "res://addons/supabase/plugin.cfg")
+
+[input]
+
+limbo_console_toggle={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":4194337,"physical_keycode":0,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
+]
+}

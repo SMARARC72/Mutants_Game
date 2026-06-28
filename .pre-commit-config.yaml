@@ -1,0 +1,17 @@
+# Pre-commit hooks (D1, TDD §15) — gdtoolkit gdformat + gdlint on hand-written GDScript.
+# Install once:  pip install pre-commit gdtoolkit==4.*  &&  pre-commit install
+# These mirror the CI lint job (.github/workflows/ci.yml): vendored addons under
+# client/addons/ and the generated client/domain/constants.gd are excluded.
+repos:
+  - repo: https://github.com/Scony/godot-gdscript-toolkit
+    rev: 4.3.4
+    hooks:
+      - id: gdformat
+        name: gdformat (check formatting)
+        args: ["--check"]
+        files: ^client/.*\.gd$
+        exclude: ^client/addons/|^client/domain/constants\.gd$
+      - id: gdlint
+        name: gdlint (lint)
+        files: ^client/.*\.gd$
+        exclude: ^client/addons/|^client/domain/constants\.gd$

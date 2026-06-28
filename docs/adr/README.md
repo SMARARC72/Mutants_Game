@@ -19,3 +19,4 @@ revisit by superseding with a new ADR + a TDD version bump.
 | [012](0012-versioned-json-save.md) | Versioned JSON save (no Resource deserialization) | Accepted | impl P3 |
 | [013](0013-phase05-dependencies.md) | Phase 0.5 vendored addons + asset policy + Beehave RNG rule | Accepted | **impl P0.5** |
 | [014](0014-runs-corruption-uncapped.md) | runs.corruption floor-only (not capped at 130) | Accepted | **impl P0 (deviation)** |
+| [018](0018-limboconsole-dev-only.md) | LimboConsole is dev-build-only (DEV_TOOLS flag) | Accepted | **impl Cluster 1** |
