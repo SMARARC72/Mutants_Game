@@ -22,7 +22,7 @@ import status_engine as st
 import loot_engine as lo
 import character_engine as ce
 
-OUT = os.path.join(ROOT, "tests", "golden")
+OUT = os.path.join(ROOT, "client", "tests", "golden")
 os.makedirs(OUT, exist_ok=True)
 
 FORCES = se.POLES
