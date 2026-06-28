@@ -101,7 +101,7 @@ class SupabaseRunRepository:
 	## which live in their own tables / the local snapshot). Data only.
 	static func _to_runs_row(aggregate: Dictionary) -> Dictionary:
 		var row := {}
-		for col in [
+		for col: String in [
 			"id",
 			"player_id",
 			"seed",
