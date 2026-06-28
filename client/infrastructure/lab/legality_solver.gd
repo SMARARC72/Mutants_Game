@@ -232,8 +232,10 @@ func _add_op_capacity_constraints(solver: CspSolver, ctx: Dictionary, slot_vars:
 
 
 func _parse_capacity(spec: Variant) -> int:
-	# "n"/"*"/"" -> -1 (unlimited); "0..1"/"x..y" -> the upper bound; an int -> itself.
-	if spec is int:
+	# "n"/"*"/"" -> -1 (unlimited); "0..1"/"x..y" -> the upper bound; a number -> itself.
+	# NOTE: JSON.parse_string decodes bare numbers as FLOAT in GDScript, so a JSON `1` arrives as 1.0
+	# (not int) — handle int AND float, else the cap silently becomes "unlimited" (the PR #10 bug).
+	if spec is int or spec is float:
 		return int(spec)
 	var s := str(spec)
 	if s == "n" or s == "*" or s == "":

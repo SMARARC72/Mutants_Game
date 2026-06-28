@@ -159,7 +159,13 @@ All confirmed findings were fixed in `legality_solver.gd` / `lab_bench.gd` / `sp
   distinct keys (plus a back-compat `unlock`).
 - **P3 op slot caps unused** — honored as per-ingredient-TYPE capacities (`_add_op_capacity_constraints`)
   with a coverage-lint drift assertion (every op `slots`/`raise_with`/`flags` key references known
-  types/flags). **P3 force-compat vacuous** — `force_intent` now ranges over the full 6-force universe and
+  types/flags). **Follow-up (PR #10 CI):** the cap initially didn't fire because `JSON.parse_string`
+  decodes a bare JSON number (`graft.slots.organ: 1`) as **float** in GDScript, and `_parse_capacity`
+  only matched `int` → `str(1.0)` = `"1.0"` → `is_valid_int()` false → cap fell through to -1 (unlimited),
+  so a 3-organ graft solved LEGAL. Fixed `_parse_capacity` to accept int AND float (the Python solver port
+  had masked it because Python `json` yields a real int). The org cap (1) is now enforced: a multi-organ
+  graft is ILLEGAL (`test_slot_capacity_constraints`). **P3 force-compat vacuous** — `force_intent` now
+  ranges over the full 6-force universe and
   the constraint rejects non-input forces (load-bearing); the soundness re-check independently asserts a
   non-input force is never chosen. **P3 (Codex) coverage-lint `accepts` no-op** — now enforces non-empty
   accepts, max≥1, defined-ingredient refs, defined conflict slots. **P3 (Codex) class-detection dup** —
