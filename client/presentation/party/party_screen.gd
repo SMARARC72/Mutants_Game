@@ -344,10 +344,10 @@ func _format_detail(creature: Dictionary, species: SpeciesData, catalog: Species
 	var expr := int(round(CreatureSheetScript.expression_of(creature) * 100.0))
 	var entropy := CreatureSheetScript.entropy_of(creature)
 	var awak := CreatureSheetScript.awakenings_of(creature)
-	var lines: Array = []
+	var lines := PackedStringArray()
 	lines.append("Force %s   Tier %s   HP %d" % [force, tier, hp])
 	lines.append("Expression %d%%   Awakenings %d   Entropy %d" % [expr, awak, entropy])
-	var stat_parts: Array = []
+	var stat_parts := PackedStringArray()
 	for k in POLE_STATS:
 		stat_parts.append("%s %d" % [k, int(stats.get(k, 0))])
 	lines.append("  ".join(stat_parts))
@@ -387,7 +387,7 @@ func _format_level_ledger(ledger: Dictionary) -> String:
 	var head := "Resonance" if str(ledger.get("reason", "")) == "resonance" else "OVERCLOCK"
 	var before := int(round(float(ledger.get("expression_before", 0.0)) * 100.0))
 	var after := int(round(float(ledger.get("expression_after", 0.0)) * 100.0))
-	var lines: Array = ["%s: expr %d%% -> %d%%" % [head, before, after]]
+	var lines := PackedStringArray(["%s: expr %d%% -> %d%%" % [head, before, after]])
 	if ledger.has("essence_spent"):
 		lines.append(
 			"essence -%d (now %d)" % [int(ledger["essence_spent"]), int(ledger["essence_after"])]
@@ -410,7 +410,8 @@ func _format_level_ledger(ledger: Dictionary) -> String:
 		if bool(ledger.get("burnout", false)):
 			lines.append("!! BURNOUT risk reached")
 	if not events.is_empty():
-		lines.append(" · ".join(events.map(func(e: Variant) -> String: return str(e))))
+		var event_strs := PackedStringArray(events.map(func(e: Variant) -> String: return str(e)))
+		lines.append(" · ".join(event_strs))
 	return "\n".join(lines)
 
 
@@ -419,11 +420,11 @@ func _format_gear_ledger(ledger: Dictionary, gear_catalog: GearCatalog) -> Strin
 	var equipped := str(ledger.get("equipped", ""))
 	var gear_name := gear_catalog.name_of(equipped) if equipped != "" else "(nothing)"
 	var delta: Dictionary = ledger.get("delta", {})
-	var parts: Array = []
+	var parts := PackedStringArray()
 	for field in delta:
 		var v: Variant = delta[field]
 		if v is float or v is int:
-			parts.append("%s %+0.2f" % [field, float(v)])
+			parts.append("%s %+.2f" % [field, float(v)])
 		else:
 			parts.append("%s: %s" % [field, str(v)])
 	var detail := "  ".join(parts) if not parts.is_empty() else "no stat change"
