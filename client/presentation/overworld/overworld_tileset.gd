@@ -101,20 +101,24 @@ static func _tile_image(path: String, modulate: Color, tile_id: int) -> Image:
 			c.r = clampf(c.r * modulate.r, 0.0, 1.0)
 			c.g = clampf(c.g * modulate.g, 0.0, 1.0)
 			c.b = clampf(c.b * modulate.b, 0.0, 1.0)
-			c.a = 1.0
+			c.a = clampf(c.a * modulate.a, 0.0, 1.0)  # preserve source alpha (soft edges/overlays)
 			region.set_pixel(px, py, c)
 	return region
 
 
 ## Paint a Layout onto a TileMapLayer (source 0; atlas coords == tile id). Skips void cells. Each
 ## cell gets a DETERMINISTIC flip/transpose so the single source texture reads as organic terrain
-## (8 orientations) instead of a visibly repeating grid. The layer must already have a TileSet from
-## build(). Returns the TileMapLayer for chaining.
+## (8 orientations) instead of a visibly repeating grid. Validity is checked against the tiles the
+## layer's OWN TileSet actually has (whatever force palette built it), so no region's tiles are
+## wrongly skipped. The layer must already have a TileSet from build(). Returns it for chaining.
 static func paint(layer: TileMapLayer, layout: Layout) -> TileMapLayer:
+	var source: TileSetAtlasSource = null
+	if layer.tile_set != null and layer.tile_set.get_source_count() > 0:
+		source = layer.tile_set.get_source(0) as TileSetAtlasSource
 	for y in layout.height:
 		for x in layout.width:
 			var tile_id := layout.get_cell(x, y)
-			if tile_id == VOID_TILE or not PALETTES[_DEFAULT_FORCE].has(tile_id):
+			if tile_id == VOID_TILE or source == null or not source.has_tile(Vector2i(tile_id, 0)):
 				continue
 			layer.set_cell(Vector2i(x, y), 0, Vector2i(tile_id, 0), _cell_orientation(x, y))
 	return layer
