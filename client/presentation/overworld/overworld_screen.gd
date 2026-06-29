@@ -883,17 +883,25 @@ func _advance_quest_for(npc: Dictionary) -> void:
 func _advance_quest_step(quest_id: String, step: String) -> void:
 	if step == "":
 		return
+	# Track BOTH transitions: a fresh start() and a real advance(). An out-of-order NPC (talked to
+	# before the prerequisite step) can start the quest yet have its advance() rejected — that start
+	# is still durable state and MUST persist, else re-entering the screen loses it (Codex #39 P2).
+	var started := false
 	if not _quests.is_active(quest_id) and not _quests.is_done(quest_id):
-		_quests.start(quest_id)
-	if not (_quests.is_active(quest_id) and _quests.advance(quest_id, step)):
+		started = _quests.start(quest_id)
+	var advanced := _quests.is_active(quest_id) and _quests.advance(quest_id, step)
+	if advanced:
+		_apply_effect_to_run(_quest_step_effect(quest_id, step))
+		if _quests.is_done(quest_id):
+			_apply_effect_to_run(_quest_def_by_id(quest_id).get("on_complete", {}) as Dictionary)
+	if not (started or advanced):
 		return
-	_apply_effect_to_run(_quest_step_effect(quest_id, step))
-	if _quests.is_done(quest_id):
-		_apply_effect_to_run(_quest_def_by_id(quest_id).get("on_complete", {}) as Dictionary)
 	_persist_quests()
-	var toast := get_node_or_null("/root/Toast")
-	if toast != null and toast.has_method("event"):
-		toast.call("event", "quest_update")
+	# Only a real advance is a player-facing "quest update"; a bare start with no advance is silent.
+	if advanced:
+		var toast := get_node_or_null("/root/Toast")
+		if toast != null and toast.has_method("event"):
+			toast.call("event", "quest_update")
 
 
 ## All quest definitions this screen drives (for lookup + restore).
