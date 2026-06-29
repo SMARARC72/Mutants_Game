@@ -92,6 +92,21 @@ func combatant_name() -> String:
 	return _mon.name
 
 
+## The combatant's PRIMARY force (the engine's combo key + the UI's force-color key). Read-only.
+func primary_force() -> String:
+	return _mon.prim
+
+
+## The combatant's SECONDARY force. Read-only.
+func secondary_force() -> String:
+	return _mon.sec
+
+
+## The defdown debuff currently on this combatant (0.0 = none) — engine-owned, surfaced for the UI.
+func defdown() -> float:
+	return _mon.defdown
+
+
 func hp() -> int:
 	return _mon.hp
 
