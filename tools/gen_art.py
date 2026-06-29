@@ -31,6 +31,7 @@ import sys
 import time
 import urllib.error
 import urllib.request
+import warnings
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 REGISTRY = os.path.join(ROOT, "docs", "creature_registry.csv")
@@ -345,7 +346,17 @@ def generate_with_retry(client, prompt, retries=3, backoff=2.0, sleep=time.sleep
 # Run.
 # ---------------------------------------------------------------------------
 def price_for(size):
+    """Per-image USD price for `size`, falling back to the default-size price if unknown.
+
+    Use `price_is_known(size)` to tell whether the returned price actually matches `size`; the
+    CLI surfaces that so a non-whitelisted --size doesn't silently quote the default-size price.
+    """
     return PRICE_PER_IMAGE_USD.get(size, PRICE_PER_IMAGE_USD[DEFAULT_SIZE])
+
+
+def price_is_known(size):
+    """True if `size` has its own entry in PRICE_PER_IMAGE_USD (i.e. price_for(size) is exact)."""
+    return size in PRICE_PER_IMAGE_USD
 
 
 def run(args):
@@ -381,11 +392,18 @@ def run(args):
         else:
             to_gen.append(row)
 
-    est = len(to_gen) * price_for(args.size)
+    unit = price_for(args.size)
+    est = len(to_gen) * unit
     print("  plan     : %d to generate, %d already done (skipped)"
           % (len(to_gen), len(skipped)))
-    print("  estimate : ~$%.2f USD (%d x $%.2f @ %s) — $0.00 in dry-run"
-          % (est, len(to_gen), price_for(args.size), args.size))
+    # Make the price basis explicit if --size isn't in the price table (we used the default).
+    basis = "" if price_is_known(args.size) else " (price basis: default size %s)" % DEFAULT_SIZE
+    print("  estimate : ~$%.2f USD (%d x $%.2f @ %s)%s — $0.00 in dry-run"
+          % (est, len(to_gen), unit, args.size, basis))
+    if basis:
+        warnings.warn(
+            "--size %s has no listed price; cost estimate uses the default-size (%s) price."
+            % (args.size, DEFAULT_SIZE), RuntimeWarning, stacklevel=2)
     print("")
 
     if dry_run:

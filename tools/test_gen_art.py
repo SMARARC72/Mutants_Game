@@ -8,6 +8,7 @@ the same shape as tools/test_rng_parity.py. Run: python -B tools/test_gen_art.py
 import os
 import sys
 import tempfile
+import warnings
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import gen_art as ga
@@ -101,6 +102,16 @@ check("select --limit", len(ga.select_rows(rows, limit=2)) == 2)
 # --- output_path -----------------------------------------------------------
 op = ga.output_path("/out", row())
 check("output_path id+slug", op.endswith("AD01_ruinmaw.png"))
+
+
+# --- pricing: known sizes vs default-size fallback -------------------------
+check("price known default size", ga.price_is_known(ga.DEFAULT_SIZE))
+check("price known tall size", ga.price_is_known("1024x1536"))
+check("price unknown size", not ga.price_is_known("2048x2048"))
+check("price_for known returns its own price",
+      ga.price_for("1024x1536") == ga.PRICE_PER_IMAGE_USD["1024x1536"])
+check("price_for unknown falls back to default-size price",
+      ga.price_for("2048x2048") == ga.PRICE_PER_IMAGE_USD[ga.DEFAULT_SIZE])
 
 
 # --- the real registry parses and builds prompts cleanly -------------------
@@ -261,6 +272,22 @@ try:
         check("dry-run exit 0", code == 0)
         check("dry-run wrote no images", not any(f.endswith(".png") for f in os.listdir(td)))
         check("dry-run wrote no manifest", not os.path.exists(ga.manifest_path(td)))
+
+        # A non-whitelisted --size warns (default-size price basis) but still runs.
+        with warnings.catch_warnings(record=True) as caught:
+            warnings.simplefilter("always")
+            code = ga.run(Args(out_dir=td, dry_run=True, only="AD01", size="2048x2048"))
+        check("unknown-size run exit 0", code == 0)
+        rt = [w for w in caught if issubclass(w.category, RuntimeWarning)]
+        check("unknown-size emits RuntimeWarning", len(rt) == 1)
+        check("warning names the default-size basis", ga.DEFAULT_SIZE in str(rt[0].message))
+
+        # A known --size does NOT warn.
+        with warnings.catch_warnings(record=True) as caught2:
+            warnings.simplefilter("always")
+            ga.run(Args(out_dir=td, dry_run=True, only="AD01", size="1024x1536"))
+        check("known-size emits no RuntimeWarning",
+              not [w for w in caught2 if issubclass(w.category, RuntimeWarning)])
 finally:
     if saved is not None:
         os.environ["OPENAI_API_KEY"] = saved
