@@ -1,0 +1,511 @@
+{
+  "schema_version": 1,
+  "ruleset_name": "Lab Legality Engine — splice_rules",
+  "design_note": "Authored ruleset for the Legality Engine (CSP over splice_rules). This file gates PERMISSION and resolves NON-NUMERIC config (force-intent legality, ingredient/trait-slot assignment, tier-target legality, flags, gate satisfaction). It NEVER computes stats, force blends, entropy, or corruption COSTS — those belong to lab_engine. All flavor lives in 'desc' fields only.",
+  "forces": ["Gaia", "Ouranos", "Cosmos", "Chaos", "Eros", "Thanatos"],
+  "force_roles": {
+    "Gaia": "Bulk",
+    "Ouranos": "Celerity",
+    "Cosmos": "Ward",
+    "Chaos": "Spike",
+    "Eros": "Vitality",
+    "Thanatos": "Bane"
+  },
+  "opposed": [
+    ["Cosmos", "Chaos"],
+    ["Eros", "Thanatos"],
+    ["Gaia", "Ouranos"]
+  ],
+  "adjacency": {
+    "_note": "Non-opposed force relations used only for legality framing. 'same' and 'adjacent' fuse without the abomination flag; 'opposed' (see above) sets it. lab_engine still owns the actual blend math; this is permission framing only.",
+    "compatible_when": ["same_force", "shares_a_force", "non_opposed_pair"],
+    "abomination_when": "opposed_pair"
+  },
+  "tiers": ["T1", "T2", "T3"],
+  "ranks": ["wild", "legendary", "god", "primordial"],
+  "classes": ["organic", "construct", "hybrid"],
+  "thresholds": {
+    "_note": "Player corruption gates. Data, not code — tunable in the balance sprint. Mirrored to client/domain/constants ONLY as the shared threshold values lab_engine also reads.",
+    "T_abom": 40,
+    "T_god": 70,
+    "T_self": 85
+  },
+  "unlocks": [
+    "abomination_rites",
+    "auto_chirurgy",
+    "necromancy",
+    "machine_godhood",
+    "deep_communion"
+  ],
+  "unlock_desc": {
+    "abomination_rites": "The blasphemer's license. Lets opposed-force fusion proceed before corruption reaches the natural threshold — you learn to hold two enemies in one body without your hands shaking. The world still notices.",
+    "auto_chirurgy": "You stop bringing beasts to the table and bring yourself. Required to run any operation on the player's own character. There is no anaesthetic; there is no going back.",
+    "necromancy": "Permission to argue with the recently filed. Rebuild from your Graveyard, or wake a Succession god-snapshot — yours or a friend's. The dead consent to nothing; you do it anyway.",
+    "machine_godhood": "The Iron Guild's heresy: a built thing can hold a living core. Unlocks reanimation/graft paths that turn a construct into a living-core candidate. Halix would be so proud.",
+    "deep_communion": "What the Deep Choir bartered in secrets, not coin. Sanctions the rare aberrant grafts — eldritch organs on flesh that should have rejected them. The flesh does not reject them. That is the problem."
+  },
+  "flags": {
+    "_note": "Derived booleans the CSP constrains. lab_engine reads them to know which cost track + world-state hooks to fire. The CSP sets them; it does not price them.",
+    "available": ["taboo", "abomination", "god_graft", "reanimated", "chimera", "self_spliced", "contraband", "world_bounty"],
+    "world_bounty_implied_by": ["abomination", "god_graft", "self_spliced"]
+  },
+  "operations": {
+    "fuse": {
+      "desc": "Two creatures into one chimera. The signature cut. Adjacent or shared forces blend quietly; opposed forces make an abomination and the world goes looking for it.",
+      "inputs": { "creatures": 2, "ingredients": "optional" },
+      "force_rule": "blend",
+      "force_rule_note": "Defers the actual blend (primary 0.6 / secondary 0.4) to lab_engine. The CSP only validates that the requested force_intent is a legal subset of {forces(a) ∪ forces(b)} and decides whether the pairing is compatible or abomination.",
+      "tier_rule": { "base": "max", "both_T3": "T3", "raise_with": ["core", "soul"] },
+      "tier_rule_note": "tier_target defaults to max(tA, tB). It may exceed that ONLY if a tier-raising core/soul is consumed; lab_engine performs the T1→T2→T3 escalation, the CSP merely permits the ceiling.",
+      "class_rule": {
+        "organic+organic": "organic",
+        "construct+construct": "construct",
+        "organic+construct": "hybrid_requires_bridge"
+      },
+      "slots": { "trait_slots": "0..n_from_ingredients", "core": "0..1" },
+      "taboo_when": {
+        "forces": "opposed",
+        "sets_flags": ["taboo", "abomination", "world_bounty"],
+        "gate": {
+          "any_of": [
+            { "corruption_gte": "T_abom" },
+            { "unlock": "abomination_rites" }
+          ],
+          "eases_with_part": "opposed_force_solvent"
+        }
+      },
+      "illegal_when": [
+        "force_intent not a subset of inputs' forces",
+        "tier_target exceeds max(tA,tB) with no tier-raising core consumed",
+        "organic+construct fusion with no bridging part (no hybrid bridge)"
+      ]
+    },
+    "mutate": {
+      "desc": "One creature plus a gene-vial or mutagen, modified in place. Cheap, intimate, mostly survivable. Cross-force genes don't kill it — they just make it unstable and a little wrong.",
+      "inputs": { "creatures": 1, "ingredients": "required" },
+      "accepts_ingredient_types": ["gene-vial", "consumable"],
+      "force_rule": "host_keeps_force",
+      "force_rule_note": "The host's force identity is unchanged by mutate; lab_engine surfaces the gene's stat/trait. The CSP only checks the gene is legal on the host's force/class, or flags the cross-force case.",
+      "tier_rule": { "base": "same", "raise_with": [] },
+      "slots": { "gene_slots": "1..n", "trait_slots": "0" },
+      "taboo_when": {
+        "gene_force_opposed_to_host": true,
+        "sets_flags": ["taboo"],
+        "severity": "taboo_lite",
+        "gate": {
+          "any_of": [
+            { "corruption_gte": "T_abom" },
+            { "unlock": "abomination_rites" }
+          ]
+        },
+        "note": "Cross-force gene = 'taboo-lite': lab_engine applies an entropy spike rather than full abomination cost. Same gate as fuse-abomination but the consequence is the creature's instability, not a world bounty."
+      },
+      "illegal_when": [
+        "gene class incompatible with host class (e.g. construct-only gene on organic with no hybrid bridge)",
+        "two mutually-exclusive genes in the same lineage slot"
+      ]
+    },
+    "graft": {
+      "desc": "Augment a living beast with an organ, plating, or core. The everyday surgery — until the organ on your table used to belong to a god.",
+      "inputs": { "creatures": 1, "ingredients": "required" },
+      "accepts_ingredient_types": ["organ", "plating", "scrap", "core", "soul"],
+      "force_rule": "host_keeps_force",
+      "force_rule_note": "Grafting does not re-blend the host's forces; lab_engine attaches the organ's trait. The CSP checks organ↔force/class legality and slot occupancy/conflict.",
+      "tier_rule": { "base": "same", "raise_with": ["core", "soul"] },
+      "slots": { "organ": "1..n_by_trait_slot", "plating": "n", "core": "0..1" },
+      "taboo_when": {
+        "ingredient_rank": "god",
+        "sets_flags": ["taboo", "god_graft", "world_bounty"],
+        "gate": {
+          "all_of": [
+            { "corruption_gte": "T_god" },
+            { "requires_part_rank": "god" }
+          ]
+        },
+        "note": "God-tier organ/core (e.g. Hades' Marrow, a God-Soul Ingot). Needs BOTH the divine part in hand AND corruption ≥ T_god. lab_engine then applies god-tier power + heavy corruption cost."
+      },
+      "illegal_when": [
+        "organ force/class not legal on host (ingredient_compat fails) and no hybrid bridge present",
+        "two organs claim the same trait_slot (slot conflict)",
+        "core count exceeds the slot max (core slot is 0..1)",
+        "construct-only part on organic host with no bridging part"
+      ]
+    },
+    "self_splice": {
+      "desc": "You stop operating on beasts and start operating on yourself. The chimera-god route, done by your own hand. Always gated; there was never a version of this that was safe.",
+      "inputs": { "player": true, "ingredients": "required" },
+      "accepts_ingredient_types": ["organ", "core", "soul", "gene-vial"],
+      "force_rule": "player_gains_force_power",
+      "force_rule_note": "lab_engine resolves which force-power the player gains (e.g. Deathtouch from a Thanatos god-organ) and the corruption cost. The CSP only confirms the operation is permitted at all and the part is legal on a player vessel.",
+      "tier_rule": { "base": "player", "raise_with": [] },
+      "slots": { "player_organ": "1", "core": "0..1" },
+      "always_gated": true,
+      "taboo_when": {
+        "always": true,
+        "sets_flags": ["taboo", "self_spliced", "chimera", "world_bounty"],
+        "gate": {
+          "all_of": [
+            { "corruption_gte": "T_self" },
+            { "unlock": "auto_chirurgy" }
+          ],
+          "escalates_if_part_rank": { "god": { "also_requires": { "corruption_gte": "T_self" } } }
+        },
+        "note": "Requires corruption ≥ T_self AND the auto_chirurgy unlock, ALWAYS — there is no legal self-splice without both. lab_engine writes the corruption onto the player and may lock the Pure ending / turn the world hostile."
+      },
+      "illegal_when": [
+        "auto_chirurgy not unlocked",
+        "part not legal on a player vessel (ingredient_compat 'player' class absent)",
+        "core count exceeds slot max"
+      ]
+    },
+    "reanimate": {
+      "desc": "Rebuild from the Graveyard, or wake a Succession god-snapshot — yours or a friend's. Necromancy of the dead, and of other people's dead gods. Souls are mandatory; the dead are not consulted.",
+      "inputs": { "graveyard_part_or_snapshot": 1, "ingredients": "required" },
+      "accepts_ingredient_types": ["core", "soul", "organ", "scrap", "plating"],
+      "force_rule": "source_keeps_force",
+      "force_rule_note": "The reanimated subject keeps the dead creature's / snapshot's force identity; lab_engine reconstitutes the stat-spine from the stored lineage. The CSP confirms a soul/core is present and the necromancy unlock is held.",
+      "tier_rule": { "base": "source", "raise_with": ["soul"] },
+      "slots": { "core": "1", "soul": "0..1", "organ": "0..n", "plating": "n" },
+      "requires_input_kind": ["graveyard_part", "god_snapshot"],
+      "taboo_when": {
+        "always": true,
+        "sets_flags": ["taboo", "reanimated"],
+        "requires_soul_or_core": true,
+        "gate": {
+          "all_of": [
+            { "unlock": "necromancy" },
+            { "requires_part_type_any": ["soul", "core"] }
+          ]
+        },
+        "special_flags_when": {
+          "input_kind": "god_snapshot",
+          "adds_flags": ["god_graft", "world_bounty"],
+          "friend_snapshot_extra": {
+            "sets_flag": "contraband",
+            "note": "Waking a FRIEND'S async Succession god is the necromancy-of-friends'-gods case: lab_engine tags lineage with the source player + may escalate corruption. The CSP records it as contraband-flagged so the world-state hook fires."
+          }
+        },
+        "note": "Necromancy ALWAYS needs the unlock AND a soul/core. A god_snapshot input additionally trips god_graft + world_bounty; a friend's snapshot also trips contraband."
+      },
+      "illegal_when": [
+        "necromancy not unlocked",
+        "no soul/core consumed",
+        "input is neither a graveyard part nor a god_snapshot"
+      ]
+    }
+  },
+  "trait_slots": {
+    "_note": "Body slots an organ/graft can occupy. The CSP assigns each provided organ to a legal slot; two organs claiming the same slot (beyond 'max') is a conflict → backtrack. 'accepts' lists organ archetype keys (see ingredient_compat 'slot'). Whole-creature stat math is still lab_engine's; these slots govern PLACEMENT legality only.",
+    "head": {
+      "desc": "Skull, sensory crown, what's left of the face.",
+      "accepts": ["eye", "horn", "crest", "antler", "maw", "sensory"],
+      "max": 1,
+      "conflicts_with": []
+    },
+    "eyes": {
+      "desc": "Ocular cluster. More eyes is rarely an improvement to look at, often an improvement to be.",
+      "accepts": ["eye", "sensory"],
+      "max": 2,
+      "conflicts_with": ["head"]
+    },
+    "core": {
+      "desc": "The chest cavity — heart, soul, reactor. One beating want per body; the engine refuses a second.",
+      "accepts": ["heart", "soul", "reactor", "anima_cell", "living_core"],
+      "max": 1,
+      "conflicts_with": []
+    },
+    "endocrine": {
+      "desc": "Glands and the chemistry of bad decisions. Adrenal, venom, bile.",
+      "accepts": ["gland", "bladder", "sac"],
+      "max": 2,
+      "conflicts_with": []
+    },
+    "forelimbs": {
+      "desc": "Arms, claws, the grasping front. Paired by convention, not by law.",
+      "accepts": ["claw", "arm", "talon", "blade"],
+      "max": 2,
+      "conflicts_with": []
+    },
+    "hindlimbs": {
+      "desc": "Legs, the running back. Lose these and you become someone's ambush, not their pursuer.",
+      "accepts": ["leg", "hoof", "talon", "tail"],
+      "max": 2,
+      "conflicts_with": []
+    },
+    "tail": {
+      "desc": "The afterthought that does most of the steering. Or the stinging.",
+      "accepts": ["tail", "stinger", "lash"],
+      "max": 1,
+      "conflicts_with": ["hindlimbs"]
+    },
+    "hide": {
+      "desc": "Skin, scale, carapace, plating. The boundary between the beast and the world, negotiable.",
+      "accepts": ["scale", "carapace", "plating", "pelt", "membrane"],
+      "max": 1,
+      "conflicts_with": []
+    },
+    "wings": {
+      "desc": "What lets a thing arrive from a direction you weren't watching.",
+      "accepts": ["wing", "membrane", "fin"],
+      "max": 2,
+      "conflicts_with": ["forelimbs"]
+    },
+    "aura": {
+      "desc": "The non-anatomical slot — the field a creature projects. Glyph, ward, miasma, charm. One presence per body; auras do not layer.",
+      "accepts": ["sigil", "ward_field", "miasma", "charm", "halo"],
+      "max": 1,
+      "conflicts_with": []
+    },
+    "marrow": {
+      "desc": "What's in the bones — the deep slot. Where divine grafts root, and where they're hardest to remove later.",
+      "accepts": ["marrow", "ingot", "soul"],
+      "max": 1,
+      "conflicts_with": []
+    },
+    "frame": {
+      "desc": "Construct-only: the structural chassis. Beams, struts, the skeleton you bolted together. Organic bodies have no frame slot.",
+      "accepts": ["beam", "strut", "chassis", "scrap"],
+      "max": 4,
+      "class_restricted": ["construct", "hybrid"],
+      "conflicts_with": []
+    }
+  },
+  "ingredient_compat": {
+    "_note": "The legality library: which forces + classes each ingredient is legal on. 'slot' maps the ingredient to its trait_slot archetype. Keys are clean; flavor in 'desc'. An ingredient is grafTable on a host only if the host shares one of the listed 'forces' (or the rule is 'any') AND the host class is in 'class'. 'rank' gates god-tier taboo. This table NEVER carries stat values — lab_engine reads the trait the part grants.",
+
+    "gravetusk_adrenal_gland": {
+      "desc": "Boar-line adrenal. Pump it in and 'stop' becomes a foreign concept. Grants a charge-Strike on graft.",
+      "forces": ["Gaia", "Chaos"], "class": ["organic", "hybrid"], "slot": "gland", "rank": "wild", "ingredient_type": "organ"
+    },
+    "gloamcat_soul_bladder": {
+      "desc": "Still leaking the colour of dusk. Grants a lifesteal Drain; the host arrives last and leaves first.",
+      "forces": ["Thanatos", "Ouranos"], "class": ["organic", "hybrid"], "slot": "bladder", "rank": "wild", "ingredient_type": "organ"
+    },
+    "augurwing_foresight_eye": {
+      "desc": "An eye that already saw this coming. Grants an evade/foresight read.",
+      "forces": ["Ouranos", "Eros"], "class": ["organic", "hybrid"], "slot": "eye", "rank": "wild", "ingredient_type": "organ"
+    },
+    "sigil_antler_ward": {
+      "desc": "Antler etched in old protective glyphs. Grants a Ward-tint barrier on graft.",
+      "forces": ["Cosmos"], "class": ["organic", "hybrid"], "slot": "antler", "rank": "wild", "ingredient_type": "organ"
+    },
+    "worldback_tooth": {
+      "desc": "A tooth from something that carried a hill on its back. Grants a Bulk-anchor stagger-resist.",
+      "forces": ["Gaia"], "class": ["organic", "hybrid"], "slot": "maw", "rank": "wild", "ingredient_type": "organ"
+    },
+    "emberwyrm_cinder_heart": {
+      "desc": "A coal that never went out. Grants a Spike burst; the host smells faintly of the last thing it burned.",
+      "forces": ["Chaos", "Ouranos"], "class": ["organic", "hybrid"], "slot": "heart", "rank": "wild", "ingredient_type": "organ"
+    },
+    "palehart_vitae_node": {
+      "desc": "A node that keeps pumping after the heart's given up. Grants a Vitality regen.",
+      "forces": ["Cosmos", "Eros"], "class": ["organic", "hybrid"], "slot": "heart", "rank": "wild", "ingredient_type": "organ"
+    },
+    "quagsovereign_bile_sac": {
+      "desc": "A sac of swamp-end. Grants a Bane corrosion-on-hit.",
+      "forces": ["Chaos", "Thanatos"], "class": ["organic", "hybrid"], "slot": "sac", "rank": "wild", "ingredient_type": "organ"
+    },
+    "tunnelward_carapace": {
+      "desc": "Plates grown by a thing that lives where the ceiling can fall. Grants a Ward/Bulk hide.",
+      "forces": ["Gaia", "Cosmos"], "class": ["organic", "hybrid"], "slot": "carapace", "rank": "wild", "ingredient_type": "organ"
+    },
+    "khamsoon_galeclaw": {
+      "desc": "A talon honed by a desert that never stops moving. Grants a Celerity opener.",
+      "forces": ["Ouranos", "Chaos"], "class": ["organic", "hybrid"], "slot": "talon", "rank": "wild", "ingredient_type": "organ"
+    },
+    "constellute_starcrest": {
+      "desc": "A crest that holds a little fixed light. Grants a Ward/Celerity control read.",
+      "forces": ["Ouranos", "Cosmos"], "class": ["organic", "hybrid"], "slot": "crest", "rank": "wild", "ingredient_type": "organ"
+    },
+    "leviathan_deepgill": {
+      "desc": "Gills that breathe the pressure of the trench. Grants a Bulk/Bane sustain underwater and elsewhere.",
+      "forces": ["Gaia", "Thanatos"], "class": ["organic", "hybrid"], "slot": "membrane", "rank": "wild", "ingredient_type": "organ"
+    },
+    "reveler_charm_glands": {
+      "desc": "Glands that make a thing easy to love and easier to forgive. Grants a charm-field aura.",
+      "forces": ["Eros", "Chaos"], "class": ["organic", "hybrid"], "slot": "charm", "rank": "wild", "ingredient_type": "organ"
+    },
+    "stoneblooded_horn": {
+      "desc": "Clan-bred horn, hand-warm. Grants a Bulk ram-Strike.",
+      "forces": ["Gaia"], "class": ["organic", "hybrid"], "slot": "horn", "rank": "wild", "ingredient_type": "organ"
+    },
+    "stormvault_winglash": {
+      "desc": "A wing-membrane that still crackles. Grants a Celerity reposition.",
+      "forces": ["Ouranos"], "class": ["organic", "hybrid"], "slot": "wing", "rank": "wild", "ingredient_type": "organ"
+    },
+    "dustdervish_stinger": {
+      "desc": "A barb wrapped in stinging grit. Grants a Spike/Bane poke.",
+      "forces": ["Ouranos", "Chaos"], "class": ["organic", "hybrid"], "slot": "stinger", "rank": "wild", "ingredient_type": "organ"
+    },
+    "mournmarch_grave_pelt": {
+      "desc": "A pelt that remembers being buried. Grants a Bane decay-aura hide.",
+      "forces": ["Thanatos"], "class": ["organic", "hybrid"], "slot": "pelt", "rank": "wild", "ingredient_type": "organ"
+    },
+    "bloomwarden_thornlash": {
+      "desc": "A whip of fast-growing thorn. Grants a Vitality/Bulk lash.",
+      "forces": ["Eros", "Gaia"], "class": ["organic", "hybrid"], "slot": "lash", "rank": "wild", "ingredient_type": "organ"
+    },
+    "deep_choir_lure_node": {
+      "desc": "An anglerfish lantern that sings. Aberrant — legal only with deep_communion. Grants a control miasma.",
+      "forces": ["Thanatos", "Cosmos"], "class": ["organic", "hybrid"], "slot": "miasma", "rank": "wild", "ingredient_type": "organ",
+      "requires_unlock": "deep_communion"
+    },
+
+    "hades_marrow": {
+      "desc": "A bone the death-god won't miss for a while. Grants Deathtouch-adjacent Drain at divine scale. Taboo on a mortal beast; the Pantheon marks you.",
+      "forces": ["Thanatos", "Gaia"], "class": ["organic", "hybrid"], "slot": "marrow", "rank": "god", "ingredient_type": "organ"
+    },
+    "hephaestus_coal_heart": {
+      "desc": "Still forging something. Turns a built thing into a living-core candidate — the machine-godhood route.",
+      "forces": ["Cosmos", "Gaia"], "class": ["construct", "hybrid"], "slot": "living_core", "rank": "god", "ingredient_type": "core",
+      "enables_unlock_path": "machine_godhood"
+    },
+    "aphrodite_unspent_heartbeat": {
+      "desc": "A pulse the Primordial never used. Every creature you raise loves you a little before it has reason to. Disquieting. Effective. Player-graftable.",
+      "forces": ["Eros"], "class": ["organic", "hybrid", "player"], "slot": "heart", "rank": "god", "ingredient_type": "organ"
+    },
+    "uranus_skyshard_eye": {
+      "desc": "A splinter of the first sky's sight. Grants Celerity-precognition at divine scale.",
+      "forces": ["Ouranos"], "class": ["organic", "hybrid"], "slot": "eye", "rank": "god", "ingredient_type": "organ"
+    },
+    "gaia_worldseed_node": {
+      "desc": "A seed with a continent folded inside. Grants Bulk-regeneration at divine scale.",
+      "forces": ["Gaia"], "class": ["organic", "hybrid"], "slot": "core", "rank": "god", "ingredient_type": "organ"
+    },
+    "chaos_unmade_shard": {
+      "desc": "A piece of the thing before things. Grants Spike that ignores the rules it was told. Reads as Chaos to everything that fears it.",
+      "forces": ["Chaos"], "class": ["organic", "hybrid"], "slot": "core", "rank": "god", "ingredient_type": "organ"
+    },
+    "cosmos_lawgivers_sigil": {
+      "desc": "A glyph that says NO to the world and means it. Grants a Ward at divine scale; pairs into machine-gods of pure Cosmos.",
+      "forces": ["Cosmos"], "class": ["organic", "construct", "hybrid"], "slot": "ward_field", "rank": "god", "ingredient_type": "organ"
+    },
+
+    "vial_dominant_bulk": {
+      "desc": "Bottled stubbornness. Surfaces a Bulk gene; the lineage gets heavier with implication.",
+      "forces": ["Gaia"], "class": ["organic", "hybrid"], "slot": "gene", "rank": "wild", "ingredient_type": "gene-vial"
+    },
+    "vial_recessive_celerity": {
+      "desc": "A speed that runs in the family but hides. Surfaces Celerity; offspring outpaces its parents and its luck.",
+      "forces": ["Ouranos"], "class": ["organic", "hybrid"], "slot": "gene", "rank": "wild", "ingredient_type": "gene-vial"
+    },
+    "vial_recessive_bane": {
+      "desc": "The mean gene grandmother never discussed. Surfaces Bane; the bloodline's bite gets ideas.",
+      "forces": ["Thanatos"], "class": ["organic", "hybrid"], "slot": "gene", "rank": "wild", "ingredient_type": "gene-vial"
+    },
+    "vial_wild_spike": {
+      "desc": "Will not be told what to express. High Spike, high variance, faint smell of ozone and regret.",
+      "forces": ["Chaos"], "class": ["organic", "hybrid"], "slot": "gene", "rank": "wild", "ingredient_type": "gene-vial"
+    },
+    "vial_dominant_ward": {
+      "desc": "A gene that flinches first so the body doesn't have to. Surfaces Ward.",
+      "forces": ["Cosmos"], "class": ["organic", "construct", "hybrid"], "slot": "gene", "rank": "wild", "ingredient_type": "gene-vial"
+    },
+    "vial_recessive_vitality": {
+      "desc": "The gene for outliving the prognosis. Surfaces Vitality, quietly.",
+      "forces": ["Eros"], "class": ["organic", "hybrid"], "slot": "gene", "rank": "wild", "ingredient_type": "gene-vial"
+    },
+    "vial_pure_pole_concentrate": {
+      "desc": "One force, undiluted, screaming to express. Pushes a lineage toward a pole — the breeder's Apotheosis fuel.",
+      "forces": ["any_single_pole"], "class": ["organic", "hybrid"], "slot": "gene", "rank": "legendary", "ingredient_type": "gene-vial",
+      "note": "Legal on a host only if it shares the chosen single pole; never legal as a cross-force gene without tripping mutate's taboo_lite."
+    },
+    "common_mutagen_draught": {
+      "desc": "Generic instability in a bottle. Surfaces a random in-force trait; the cheap door into mutation.",
+      "forces": ["any"], "class": ["organic", "hybrid"], "slot": "gene", "rank": "wild", "ingredient_type": "consumable"
+    },
+
+    "cracked_anima_cell": {
+      "desc": "A soul with a hairline fault, sold cheap and humming. Powers minor Builds and routine rituals. Can raise a tier once.",
+      "forces": ["any"], "class": ["construct", "hybrid", "organic"], "slot": "anima_cell", "rank": "wild", "ingredient_type": "core", "tier_raise": true
+    },
+    "bound_spirit_battery": {
+      "desc": "Someone's afterlife on a leash. Steady ritual fuel; contraband, draws heat.",
+      "forces": ["any"], "class": ["construct", "hybrid", "organic"], "slot": "soul", "rank": "wild", "ingredient_type": "soul", "tier_raise": true, "sets_flag": "contraband"
+    },
+    "legendary_heartcore": {
+      "desc": "The still-beating want of something that was nearly a god. Powers ascension-grade rituals; raises a tier.",
+      "forces": ["any"], "class": ["construct", "hybrid", "organic"], "slot": "soul", "rank": "legendary", "ingredient_type": "core", "tier_raise": true
+    },
+    "god_soul_ingot": {
+      "desc": "Distilled godhood, poured into a bar you can hold but shouldn't. The keystone fuel of your own Apotheosis. God-rank — trips the god gate.",
+      "forces": ["any"], "class": ["construct", "hybrid", "organic", "player"], "slot": "ingot", "rank": "god", "ingredient_type": "soul", "tier_raise": true
+    },
+    "succession_snapshot_core": {
+      "desc": "A hot core carrying a dead god's whole self — yours or a friend's. The reanimation keystone; soul mandatory, conscience optional.",
+      "forces": ["any"], "class": ["construct", "hybrid", "organic"], "slot": "soul", "rank": "god", "ingredient_type": "core", "tier_raise": true, "input_kind": "god_snapshot"
+    },
+
+    "dead_automaton_scrap": {
+      "desc": "Forgefell's endless harvest. Bulk filler for any Build; somebody's masterwork, by weight.",
+      "forces": ["any"], "class": ["construct", "hybrid"], "slot": "scrap", "rank": "wild", "ingredient_type": "scrap"
+    },
+    "sigil_etched_plating": {
+      "desc": "Salvage that still remembers being a wall. Adds Ward-tint to a construct; sold by the crate.",
+      "forces": ["Cosmos"], "class": ["construct", "hybrid"], "slot": "plating", "rank": "wild", "ingredient_type": "plating"
+    },
+    "adamant_frame_beam": {
+      "desc": "A beam that has never once bent and resents being asked. Structural Bulk for a construct frame.",
+      "forces": ["Gaia"], "class": ["construct", "hybrid"], "slot": "beam", "rank": "wild", "ingredient_type": "scrap"
+    },
+    "stormvault_conductor_wire": {
+      "desc": "Wire that carries a charge it didn't ask to hold. Adds Celerity-tint to a construct.",
+      "forces": ["Ouranos"], "class": ["construct", "hybrid"], "slot": "strut", "rank": "wild", "ingredient_type": "scrap"
+    },
+    "havoc_riot_plate": {
+      "desc": "Plating that was an explosion once and remembers fondly. Adds Spike-tint to a construct.",
+      "forces": ["Chaos"], "class": ["construct", "hybrid"], "slot": "plating", "rank": "wild", "ingredient_type": "plating"
+    },
+    "iron_throne_carapace_panel": {
+      "desc": "A panel off something that called itself a throne. Premium Ward/Bulk chassis; the law, by the crate.",
+      "forces": ["Cosmos", "Gaia"], "class": ["construct", "hybrid"], "slot": "chassis", "rank": "legendary", "ingredient_type": "plating"
+    },
+
+    "opposed_force_solvent": {
+      "desc": "Contraband that lets two enemies share one body without the body voting on it. Eases the opposed-fusion gate; always premium, always heat.",
+      "forces": ["any"], "class": ["organic", "construct", "hybrid"], "slot": null, "rank": "legendary", "ingredient_type": "consumable", "sets_flag": "contraband", "role": "abomination_catalyst"
+    },
+    "hybrid_bridge_graftplasm": {
+      "desc": "Grey jelly that convinces meat and metal they were always related. The bridging part: the only thing that lets organic + construct become hybrid.",
+      "forces": ["any"], "class": ["organic", "construct", "hybrid"], "slot": null, "rank": "wild", "ingredient_type": "consumable", "role": "hybrid_bridge"
+    },
+    "sextons_consecrated_marrow_kit": {
+      "desc": "For exhuming what you buried and improving it. Lowers the sanity cost of reanimating your own Graveyard; routes more through the soul instead. Necromancy aid.",
+      "forces": ["Thanatos"], "class": ["organic", "construct", "hybrid"], "slot": null, "rank": "legendary", "ingredient_type": "consumable", "role": "reanimation_aid"
+    }
+  },
+  "csp_contract": {
+    "_note": "How the rules drive godot-constraint-solving. Declarative; the solver does backtracking search. Stat/blend/cost computation is explicitly OUT OF SCOPE here.",
+    "variables": ["force_intent", "tier_target", "class_target", "trait_slots[]", "gene_slots[]", "flags"],
+    "domains": {
+      "force_intent": "legal subset of union(forces(a), forces(b)) for fuse; host force otherwise",
+      "tier_target": "max(tA,tB) .. ceiling, where ceiling rises only if a tier_raise core/soul is consumed",
+      "class_target": "{organic, construct, hybrid}; hybrid only with a hybrid_bridge part",
+      "trait_slots[i]": "compatible organs from provided ingredients, by trait_slots.accepts",
+      "gene_slots[i]": "compatible gene-vials from provided ingredients"
+    },
+    "constraints": [
+      "force_compatibility: same/shared/non-opposed = ok; opposed sets flags.taboo+abomination and requires the gate",
+      "ingredient_legality: organ/gene occupies a slot only if host shares a listed force (or 'any') AND host class in ingredient.class",
+      "slot_exclusivity: no two organs in the same trait_slot beyond its 'max'; respect class_restricted slots",
+      "gene_exclusivity: no two mutually-exclusive genes in the same lineage slot",
+      "tier_ceiling: tier_target <= max(tA,tB) unless a tier_raise core/soul is consumed",
+      "class_rules: construct output requires plating/core; organic+construct requires a hybrid_bridge to become hybrid",
+      "gate_satisfaction: every flag requiring a taboo gate must have its precondition met (corruption / unlock / specific part); else reject the assignment",
+      "unlock_required_parts: ingredients with requires_unlock are legal only if that unlock is held"
+    ],
+    "results": {
+      "LEGAL": "a consistent assignment exists and no gate fails → emit splice_config",
+      "TABOO": "a consistent assignment exists but needs an unmet gate → return unlock/corruption cost so the UI can offer it",
+      "ILLEGAL": "no consistent assignment → return the specific failing constraint (dread microcopy)"
+    },
+    "choice_among_legal_variants": "if multiple assignments satisfy all constraints, pick one with canonical_rng(run.seed, op_id); persist the chosen splice_config in creature_instances.lineage.splice_config",
+    "out_of_scope": [
+      "force blend (primary 0.6 / secondary 0.4)",
+      "tier escalation math (T1→T2→T3)",
+      "stat_block / HP / BST",
+      "entropy and corruption COSTS",
+      "any numeric value whatsoever"
+    ]
+  }
+}
