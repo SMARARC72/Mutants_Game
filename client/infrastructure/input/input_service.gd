@@ -53,12 +53,21 @@ func just_pressed(action_id: String) -> bool:
 	return InputMap.has_action(action_id) and Input.is_action_just_pressed(action_id)
 
 
-## A 2D movement vector from the four directional actions of the active context.
+## A 2D movement vector from the four directional actions of the active context. In the OVERWORLD,
+## WASD (MOVE_*) is primary but the ARROW keys (NAV_*) drive movement too — players reach for the
+## arrows by instinct, and an avatar that ignored them read as "the game is frozen". Either set steps
+## the avatar; WASD wins when both are held the same frame.
 func movement_vector() -> Vector2:
 	if _current_context == InputActions.CTX_OVERWORLD:
-		return Vector2(
+		var move := Vector2(
 			_axis(InputActions.MOVE_LEFT, InputActions.MOVE_RIGHT),
 			_axis(InputActions.MOVE_UP, InputActions.MOVE_DOWN)
+		)
+		if move != Vector2.ZERO:
+			return move
+		return Vector2(
+			_axis(InputActions.NAV_LEFT, InputActions.NAV_RIGHT),
+			_axis(InputActions.NAV_UP, InputActions.NAV_DOWN)
 		)
 	return Vector2(
 		_axis(InputActions.NAV_LEFT, InputActions.NAV_RIGHT),

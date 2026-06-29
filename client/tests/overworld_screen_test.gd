@@ -94,17 +94,54 @@ func test_try_move_blocks_walls_and_advances_steps() -> void:
 	var gc := _make_game()
 	gc.call("new_run", TEST_SEED)
 	var ow := _make_overworld(gc)
-	# Moving out of bounds from the spawn (which is the first walkable cell) does not advance steps.
+	var layout: Layout = ow.call("layout")
+	var spawn: Vector2i = ow.call("player_cell")
 	var before := int(gc.call("current_step"))
-	# A move into an impossible direction (large) is rejected; pick a definitely-out-of-bounds step
-	# by moving up-left repeatedly until blocked, asserting blocked moves never advance the counter.
-	var blocked: Dictionary = ow.call("try_move", Vector2i(-1, 0))
-	if not bool(blocked.get("moved", false)):
+
+	# OUT OF BOUNDS: a far step leaves the region entirely; it is rejected and never advances the
+	# step counter. (The spawn is now the walkable cell nearest centre, so no single cardinal is
+	# guaranteed off-grid — a deliberately huge delta is.)
+	var oob: Dictionary = ow.call("try_move", Vector2i(-1000, 0))
+	assert_bool(bool(oob.get("moved", false))).is_false()
+	assert_int(int(gc.call("current_step"))).is_equal(before)
+
+	# WALL COLLISION (best-effort): if the spawn borders a wall, stepping into it is blocked and the
+	# counter still holds. A wall neighbour is not guaranteed for every layout, so only assert when
+	# one exists.
+	var wall_dir := _wall_dir(layout, spawn)
+	if wall_dir != Vector2i.ZERO:
+		var into_wall: Dictionary = ow.call("try_move", wall_dir)
+		assert_bool(bool(into_wall.get("moved", false))).is_false()
 		assert_int(int(gc.call("current_step"))).is_equal(before)
-	# A valid move (right, into open ground in the fallback/solved grid) advances exactly one step.
-	var moved: Dictionary = ow.call("try_move", Vector2i(1, 0))
-	if bool(moved.get("moved", false)):
-		assert_int(int(gc.call("current_step"))).is_equal(before + 1)
+
+	# A valid step into a walkable neighbour advances the step counter by exactly one.
+	var open_dir := _walkable_dir(layout, spawn)
+	assert_bool(open_dir != Vector2i.ZERO).is_true()
+	var moved: Dictionary = ow.call("try_move", open_dir)
+	assert_bool(bool(moved.get("moved", false))).is_true()
+	assert_int(int(gc.call("current_step"))).is_equal(before + 1)
+
+	ow.queue_free()
+	gc.queue_free()
+
+
+func test_spawn_is_in_the_largest_reachable_area_not_a_sealed_room() -> void:
+	# The player must spawn in the LARGEST 4-connected walkable component (the open field), never
+	# inside a sealed DungeonAssembler set-piece room (a walled interior with no doorway) — a spawn
+	# there could move within the room but never leave, soft-locking the run.
+	var gc := _make_game()
+	gc.call("new_run", TEST_SEED)
+	var ow := _make_overworld(gc)
+	var layout: Layout = ow.call("layout")
+	var spawn: Vector2i = ow.call("player_cell")
+	var spawn_size := _component_size(layout, spawn)
+	var max_size := 0
+	for y in layout.height:
+		for x in layout.width:
+			if OverworldTileSetScript.is_walkable(layout.get_cell(x, y)):
+				max_size = maxi(max_size, _component_size(layout, Vector2i(x, y)))
+	assert_int(spawn_size).is_equal(max_size)
+	assert_int(spawn_size).is_greater(1)  # not a one-tile pocket
 	ow.queue_free()
 	gc.queue_free()
 
@@ -167,3 +204,37 @@ func _walkable_dir(layout: Layout, cell: Vector2i) -> Vector2i:
 		):
 			return dir
 	return Vector2i.ZERO
+
+
+## A cardinal direction from `cell` into an IN-BOUNDS but NON-walkable (wall) neighbour, or ZERO if
+## the cell has no immediate wall neighbour (all borders are floor or the region edge).
+func _wall_dir(layout: Layout, cell: Vector2i) -> Vector2i:
+	for dir: Vector2i in [Vector2i(1, 0), Vector2i(0, 1), Vector2i(-1, 0), Vector2i(0, -1)]:
+		var n := cell + dir
+		if (
+			layout.in_bounds(n.x, n.y)
+			and not OverworldTileSetScript.is_walkable(layout.get_cell(n.x, n.y))
+		):
+			return dir
+	return Vector2i.ZERO
+
+
+## Size of the 4-connected walkable component containing `start` (independent flood fill, used to
+## verify the spawn lands in the largest reachable area). 0 if `start` itself is not walkable.
+func _component_size(layout: Layout, start: Vector2i) -> int:
+	if not OverworldTileSetScript.is_walkable(layout.get_cell(start.x, start.y)):
+		return 0
+	var visited := {start: true}
+	var queue: Array[Vector2i] = [start]
+	var count := 0
+	while not queue.is_empty():
+		var cell: Vector2i = queue.pop_back()
+		count += 1
+		for dir: Vector2i in [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]:
+			var n := cell + dir
+			if visited.has(n) or not layout.in_bounds(n.x, n.y):
+				continue
+			if OverworldTileSetScript.is_walkable(layout.get_cell(n.x, n.y)):
+				visited[n] = true
+				queue.append(n)
+	return count

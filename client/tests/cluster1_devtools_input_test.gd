@@ -57,6 +57,33 @@ func test_input_service_switches_contexts() -> void:
 		assert_str(input.current_context()).is_equal(ctx)
 
 
+func test_overworld_movement_reads_both_wasd_and_arrow_keys() -> void:
+	# Regression: the overworld avatar ignored the ARROW keys (it only read WASD), so players who
+	# reached for the arrows by instinct saw a frozen-looking game. In CTX_OVERWORLD both WASD
+	# (MOVE_*) and the arrows (NAV_*) must yield a movement vector.
+	var input := get_node_or_null("/root/InputService")
+	assert_object(input).is_not_null()
+	# This relies on the Godot InputMap fallback (action_press drives is_action_pressed); guard so the
+	# test is meaningful (the project boots without the GUIDE engine singleton -> fallback is active).
+	assert_bool(InputMap.has_action(InputActions.MOVE_UP)).is_true()
+
+	input.switch_context(InputActions.CTX_OVERWORLD)
+
+	Input.action_press(InputActions.MOVE_UP)  # W -> up
+	var wasd: Vector2 = input.movement_vector()
+	Input.action_release(InputActions.MOVE_UP)
+	assert_float(wasd.x).is_equal(0.0)
+	assert_float(wasd.y).is_equal(-1.0)
+
+	Input.action_press(InputActions.NAV_LEFT)  # arrow-left -> left
+	var arrow: Vector2 = input.movement_vector()
+	Input.action_release(InputActions.NAV_LEFT)
+	assert_float(arrow.x).is_equal(-1.0)
+	assert_float(arrow.y).is_equal(0.0)
+
+	input.switch_context(InputActions.CTX_MENU)
+
+
 func test_input_service_rebind_persists_to_settings() -> void:
 	var input := get_node_or_null("/root/InputService")
 	var settings := get_node_or_null("/root/Settings")
