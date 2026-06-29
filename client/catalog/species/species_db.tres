@@ -968,7 +968,7 @@ role = "assassin"
 evolution_line = ""
 stage = "mid"
 signature_skill = ""
-description = ""
+description = "A smoke-leaking kitten that has not yet grown into its body count, but is clearly saving up; adorable from the front, rehearsing worse from the back."
 status = "reviewed"
 tags = PackedStringArray("draft")
 
@@ -987,7 +987,7 @@ role = "assassin"
 evolution_line = ""
 stage = "mid"
 signature_skill = ""
-description = ""
+description = "All bat-ears and bad news, it hears your pulse from the next room and finds it unpunctual; sits on your chest at dusk, taking notes."
 status = "reviewed"
 tags = PackedStringArray("draft")
 
@@ -1006,7 +1006,7 @@ role = "nuker"
 evolution_line = ""
 stage = "mid"
 signature_skill = ""
-description = ""
+description = "A pocket-sized arson with horns it has not earned and a temper it absolutely has; every flammable thing you own is, to it, kindling awaiting destiny."
 status = "reviewed"
 tags = PackedStringArray("draft")
 
@@ -1025,7 +1025,7 @@ role = "control"
 evolution_line = ""
 stage = "mid"
 signature_skill = ""
-description = ""
+description = "A many-tailed hare with the patience of a thing that has already counted everyone; where it sits, the dice land flatter and the world minds its manners."
 status = "reviewed"
 tags = PackedStringArray("draft")
 
@@ -1044,7 +1044,7 @@ role = "assassin"
 evolution_line = ""
 stage = "mid"
 signature_skill = ""
-description = ""
+description = "A kit the colour of a fire someone gave up on, with two blue coals for eyes; it does not hiss, it cools — rooms and morale drop a degree."
 status = "reviewed"
 tags = PackedStringArray("draft")
 
@@ -1063,7 +1063,7 @@ role = "nuker"
 evolution_line = ""
 stage = "mid"
 signature_skill = ""
-description = ""
+description = "A cat that grew wings out of a campfire and the attitude to match; the wing-powder is gorgeous, combustible, and aimed at your favourite cloak."
 status = "reviewed"
 tags = PackedStringArray("draft")
 
@@ -1082,7 +1082,7 @@ role = "support"
 evolution_line = ""
 stage = "mid"
 signature_skill = ""
-description = ""
+description = "A fat amphibian wearing a salad it grew itself, blinking at the carnage; step on the frills and it fogs your wounds shut, its idea of an apology."
 status = "reviewed"
 tags = PackedStringArray("draft")
 
@@ -1101,7 +1101,7 @@ role = "assassin"
 evolution_line = ""
 stage = "mid"
 signature_skill = ""
-description = ""
+description = "A fox-kit knit from briar-shadow and bad grudges, one tail too many; by the time you realise the bramble has eyes, it has gone back to having none."
 status = "reviewed"
 tags = PackedStringArray("draft")
 
@@ -1120,7 +1120,7 @@ role = "assassin"
 evolution_line = ""
 stage = "mid"
 signature_skill = ""
-description = ""
+description = "Half low-slung predator, half thing that should have stayed in the well, joined at a restless tail; it walks like an apology and strikes like a debt."
 status = "reviewed"
 tags = PackedStringArray("draft")
 
@@ -1139,7 +1139,7 @@ role = "tank"
 evolution_line = ""
 stage = "mid"
 signature_skill = ""
-description = ""
+description = "A creature built on the principle that the best argument is not moving, conducted from inside a great deal of armour; it will hold a doorway for a week."
 status = "reviewed"
 tags = PackedStringArray("draft")
 
@@ -1158,7 +1158,7 @@ role = "striker"
 evolution_line = ""
 stage = "mid"
 signature_skill = ""
-description = ""
+description = "A whip-quick drake that treats gravity as a suggestion and standing still as failure; it strikes first, asks nothing, is already three feet to the left."
 status = "reviewed"
 tags = PackedStringArray("draft")
 
@@ -1177,7 +1177,7 @@ role = "assassin"
 evolution_line = ""
 stage = "mid"
 signature_skill = ""
-description = ""
+description = "A coil of drowned indigo that moves like spilled ink finding your ankles; it does not chase — it waits at the bottom of wherever the fight is sliding."
 status = "reviewed"
 tags = PackedStringArray("draft")
 
@@ -1196,7 +1196,7 @@ role = "tank"
 evolution_line = ""
 stage = "mid"
 signature_skill = ""
-description = ""
+description = "A reptile that let a reef move in rent-free until it became eighty percent fortress, twenty percent landlord; razor coral, load-bearing, and biting."
 status = "reviewed"
 tags = PackedStringArray("draft")
 
@@ -1215,7 +1215,7 @@ role = "striker"
 evolution_line = ""
 stage = "mid"
 signature_skill = ""
-description = ""
+description = "A gauzy pink nothing that drifts like an unfinished thought, then darts; boneless, hurryless, and always somehow already past you."
 status = "reviewed"
 tags = PackedStringArray("draft")
 
@@ -1234,7 +1234,7 @@ role = "striker"
 evolution_line = ""
 stage = "mid"
 signature_skill = ""
-description = ""
+description = "A river-otter that swapped baby softness for fins and bad intentions, fast enough to mug a fish mid-thought; it strikes, vanishes, and takes your snack."
 status = "reviewed"
 tags = PackedStringArray("draft")
 
@@ -1253,7 +1253,7 @@ role = "tank"
 evolution_line = ""
 stage = "mid"
 signature_skill = ""
-description = ""
+description = "A lump of armoured green patience with one enormous unimpressed eye and a shell coiled like an old argument; whatever it sees is not worth flinching for."
 status = "reviewed"
 tags = PackedStringArray("draft")
 
@@ -1272,7 +1272,7 @@ role = "support"
 evolution_line = ""
 stage = "mid"
 signature_skill = ""
-description = ""
+description = "A patient green lizard wearing a shrine's worth of moss; where it rests, old wounds furze over with new growth and someone always feels better."
 status = "reviewed"
 tags = PackedStringArray("draft")
 
@@ -1291,7 +1291,7 @@ role = "control"
 evolution_line = ""
 stage = "mid"
 signature_skill = ""
-description = ""
+description = "A pup wearing a collar of its own spines and a temper of low static; it does not bite first, it insulates — sending the fight's worst to ground."
 status = "reviewed"
 tags = PackedStringArray("draft")
 
@@ -1310,7 +1310,7 @@ role = "control"
 evolution_line = ""
 stage = "mid"
 signature_skill = ""
-description = ""
+description = "A soft lilac dumpling with a back-fence of crystal and the serene certainty nothing bad gets past it; lawful little rainbows, the prettiest way to say no."
 status = "reviewed"
 tags = PackedStringArray("draft")
 
@@ -1329,7 +1329,7 @@ role = "tank"
 evolution_line = ""
 stage = "mid"
 signature_skill = ""
-description = ""
+description = "A low, heavy drake that decided the answer to most threats is more spikes, closer together; hitting it is its own punishment, exactly as arranged."
 status = "reviewed"
 tags = PackedStringArray("draft")
 
@@ -1348,7 +1348,7 @@ role = "nuker"
 evolution_line = ""
 stage = "mid"
 signature_skill = ""
-description = ""
+description = "A wolf that lost an argument with a thornbush and a curse the same night and came back meaner; every lunge costs it something it can't afford."
 status = "reviewed"
 tags = PackedStringArray("draft")
 
@@ -1367,7 +1367,7 @@ role = "tank"
 evolution_line = ""
 stage = "mid"
 signature_skill = ""
-description = ""
+description = "A boar caught between piglet and battering-ram, all bristle and not quite enough tusk yet; it holds ground beautifully and charges clumsily, for now."
 status = "reviewed"
 tags = PackedStringArray("draft")
 
@@ -1386,7 +1386,7 @@ role = "striker"
 evolution_line = ""
 stage = "mid"
 signature_skill = ""
-description = ""
+description = "A half-grown caracal built entirely out of legs and intentions, fast enough to arrive before its own shadow; strikes first, lands light, is gone."
 status = "reviewed"
 tags = PackedStringArray("draft")
 
@@ -1405,7 +1405,7 @@ role = "control"
 evolution_line = ""
 stage = "mid"
 signature_skill = ""
-description = ""
+description = "A grey ram with horns wound like written law and the stare of something that has already adjudicated you; the spiral horns are a seal, taken seriously."
 status = "reviewed"
 tags = PackedStringArray("draft")
 
@@ -1424,7 +1424,7 @@ role = "tank"
 evolution_line = ""
 stage = "mid"
 signature_skill = ""
-description = ""
+description = "A long, patient lizard armoured like a roof-tile, built to march into a position and stay there; it advances at the speed of a grudge."
 status = "reviewed"
 tags = PackedStringArray("draft")
 
@@ -1443,7 +1443,7 @@ role = "tank"
 evolution_line = ""
 stage = "mid"
 signature_skill = ""
-description = ""
+description = "A barrel of red muscle and digging claws that treats every problem as a hole to make or a wall to be; hit it all day, it'll be busy not noticing."
 status = "reviewed"
 tags = PackedStringArray("draft")
 
@@ -1462,7 +1462,7 @@ role = "striker"
 evolution_line = ""
 stage = "mid"
 signature_skill = ""
-description = ""
+description = "A wolf that came back from somewhere high covered in blue feathers and contempt for the ground; it has seen the weather coming and will be elsewhere."
 status = "reviewed"
 tags = PackedStringArray("draft")
 
@@ -1481,7 +1481,7 @@ role = "tank"
 evolution_line = ""
 stage = "mid"
 signature_skill = ""
-description = ""
+description = "A green slab that can't decide if it's a wolf or a wall and settled on both, immovably; bites with the conviction of something that used to be a predator."
 status = "reviewed"
 tags = PackedStringArray("draft")
 
@@ -1500,7 +1500,7 @@ role = "tank"
 evolution_line = ""
 stage = "mid"
 signature_skill = ""
-description = ""
+description = "A low, striped slab of bad temper and lower centre of gravity, built like a door that bites; pound for pound the most stubborn thing in the set."
 status = "reviewed"
 tags = PackedStringArray("draft")
 
@@ -1519,7 +1519,7 @@ role = "nuker"
 evolution_line = ""
 stage = "mid"
 signature_skill = ""
-description = ""
+description = "A hyena-shaped problem that runs on spite and bad laughter, hackles up before it knows what's annoyed it; the strategy is \"yes, and harder.\""
 status = "reviewed"
 tags = PackedStringArray("draft")
 
@@ -1538,7 +1538,7 @@ role = "tank"
 evolution_line = ""
 stage = "apex"
 signature_skill = ""
-description = ""
+description = "A wyrm that gave up flying and decided the ground was the only thing worth being; its hide is a quarry wall, and you will tire first."
 status = "reviewed"
 tags = PackedStringArray("draft")
 
@@ -1557,7 +1557,7 @@ role = "tank"
 evolution_line = ""
 stage = "apex"
 signature_skill = ""
-description = ""
+description = "A wolf the size of a doorway that grew a hedge instead of a hide; it lets you come close, then becomes briefly all needle — a hug you regret."
 status = "reviewed"
 tags = PackedStringArray("draft")
 
@@ -1576,7 +1576,7 @@ role = "tank"
 evolution_line = ""
 stage = "apex"
 signature_skill = ""
-description = ""
+description = "A reptile shaped like a sunken log and marginally less excitable; it perfects being scenery until the precise moment it is teeth. Count the logs twice."
 status = "reviewed"
 tags = PackedStringArray("draft")
 
@@ -1595,7 +1595,7 @@ role = "assassin"
 evolution_line = ""
 stage = "apex"
 signature_skill = ""
-description = ""
+description = "A hunting-thing that wears its own death like a coat and lets a little fall on everyone it passes; the quills are the only warning, and they're polite."
 status = "reviewed"
 tags = PackedStringArray("draft")
 
@@ -1614,7 +1614,7 @@ role = "tank"
 evolution_line = ""
 stage = "apex"
 signature_skill = ""
-description = ""
+description = "A bear that ate a hillside and kept the personality; moss grows on its shoulders because it stands still long enough for moss to make plans."
 status = "reviewed"
 tags = PackedStringArray("draft")
 
@@ -1633,7 +1633,7 @@ role = "striker"
 evolution_line = ""
 stage = "apex"
 signature_skill = ""
-description = ""
+description = "A flat slab of muscle and membrane that pours across the sky like a stingray; by the time you've looked up, the pass — and the argument — is over."
 status = "reviewed"
 tags = PackedStringArray("draft")
 
@@ -1652,7 +1652,7 @@ role = "tank"
 evolution_line = ""
 stage = "apex"
 signature_skill = ""
-description = ""
+description = "A toad that grew until \"leap\" stopped being a verb it could afford; it occupies space like a dropped boulder, and is the safest place in any catastrophe."
 status = "reviewed"
 tags = PackedStringArray("draft")
 
@@ -1671,7 +1671,7 @@ role = "support"
 evolution_line = ""
 stage = "apex"
 signature_skill = ""
-description = ""
+description = "A drake that decided breathing fire was crude and breathing spring was funnier; where it exhales, cuts knit and bruises green over like fast-forward moss."
 status = "reviewed"
 tags = PackedStringArray("draft")
 
@@ -1690,7 +1690,7 @@ role = "tank"
 evolution_line = ""
 stage = "apex"
 signature_skill = ""
-description = ""
+description = "A boar that grew antlers it didn't ask for and a stubbornness it did; it plants itself across a path and becomes the path's opinion on who passes."
 status = "reviewed"
 tags = PackedStringArray("draft")
 
@@ -1709,7 +1709,7 @@ role = "assassin"
 evolution_line = ""
 stage = "apex"
 signature_skill = ""
-description = ""
+description = "A hunter built entirely out of reach, all elbow and patience; it picks the creature you thought was safe and proves \"the corner\" was a comforting story."
 status = "reviewed"
 tags = PackedStringArray("draft")
 
@@ -1728,7 +1728,7 @@ role = "striker"
 evolution_line = ""
 stage = "apex"
 signature_skill = ""
-description = ""
+description = "The wyvern every villager means when they point at the sky and run; not the largest dragon, simply the fastest thing with claws you'll meet this year."
 status = "reviewed"
 tags = PackedStringArray("draft")
 
@@ -1747,7 +1747,7 @@ role = "striker"
 evolution_line = ""
 stage = "apex"
 signature_skill = ""
-description = ""
+description = "A griffin that arrives a half-second ahead of its own thunder and enjoys the entrance; fly with it and your whole squad inherits its hurry."
 status = "reviewed"
 tags = PackedStringArray("draft")
 
@@ -1766,7 +1766,7 @@ role = "striker"
 evolution_line = ""
 stage = "apex"
 signature_skill = ""
-description = ""
+description = "Skyrender's quieter cousin, who learned the best time to be a fast thing with claws is when nobody can quite see the sky; it has been and gone twice."
 status = "reviewed"
 tags = PackedStringArray("draft")
 
@@ -1785,7 +1785,7 @@ role = "striker"
 evolution_line = ""
 stage = "apex"
 signature_skill = ""
-description = ""
+description = "A griffin built less for grace than for arriving, fast, on top of whatever it disagreed with; it lands on the conversation, with the temper of an arrow."
 status = "reviewed"
 tags = PackedStringArray("draft")
 
@@ -1804,7 +1804,7 @@ role = "support"
 evolution_line = ""
 stage = "apex"
 signature_skill = ""
-description = ""
+description = "A dragon the length of a fence rail and the weight of an idea, with four wings like stained-glass leaves; it hangs over a fight just sounding nice."
 status = "reviewed"
 tags = PackedStringArray("draft")
 
@@ -1823,7 +1823,7 @@ role = "control"
 evolution_line = ""
 stage = "apex"
 signature_skill = ""
-description = ""
+description = "The griffin that decided its cousins were undignified and went into administration; it does not strike, it rules, drawing lines the battle must respect."
 status = "reviewed"
 tags = PackedStringArray("draft")
 
@@ -1842,7 +1842,7 @@ role = "support"
 evolution_line = ""
 stage = "apex"
 signature_skill = ""
-description = ""
+description = "A wyvern so overgrown it looks landscaped, every scale furred with moss; it wraps a wing over your worst-broken ally and waits out the wound."
 status = "reviewed"
 tags = PackedStringArray("draft")
 
@@ -1861,7 +1861,7 @@ role = "striker"
 evolution_line = ""
 stage = "apex"
 signature_skill = ""
-description = ""
+description = "The wyvern that took the family talent for speed and went professional; it crosses the whole sky between heartbeats, leaves gold and a wound, gone."
 status = "reviewed"
 tags = PackedStringArray("draft")
 
@@ -1880,7 +1880,7 @@ role = "assassin"
 evolution_line = ""
 stage = "apex"
 signature_skill = ""
-description = ""
+description = "A demon built like an empty coat with teeth, all leather and hunger; it rides the high dark and drops on your weakest like a settled debt."
 status = "reviewed"
 tags = PackedStringArray("draft")
 
@@ -1899,7 +1899,7 @@ role = "control"
 evolution_line = ""
 stage = "apex"
 signature_skill = ""
-description = ""
+description = "A dragon that turned slowly to grey ordered stone and preferred the arrangement; it rules a fight like a law rules a town — invisibly, then completely."
 status = "reviewed"
 tags = PackedStringArray("draft")
 
@@ -1918,7 +1918,7 @@ role = "nuker"
 evolution_line = ""
 stage = "apex"
 signature_skill = ""
-description = ""
+description = "A wolf that runs too hot to touch and far too hot to reason with; it does not attack so much as combust at you, gloriously and expensively."
 status = "reviewed"
 tags = PackedStringArray("draft")
 
@@ -1937,7 +1937,7 @@ role = "assassin"
 evolution_line = ""
 stage = "apex"
 signature_skill = ""
-description = ""
+description = "A predator the colour of deep cold water, built around a jaw that closes once and means it; it takes one creature and waits out the struggle."
 status = "reviewed"
 tags = PackedStringArray("draft")
 
@@ -1956,7 +1956,7 @@ role = "control"
 evolution_line = ""
 stage = "apex"
 signature_skill = ""
-description = ""
+description = "An ice dragon that concluded heat was a passing fashion; it rules a fight by lowering it — the room, the morale, the enemy's reaction time."
 status = "reviewed"
 tags = PackedStringArray("draft")
 
@@ -1975,7 +1975,7 @@ role = "assassin"
 evolution_line = ""
 stage = "apex"
 signature_skill = ""
-description = ""
+description = "Something fused that should have stayed two things, then kept agreeing until it was several; too many legs, too many eyes, too many directions to block."
 status = "reviewed"
 tags = PackedStringArray("draft")
 
@@ -1994,7 +1994,7 @@ role = "nuker"
 evolution_line = ""
 stage = "apex"
 signature_skill = ""
-description = ""
+description = "A wasp the size of a war-dragon and roughly that calm about being looked at; it attacks like an overturned hive — all at once, from everywhere."
 status = "reviewed"
 tags = PackedStringArray("draft")
 
@@ -2013,7 +2013,7 @@ role = "tank"
 evolution_line = ""
 stage = "apex"
 signature_skill = ""
-description = ""
+description = "A brute gone so far toward terrain that moss settled on its back and stones learned its shape; it plants in front of the squad and becomes a wall with tusks."
 status = "reviewed"
 tags = PackedStringArray("draft")
 
@@ -2032,7 +2032,7 @@ role = "support"
 evolution_line = ""
 stage = "apex"
 signature_skill = ""
-description = ""
+description = "A stag whose antlers are a small slow forest and whose patience is the same; where it stands, the squad's wounds green over and sprout something absurd."
 status = "reviewed"
 tags = PackedStringArray("draft")
 
@@ -2051,7 +2051,7 @@ role = "control"
 evolution_line = ""
 stage = "apex"
 signature_skill = ""
-description = ""
+description = "A great horned hound so composed it seems to know how the fight ends; its pale mane throws a lawful light in which surprises simply don't happen."
 status = "reviewed"
 tags = PackedStringArray("draft")
 
@@ -2070,7 +2070,7 @@ role = "tank"
 evolution_line = ""
 stage = "apex"
 signature_skill = ""
-description = ""
+description = "A beast that solved being hit by becoming a closed box with legs; nothing about it is fast or sharp, everything about it is in the way."
 status = "reviewed"
 tags = PackedStringArray("draft")
 
@@ -2089,7 +2089,7 @@ role = "assassin"
 evolution_line = ""
 stage = "apex"
 signature_skill = ""
-description = ""
+description = "A serpent made of the colour grief goes when left alone too long; it does not bite and flee — it winds, and what it wraps simply gets quieter."
 status = "reviewed"
 tags = PackedStringArray("draft")
 
@@ -2108,7 +2108,7 @@ role = "nuker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A demon-lord who rules by subtraction, retiring kingdoms wholesale and keeping a tally of the unmade; even its weeping fire finds the work depressing."
 status = "reviewed"
 tags = PackedStringArray("demon-lord", "boss")
 
@@ -2127,7 +2127,7 @@ role = "nuker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "One enormous opinion about fire with no punctuation and no defenses, because it never plans to be hit twice — by then it's already over."
 status = "reviewed"
 tags = PackedStringArray("demon-lord", "boss")
 
@@ -2146,7 +2146,7 @@ role = "support"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A god half garden, half graveyard, nursing allies and rotting foes from one root; the flowers it leaves on your corpse are sincere, and hungry."
 status = "reviewed"
 tags = PackedStringArray("demon-lord", "boss")
 
@@ -2165,7 +2165,7 @@ role = "assassin"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A violet lady who moves like bad news — quietly, then already here; politely lets you finish your sentence before ending the rest of them."
 status = "reviewed"
 tags = PackedStringArray("demon-lord", "boss")
 
@@ -2184,7 +2184,7 @@ role = "control"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A mountain of stone and gold whose ruling on every matter is \"no\"; it has stood in one argument for an age and considers itself winning."
 status = "reviewed"
 tags = PackedStringArray("demon-lord", "boss")
 
@@ -2203,7 +2203,7 @@ role = "nuker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A swarm-lord that beat mortality by being a population, beautiful up close and cheerful about it; loves its children fiercely and spends them instantly."
 status = "reviewed"
 tags = PackedStringArray("demon-lord", "boss")
 
@@ -2222,7 +2222,7 @@ role = "control"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A frost-lord who decides ahead of time exactly how slowly your turn arrives; the quickest of its court, using speed only to make everyone else late."
 status = "reviewed"
 tags = PackedStringArray("demon-lord", "boss")
 
@@ -2241,7 +2241,7 @@ role = "assassin"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A winged thing that perches like a held breath and hunts only the finishable, with an unerring eye for which of you that is today."
 status = "reviewed"
 tags = PackedStringArray("demon-lord", "boss")
 
@@ -2260,7 +2260,7 @@ role = "support"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A river-serpent whose kindness arrives faster than your enemies' cruelty; the swiftest healer in the pantheon, spending all that speed on being kind sooner."
 status = "reviewed"
 tags = PackedStringArray("demon-lord", "boss")
 
@@ -2279,7 +2279,7 @@ role = "nuker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "The court's hound, the size of a grievance and twice as committed; sent to end a thing loudly, in front of witnesses, so the witnesses learn."
 status = "reviewed"
 tags = PackedStringArray("demon-lord", "boss")
 
@@ -2298,7 +2298,7 @@ role = "nuker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A magistrate of harm who thinks everything living is mid-trial and mostly guilty; never lost a case, since it writes the law, verdict, and obituary."
 status = "reviewed"
 tags = PackedStringArray("demon-lord", "boss")
 
@@ -2317,7 +2317,7 @@ role = "assassin"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "An armored lord who files every killing in triplicate and seals it with a crown; not a blade but a writ — slower, colder, impossible to appeal."
 status = "reviewed"
 tags = PackedStringArray("demon-lord", "boss")
 
@@ -2336,7 +2336,7 @@ role = "assassin"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A lord shaped like a hunger that grew too many ways to reach, never the same silhouette twice; it has more arms than you have plans."
 status = "reviewed"
 tags = PackedStringArray("demon-lord", "boss")
 
@@ -2355,7 +2355,7 @@ role = "nuker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A lady whose every emotion arrives as an explosion; her antlers catch other people's last moments, and she mourns each kill loudly and insincerely."
 status = "reviewed"
 tags = PackedStringArray("demon-lord", "boss")
 
@@ -2374,7 +2374,7 @@ role = "control"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A dragon of blue glass and colder logic that breathes not fire but terms and conditions, binding; where it banks, the light apologizes for being late."
 status = "reviewed"
 tags = PackedStringArray("demon-lord", "boss")
 
@@ -2393,7 +2393,7 @@ role = "control"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A warden whose order-colored flame doesn't destroy but files you under \"later,\" which in a fast fight is the same as never; its blue fire seals shut."
 status = "reviewed"
 tags = PackedStringArray("demon-lord", "boss")
 
@@ -2412,7 +2412,7 @@ role = "support"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A serpent-lord so overgrown it became geography — a fortress that gardens, the steadiest god in a court of strange ones, healing an army behind its bulk."
 status = "reviewed"
 tags = PackedStringArray("demon-lord", "boss")
 
@@ -2431,7 +2431,7 @@ role = "nuker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "An arsonist with wings and a sense of humour about gravity; it strikes first because it's bored by the part of fights where the enemy participates."
 status = "reviewed"
 tags = PackedStringArray("demon-lord", "boss")
 
@@ -2450,7 +2450,7 @@ role = "assassin"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A horror that kills the way some people hug — too long, too hard, past when you asked it to stop; it will miss you terribly, starting now."
 status = "reviewed"
 tags = PackedStringArray("demon-lord", "boss")
 
@@ -2469,7 +2469,7 @@ role = "tank"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A king who was buried, disagreed, and came back wearing the hill; the heaviest thing in the pantheon, ruling by being permanently in everything's way."
 status = "reviewed"
 tags = PackedStringArray("demon-lord", "boss")
 
@@ -2488,7 +2488,7 @@ role = "assassin"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "The portrait the word \"demon-lord\" paints before it knows better — horned, winged, crowned; old enough to have started the cliché, vain enough to keep it."
 status = "reviewed"
 tags = PackedStringArray("demon-lord", "boss")
 
@@ -2507,7 +2507,7 @@ role = "assassin"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A serpent-lord refined down to a single verb — end. No defense, no flourish, only the one cut, perfected across an embarrassing number of eras."
 status = "reviewed"
 tags = PackedStringArray("demon-lord", "boss")
 
@@ -2526,7 +2526,7 @@ role = "support"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A moss-mounded titan that heals like a forest recovering from fire — slowly, completely, on its own schedule; it considers most emergencies mere impatience."
 status = "reviewed"
 tags = PackedStringArray("demon-lord", "boss")
 
@@ -2545,7 +2545,7 @@ role = "striker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A dragon sanded down to pure velocity wrapped in just enough order to survive it; the quickest thing alive, spending all that speed to simply go first."
 status = "reviewed"
 tags = PackedStringArray("demon-lord", "boss")
 
@@ -2564,7 +2564,7 @@ role = "assassin"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A lord technically singular and morally a swarm, hungry in one direction; it doesn't roar — it chitters, the sound of the fight's maths turning against you."
 status = "reviewed"
 tags = PackedStringArray("demon-lord", "boss")
 
@@ -2583,7 +2583,7 @@ role = "control"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A stag-shouldered lord of armoured blue carrying the court's law in its antlers; the most regal and least hurried, because order properly enforced never rushes."
 status = "reviewed"
 tags = PackedStringArray("demon-lord", "boss")
 
@@ -2602,7 +2602,7 @@ role = "assassin"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A serpent-lord built like a hill that decided to hunt; it kills thoroughly, not quickly, the one assassin you cannot outlast — it brought the longer afternoon."
 status = "reviewed"
 tags = PackedStringArray("demon-lord", "boss")
 
@@ -2621,7 +2621,7 @@ role = "nuker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A draconic furnace-lord whose chest is a small sun on a short fuse, perpetually about to make that everyone's problem; closer to weather than animal."
 status = "reviewed"
 tags = PackedStringArray("demon-lord", "boss")
 
@@ -2640,7 +2640,7 @@ role = "control"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A frost-lord built like a moving glacier — barely moving, impossible to argue with; given time, ice wins every standoff, and it has all the time."
 status = "reviewed"
 tags = PackedStringArray("demon-lord", "boss")
 
@@ -2659,7 +2659,7 @@ role = "assassin"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "An elder of reaching things — a limb that forgot it ever needed a body, governing the tentacled Hollow-Court by being the longest thing in any room."
 status = "reviewed"
 tags = PackedStringArray("demon-lord", "boss")
 
@@ -2678,7 +2678,7 @@ role = "control"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "The foundry's first, most honest model: a riveted bronze sentinel whose whole personality is \"hold this line,\" running on wound springs and one repeating thought."
 status = "reviewed"
 tags = PackedStringArray("construct", "clockwork")
 
@@ -2697,7 +2697,7 @@ role = "control"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A foundry crab machined for one verb. Its shell takes hits like a safe takes burglars; it scuttles to whatever it was told to hold, then holds it forever."
 status = "reviewed"
 tags = PackedStringArray("construct", "clockwork")
 
@@ -2716,7 +2716,7 @@ role = "control"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A one-eyed brass watchman on spindly legs, built to stare at one problem until it stops being one. It never blinks, and finds your attempts to leave its gaze faintly insulting."
 status = "reviewed"
 tags = PackedStringArray("construct", "clockwork")
 
@@ -2735,7 +2735,7 @@ role = "control"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A barrel-chested model with a boiler for a torso and the disposition of a closed door. It guards by being too solid to get past, and likes its pressure rating."
 status = "reviewed"
 tags = PackedStringArray("construct", "clockwork")
 
@@ -2754,7 +2754,7 @@ role = "control"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A sealed foundry diver rated for crushing depths, repurposed to stand in the way on dry land. It moves as if wading deep water, because its gears insist it still is."
 status = "reviewed"
 tags = PackedStringArray("construct", "clockwork")
 
@@ -2773,7 +2773,7 @@ role = "control"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A pale clockwork hare, light in shell and heavy in spring, built to fling itself between an ally and a bad idea. The closest the foundry came to endearing — at a quarter-ton."
 status = "reviewed"
 tags = PackedStringArray("construct", "clockwork")
 
@@ -2792,7 +2792,7 @@ role = "control"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A low brass crawler on too many legs that lays a grid of cabling and decides who's allowed to hurry. It ticks toward you with no malice, no mercy, and excellent traction."
 status = "reviewed"
 tags = PackedStringArray("construct", "clockwork")
 
@@ -2811,7 +2811,7 @@ role = "control"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A brass owl whose head turns past comfort and whose lens-eyes tally you against a standard you can't see. The foundry's auditor: it doesn't hoot, it *ticks* — somehow worse at 3am."
 status = "reviewed"
 tags = PackedStringArray("construct", "clockwork")
 
@@ -2830,7 +2830,7 @@ role = "control"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A teal-glass dome on brass armatures, drifting on gyros and projecting a field it would prefer you respect. The strangest model the foundry signed off on; nobody's sure how it floats."
 status = "reviewed"
 tags = PackedStringArray("construct", "clockwork")
 
@@ -2849,7 +2849,7 @@ role = "control"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "The capstone: a bronze tortoise-shell on treads, built to roll into position once and become permanent. When it locks down, it stops being a creature and starts being terrain."
 status = "reviewed"
 tags = PackedStringArray("construct", "clockwork")
 
@@ -2868,7 +2868,7 @@ role = "assassin"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "Someone grafted grief onto a growing thing and it said yes; now it reaches into wherever you used to be, mistaking you for soil."
 status = "reviewed"
 tags = PackedStringArray("eldritch", "abomination")
 
@@ -2887,7 +2887,7 @@ role = "striker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "It came to the lamp, kept coming, became the lamp's idea of a face; its almost-meaningful wings make you follow one fatal step."
 status = "reviewed"
 tags = PackedStringArray("eldritch", "abomination")
 
@@ -2906,7 +2906,7 @@ role = "assassin"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "Hung once and decided not to stop, it sways in the air full of one enormous intention, doing a single thing to you very thoroughly."
 status = "reviewed"
 tags = PackedStringArray("eldritch", "abomination")
 
@@ -2925,7 +2925,7 @@ role = "support"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "Beautiful from a survivable distance, it drifts trailing glowing kindnesses, mending your wounds the way a tide loves the shore: completely, unasked."
 status = "reviewed"
 tags = PackedStringArray("eldritch", "abomination")
 
@@ -2944,7 +2944,7 @@ role = "support"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "It prays without pause to no god, all those folded hands, and the unsettling part is the prayer works — nobody knows what it wants."
 status = "reviewed"
 tags = PackedStringArray("eldritch", "abomination")
 
@@ -2963,7 +2963,7 @@ role = "assassin"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A priest of something that stopped writing back, it still takes confession, and rather more; it absolves you of everything you had left."
 status = "reviewed"
 tags = PackedStringArray("eldritch", "abomination")
 
@@ -2982,7 +2982,7 @@ role = "assassin"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "Too tall, too thin, too fast for either, it crosses a room before you decide to leave; it does not run, it arrives like bad news."
 status = "reviewed"
 tags = PackedStringArray("eldritch", "abomination")
 
@@ -3001,7 +3001,7 @@ role = "nuker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A fusion that couldn't agree how many mouths to have, so it took all of them; it does not strategise, it converges, loudly, from everywhere."
 status = "reviewed"
 tags = PackedStringArray("eldritch", "abomination")
 
@@ -3020,7 +3020,7 @@ role = "assassin"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A blight that grew downward and forgot to stop being hungry; it has already arrived underneath, and your roots were its several turns ago."
 status = "reviewed"
 tags = PackedStringArray("eldritch", "abomination")
 
@@ -3039,7 +3039,7 @@ role = "assassin"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "It lost its skin and has been upset ever since in a key only it can hold; the flaying just freed the screaming, and each kill makes it worse."
 status = "reviewed"
 tags = PackedStringArray("eldritch", "abomination")
 
@@ -3058,7 +3058,7 @@ role = "tank"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A walking ridgeline that learned to hurry and resents being asked; storms gather on its spines, and when it moves the horizon revises itself."
 status = "reviewed"
 tags = PackedStringArray("kaiju", "apex")
 
@@ -3077,7 +3077,7 @@ role = "tank"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "Something the deep grew when it tired of being calm; it carries the sea's worst mood, and the tail arrives a second after you thought you dodged."
 status = "reviewed"
 tags = PackedStringArray("kaiju", "apex")
 
@@ -3096,7 +3096,7 @@ role = "tank"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "Built like a collapsed monument and as eager to move; things that die near it stay, becoming the cairn it carries without comment or burden."
 status = "reviewed"
 tags = PackedStringArray("kaiju", "apex")
 
@@ -3115,7 +3115,7 @@ role = "striker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A dragon that treats altitude as a weapon and gravity as a bullied ally; it fights from above, briefly, on the way down — your only warning."
 status = "reviewed"
 tags = PackedStringArray("kaiju", "apex")
 
@@ -3134,7 +3134,7 @@ role = "tank"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A mountain of an animal always emptier than its size suggests; it collects what it kills not to eat but to fill, and has never once felt full."
 status = "reviewed"
 tags = PackedStringArray("kaiju", "apex")
 
@@ -3153,7 +3153,7 @@ role = "control"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "The first thing the foundry got right and never improved on. It doesn't advance, retreat, or have opinions — it *holds*. Built, not born; the only thing it fears is rust."
 status = "reviewed"
 tags = PackedStringArray("construct", "mecha")
 
@@ -3172,7 +3172,7 @@ role = "control"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "The model after the foundry got bored of pure defense and added a lance — for keeping things *out*, not getting them. Cleaner-lined than its sibling, and twice as smug."
 status = "reviewed"
 tags = PackedStringArray("construct", "mecha")
 
@@ -3191,7 +3191,7 @@ role = "control"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A bunker that learned to walk, then sensibly chose not to. Every rivet argues against a way through; it eats the blows meant for softer creatures, unable to conceive of damage."
 status = "reviewed"
 tags = PackedStringArray("construct", "mecha")
 
@@ -3210,7 +3210,7 @@ role = "control"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "The chassis built after someone hit the Mk.III and got away with it. Soot-black and patient, it doesn't forgive a blow — it *files* it, then refunds the whole account at once."
 status = "reviewed"
 tags = PackedStringArray("construct", "mecha")
 
@@ -3229,7 +3229,7 @@ role = "control"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "The model where the foundry admitted it had built a turret with legs. It still won't move much, but now that's a firing decision — it holds ground by making the ground lethal."
 status = "reviewed"
 tags = PackedStringArray("construct", "mecha")
 
@@ -3248,7 +3248,7 @@ role = "tank"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A walking quarry that crystallised its own bad temper and sheds it as shrapnel; it rules nothing — it just will not get out of the way."
 status = "reviewed"
 tags = PackedStringArray("kaiju", "apex")
 
@@ -3267,7 +3267,7 @@ role = "tank"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "The biggest single thing in the clade, geology with a pulse; it does not attack or hurry, it is simply there, a horizon standing in your way."
 status = "reviewed"
 tags = PackedStringArray("kaiju", "apex")
 
@@ -3286,7 +3286,7 @@ role = "striker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A dragon wired like a coming storm and just as orderly; the glow in its chest is not a heart but a schedule, and it strikes on the beat."
 status = "reviewed"
 tags = PackedStringArray("kaiju", "apex")
 
@@ -3305,7 +3305,7 @@ role = "striker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A dragon-beast built like a wave with legs, fast as surf and heavy as the water under it; it does not chase the slow — it catches everyone."
 status = "reviewed"
 tags = PackedStringArray("kaiju", "apex")
 
@@ -3324,7 +3324,7 @@ role = "striker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A dragon assembled in a hurry by something out of patience; faster than it should be, wildly inaccurate, brilliant or comedy turn by turn."
 status = "reviewed"
 tags = PackedStringArray("kaiju", "apex")
 
@@ -3343,7 +3343,7 @@ role = "tank"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A kaiju whose hide grew in such tidy plates people swear it's a construct; entirely organic, entirely armored, walling calmly and resentfully."
 status = "reviewed"
 tags = PackedStringArray("kaiju", "apex")
 
@@ -3362,7 +3362,7 @@ role = "control"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "The foundry's attempt at a flying mech, which produced a mech that hovers menacingly and insists it could. The thruster-vanes are real; the flight is a firmly-held intention."
 status = "reviewed"
 tags = PackedStringArray("construct", "mecha")
 
@@ -3381,7 +3381,7 @@ role = "control"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "They took the flight model, dropped the pretension, and added enough hull to sink a harbour. It plants like a ship run aground and dares the tide to move it. It won't."
 status = "reviewed"
 tags = PackedStringArray("construct", "mecha")
 
@@ -3400,7 +3400,7 @@ role = "control"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A construct issued a spear and one instruction — *nothing gets past* — and the literal devotion of a thing that can't interpret it otherwise. Within reach of the pike, battles end."
 status = "reviewed"
 tags = PackedStringArray("construct", "mecha")
 
@@ -3419,7 +3419,7 @@ role = "control"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "The chassis that runs on actual fire, which newer models call quaint and which outlasts them all. Obsolete, leaking heat from every seam, still bolted to the fort's most important door."
 status = "reviewed"
 tags = PackedStringArray("construct", "mecha")
 
@@ -3438,7 +3438,7 @@ role = "control"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A heavy-coated beast whose fleece grew faint orderly markings that hold the air quieter. Not a fighter but a *settler*: disputes lose heat near it, dice land flatter, tempers cool."
 status = "reviewed"
 tags = PackedStringArray("beast")
 
@@ -3457,7 +3457,7 @@ role = "assassin"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A night-coloured hydra that treats decapitation as a scheduling problem; it strikes in draining waves, an argument you keep almost winning."
 status = "reviewed"
 tags = PackedStringArray("dragon", "apex")
 
@@ -3476,7 +3476,7 @@ role = "tank"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "The bull at the heart of the maze that never needed it — built to keep you in; a straight charge is the only prayer he still remembers."
 status = "reviewed"
 tags = PackedStringArray("greek-myth", "champion")
 
@@ -3495,7 +3495,7 @@ role = "assassin"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "The hound at the gate no one leaves, three heads so nothing slips past while one sleeps; it does not hate the dead, it files them."
 status = "reviewed"
 tags = PackedStringArray("greek-myth", "champion")
 
@@ -3514,7 +3514,7 @@ role = "striker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "The storm-wind that learned to steal, given a face, a grudge, and talons; she does not linger to fight, she passes, and your blessing is gone."
 status = "reviewed"
 tags = PackedStringArray("greek-myth", "champion")
 
@@ -3533,7 +3533,7 @@ role = "assassin"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "Punished for another's crime, turning messengers to stone ever since; the snakes are honest, the face ruins you — she is not cruel, just tired."
 status = "reviewed"
 tags = PackedStringArray("greek-myth", "champion")
 
@@ -3552,7 +3552,7 @@ role = "control"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "The lion whose pelt turned every weapon ever raised — a marvellous, lonely gift; it guards now the way it once could not be guarded against."
 status = "reviewed"
 tags = PackedStringArray("greek-myth", "champion")
 
@@ -3571,7 +3571,7 @@ role = "support"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A fox-kit lit from inside like a held candle, and about as fond of being held. It heals because it can't help it — proximity makes wounds embarrassed enough to close."
 status = "reviewed"
 tags = PackedStringArray("radiant", "holy")
 
@@ -3590,7 +3590,7 @@ role = "support"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A lamb so radiant wolves report a moral crisis before eating one anyway. It follows kind people home and gentle ones to their graves, where it stands vigil and glows."
 status = "reviewed"
 tags = PackedStringArray("radiant", "holy")
 
@@ -3609,7 +3609,7 @@ role = "support"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A wool-cloud with hooves and a halo it's too young to have earned, which never stops it. It throws itself between danger and anyone smaller — courage made comic by its footstool size."
 status = "reviewed"
 tags = PackedStringArray("radiant", "holy")
 
@@ -3628,7 +3628,7 @@ role = "support"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A fox-kit that wakes at dawn and *becomes* dawn, to the annoyance of late sleepers. Its exhausting hope reads as a stat buff — the only context optimism ever won an argument."
 status = "reviewed"
 tags = PackedStringArray("radiant", "holy")
 
@@ -3647,7 +3647,7 @@ role = "support"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A chick of pure morning peeping the three notes that switched the first sunrise on. One is cute; a choir is a healing engine and a liability, because nothing nearby gets to sleep."
 status = "reviewed"
 tags = PackedStringArray("radiant", "holy")
 
@@ -3666,7 +3666,7 @@ role = "support"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A palm-sized thing of light and good intentions that mends what it lands on — including the occasional open wound it was curious about. Healers adore it; surgeons ask it to wait outside."
 status = "reviewed"
 tags = PackedStringArray("radiant", "holy")
 
@@ -3685,7 +3685,7 @@ role = "support"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A tortoise whose shell grew a tiny shrine instead of barnacles. Step inside its glow and the world's edges round off. It moves at the speed of devotion: you arrive, eventually."
 status = "reviewed"
 tags = PackedStringArray("radiant", "holy")
 
@@ -3704,7 +3704,7 @@ role = "support"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A fawn that walks like the first minute of a morning you didn't deserve; grass un-wilts where it steps, and it makes the fighters around it harder to discourage."
 status = "reviewed"
 tags = PackedStringArray("radiant", "holy")
 
@@ -3723,7 +3723,7 @@ role = "support"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A small winged guardian that works best at the hour the light gives up, folding luminous wings over the dying; they die less afraid, which it counts as a win."
 status = "reviewed"
 tags = PackedStringArray("radiant", "holy")
 
@@ -3742,7 +3742,7 @@ role = "support"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A river-otter in late-afternoon gold, ferrying blessings from somewhere upstream nobody's found. It scrubs curses off you the brisk way a mother does, and is just as immune to complaint."
 status = "reviewed"
 tags = PackedStringArray("radiant", "holy")
 
@@ -3761,7 +3761,7 @@ role = "support"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A young stag with the first hint of wings and the full confidence of an older one, setting a perimeter of decorum and enforcing it on incoming violence."
 status = "reviewed"
 tags = PackedStringArray("radiant", "holy")
 
@@ -3780,7 +3780,7 @@ role = "support"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A young ram whose horns ring like a temple bell at noon, scattering the small despairs that gather in shade. It headbutts predators to *correct*, not wound; a few don't leave at all."
 status = "reviewed"
 tags = PackedStringArray("radiant", "holy")
 
@@ -3799,7 +3799,7 @@ role = "support"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A tortoise grown into a moving chapel, taking the duty very seriously and very slowly. Pilgrims sleep under its shell down dangerous roads and wake alive — which there is the whole review."
 status = "reviewed"
 tags = PackedStringArray("radiant", "holy")
 
@@ -3818,7 +3818,7 @@ role = "support"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A deer given wings by something that believed in it more than was strictly safe. It glides the battlefield distributing healing like alms, untroubled by arrows it really ought to mind."
 status = "reviewed"
 tags = PackedStringArray("radiant", "holy")
 
@@ -3837,7 +3837,7 @@ role = "support"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A small thing with too many wings and the calm of something that read the ending and found it acceptable; it heals in a warm wave while watching you, unnervingly."
 status = "reviewed"
 tags = PackedStringArray("radiant", "holy")
 
@@ -3856,7 +3856,7 @@ role = "support"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A hatchling dragon of pure daylight that hasn't learned dragons should be terrifying. It curls around what it loves and glows — a serviceable shield, a space heater, and twice a wolf-eater."
 status = "reviewed"
 tags = PackedStringArray("radiant", "holy")
 
@@ -3875,7 +3875,7 @@ role = "support"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "An owl the dawn reached before the night could, leaving it gold-eyed and incurably reassuring. It hoots only to say the thing in the dark is handled; travellers sleep better than they've earned."
 status = "reviewed"
 tags = PackedStringArray("radiant", "holy")
 
@@ -3894,7 +3894,7 @@ role = "support"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A winged fox delivering benedictions at a full, undignified sprint — too restless to be properly worshipped. In a fight it laps the party endlessly, stitching everyone back a half-step at a time."
 status = "reviewed"
 tags = PackedStringArray("radiant", "holy")
 
@@ -3913,7 +3913,7 @@ role = "support"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A gold creature so beautiful whole villages once worshipped it instead of feeding their fields. It finds this a bit much, but keeps healing whoever falls down — which only encourages cults."
 status = "reviewed"
 tags = PackedStringArray("radiant", "holy")
 
@@ -3932,7 +3932,7 @@ role = "support"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A stag that consecrates dirt simply by standing on it: wonderful to fight beside, inconvenient to relocate. It won't leave hallowed ground on principle, even when leaving would be wiser."
 status = "reviewed"
 tags = PackedStringArray("radiant", "holy")
 
@@ -3951,7 +3951,7 @@ role = "support"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "The full flower of the radiant deer — a stag crowned in sunrise, bearing of something that declined godhood twice. It heals the field with a largesse that shames lesser predators into bowing."
 status = "reviewed"
 tags = PackedStringArray("radiant", "holy")
 
@@ -3970,7 +3970,7 @@ role = "support"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A ram grown into a small sun with a temper and a clear sense of jurisdiction, ending wars by standing in the middle and glowing until both sides reconsider."
 status = "reviewed"
 tags = PackedStringArray("radiant", "holy")
 
@@ -3989,7 +3989,7 @@ role = "support"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "The grandparent of the radiant tortoises, a walking cathedral that walks roughly never. Stand inside its sanctuary and you're briefly un-killable and extremely behind schedule. It won't apologise."
 status = "reviewed"
 tags = PackedStringArray("radiant", "holy")
 
@@ -4008,7 +4008,7 @@ role = "support"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A winged stag that takes flight like a hymn reaching its last note, carrying no rider — only everyone's spirits, upward, right as they were about to give up."
 status = "reviewed"
 tags = PackedStringArray("radiant", "holy")
 
@@ -4027,7 +4027,7 @@ role = "assassin"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "After two dozen creatures made of sunrise, here is the bill: a winged shadow with a widow's patience that folds dark over the dying and quietly drinks the difference."
 status = "reviewed"
 tags = PackedStringArray("dark")
 
@@ -4046,7 +4046,7 @@ role = "assassin"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A beast that wept so long its tears went hard and grew back inward as amethyst spines. Each shard is an unfinished sorrow, shared generously, point-first. No fortune is worth the harvest."
 status = "reviewed"
 tags = PackedStringArray("dark")
 
@@ -4065,7 +4065,7 @@ role = "assassin"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A shadow-thing that learned cold from the dead and wields it like a grudge; its breath is the chill of a room something just left, and it hunts the warm."
 status = "reviewed"
 tags = PackedStringArray("dark")
 
@@ -4084,7 +4084,7 @@ role = "assassin"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A starved silhouette draped in the funeral-rags of everything it's caught, rattling them as it runs to advertise the back-catalogue. It fights with the frenzy of a thing that lost everything ages ago."
 status = "reviewed"
 tags = PackedStringArray("dark")
 
@@ -4103,7 +4103,7 @@ role = "assassin"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A pale, fae-winged thing that looks like it wandered in from the radiant block, which is exactly the trap: it mimics the light to get near the trusting, then collects."
 status = "reviewed"
 tags = PackedStringArray("dark")
 
@@ -4122,7 +4122,7 @@ role = "assassin"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "The senior of the dark interlude, a wyrm-shaped shadow stitched in arterial red that takes a tithe from everything it touches and calls the arrangement scripture."
 status = "reviewed"
 tags = PackedStringArray("dark")
 
@@ -4141,7 +4141,7 @@ role = "striker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A fox spun out of breath on a winter morning, friendliest and quickest of the frost court — used mostly for mischief, occasionally for murder if you didn't share."
 status = "reviewed"
 tags = PackedStringArray("frost", "sky")
 
@@ -4160,7 +4160,7 @@ role = "striker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A snow-hare so soft it looks like an apology and so fast it kicks powder in three faces before you finish saying \"aww\" — harmless right up until it very much isn't."
 status = "reviewed"
 tags = PackedStringArray("frost", "sky")
 
@@ -4179,7 +4179,7 @@ role = "striker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A river-otter that forgot to stay solid and now commutes by fog — seen on the far bank and felt at your ankle in one breath. It drowns people the way fog does."
 status = "reviewed"
 tags = PackedStringArray("frost", "sky")
 
@@ -4198,7 +4198,7 @@ role = "striker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A drifting baby-sprite that looks like it's daydreaming until it crosses the room in a single twitch — too dreamy to seem dangerous, which is the dream's whole job."
 status = "reviewed"
 tags = PackedStringArray("frost", "sky")
 
@@ -4217,7 +4217,7 @@ role = "striker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A prim, faintly judgmental frost-fox that turns every surface it crosses into ice for the next person, calls it a public service, and watches you slip like someone who warned you."
 status = "reviewed"
 tags = PackedStringArray("frost", "sky")
 
@@ -4236,7 +4236,7 @@ role = "striker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "The first of the storm-wolves, darker and colder than the kits, running at the speed of the wind that pushes a blizzard ahead of it. It doesn't play; it hunts like weather."
 status = "reviewed"
 tags = PackedStringArray("frost", "sky")
 
@@ -4255,7 +4255,7 @@ role = "striker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A stag of midwinter dusk whose antlers wear hoarfrost like a sharper second crown, moving with the gliding speed of a cold front and its indifference, freezing the air behind it."
 status = "reviewed"
 tags = PackedStringArray("frost", "sky")
 
@@ -4274,7 +4274,7 @@ role = "striker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A storm-wolf that travels inside its own bad weather, a smear of cold vapor that picks its moment from behind the curtain. Half the time you're swinging at the squall, not the wolf."
 status = "reviewed"
 tags = PackedStringArray("frost", "sky")
 
@@ -4293,7 +4293,7 @@ role = "striker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "The grandest storm-wolf, mane piled into its own thunderhead and a temper to match: it starts a fight quick and *accelerates*, which is deeply unfair from an already-fast predator."
 status = "reviewed"
 tags = PackedStringArray("frost", "sky")
 
@@ -4312,7 +4312,7 @@ role = "striker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A darker, sleeker Wispcalf cousin carrying a little frozen star on its tail like a slingshot, lurking in deep cold water to lob hail at things that lean too far over the surface."
 status = "reviewed"
 tags = PackedStringArray("frost", "sky")
 
@@ -4331,7 +4331,7 @@ role = "striker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A frost-seal pup that, against all visual evidence, is one of the court's fastest — a barrel of blubber that moves like a skipped stone and bonks intruders, not understanding it's a weapon."
 status = "reviewed"
 tags = PackedStringArray("frost", "sky")
 
@@ -4350,7 +4350,7 @@ role = "striker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A turtle that solved being slow by growing an ice-shell: a paperweight on land, on ice a low blue blur that knocks the legs from things its size."
 status = "reviewed"
 tags = PackedStringArray("frost", "sky")
 
@@ -4369,7 +4369,7 @@ role = "striker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "The Mistlurk's solid, cheekier relative — twice as smug and just as quick — riding its own cold currents to surface, hit, and duck before the reply lands. It keeps the shiny things."
 status = "reviewed"
 tags = PackedStringArray("frost", "sky")
 
@@ -4388,7 +4388,7 @@ role = "striker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "The brightest, most overconfident ice-sprite, a thumb-sized thing convinced it's a dragon and behaving so. It nips much larger creatures and zips away vibrating with pride; the ones that miss learn cold respect."
 status = "reviewed"
 tags = PackedStringArray("frost", "sky")
 
@@ -4407,7 +4407,7 @@ role = "striker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A frost-wolf that grew its blizzard *inward* into a mane of literal ice-blades — less weather, more weapon. Its wounds take a strange long time to warm back up."
 status = "reviewed"
 tags = PackedStringArray("frost", "sky")
 
@@ -4426,7 +4426,7 @@ role = "striker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "The frost court with the gloves off — a snarling knot of crest, fin and bad weather that hits like the worst ten seconds of a storm and, unlike its cousins, fully commits."
 status = "reviewed"
 tags = PackedStringArray("frost", "sky")
 
@@ -4445,7 +4445,7 @@ role = "striker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "The aerodynamic specialist of the frost-wolves, all swept lines and silence, built to arrive before its own sound — the quietest fast thing in the cold, a contradiction resolved at your expense."
 status = "reviewed"
 tags = PackedStringArray("frost", "sky")
 
@@ -4464,7 +4464,7 @@ role = "striker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "The grandest frost-deer, antlers grown clear as black ice and twice as treacherous, moving like the first hard freeze — beautiful, total, impossible to walk on safely."
 status = "reviewed"
 tags = PackedStringArray("frost", "sky")
 
@@ -4483,7 +4483,7 @@ role = "striker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "The volume's first true apex: a feathered-light dragon faster than weather that judges from above, owns all the altitude, and shares none."
 status = "reviewed"
 tags = PackedStringArray("dragon", "apex")
 
@@ -4502,7 +4502,7 @@ role = "striker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "Skysovereign's darker, swifter twin — a storm-riding serpent that doesn't fly so much as cut, arriving twice and gone before the thunder explains it."
 status = "reviewed"
 tags = PackedStringArray("dragon", "apex")
 
@@ -4521,7 +4521,7 @@ role = "nuker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "The Flight's oldest molten apex: a quarry-fire dragon that does not breathe flame but passes sentence, and the verdict is always ash."
 status = "reviewed"
 tags = PackedStringArray("dragon", "apex")
 
@@ -4540,7 +4540,7 @@ role = "nuker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "Rules its cooling lava-field and taxes every trespasser in the currency of being on fire; the foundry throat is your only warning, and it's not enough."
 status = "reviewed"
 tags = PackedStringArray("dragon", "apex")
 
@@ -4559,7 +4559,7 @@ role = "nuker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "The Flight's working arsonist, lean and tireless and faintly bored, burning things less from fury than a sense they ought to be ash by now."
 status = "reviewed"
 tags = PackedStringArray("dragon", "apex")
 
@@ -4578,7 +4578,7 @@ role = "nuker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A vain apex that mistook its rack of door-sized burning horns for a crown, and you for a subject who hasn't yet bowed; carrion birds know dusk is dinner."
 status = "reviewed"
 tags = PackedStringArray("dragon", "apex")
 
@@ -4597,7 +4597,7 @@ role = "nuker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "The Flight's pessimist, proven right too often, raining slow burning cinders on places having a nice century; it is not in a hurry, doom rarely is."
 status = "reviewed"
 tags = PackedStringArray("dragon", "apex")
 
@@ -4616,7 +4616,7 @@ role = "assassin"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "Deep-water serpent lit by cold cyan that never offered warmth; it does not maul but passes through, and afterward someone is simply gone from the line."
 status = "reviewed"
 tags = PackedStringArray("dragon", "apex")
 
@@ -4635,7 +4635,7 @@ role = "assassin"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "An unreasonable number of teal-lit heads, each biting a different one of you and living off the difference; it hunts groups for the variety."
 status = "reviewed"
 tags = PackedStringArray("dragon", "apex")
 
@@ -4654,7 +4654,7 @@ role = "assassin"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A wave with a shadow under it, fighting by rearrangement, yanking your fastest to the back with the patience of cold water that knows you must breathe."
 status = "reviewed"
 tags = PackedStringArray("dragon", "apex")
 
@@ -4673,7 +4673,7 @@ role = "assassin"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "The Coil's heavyweight assassin, faster than its mass has any right to be, surfacing from a direction your shield wasn't pointing; bring a roof."
 status = "reviewed"
 tags = PackedStringArray("dragon", "apex")
 
@@ -4692,7 +4692,7 @@ role = "assassin"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "The Coil's closer, colour of water nobody resurfaces from, drifting in after the work is done to collect what's left, swiftly and without comment."
 status = "reviewed"
 tags = PackedStringArray("dragon", "apex")
 
@@ -4711,7 +4711,7 @@ role = "support"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A walking bog that committed too hard to being alive; it knits your wounded shut and makes your enemies itch, both technically true, no contradiction seen."
 status = "reviewed"
 tags = PackedStringArray("eldritch", "apex")
 
@@ -4730,7 +4730,7 @@ role = "support"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A stag the size of a wrong idea, antlers a hanging garden of luminous rot, pulling vitality from the dying and reseeding it green on your side."
 status = "reviewed"
 tags = PackedStringArray("eldritch", "apex")
 
@@ -4749,7 +4749,7 @@ role = "support"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A hill that grew a bad mood and a digestive system; it plants over your wounded and dares the enemy through the fever-cloud. Safe like a quarantine tent."
 status = "reviewed"
 tags = PackedStringArray("eldritch", "apex")
 
@@ -4768,7 +4768,7 @@ role = "support"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A vulture that decided to be helpful, circling to grow your dead back into something approximately alive. The favour is genuine; the favour also itches."
 status = "reviewed"
 tags = PackedStringArray("eldritch", "apex")
 
@@ -4787,7 +4787,7 @@ role = "tank"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A walking fortress built around a green furnace-heart by hands that wanted a relocatable wall: it doesn't eat, sleep, fear, or much think — it occupies space and refuses to surrender it."
 status = "reviewed"
 tags = PackedStringArray("construct")
 
@@ -4806,7 +4806,7 @@ role = "assassin"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "Old-copper green left out centuries to brood; it does not hurry a kill but wraps, waits, and grows healthier as you grow less so. The Mirepyre's dark mirror."
 status = "reviewed"
 tags = PackedStringArray("eldritch", "apex")
 
@@ -4825,7 +4825,7 @@ role = "assassin"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A nightmare of elbows and edges, joint-lit from rotting within, skewering whatever you were protecting because it correctly guessed that's worth killing."
 status = "reviewed"
 tags = PackedStringArray("eldritch", "apex")
 
@@ -4844,7 +4844,7 @@ role = "assassin"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A hound built like a famine, running ahead to mark a chosen victim with a death-sign only its clade can see. It picks; the Reapers collect."
 status = "reviewed"
 tags = PackedStringArray("eldritch", "apex")
 
@@ -4863,7 +4863,7 @@ role = "assassin"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "Wings rotted halfway, flying out of sheer refusal, dropping on one target like a falling graveyard and getting up healthier than it landed."
 status = "reviewed"
 tags = PackedStringArray("eldritch", "apex")
 
@@ -4882,7 +4882,7 @@ role = "assassin"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A gallows that learned to float, draped in what might be robes or prior visitors; it guards nothing and simply punishes motion. Stillness is the only mercy."
 status = "reviewed"
 tags = PackedStringArray("eldritch", "apex")
 
@@ -4901,7 +4901,7 @@ role = "control"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A lich worn thin as a held breath; it does not scream but intones, slowing the field to a funeral's pace and setting the key the whole choir waits for."
 status = "reviewed"
 tags = PackedStringArray("spirit", "eldritch")
 
@@ -4920,7 +4920,7 @@ role = "control"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A grief-shape that forgot which death it set out to mourn and now mourns everyone, veiling foes in second-hand sorrow until they can barely lift their arms."
 status = "reviewed"
 tags = PackedStringArray("spirit", "eldritch")
 
@@ -4939,7 +4939,7 @@ role = "control"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "The choir's highest voice, frozen mid-reach of a note it never finishes; its song deals no damage, it simply makes the enemy late until late turns fatal."
 status = "reviewed"
 tags = PackedStringArray("spirit", "eldritch")
 
@@ -4958,7 +4958,7 @@ role = "control"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "The Sepulchre's bass and bodyguard, broad enough to let harm break on its shrouds; it guards the choir like a tombstone guards a name, already grieving you."
 status = "reviewed"
 tags = PackedStringArray("spirit", "eldritch")
 
@@ -4977,7 +4977,7 @@ role = "control"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A drowned draught that floats upward from habit; its keening does not roar but erodes, a ceaseless wearing-away that makes the strong feel briefly mortal."
 status = "reviewed"
 tags = PackedStringArray("spirit", "eldritch")
 
@@ -4996,7 +4996,7 @@ role = "control"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A lich mourning in two mirrored voices, draping overlapping grey protection; cut off one voice and the other only sings louder. Worse to interrupt than watch."
 status = "reviewed"
 tags = PackedStringArray("spirit", "eldritch")
 
@@ -5015,7 +5015,7 @@ role = "control"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A lich with the bearing of one who ran a cathedral and never accepted the resignation; a sweep of pale arms forces the battlefield into his grim tempo."
 status = "reviewed"
 tags = PackedStringArray("spirit", "eldritch")
 
@@ -5034,7 +5034,7 @@ role = "control"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "The voice that names the Drown-Choir, a lich that died underwater and never stopped pouring, settling a sodden weight on foes until moving feels like swimming."
 status = "reviewed"
 tags = PackedStringArray("spirit", "eldritch")
 
@@ -5053,7 +5053,7 @@ role = "control"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "Hung with ribbons of half-remembered scripture, each verse forbidding the enemy a move, a moment, a mercy, with the dry authority of a rule no one recalls passing."
 status = "reviewed"
 tags = PackedStringArray("spirit", "eldritch")
 
@@ -5072,7 +5072,7 @@ role = "control"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "The choir's crowned sovereign, ruling a congregation that died facing the altar; when it raises the silence, the battlefield becomes a held funeral service."
 status = "reviewed"
 tags = PackedStringArray("spirit", "eldritch")
 
@@ -5091,7 +5091,7 @@ role = "support"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A dragon the size of a loaf — all eyes, frills, and unearned confidence — that heals friends by good intent and bites with teeth that don't yet work. Respect the try."
 status = "reviewed"
 tags = PackedStringArray("base", "fae")
 
@@ -5110,7 +5110,7 @@ role = "support"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A purple hatchling that appointed itself the team's emotional support, application or not. It chirps encouragement before every fight, even ones it can't help with, and somehow everyone's a half-step faster."
 status = "reviewed"
 tags = PackedStringArray("base", "fae")
 
@@ -5129,7 +5129,7 @@ role = "support"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A blue dollop with one bobbing antenna for finding sad people, producing healing dew from no identifiable organ and applying it to creatures that didn't ask to be damp."
 status = "reviewed"
 tags = PackedStringArray("base", "fae")
 
@@ -5148,7 +5148,7 @@ role = "support"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A finger-length seahorse-dragon taking its self-appointed lifeguard duties with total seriousness. It throws up a little spray-shield for friends, then looks around for the praise it has earned and should receive."
 status = "reviewed"
 tags = PackedStringArray("base", "fae")
 
@@ -5167,7 +5167,7 @@ role = "support"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A grub with useless wing-buds and a face engineered to prevent squashing, defending the squad by sneezing glitter at enemies — which sounds useless and somehow isn't. Give it a season."
 status = "reviewed"
 tags = PackedStringArray("base", "fae")
 
@@ -5186,7 +5186,7 @@ role = "support"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A moth-fae the colour of moonlight, wings patterned like eyes never quite finished, drawn to light and danger equally and weaponising it by being the most distracting thing on the field."
 status = "reviewed"
 tags = PackedStringArray("base", "fae")
 
@@ -5205,7 +5205,7 @@ role = "support"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A purple axolotl baby whose philosophy is that nothing's really broken if you wait and stay damp; it heals friends slowly and totally, having regrown most of itself once."
 status = "reviewed"
 tags = PackedStringArray("base", "fae")
 
@@ -5224,7 +5224,7 @@ role = "support"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A downy blue chick between songbird and griffin, fully committed to the idea it can already fly: it throws itself off things, fails upward, and kicks up a gust that genuinely helps."
 status = "reviewed"
 tags = PackedStringArray("base", "fae")
 
@@ -5243,7 +5243,7 @@ role = "support"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A winged kitten-fae that treats combat as a fancier string to chase, swatting little lights at enemies and dust motes alike — and on the ones that land, the squad's luck ticks upward."
 status = "reviewed"
 tags = PackedStringArray("base", "fae")
 
@@ -5262,7 +5262,7 @@ role = "support"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A wobbly-legged fawn so pale it looks half-drawn, surviving by being faster than its terror and kinder than its odds — and, the faithful whisper, perhaps a very junior Pale-Hart relative."
 status = "reviewed"
 tags = PackedStringArray("base", "fae")
 
@@ -5281,7 +5281,7 @@ role = "nuker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A dragon grown like a struck geode that doesn't breathe fire but *refraction* — where the shards land, the ground is briefly a cathedral window and then a crater."
 status = "reviewed"
 tags = PackedStringArray("mystic", "crystal")
 
@@ -5300,7 +5300,7 @@ role = "nuker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A dragon armoured in sapphire shards it sheds and regrows like a slow blizzard, flinging handfuls of itself at problems — so being attacked is gorgeous right until it isn't."
 status = "reviewed"
 tags = PackedStringArray("mystic", "crystal")
 
@@ -5319,7 +5319,7 @@ role = "nuker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A dragon with stained-glass wings someone diagrammed before they grew, every vein deliberate. It fights by *angles* — turning attacks aside with the cold precision of a proof and returning them refracted."
 status = "reviewed"
 tags = PackedStringArray("mystic", "crystal")
 
@@ -5338,7 +5338,7 @@ role = "nuker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "The clade's most delicate-looking member, half-made of the light it bends. Don't be charmed: the gleam is a weapon, and it detonates the rainbow at point-blank with a smile. Simply *vanity, armed*."
 status = "reviewed"
 tags = PackedStringArray("mystic", "crystal")
 
@@ -5357,7 +5357,7 @@ role = "nuker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A crystal dragon caught between solid and sky, trailing colour like an aurora that grew teeth; it half-dissolves so strikes pass through, then answers with cascading, confusing light."
 status = "reviewed"
 tags = PackedStringArray("mystic", "crystal")
 
@@ -5376,7 +5376,7 @@ role = "nuker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A dragon the colour of opal held to a candle, all milky fire and drifting fins — it looks like the clade's most peaceable member, then goes off like a flashbang when you relax."
 status = "reviewed"
 tags = PackedStringArray("mystic", "crystal")
 
@@ -5395,7 +5395,7 @@ role = "nuker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "The clade's tempest — a sapphire dragon that fights like weather, flinging a whole season of razor-sleet off its wings: loud, bright, and over very quickly for whoever it lands on."
 status = "reviewed"
 tags = PackedStringArray("mystic", "crystal")
 
@@ -5414,7 +5414,7 @@ role = "nuker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "The bruiser of the crystal clade, a broad amethyst dragon that answered \"how do I deal more damage\" with a quarry of teeth, closing its jaws where its kin scatter light."
 status = "reviewed"
 tags = PackedStringArray("mystic", "crystal")
 
@@ -5433,7 +5433,7 @@ role = "nuker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "The clade's prowler — built less like a dragon than a great cat carved from violet quartz — that picks one target and commits with fangs that splinter on contact and keep cutting."
 status = "reviewed"
 tags = PackedStringArray("mystic", "crystal")
 
@@ -5452,7 +5452,7 @@ role = "nuker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "The grandest crystal, faceted hide dusted with trapped stars as if it swallowed a small night sky: where its kin scatter, this one *focuses*, pulling all that brilliance into a single apocalyptic point."
 status = "reviewed"
 tags = PackedStringArray("mystic", "crystal")
 
@@ -5471,7 +5471,7 @@ role = "tank"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A creature that solved being attacked by becoming geology; it does not dodge or plan, it lowers itself and lets the day break against its back."
 status = "reviewed"
 tags = PackedStringArray("beast")
 
@@ -5490,7 +5490,7 @@ role = "tank"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "Named for the black rock left when something burns then sulks; its little wings don't fly so much as let it fall, with opinions, onto what annoyed it."
 status = "reviewed"
 tags = PackedStringArray("beast")
 
@@ -5509,7 +5509,7 @@ role = "tank"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A boar that wears the swamp like armour and treats hygiene as a weakness in others; it plants in the muck and dares the fight to come wade for it."
 status = "reviewed"
 tags = PackedStringArray("beast")
 
@@ -5528,7 +5528,7 @@ role = "tank"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A buck that decided antlers were for blocking, not vanity; it stands its ground with the dim total conviction of underbrush — you go around, it wins."
 status = "reviewed"
 tags = PackedStringArray("beast")
 
@@ -5547,7 +5547,7 @@ role = "tank"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A low grey wall someone unwisely gave a temper and a swing; it walks like furniture holding a grudge and delivers others to \"out of the way.\""
 status = "reviewed"
 tags = PackedStringArray("beast")
 
@@ -5566,7 +5566,7 @@ role = "tank"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A beast so overgrown it qualifies as habitat — birds nest in its hackles; it holds a line by being a deeply unpleasant thing to grab, hug, or bite."
 status = "reviewed"
 tags = PackedStringArray("beast")
 
@@ -5585,7 +5585,7 @@ role = "control"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A frilled drake that treats a battlefield's chaos as a clerical error to correct; it does not burn things, it files them, until the fight obeys procedure."
 status = "reviewed"
 tags = PackedStringArray("mixed")
 
@@ -5604,7 +5604,7 @@ role = "control"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A slab-shouldered warden that stands at true vertical and judges everything that isn't; it controls a fight by sheer immovable correctness."
 status = "reviewed"
 tags = PackedStringArray("mixed")
 
@@ -5623,7 +5623,7 @@ role = "control"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A horned thing whose antlers grew in perfect crystal lattices, which it takes as proof the universe agrees; it pins foes in tidy mineral cages, puzzled they object."
 status = "reviewed"
 tags = PackedStringArray("mixed")
 
@@ -5642,7 +5642,7 @@ role = "control"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A mossy stag carved over by glyphs it grew rather than learned; it treats a clearing as a contract and trespass as a breach litigated by underbrush."
 status = "reviewed"
 tags = PackedStringArray("mixed")
 
@@ -5661,7 +5661,7 @@ role = "control"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A white dragon that bends harm the way glass bends a sunbeam — coolly, precisely, as if the whole business is beneath it; bloodless and quietly insufferable."
 status = "reviewed"
 tags = PackedStringArray("mixed")
 
@@ -5680,7 +5680,7 @@ role = "control"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A slate-grey wyrm whose scales half-turned to mineral and whose temperament finished the job; it manages a battlefield like a magistrate manages a queue."
 status = "reviewed"
 tags = PackedStringArray("mixed")
 
@@ -5699,7 +5699,7 @@ role = "support"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A pale fox whose tail leaks a kind, cold light it seems embarrassed to produce; it tends the wounded with the manner of a nurse who has seen worse."
 status = "reviewed"
 tags = PackedStringArray("radiant")
 
@@ -5718,7 +5718,7 @@ role = "support"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A fox dressed in tails of slow gold light, with the unbothered glamour of a thing that never worried about money or mortality; being its favourite is wonderful, earning it a fool's errand."
 status = "reviewed"
 tags = PackedStringArray("radiant")
 
@@ -5737,7 +5737,7 @@ role = "support"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A hare whose ears catch the first light of any morning and pass it, warm, to whoever needs it most; it has quietly out-survived every flashier creature."
 status = "reviewed"
 tags = PackedStringArray("radiant")
 
@@ -5756,7 +5756,7 @@ role = "support"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A lavender kitsune whose presence makes a battlefield go drowsy and strange; it guards its charges by convincing the violence to lose its train of thought."
 status = "reviewed"
 tags = PackedStringArray("radiant")
 
@@ -5775,7 +5775,7 @@ role = "support"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A horned wolf that herds the wounded behind itself with the bossiness of a sheepdog; its halo is a budget of grace, spent carefully, refilled slowly."
 status = "reviewed"
 tags = PackedStringArray("radiant")
 
@@ -5794,7 +5794,7 @@ role = "support"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "The oldest, most composed of the gold-tailed foxes, with the authority of something that has comforted many deaths; it simply tends, for as long as the fight lasts."
 status = "reviewed"
 tags = PackedStringArray("radiant")
 
@@ -5813,7 +5813,7 @@ role = "striker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A frost-serpent that flies like weather with a grudge — it is simply already there, and you are simply already colder; it opens fights, never closes them."
 status = "reviewed"
 tags = PackedStringArray("frost")
 
@@ -5832,7 +5832,7 @@ role = "striker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A frost-deer so light it seems a rumour of cold rather than a body; it strikes the way a draft cuts, then is somewhere else, leaving ice and confusion."
 status = "reviewed"
 tags = PackedStringArray("frost")
 
@@ -5851,7 +5851,7 @@ role = "striker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A blue dragon that does not ride storms so much as be one with teeth; it blinds before it bites, filling the air until the enemy swings at memories."
 status = "reviewed"
 tags = PackedStringArray("frost")
 
@@ -5870,7 +5870,7 @@ role = "striker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A slate-winged dragon with the disposition of falling ice and roughly the warmth; it dives, rends, and is climbing again before the wound registers."
 status = "reviewed"
 tags = PackedStringArray("frost")
 
@@ -5889,7 +5889,7 @@ role = "striker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A frost-rider built out of the cold edge of a fast wind — present, biting, and already past; it opens the fight by being faster than the argument."
 status = "reviewed"
 tags = PackedStringArray("frost")
 
@@ -5908,7 +5908,7 @@ role = "striker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "The black dragon of the winter flight, all the cold with none of the courtesy of glittering; where its kin announce the storm, this one finishes it."
 status = "reviewed"
 tags = PackedStringArray("frost")
 
@@ -5927,7 +5927,7 @@ role = "control"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "Descends only to correct an offense it calls a battle, rearranging who acts and when with bored, pre-ancient authority."
 status = "reviewed"
 tags = PackedStringArray("celestial")
 
@@ -5946,7 +5946,7 @@ role = "control"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A night-sky watcher who edits what each side can be sure of; your aim finds after-images while it stays unknowable."
 status = "reviewed"
 tags = PackedStringArray("celestial")
 
@@ -5965,7 +5965,7 @@ role = "control"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A winged hart wearing a crown of cold light, refereeing endings and imposing peace without asking the violence first."
 status = "reviewed"
 tags = PackedStringArray("celestial")
 
@@ -5984,7 +5984,7 @@ role = "control"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "The host's last resort, planting an immovable throne over what must not fall and daring the battle to break on the floor."
 status = "reviewed"
 tags = PackedStringArray("celestial")
 
@@ -6003,7 +6003,7 @@ role = "control"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A drake of running silver light that owns a fight's rhythm, mireing the swift and keeping initiative as a ledger."
 status = "reviewed"
 tags = PackedStringArray("celestial")
 
@@ -6022,7 +6022,7 @@ role = "control"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A heaven-serpent that shields by enclosing, wrapping allies in cold high light the battlefield's worst can't reach."
 status = "reviewed"
 tags = PackedStringArray("celestial")
 
@@ -6041,7 +6041,7 @@ role = "nuker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "The runt of the fire-herd, which here means it explodes slightly less than its siblings and resents it; it detonates everything it has, then deals with the consequences badly."
 status = "reviewed"
 tags = PackedStringArray("fierce")
 
@@ -6060,7 +6060,7 @@ role = "nuker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A bull on fire and entirely at peace with it, treating \"charge\" as the answer to questions no one asked; magnificent, unstoppable, a hazard to its own herd."
 status = "reviewed"
 tags = PackedStringArray("fierce")
 
@@ -6079,7 +6079,7 @@ role = "nuker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A griffin made of bonfire and bad judgment, which combines into a creature that solves problems by falling on them while alight; loyal enough, tensely."
 status = "reviewed"
 tags = PackedStringArray("fierce")
 
@@ -6098,7 +6098,7 @@ role = "nuker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A stag whose antlers caught fire one season and never went out, which it considers an upgrade; it walks a crown of torches through the enemy line."
 status = "reviewed"
 tags = PackedStringArray("fierce")
 
@@ -6117,7 +6117,7 @@ role = "nuker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A boar with tusks that glow like fresh slag and a temperament to match; it gores upward, which is rude, and the wounds cook closed wrong."
 status = "reviewed"
 tags = PackedStringArray("fierce")
 
@@ -6136,7 +6136,7 @@ role = "nuker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A lion wearing a mane of open flame, loudest and proudest of an immodest herd; it opens fights with a wall of fire, then treats being on fire as a later issue."
 status = "reviewed"
 tags = PackedStringArray("fierce")
 
@@ -6155,7 +6155,7 @@ role = "nuker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A walking magma cliff that erupts at you rather than attacks, cracking the earth open; the death in its fire is the quiet part."
 status = "reviewed"
 tags = PackedStringArray("demon")
 
@@ -6174,7 +6174,7 @@ role = "nuker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A starved blade-limbed fiend that harvests endings, growing keener with every soul it takes. Nothing about it is wasted."
 status = "reviewed"
 tags = PackedStringArray("demon")
 
@@ -6193,7 +6193,7 @@ role = "nuker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "An armored demon with a furnace where its grudge should be, overloading until everything nearby burns, including its composure."
 status = "reviewed"
 tags = PackedStringArray("demon")
 
@@ -6212,7 +6212,7 @@ role = "nuker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A winged ruin that descends like bad news; where it lands the fight is a formality, death in the heat, arrogance in all else."
 status = "reviewed"
 tags = PackedStringArray("demon")
 
@@ -6231,7 +6231,7 @@ role = "nuker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A demon shaped like a collapsing roof, splitting its own form to double the scream that empties the front rank."
 status = "reviewed"
 tags = PackedStringArray("demon")
 
@@ -6250,7 +6250,7 @@ role = "nuker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "Takes up cursing like gardening, naming you guilty in a flat clerical mutter and bleeding your defenses to nothing over days."
 status = "reviewed"
 tags = PackedStringArray("demon")
 
@@ -6269,7 +6269,7 @@ role = "assassin"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A pale, patient thing that haunts the edge of your vision and the front of your insurance claims; it waits, warded, until the target tires of looking."
 status = "reviewed"
 tags = PackedStringArray("dark")
 
@@ -6288,7 +6288,7 @@ role = "assassin"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A wraith that wears the evening like a borrowed coat and keeps the pockets; it folds its wings around a victim and the world goes politely, terminally quiet."
 status = "reviewed"
 tags = PackedStringArray("dark")
 
@@ -6307,7 +6307,7 @@ role = "assassin"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A heavy, hollow sentinel that took a guard's post after the guard left and never resigned; it does not pursue, it occupies, and you may not pass without donating."
 status = "reviewed"
 tags = PackedStringArray("dark")
 
@@ -6326,7 +6326,7 @@ role = "assassin"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A fading thing that takes the world down one degree at a time; nothing about its attack is dramatic — you simply notice, eventually, there is less of you."
 status = "reviewed"
 tags = PackedStringArray("dark")
 
@@ -6345,7 +6345,7 @@ role = "assassin"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "The Wisps' serpent, a coil of darkness that hunts by being impossible to shrug off; it latches, waits, and grows stronger from the panic."
 status = "reviewed"
 tags = PackedStringArray("dark")
 
@@ -6364,7 +6364,7 @@ role = "assassin"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A shade so composed it makes the dark look organized; it draws the gloom shut like a stage curtain and conducts the killing from the dark side of it."
 status = "reviewed"
 tags = PackedStringArray("dark")
 
@@ -6383,7 +6383,7 @@ role = "nuker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "An ash-grey demon that flies to funerals uninvited and improves attendance by adding to the guest list, then detonating."
 status = "reviewed"
 tags = PackedStringArray("demon")
 
@@ -6402,7 +6402,7 @@ role = "nuker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "The Brood's most beautiful liar, a false-holy radiance that eats anything that kneels and bills like a loan shark."
 status = "reviewed"
 tags = PackedStringArray("demon")
 
@@ -6421,7 +6421,7 @@ role = "nuker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A plated demon built like a tax, arriving once the dying starts to collect with a flooded-landlord's entitlement."
 status = "reviewed"
 tags = PackedStringArray("demon")
 
@@ -6440,7 +6440,7 @@ role = "nuker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "Mostly arms and entirely opinions, delivering a beating by committee where each tendril feuds over whom to hit first."
 status = "reviewed"
 tags = PackedStringArray("demon")
 
@@ -6459,7 +6459,7 @@ role = "nuker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A grief that grew teeth from being left in the cold, howling like a slammed door you feel through the floor."
 status = "reviewed"
 tags = PackedStringArray("demon")
 
@@ -6478,7 +6478,7 @@ role = "nuker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "The last-hatched and worst-tempered, a serpent that gave the dark a spine; it moves like rumor and lands like a verdict."
 status = "reviewed"
 tags = PackedStringArray("demon")
 
@@ -6497,7 +6497,7 @@ role = "striker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A finned horror quick as a squall, striking twice before the water finishes parting, the second blow carrying drowned rot."
 status = "reviewed"
 tags = PackedStringArray("aquatic")
 
@@ -6516,7 +6516,7 @@ role = "striker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A grievance with too many legs that doesn't pinch so much as file you down, one quick stripping cut at a time."
 status = "reviewed"
 tags = PackedStringArray("aquatic")
 
@@ -6535,7 +6535,7 @@ role = "striker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A kraken that mistook ambush predator for being everywhere at once; its eight arms arrive on their own schedule, which is now."
 status = "reviewed"
 tags = PackedStringArray("aquatic")
 
@@ -6554,7 +6554,7 @@ role = "striker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A squid the colour of a drowning and twice as quick, clouding the water then carving it in a dark it brought."
 status = "reviewed"
 tags = PackedStringArray("aquatic")
 
@@ -6573,7 +6573,7 @@ role = "striker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A horror that hauled the sea's crushing bottom up like a held breath, arriving at speed and without asking permission."
 status = "reviewed"
 tags = PackedStringArray("aquatic")
 
@@ -6592,7 +6592,7 @@ role = "striker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "The palest Drownkith, a tide that kept walking after the water left, drifting in like fog and striking like surf."
 status = "reviewed"
 tags = PackedStringArray("aquatic")
 
@@ -6611,7 +6611,7 @@ role = "tank"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A beast that wears the cemetery on its back and a graveyard's patience in its skull; it simply outweighs the problem until the problem stops."
 status = "reviewed"
 tags = PackedStringArray("beast")
 
@@ -6630,7 +6630,7 @@ role = "tank"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A squat earth-dragon that gave up flying for the surer dignity of not moving; it anchors like a buried thing and makes its problems join it underground."
 status = "reviewed"
 tags = PackedStringArray("beast")
 
@@ -6649,7 +6649,7 @@ role = "tank"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A black ram heavy enough to settle an argument by leaning on it, draped in wool that smells of cold churchyards; gentle until crowded, then geology."
 status = "reviewed"
 tags = PackedStringArray("beast")
 
@@ -6668,7 +6668,7 @@ role = "tank"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A land-crab that grew a carapace like a sealed crypt and a temperament to match; it does not retreat into its shell, it invites you to break against it."
 status = "reviewed"
 tags = PackedStringArray("beast")
 
@@ -6687,7 +6687,7 @@ role = "tank"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A wolf built less for the hunt than for standing immovably over the result of one; loyal past reason, and past the point the guarded thing can appreciate."
 status = "reviewed"
 tags = PackedStringArray("beast")
 
@@ -6706,7 +6706,7 @@ role = "tank"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A bristled boar that has rooted in too many old battlefields and started to smell of them; it does not charge, it settles, half-rooted already."
 status = "reviewed"
 tags = PackedStringArray("beast")
 
@@ -6725,7 +6725,7 @@ role = "tank"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A spiteful hog whose bristles smoulder when its mood does, which is most mealtimes; it would rather hold ground than take it — but will, if you stand on the good roots."
 status = "reviewed"
 tags = PackedStringArray("beast")
 
@@ -6744,7 +6744,7 @@ role = "tank"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A young plated dragon-thing too stubborn to fly and too hot to hug; it plants itself like a paving slab with opinions and dares the day to move it."
 status = "reviewed"
 tags = PackedStringArray("beast")
 
@@ -6763,7 +6763,7 @@ role = "tank"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A horned brute that meets every problem forehead-first and considers second thoughts a failing; the angrier and more battered it gets, the harder it hits."
 status = "reviewed"
 tags = PackedStringArray("beast")
 
@@ -6782,7 +6782,7 @@ role = "tank"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A deceptively soft-looking lump that is mostly muscle, grudge, and alarming density; it rolls into trouble with the cheerful gravity of a dropped anvil."
 status = "reviewed"
 tags = PackedStringArray("beast")
 
@@ -6801,7 +6801,7 @@ role = "tank"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A stout digging hog that treats turf the way a tantrum treats a tidy room; it charges in a spray of upturned earth, half attack, half landscaping disaster."
 status = "reviewed"
 tags = PackedStringArray("beast")
 
@@ -6820,7 +6820,7 @@ role = "tank"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A broad, grudging brute that picks a hill and a hatred and commits to both for life; not fast, clever, or negotiable — simply there, the wrong place to be."
 status = "reviewed"
 tags = PackedStringArray("beast")
 
@@ -6839,7 +6839,7 @@ role = "tank"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A stag forged, or grown, in chrome — nobody will commit to which — and bright enough to shave in; it guards by reflection, sending your worst impulses back."
 status = "reviewed"
 tags = PackedStringArray("metallic")
 
@@ -6858,7 +6858,7 @@ role = "tank"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A gilded ram whose horns ring like a cathedral when struck, which it finds dignified and its enemies find concussive; it sounds a note that unnerves violence."
 status = "reviewed"
 tags = PackedStringArray("metallic")
 
@@ -6877,7 +6877,7 @@ role = "tank"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A beast sheathed in something between metal and water, so blows seem to decide against it mid-swing; heavy as a casting, yet shrugs like a ripple."
 status = "reviewed"
 tags = PackedStringArray("metallic")
 
@@ -6896,7 +6896,7 @@ role = "tank"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A patient, matte-silver hound that takes \"stand in front of the squishy one\" as scripture; not flashy, but the one still standing when the flashy ones are dented."
 status = "reviewed"
 tags = PackedStringArray("metallic")
 
@@ -6915,7 +6915,7 @@ role = "tank"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A silver wyrm that decided being beautiful and immovable beat being fast and on fire; it curls mirrored wings around the squad like a vault door easing shut."
 status = "reviewed"
 tags = PackedStringArray("metallic")
 
@@ -6934,7 +6934,7 @@ role = "tank"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "The bluest and most stubborn of the Host, tempered like a sword-edge and as eager to bend; it only gets harder to crack the longer you try."
 status = "reviewed"
 tags = PackedStringArray("metallic")
 
@@ -6953,7 +6953,7 @@ role = "assassin"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A scorpion the colour of a bruise, armoured like a verdict and twice as final; it strikes once and lets arithmetic finish, the poison compounding like a debt."
 status = "reviewed"
 tags = PackedStringArray("dark")
 
@@ -6972,7 +6972,7 @@ role = "assassin"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A lean shadow with too many edges, half assassin and half ambush; it does not duel, it salvos — barbs from the dark, gone before the count."
 status = "reviewed"
 tags = PackedStringArray("dark")
 
@@ -6991,7 +6991,7 @@ role = "assassin"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A raven that ate a small dragon and kept the worst habits of both; every feather honed to an edge, it does not circle prey so much as audit it, fatally."
 status = "reviewed"
 tags = PackedStringArray("dark")
 
@@ -7010,7 +7010,7 @@ role = "assassin"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A ram that grazed in a graveyard until the graveyard grazed back, and now wears that bargain on its horns; it charges with a debt collector's patience."
 status = "reviewed"
 tags = PackedStringArray("dark")
 
@@ -7029,7 +7029,7 @@ role = "assassin"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A serpent that grew extra heads the way a liar grows extra stories — to keep one occupied while the others work; you will swear you're watching all of it. You're not."
 status = "reviewed"
 tags = PackedStringArray("dark")
 
@@ -7048,7 +7048,7 @@ role = "assassin"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A boar with one eye long gone out and one that won't, and it has never forgiven the difference; it hunts the biggest thing in the clearing, on principle."
 status = "reviewed"
 tags = PackedStringArray("dark")
 
@@ -7067,7 +7067,7 @@ role = "assassin"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "Scythe-armed mantis that folds in mock prayer, then unfolds into your back line; every kill it lands sharpens the next reaping."
 status = "reviewed"
 tags = PackedStringArray("dark")
 
@@ -7086,7 +7086,7 @@ role = "assassin"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "Grave-beetle that rolls the unburied into a withering cloud, draining what it touches and growing fatter the longer the slaughter runs."
 status = "reviewed"
 tags = PackedStringArray("dark")
 
@@ -7105,7 +7105,7 @@ role = "assassin"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "Panther stitched from 3 a.m. dark, striking first and unseen; if it kills, it slips back into shadow and the next kill comes free."
 status = "reviewed"
 tags = PackedStringArray("dark")
 
@@ -7124,7 +7124,7 @@ role = "assassin"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "Armored ambush-slab that looks like terrain, then locks its jaw on one throat and drains harder the longer it refuses to let go."
 status = "reviewed"
 tags = PackedStringArray("dark")
 
@@ -7143,7 +7143,7 @@ role = "assassin"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "Bruise-colored drake that stoops from the dark for a staggering dive, magnificent in descent and fatal to whoever the landing finds."
 status = "reviewed"
 tags = PackedStringArray("dark")
 
@@ -7162,7 +7162,7 @@ role = "assassin"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "Pale death-courier that glides the line dealing Bane and dragging the struck toward the back, offering everyone a ride they won't return from."
 status = "reviewed"
 tags = PackedStringArray("dark")
 
@@ -7181,7 +7181,7 @@ role = "striker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "First-frost serpent that glazes the room and lands three lashes ahead of the shiver, slowing all it touches before the cold even arrives."
 status = "reviewed"
 tags = PackedStringArray("frost")
 
@@ -7200,7 +7200,7 @@ role = "striker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "Thin-ice darter that never falls, bursting ahead to lend the squad its rush and lay a sliver of frost-Ward over everyone."
 status = "reviewed"
 tags = PackedStringArray("frost")
 
@@ -7219,7 +7219,7 @@ role = "striker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "Antlered stag goring with the brisk efficiency of weather, striking early and frost-locking pinned prey where the silence is total."
 status = "reviewed"
 tags = PackedStringArray("frost")
 
@@ -7238,7 +7238,7 @@ role = "striker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "Lion frozen mid-roar and permanently furious, pouncing first to chill its prey and shave their speed before they can answer."
 status = "reviewed"
 tags = PackedStringArray("frost")
 
@@ -7257,7 +7257,7 @@ role = "striker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "Blizzard-chimed bird crossing the field faster than its own cold, clipping two front targets before either reacts and molting icicles as it goes."
 status = "reviewed"
 tags = PackedStringArray("frost")
 
@@ -7276,7 +7276,7 @@ role = "striker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "Frost-fox of nine crystalline tails, one move ahead always, stacking evasion while it dances; catching it is like catching your reflection."
 status = "reviewed"
 tags = PackedStringArray("frost")
 
@@ -7295,7 +7295,7 @@ role = "nuker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "Faceted crystal-crane holding its neck like a loaded prism, firing a splitting light-lance when the angle pleases it, rarely and devastatingly."
 status = "reviewed"
 tags = PackedStringArray("crystal")
 
@@ -7314,7 +7314,7 @@ role = "nuker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "More window than wyrm, it hoards light then spends it in one chiming detonation that leaves the air full of glittering regret."
 status = "reviewed"
 tags = PackedStringArray("crystal")
 
@@ -7333,7 +7333,7 @@ role = "nuker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "Stained-glass scalpel on wings; it molts razor edges and beats them into the whole line, the already-wounded catching the worst shrapnel."
 status = "reviewed"
 tags = PackedStringArray("crystal")
 
@@ -7352,7 +7352,7 @@ role = "nuker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "Crystal-lizard whose smile keeps adding teeth, biting and biting until the geometry of its jaw becomes everyone's problem."
 status = "reviewed"
 tags = PackedStringArray("crystal")
 
@@ -7371,7 +7371,7 @@ role = "nuker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "Walking pincushion with opinions, launching its own back at you and regrowing it, an arms race it always wins against itself."
 status = "reviewed"
 tags = PackedStringArray("crystal")
 
@@ -7390,7 +7390,7 @@ role = "nuker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "Slab of dark crystal with a grudge in its chest, lighting its own fuse for one colossal core-blast and standing there smug while it recharges."
 status = "reviewed"
 tags = PackedStringArray("crystal")
 
@@ -7409,7 +7409,7 @@ role = "tank"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A boulder that grew a wide mouth and a wider sense of belonging; it tanks hits by simply not acknowledging them, and the moss on its back pays no rent."
 status = "reviewed"
 tags = PackedStringArray("earth")
 
@@ -7428,7 +7428,7 @@ role = "tank"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "An earth-beetle the size of a doorway and about as eager to leave one; its shell is layered like sediment — each season adds a plate and a grudge."
 status = "reviewed"
 tags = PackedStringArray("earth")
 
@@ -7447,7 +7447,7 @@ role = "tank"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A bull carved out of a hillside that took \"immovable object\" as a personal goal and met it; it becomes, briefly, geography, and finds being broken upon restful."
 status = "reviewed"
 tags = PackedStringArray("earth")
 
@@ -7466,7 +7466,7 @@ role = "tank"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A stone troll with arms long enough to hug a problem until it stops, and the patience to mean it; it does not punch, it gathers you up and waits."
 status = "reviewed"
 tags = PackedStringArray("earth")
 
@@ -7485,7 +7485,7 @@ role = "tank"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "An armoured digger that decided the safest place in any fight is exactly where it's standing; it anchors into the earth and dares the battle to relocate it."
 status = "reviewed"
 tags = PackedStringArray("earth")
 
@@ -7504,7 +7504,7 @@ role = "tank"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A hill with legs and a back full of slow-growing crystal it treats as a garden; it tucks in, becomes terrain, and the squad shelters in its lee."
 status = "reviewed"
 tags = PackedStringArray("earth")
 
@@ -7523,7 +7523,7 @@ role = "support"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "Fat radiant grub humming hymns it shouldn't know, cocooning the most-wounded in gilded silk and healing everything it inches past, foes included."
 status = "reviewed"
 tags = PackedStringArray("radiant")
 
@@ -7542,7 +7542,7 @@ role = "support"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "Dragon that looks minted rather than hatched, blessing the whole squad at once and gilding the dying in a temporary Ward shell."
 status = "reviewed"
 tags = PackedStringArray("radiant")
 
@@ -7561,7 +7561,7 @@ role = "support"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "Winged saint who canopies the squad in ordered light, smoothing the worst dice into something survivable and pitying your panic."
 status = "reviewed"
 tags = PackedStringArray("radiant")
 
@@ -7580,7 +7580,7 @@ role = "support"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "Dawn-plated stag whose antlers branch into little suns; where it steps the wounded stand, serene while the enemy seethes."
 status = "reviewed"
 tags = PackedStringArray("radiant")
 
@@ -7599,7 +7599,7 @@ role = "support"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "Cathedral that learned to walk, planting itself amid the squad to bank every hit and discharge it back as grace on a liturgical schedule."
 status = "reviewed"
 tags = PackedStringArray("radiant")
 
@@ -7618,7 +7618,7 @@ role = "support"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "Serpent of pure dawn-light that loops the squad in a halo, healing without tiring and correcting death once like a clerical error."
 status = "reviewed"
 tags = PackedStringArray("radiant")
 
@@ -7637,7 +7637,7 @@ role = "nuker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A ram cast in war-brass that confuses a closed door with a personal insult, then with rubble; the horns are inscribed with victories it cannot read."
 status = "reviewed"
 tags = PackedStringArray("golden")
 
@@ -7656,7 +7656,7 @@ role = "nuker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A gold-plated brute whose every gesture is a demolition and whose every demolition is, to it, a hello; it hits the ground harder than it hits you."
 status = "reviewed"
 tags = PackedStringArray("golden")
 
@@ -7675,7 +7675,7 @@ role = "nuker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A gilded bird that mistook itself for the sun and has been overcompensating ever since, mostly downward and on fire; altitude is its ammunition."
 status = "reviewed"
 tags = PackedStringArray("golden")
 
@@ -7694,7 +7694,7 @@ role = "nuker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "A drake forged rather than hatched, lugging a furnace it is far too eager to open; it breathes liquid gold and considers the cleanup your concern."
 status = "reviewed"
 tags = PackedStringArray("golden")
 
@@ -7713,7 +7713,7 @@ role = "nuker"
 evolution_line = ""
 stage = ""
 signature_skill = ""
-description = ""
+description = "The sleekest, proudest sun-brute, a gold wyrm that swims the air like a blade and detonates like a vault; it finds brute force gauche and uses it anyway."
 status = "reviewed"
 tags = PackedStringArray("golden")
 
