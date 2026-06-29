@@ -1,7 +1,10 @@
 # Godot 4 — only the regenerable cache is ignored. `.import` + `.uid` files ARE committed
 # (Godot 4.4+ practice) so import settings + stable UIDs survive a clean clone / CI.
 .godot/
-export_presets.cfg
+# export_presets.cfg is normally machine-local, but ours is clean (relative paths, no keys/secrets)
+# and committed as the reproducible build recipe for the MVP Windows export.
+!export_presets.cfg
+build/
 
 # Local, untracked Supabase client config (anon key injected at build/runtime — never committed)
 infrastructure/supabase/supabase_config.gd
