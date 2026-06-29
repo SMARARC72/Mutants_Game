@@ -22,8 +22,16 @@ const TILE_COLORS := {
 }
 const VOID_COLOR := Color(0.05, 0.045, 0.06)
 
-## Fraction cropped off EACH edge of a source plate before downscale, to drop its painterly vignette.
-const _VIGNETTE_INSET := 0.13
+## Fraction cropped off EACH edge of a source plate before downscale, to drop its painterly vignette
+## (a deeper crop = flatter, more uniform cell edges = far less visible grid seam).
+const _VIGNETTE_INSET := 0.18
+
+## The ground tile id, and how many brightness variants of it the atlas carries. Painting ground with
+## a per-cell variant (× the per-cell flip) turns one source texture into many reads, killing the
+## "same square repeated" grid look without more art.
+const GROUND_TILE := 0
+const GROUND_VARIANTS := 3
+const _GROUND_VAR_BRIGHT := [0.88, 1.0, 1.12]
 
 ## Region force-climate palettes: force name -> {tile_id: [texture_path, modulate]}. The modulate
 ## multiplies the sampled pixels so ONE ground texture yields distinct ground/feature/wall reads
@@ -48,9 +56,10 @@ static func is_walkable(tile_id: int) -> bool:
 	return tile_id != WALL_TILE and tile_id != VOID_TILE
 
 
-## Build a TileSet whose source 0 is a real-terrain atlas (one cell per palette id, atlas coord ==
-## tile id, so set_cell(coords, 0, Vector2i(tile_id, 0)) Just Works). `force_climate` picks the
-## region palette; unknown forces fall back to the default.
+## Build a TileSet whose source 0 is a real-terrain atlas. Column = tile id. The GROUND column also
+## stacks GROUND_VARIANTS brightness rows (atlas coords (0,0..2)); every other id sits at row 0. So
+## set_cell(pos, 0, Vector2i(tile_id, 0)) Just Works for non-ground, and ground uses (0, variant).
+## `force_climate` picks the region palette; unknown forces fall back to the default.
 static func build(force_climate: String = _DEFAULT_FORCE) -> TileSet:
 	var palette: Dictionary = PALETTES.get(force_climate, PALETTES[_DEFAULT_FORCE])
 	var ids := palette.keys()
@@ -58,14 +67,23 @@ static func build(force_climate: String = _DEFAULT_FORCE) -> TileSet:
 	var max_id := 0
 	for id in ids:
 		max_id = maxi(max_id, int(id))
-	var atlas := Image.create((max_id + 1) * TILE_SIZE, TILE_SIZE, false, Image.FORMAT_RGBA8)
+	var atlas := Image.create(
+		(max_id + 1) * TILE_SIZE, GROUND_VARIANTS * TILE_SIZE, false, Image.FORMAT_RGBA8
+	)
 	atlas.fill(VOID_COLOR)
+	var full := Rect2i(0, 0, TILE_SIZE, TILE_SIZE)
 	for id in ids:
 		var entry: Array = palette[id]
-		var tile_img := _tile_image(str(entry[0]), entry[1] as Color, int(id))
-		atlas.blit_rect(
-			tile_img, Rect2i(0, 0, TILE_SIZE, TILE_SIZE), Vector2i(int(id) * TILE_SIZE, 0)
-		)
+		var base_mod := entry[1] as Color
+		if int(id) == GROUND_TILE:
+			for v in GROUND_VARIANTS:
+				var b: float = _GROUND_VAR_BRIGHT[v]
+				var vmod := Color(base_mod.r * b, base_mod.g * b, base_mod.b * b, base_mod.a)
+				var gimg := _tile_image(str(entry[0]), vmod, int(id))
+				atlas.blit_rect(gimg, full, Vector2i(int(id) * TILE_SIZE, v * TILE_SIZE))
+		else:
+			var tile_img := _tile_image(str(entry[0]), base_mod, int(id))
+			atlas.blit_rect(tile_img, full, Vector2i(int(id) * TILE_SIZE, 0))
 	var texture := ImageTexture.create_from_image(atlas)
 
 	var tile_set := TileSet.new()
@@ -74,7 +92,11 @@ static func build(force_climate: String = _DEFAULT_FORCE) -> TileSet:
 	source.texture = texture
 	source.texture_region_size = Vector2i(TILE_SIZE, TILE_SIZE)
 	for id in ids:
-		source.create_tile(Vector2i(int(id), 0))
+		if int(id) == GROUND_TILE:
+			for v in GROUND_VARIANTS:
+				source.create_tile(Vector2i(int(id), v))
+		else:
+			source.create_tile(Vector2i(int(id), 0))
 	tile_set.add_source(source, 0)
 	return tile_set
 
@@ -118,10 +140,21 @@ static func paint(layer: TileMapLayer, layout: Layout) -> TileMapLayer:
 	for y in layout.height:
 		for x in layout.width:
 			var tile_id := layout.get_cell(x, y)
-			if tile_id == VOID_TILE or source == null or not source.has_tile(Vector2i(tile_id, 0)):
+			if tile_id == VOID_TILE:
 				continue
-			layer.set_cell(Vector2i(x, y), 0, Vector2i(tile_id, 0), _cell_orientation(x, y))
+			var coord := _atlas_coord(tile_id, x, y)
+			if source == null or not source.has_tile(coord):
+				continue
+			layer.set_cell(Vector2i(x, y), 0, coord, _cell_orientation(x, y))
 	return layer
+
+
+## Atlas coord for a cell: ground picks one of its brightness variants (hashed from the cell so it's
+## stable), everything else uses its single row-0 tile.
+static func _atlas_coord(tile_id: int, x: int, y: int) -> Vector2i:
+	if tile_id == GROUND_TILE:
+		return Vector2i(GROUND_TILE, absi((x * 2654435761) ^ (y * 40503)) % GROUND_VARIANTS)
+	return Vector2i(tile_id, 0)
 
 
 ## A stable per-cell transform (flip-h / flip-v / transpose bits) hashed from the cell coords, so the
