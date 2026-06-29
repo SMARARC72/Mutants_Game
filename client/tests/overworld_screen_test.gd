@@ -240,6 +240,21 @@ func test_speaking_to_an_npc_emits_its_dialogue_timeline() -> void:
 	gc.queue_free()
 
 
+func test_talking_to_both_npcs_drives_and_completes_the_intro_quest() -> void:
+	# Talking to Old Marrow starts the intro quest + advances step 1; the Bog-Wretch advances step 2,
+	# auto-completing it — the overworld<->QuestService seam.
+	var gc := _make_game()
+	gc.call("new_run", TEST_SEED)
+	var ow := _make_overworld(gc)
+	assert_bool(bool(ow.call("quest_done", "marsh_welcome"))).is_false()
+	ow.call("speak_to", 0)
+	assert_bool(bool(ow.call("quest_active", "marsh_welcome"))).is_true()
+	ow.call("speak_to", 1)
+	assert_bool(bool(ow.call("quest_done", "marsh_welcome"))).is_true()
+	ow.queue_free()
+	gc.queue_free()
+
+
 ## A cardinal direction from `cell` into a walkable, in-bounds neighbour, or ZERO if hemmed in.
 func _walkable_dir(layout: Layout, cell: Vector2i) -> Vector2i:
 	for dir: Vector2i in [Vector2i(1, 0), Vector2i(0, 1), Vector2i(-1, 0), Vector2i(0, -1)]:
