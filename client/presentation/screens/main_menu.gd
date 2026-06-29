@@ -10,6 +10,8 @@ const InputActions := preload("res://infrastructure/input/input_actions.gd")
 const SAMPLE_SCENE := "res://presentation/screens/sample_grimoire_screen.tscn"
 const OPTIONS_SCENE := "res://presentation/screens/options_menu.tscn"
 const OVERWORLD_SCENE := "res://presentation/overworld/overworld_screen.tscn"
+const SIGIL := "✵"  # 8-pointed grimoire sigil (matches the ritual Transition)
+const BRASS_BRIGHT := Color(0.878431, 0.72549, 0.352941)
 
 var _transition: Node
 var _game: Node
@@ -33,6 +35,29 @@ func _build() -> void:
 	bg.set_anchors_preset(Control.PRESET_FULL_RECT)
 	add_child(bg)
 
+	# Atmosphere: drifting motes + a radial vignette, so the menu feels like an open grimoire.
+	var motes := CPUParticles2D.new()
+	motes.position = Vector2(576, 700)
+	motes.amount = 30
+	motes.lifetime = 8.0
+	motes.preprocess = 6.0
+	motes.emission_shape = CPUParticles2D.EMISSION_SHAPE_RECTANGLE
+	motes.emission_rect_extents = Vector2(700, 60)
+	motes.gravity = Vector2(0, -7)
+	motes.initial_velocity_min = 3.0
+	motes.initial_velocity_max = 12.0
+	motes.scale_amount_min = 1.0
+	motes.scale_amount_max = 2.6
+	motes.color = Color(0.88, 0.78, 0.42, 0.45)
+	add_child(motes)
+	var vig := TextureRect.new()
+	vig.texture = _make_vignette(256)
+	vig.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	vig.stretch_mode = TextureRect.STRETCH_SCALE
+	vig.set_anchors_preset(Control.PRESET_FULL_RECT)
+	vig.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(vig)
+
 	var center := CenterContainer.new()
 	center.set_anchors_preset(Control.PRESET_FULL_RECT)
 	add_child(center)
@@ -41,6 +66,13 @@ func _build() -> void:
 	box.add_theme_constant_override("separation", 16)
 	box.custom_minimum_size = Vector2(360, 0)
 	center.add_child(box)
+
+	var crest := Label.new()
+	crest.text = SIGIL
+	crest.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	crest.add_theme_font_size_override("font_size", 64)
+	crest.add_theme_color_override("font_color", BRASS_BRIGHT)
+	box.add_child(crest)
 
 	var title := Label.new()
 	title.text = "MUTANTS"
@@ -70,6 +102,18 @@ func _add_button(parent: VBoxContainer, text: String, handler: Callable) -> Butt
 	parent.add_child(button)
 	button.pressed.connect(handler)
 	return button
+
+
+## A radial vignette texture (transparent centre → soft dark corners) for menu atmosphere.
+func _make_vignette(size: int) -> ImageTexture:
+	var img := Image.create(size, size, false, Image.FORMAT_RGBA8)
+	var c := (size - 1) * 0.5
+	var maxd := Vector2(c, c).length()
+	for y in size:
+		for x in size:
+			var t := clampf((Vector2(x - c, y - c).length() / maxd - 0.5) / 0.5, 0.0, 1.0)
+			img.set_pixel(x, y, Color(0.02, 0.015, 0.03, t * t * 0.7))
+	return ImageTexture.create_from_image(img)
 
 
 ## New Run: seed a fresh run via GameController, then ritual-swap to the overworld.
