@@ -15,6 +15,8 @@ const MANIFEST := {
 	"SB07": "leaf_hare.png",  # Leaf-hare (Eros/Gaia, starter lead)
 	"SB05": "sprout_shell.png",  # Sprout-shell (Gaia/Eros, starter tank)
 	"AD10": "thornmane.png",  # Thornmane (Eros/Gaia, starter regenerator)
+	"SB14": "quill_hog.png",  # Quill-hog (verdant wild)
+	"SB33": "wild_stag_calf.png",  # Wild-stag-calf (verdant wild)
 }
 
 
