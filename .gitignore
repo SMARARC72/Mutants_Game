@@ -26,6 +26,8 @@
 *.pem
 service-role*
 *serviceRole*
+# Art pipeline local OpenAI key (tools/gen_art.py) — gitignored explicitly; .example is committed
+tools/.art_secrets.env
 
 # Python
 __pycache__/
