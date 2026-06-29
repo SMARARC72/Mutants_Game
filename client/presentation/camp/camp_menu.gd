@@ -105,7 +105,12 @@ func _add_lead_portrait(box: VBoxContainer) -> void:
 	var run: RunContext = gc.call("run")
 	if run == null or not (run.party is Array) or (run.party as Array).is_empty():
 		return
-	var lead: Variant = (run.party as Array)[0]
+	# The lead is the ACTIVE creature (the player may have set a non-first member as lead), not party[0].
+	var party: Array = run.party
+	var idx := 0
+	if gc.has_method("active_creature_index"):
+		idx = clampi(int(gc.call("active_creature_index")), 0, party.size() - 1)
+	var lead: Variant = party[idx]
 	if not (lead is Dictionary):
 		return
 	var plate := SpeciesArt.plate(str((lead as Dictionary).get("species_id", "")))
