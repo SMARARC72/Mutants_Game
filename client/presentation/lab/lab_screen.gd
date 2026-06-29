@@ -530,6 +530,12 @@ func _rebuild_creature_picker(
 		btn.toggle_mode = true
 		btn.button_pressed = i == selected_index
 		btn.text = ("• " if i == selected_index else "  ") + label
+		var plate := SpeciesArt.plate(str(entry.get("species_id", "")))
+		if plate != null:
+			btn.icon = plate
+			btn.expand_icon = true
+			btn.add_theme_constant_override("icon_max_width", 36)
+		btn.custom_minimum_size = Vector2(0, 44)
 		var idx := i
 		btn.pressed.connect(func() -> void: on_pick.call(idx))
 		container.add_child(btn)

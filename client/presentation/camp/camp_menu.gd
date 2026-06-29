@@ -88,9 +88,44 @@ func _build() -> void:
 	subtitle.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	box.add_child(subtitle)
 
+	_add_lead_portrait(box)
 	_add_button(box, "PartyButton", "Party & Grimoire", open_party)
 	_add_button(box, "LabButton", "Lab", open_lab)
 	_add_button(box, "ResumeButton", "Resume", resume)
+
+
+## Show the lead creature's framed bestiary plate (when a run is live) — a face for "tend your coven".
+## No-op headless / no-run (GameController autoload absent or party empty), so tests are unaffected.
+func _add_lead_portrait(box: VBoxContainer) -> void:
+	var gc := get_node_or_null("/root/GameController")
+	if gc == null or not gc.has_method("run"):
+		return
+	var run: RunContext = gc.call("run")
+	if run == null or not (run.party is Array) or (run.party as Array).is_empty():
+		return
+	var lead: Variant = (run.party as Array)[0]
+	if not (lead is Dictionary):
+		return
+	var plate := SpeciesArt.plate(str((lead as Dictionary).get("species_id", "")))
+	if plate == null:
+		return
+	var portrait := TextureRect.new()
+	portrait.name = "LeadPortrait"
+	portrait.custom_minimum_size = Vector2(118, 118)
+	portrait.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	portrait.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	portrait.texture = plate
+	var frame := PanelContainer.new()
+	var sb := StyleBoxFlat.new()
+	sb.bg_color = Color(0.13, 0.11, 0.16)
+	sb.set_corner_radius_all(4)
+	sb.set_border_width_all(2)
+	sb.border_color = Color(0.725, 0.576, 0.247)  # BRASS
+	sb.set_content_margin_all(3)
+	frame.add_theme_stylebox_override("panel", sb)
+	frame.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	frame.add_child(portrait)
+	box.add_child(frame)
 
 
 func _add_button(
