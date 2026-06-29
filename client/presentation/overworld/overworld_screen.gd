@@ -762,6 +762,7 @@ func _spawn_npcs() -> void:
 	if _quests == null:
 		_quests = QuestService.new()
 		_quests.register([MARSH_QUEST, MELON_QUEST])
+		_restore_quests()
 	var cells := _npc_cells(NPC_DEFS.size())
 	for i in mini(cells.size(), NPC_DEFS.size()):
 		var def: Dictionary = NPC_DEFS[i]
@@ -853,10 +854,12 @@ func speak_to(index: int) -> String:
 		return ""
 	var npc: Dictionary = _npcs[index]
 	var timeline := str(npc["timeline"])
-	_in_dialogue = true
 	if _dialogue == null:
 		_dialogue = DialogicFacade.new()
+	# Connect idempotently BEFORE play so a first-talk signal can never be missed (review P2.3).
+	if not _dialogue.scene_finished.is_connected(_on_dialogue_finished):
 		_dialogue.scene_finished.connect(_on_dialogue_finished)
+	_in_dialogue = true
 	_advance_quest_for(npc)
 	dialogue_started.emit(timeline)
 	_dialogue.play_timeline(timeline)
@@ -874,16 +877,86 @@ func _advance_quest_for(npc: Dictionary) -> void:
 
 
 ## Start `quest_id` on the first talk that names a step, advance to that step, and toast the ledger
-## on a real advance. No-op when the NPC drives no step of this quest (empty step).
+## on a real advance. On a real advance the step's (and, on completion, the quest's) gameplay effect
+## is applied to the PERSISTED run, and quest progress is serialized + saved — so standing/corruption
+## actually accrue and survive reload (review P1.1 + Codex #37). No-op when the NPC drives no step.
 func _advance_quest_step(quest_id: String, step: String) -> void:
 	if step == "":
 		return
 	if not _quests.is_active(quest_id) and not _quests.is_done(quest_id):
 		_quests.start(quest_id)
-	if _quests.is_active(quest_id) and _quests.advance(quest_id, step):
-		var toast := get_node_or_null("/root/Toast")
-		if toast != null and toast.has_method("event"):
-			toast.call("event", "quest_update")
+	if not (_quests.is_active(quest_id) and _quests.advance(quest_id, step)):
+		return
+	_apply_effect_to_run(_quest_step_effect(quest_id, step))
+	if _quests.is_done(quest_id):
+		_apply_effect_to_run(_quest_def_by_id(quest_id).get("on_complete", {}) as Dictionary)
+	_persist_quests()
+	var toast := get_node_or_null("/root/Toast")
+	if toast != null and toast.has_method("event"):
+		toast.call("event", "quest_update")
+
+
+## All quest definitions this screen drives (for lookup + restore).
+func _quest_defs() -> Array:
+	return [MARSH_QUEST, MELON_QUEST]
+
+
+func _quest_def_by_id(quest_id: String) -> Dictionary:
+	for d: Dictionary in _quest_defs():
+		if str(d.get("id", "")) == quest_id:
+			return d
+	return {}
+
+
+## The `on_complete` effect of a named step of a quest, or {} if not found.
+func _quest_step_effect(quest_id: String, step_id: String) -> Dictionary:
+	for s: Dictionary in _quest_def_by_id(quest_id).get("steps", []) as Array:
+		if str(s.get("id", "")) == step_id:
+			return s.get("on_complete", {}) as Dictionary
+	return {}
+
+
+## Apply a quest effect to the ACTUAL run (corruption / standing / flags), not just the screen-local
+## QuestService run-state, so the rewards are real + saved. Data-only effect dict.
+func _apply_effect_to_run(effect: Dictionary) -> void:
+	if effect.is_empty() or _game == null or not _game.has_method("run"):
+		return
+	var run: RunContext = _game.call("run")
+	if run == null:
+		return
+	if effect.has("set_flag"):
+		run.flags[str(effect["set_flag"])] = true
+	if effect.has("add_corruption"):
+		run.corruption += int(effect["add_corruption"])
+	if effect.has("nudge_standing"):
+		var pair: Array = effect["nudge_standing"]
+		if (
+			pair.size() == 2
+			and str(pair[0]) == "bloomwardens"
+			and _game.has_method("adjust_bloomwardens_standing")
+		):
+			_game.call("adjust_bloomwardens_standing", int(pair[1]))
+
+
+## Serialize quest progress into run.flags and persist the run, so quests survive leaving the screen.
+func _persist_quests() -> void:
+	if _quests == null or _game == null or not _game.has_method("run"):
+		return
+	var run: RunContext = _game.call("run")
+	if run == null:
+		return
+	run.flags["quest_state"] = _quests.serialize()
+	if _game.has_method("save_run"):
+		_game.call("save_run")
+
+
+## Restore quest progress from the run (so a re-entered overworld keeps completed/in-flight quests).
+func _restore_quests() -> void:
+	if _quests == null or _game == null or not _game.has_method("run"):
+		return
+	var run: RunContext = _game.call("run")
+	if run != null and run.flags.has("quest_state"):
+		_quests.deserialize(run.flags["quest_state"] as Dictionary)
 
 
 func _on_dialogue_finished(_timeline_id: String) -> void:
