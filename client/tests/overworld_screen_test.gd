@@ -125,6 +125,28 @@ func test_try_move_blocks_walls_and_advances_steps() -> void:
 	gc.queue_free()
 
 
+func test_sigil_dash_crosses_up_to_three_tiles_and_advances_by_exactly_that() -> void:
+	# Sigil-dash hops up to DASH_TILES (3) along a direction, stopping at walls/edges/encounters; the
+	# avatar ends exactly `crossed` tiles further along, and the step counter advanced once per tile.
+	var gc := _make_game()
+	gc.call("new_run", TEST_SEED)
+	var ow := _make_overworld(gc)
+	var layout: Layout = ow.call("layout")
+	var before: Vector2i = ow.call("player_cell")
+	var dir := _walkable_dir(layout, before)
+	assert_bool(dir != Vector2i.ZERO).is_true()
+	var steps_before := int(gc.call("current_step"))
+	var crossed: int = ow.call("sigil_dash", dir)
+	assert_int(crossed).is_greater(0)
+	assert_int(crossed).is_less_equal(3)
+	var after: Vector2i = ow.call("player_cell")
+	assert_int(after.x).is_equal(before.x + dir.x * crossed)
+	assert_int(after.y).is_equal(before.y + dir.y * crossed)
+	assert_int(int(gc.call("current_step"))).is_equal(steps_before + crossed)
+	ow.queue_free()
+	gc.queue_free()
+
+
 func test_spawn_is_in_the_largest_reachable_area_not_a_sealed_room() -> void:
 	# The player must spawn in the LARGEST 4-connected walkable component (the open field), never
 	# inside a sealed DungeonAssembler set-piece room (a walled interior with no doorway) — a spawn
