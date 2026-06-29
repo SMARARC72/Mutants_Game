@@ -225,6 +225,52 @@ func test_overworld_places_talkable_npcs() -> void:
 	gc.queue_free()
 
 
+func test_overworld_places_all_authored_npcs() -> void:
+	# The expanded cast (intro pair + the 4 new authored NPCs) must all be placed: _npc_cells finds
+	# enough walkable cells near spawn for every NPC_DEFS entry.
+	var gc := _make_game()
+	gc.call("new_run", TEST_SEED)
+	var ow := _make_overworld(gc)
+	assert_int(int(ow.call("npc_count"))).is_equal(OverworldScreenScript.NPC_DEFS.size())
+	assert_int(int(ow.call("npc_count"))).is_greater_equal(6)
+	ow.queue_free()
+	gc.queue_free()
+
+
+func test_speaking_to_a_new_npc_emits_its_authored_timeline() -> void:
+	# Speaking to one of the NEW authored NPCs (Matron Sevvy, index 2) plays her authored Dialogic
+	# timeline; the dialogue_started signal + returned timeline id prove the new beat fires.
+	var gc := _make_game()
+	gc.call("new_run", TEST_SEED)
+	var ow := _make_overworld(gc)
+	var seen := {"id": ""}
+	ow.connect("dialogue_started", func(tid: String) -> void: seen["id"] = tid)
+	var timeline: String = ow.call("speak_to", 2)
+	assert_str(timeline).is_equal("bloom_matron")
+	assert_str(str(seen["id"])).is_equal(timeline)
+	ow.queue_free()
+	gc.queue_free()
+
+
+func test_side_quest_starts_and_completes_via_its_npcs() -> void:
+	# SQ-04 "The Melon That Waits": talking to Pollen-Factor Dree (index 3) starts the side quest +
+	# advances step 1; sitting with The Melon (index 4) advances step 2, auto-completing it — without
+	# disturbing the separate intro quest. The overworld<->QuestService seam for the second quest.
+	var gc := _make_game()
+	gc.call("new_run", TEST_SEED)
+	var ow := _make_overworld(gc)
+	assert_bool(bool(ow.call("quest_active", "the_melon_that_waits"))).is_false()
+	assert_bool(bool(ow.call("quest_done", "the_melon_that_waits"))).is_false()
+	ow.call("speak_to", 3)
+	assert_bool(bool(ow.call("quest_active", "the_melon_that_waits"))).is_true()
+	# The intro quest must NOT have been started by the side-quest NPCs.
+	assert_bool(bool(ow.call("quest_active", "marsh_welcome"))).is_false()
+	ow.call("speak_to", 4)
+	assert_bool(bool(ow.call("quest_done", "the_melon_that_waits"))).is_true()
+	ow.queue_free()
+	gc.queue_free()
+
+
 func test_speaking_to_an_npc_emits_its_dialogue_timeline() -> void:
 	# speak_to plays the NPC's authored Dialogic timeline; headless it resolves immediately, but the
 	# dialogue_started signal + returned timeline id prove the beat fired (the overworld<->narrative seam).

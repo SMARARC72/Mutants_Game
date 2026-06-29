@@ -39,20 +39,44 @@ const BRASS := Color(0.725, 0.576, 0.247)
 const BRASS_BRIGHT := Color(0.878431, 0.72549, 0.352941)
 
 ## Walk-up-and-talk NPCs placed in the starter region. Each plays its authored Dialogic timeline
-## (registered in project.godot dtl_directory) on INTERACT when the tamer stands beside it, and
-## advances `quest_step` of the intro quest.
+## (registered in project.godot dtl_directory) on INTERACT when the tamer stands beside it.
+## `quest_step` advances the intro quest (MARSH_QUEST); `melon_step` advances the side quest
+## (MELON_QUEST). A def may drive both, one, or neither quest. Ring colours are drawn from the
+## six-force palette (GrimoirePalette) so each token reads as a distinct occult game-piece.
 const NPC_DEFS := [
 	{
 		"name": "Old Marrow",
 		"timeline": "marsh_oracle",
-		"ring": Color(0.667, 0.376, 0.69),
+		"ring": Color(0.667, 0.376, 0.69),  # Thanatos violet — the bog oracle
 		"quest_step": "hear_marrow"
 	},
 	{
 		"name": "Bog-Wretch",
 		"timeline": "marsh_encounter",
-		"ring": Color(0.435, 0.722, 0.839),
+		"ring": Color(0.435, 0.722, 0.839),  # Ouranos silver-blue — the penny-coloured wretch
 		"quest_step": "meet_wretch"
+	},
+	{
+		"name": "Matron Sevvy",
+		"timeline": "bloom_matron",
+		"ring": Color("e0658c"),  # Eros rose — the Bloomwarden Greenmother
+	},
+	{
+		"name": "Pollen-Factor Dree",
+		"timeline": "pollen_factor",
+		"ring": Color("d6248c"),  # Chaos magenta — the absurdist cursed-goods merchant
+		"melon_step": "covet_melon",
+	},
+	{
+		"name": "The Melon",
+		"timeline": "the_melon",
+		"ring": Color("e8d8a0"),  # Cosmos gold — the patient melon that waits
+		"melon_step": "wait_with_melon",
+	},
+	{
+		"name": "Rust Warden",
+		"timeline": "rust_warden",
+		"ring": Color("e0b95a"),  # lit brass — the Bloomwarden lore/mentor
 	},
 ]
 
@@ -76,6 +100,32 @@ const MARSH_QUEST := {
 		},
 	],
 	"on_complete": {"set_flag": "marsh_welcomed", "add_corruption": 1},
+}
+
+## SQ-04 "The Melon That Waits" — an authored absurdist non-combat side quest. The Pollen-Factor
+## covets the melon (start); the tamer then sits and waits with the patient melon (complete). A
+## second QuestService quest, mirroring MARSH_QUEST but driven by a separate pair of NPCs — it does
+## NOT butcher anything (a Bloomwarden-flavoured beat: some things you outlast, not befriend). The
+## payoff nudges Bloomwarden standing rather than corruption: patience is husbandry.
+const MELON_QUEST := {
+	"id": "the_melon_that_waits",
+	"name": "The Melon That Waits",
+	"description":
+	"Pollen-Factor Dree wants the melon. The melon has other plans. So, now, do you.",
+	"steps":
+	[
+		{
+			"id": "covet_melon",
+			"description": "Hear Pollen-Factor Dree out.",
+			"on_complete": {"set_flag": "heard_the_factor"}
+		},
+		{
+			"id": "wait_with_melon",
+			"description": "Wait with the melon.",
+			"on_complete": {"set_flag": "waited_with_melon"}
+		},
+	],
+	"on_complete": {"set_flag": "melon_outlasted", "nudge_standing": ["bloomwardens", 1]},
 }
 
 var _game: Node = null
@@ -711,7 +761,7 @@ func _spawn_npcs() -> void:
 		return
 	if _quests == null:
 		_quests = QuestService.new()
-		_quests.register([MARSH_QUEST])
+		_quests.register([MARSH_QUEST, MELON_QUEST])
 	var cells := _npc_cells(NPC_DEFS.size())
 	for i in mini(cells.size(), NPC_DEFS.size()):
 		var def: Dictionary = NPC_DEFS[i]
@@ -733,6 +783,7 @@ func _spawn_npcs() -> void:
 					"name": str(def["name"]),
 					"timeline": str(def["timeline"]),
 					"quest_step": str(def.get("quest_step", "")),
+					"melon_step": str(def.get("melon_step", "")),
 					"node": node,
 				}
 			)
@@ -812,18 +863,24 @@ func speak_to(index: int) -> String:
 	return timeline
 
 
-## Start the intro quest on the first talk and advance the NPC's step; toast the ledger on a real
-## advance. The quest lives in this screen's QuestService (its own narrative run-state) for now.
+## Drive every quest this NPC participates in: the intro quest (quest_step → MARSH_QUEST) and the
+## SQ-04 side quest (melon_step → MELON_QUEST). Both quests live in this screen's QuestService (its
+## own narrative run-state) for now and share the same start-on-first-talk / toast-on-advance shape.
 func _advance_quest_for(npc: Dictionary) -> void:
 	if _quests == null:
 		return
-	var step := str(npc.get("quest_step", ""))
-	var qid := str(MARSH_QUEST["id"])
+	_advance_quest_step(str(MARSH_QUEST["id"]), str(npc.get("quest_step", "")))
+	_advance_quest_step(str(MELON_QUEST["id"]), str(npc.get("melon_step", "")))
+
+
+## Start `quest_id` on the first talk that names a step, advance to that step, and toast the ledger
+## on a real advance. No-op when the NPC drives no step of this quest (empty step).
+func _advance_quest_step(quest_id: String, step: String) -> void:
 	if step == "":
 		return
-	if not _quests.is_active(qid) and not _quests.is_done(qid):
-		_quests.start(qid)
-	if _quests.is_active(qid) and _quests.advance(qid, step):
+	if not _quests.is_active(quest_id) and not _quests.is_done(quest_id):
+		_quests.start(quest_id)
+	if _quests.is_active(quest_id) and _quests.advance(quest_id, step):
 		var toast := get_node_or_null("/root/Toast")
 		if toast != null and toast.has_method("event"):
 			toast.call("event", "quest_update")
