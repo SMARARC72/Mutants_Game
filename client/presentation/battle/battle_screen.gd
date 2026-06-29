@@ -403,12 +403,34 @@ func _rebuild_rows(container: VBoxContainer, team: Array, _is_enemy: bool) -> vo
 		bar.value = maxi(0, mon.hp)
 		bar.show_percentage = false
 		bar.custom_minimum_size = Vector2(0, 14)
+		_style_hp_bar(bar)
 		row.add_child(bar)
 		var hp_label := Label.new()
 		hp_label.text = "%d / %d" % [maxi(0, mon.hp), mon.maxhp]
 		hp_label.theme_type_variation = "MutedLabel"
 		row.add_child(hp_label)
 		container.add_child(row)
+
+
+## Colour the HP bar green -> amber -> red by health fraction (an instant read-out) over a dark INK
+## track, with rounded corners to match the grimoire theme (replaces the engine default pink fill).
+static func _style_hp_bar(bar: ProgressBar) -> void:
+	var frac := 0.0
+	if bar.max_value > 0:
+		frac = clampf(bar.value / bar.max_value, 0.0, 1.0)
+	var fill_color := Color(0.498039, 0.682353, 0.352941)  # SUCCESS green #7fae5a
+	if frac < 0.3:
+		fill_color = Color(0.760784, 0.25098, 0.184314)  # DANGER red #c2402f
+	elif frac < 0.6:
+		fill_color = Color(0.839216, 0.635294, 0.247059)  # WARNING amber #d6a23f
+	var fill := StyleBoxFlat.new()
+	fill.bg_color = fill_color
+	fill.set_corner_radius_all(3)
+	var track := StyleBoxFlat.new()
+	track.bg_color = Color(0.090196, 0.07451, 0.109804)  # INK track
+	track.set_corner_radius_all(3)
+	bar.add_theme_stylebox_override("fill", fill)
+	bar.add_theme_stylebox_override("background", track)
 
 
 func _refresh_transcript() -> void:
