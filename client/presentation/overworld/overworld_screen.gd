@@ -286,7 +286,7 @@ func _render_layout() -> void:
 
 
 func _spawn_player() -> void:
-	_player_cell = _first_walkable_cell()
+	_player_cell = _spawn_cell()
 	if _player == null:
 		_player = Node2D.new()
 		_player.name = "Player"
@@ -325,6 +325,24 @@ func _first_walkable_cell() -> Vector2i:
 			if OverworldTileSetScript.is_walkable(_layout.get_cell(x, y)):
 				return Vector2i(x, y)
 	return Vector2i.ZERO
+
+
+## The walkable cell nearest the region CENTER — the player spawns here (not the top-left corner)
+## so every direction is usable immediately and the camera frames the player mid-region. A corner
+## spawn made W/A read as "nothing happens" (out of bounds), which felt like broken movement.
+func _spawn_cell() -> Vector2i:
+	var cx := _layout.width / 2
+	var cy := _layout.height / 2
+	var best := Vector2i(-1, -1)
+	var best_d := 1 << 30
+	for y in _layout.height:
+		for x in _layout.width:
+			if OverworldTileSetScript.is_walkable(_layout.get_cell(x, y)):
+				var d := (x - cx) * (x - cx) + (y - cy) * (y - cy)
+				if d < best_d:
+					best_d = d
+					best = Vector2i(x, y)
+	return best if best.x >= 0 else _first_walkable_cell()
 
 
 ## Attach a PhantomCamera2D following the player. Fully guarded: if the addon classes are missing
