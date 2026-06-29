@@ -23,6 +23,7 @@ const GearServiceScript := preload("res://application/game/gear_service.gd")
 const CAMP_SCENE := "res://presentation/camp/camp_menu.tscn"
 
 const POLE_STATS: Array = ["Bulk", "Celerity", "Ward", "Spike", "Vitality", "Bane"]
+const _FORCE_ICON_DIR := "res://assets/icons/forces/"
 
 var _game: Node = null
 var _transition: Node = null
@@ -35,6 +36,8 @@ var _roster: VBoxContainer = null
 var _detail_box: VBoxContainer = null
 var _detail_title: Label = null
 var _detail_stats: Label = null
+var _detail_portrait: TextureRect = null
+var _detail_forces: HBoxContainer = null
 var _ledger_label: Label = null
 var _gear_box: VBoxContainer = null
 ## When false, _ready does NOT auto-build from the autoload (a headless test injects + drives).
@@ -242,10 +245,29 @@ func _build_ui() -> void:
 
 
 func _build_detail_panel() -> void:
+	# Header: a framed bestiary-plate portrait beside the name + force icons.
+	var header := HBoxContainer.new()
+	header.add_theme_constant_override("separation", 12)
+	_detail_box.add_child(header)
+	_detail_portrait = TextureRect.new()
+	_detail_portrait.name = "DetailPortrait"
+	_detail_portrait.custom_minimum_size = Vector2(132, 132)
+	_detail_portrait.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	_detail_portrait.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	header.add_child(_frame_portrait(_detail_portrait))
+	var head_col := VBoxContainer.new()
+	head_col.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	head_col.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	head_col.add_theme_constant_override("separation", 4)
+	header.add_child(head_col)
 	_detail_title = Label.new()
 	_detail_title.name = "DetailTitle"
 	_detail_title.theme_type_variation = "TitleLabel"
-	_detail_box.add_child(_detail_title)
+	head_col.add_child(_detail_title)
+	_detail_forces = HBoxContainer.new()
+	_detail_forces.name = "DetailForces"
+	_detail_forces.add_theme_constant_override("separation", 6)
+	head_col.add_child(_detail_forces)
 
 	_detail_stats = Label.new()
 	_detail_stats.name = "DetailStats"
@@ -299,6 +321,12 @@ func _refresh_roster() -> void:
 		btn.text = label
 		btn.toggle_mode = true
 		btn.button_pressed = i == _selected_index
+		var plate := SpeciesArt.plate(str(creature.get("species_id", "")))
+		if plate != null:
+			btn.icon = plate
+			btn.expand_icon = true
+			btn.add_theme_constant_override("icon_max_width", 38)
+		btn.custom_minimum_size = Vector2(0, 46)
 		var idx := i
 		btn.pressed.connect(func() -> void: select_creature(idx))
 		_roster.add_child(btn)
@@ -327,8 +355,56 @@ func _refresh_detail() -> void:
 	var species: SpeciesData = catalog.get_by_id(str(creature.get("species_id", "")))
 	var nick := str(creature.get("nickname", ""))
 	_detail_title.text = nick if nick != "" else (species.name if species != null else "?")
+	if _detail_portrait != null:
+		_detail_portrait.texture = SpeciesArt.plate(str(creature.get("species_id", "")))
+	_refresh_detail_forces(species)
 	_detail_stats.text = _format_detail(creature, species, catalog)
 	_refresh_gear_box(creature)
+
+
+## Fill the detail force-icon row from the species' primary/secondary forces (colour+icon pairing).
+func _refresh_detail_forces(species: SpeciesData) -> void:
+	if _detail_forces == null:
+		return
+	for child in _detail_forces.get_children():
+		child.queue_free()
+	if species == null:
+		return
+	for f: String in [species.force_primary, species.force_secondary]:
+		var icon := _force_icon(f)
+		if icon == null:
+			continue
+		var tr := TextureRect.new()
+		tr.texture = icon
+		tr.custom_minimum_size = Vector2(22, 22)
+		tr.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		tr.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		tr.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		tr.modulate = GrimoirePalette.force_color(f)
+		tr.tooltip_text = f
+		_detail_forces.add_child(tr)
+
+
+## A brass-bordered ink frame around a portrait so the creature reads as a bestiary plate.
+func _frame_portrait(portrait: TextureRect) -> Control:
+	var frame := PanelContainer.new()
+	var sb := StyleBoxFlat.new()
+	sb.bg_color = Color(0.13, 0.11, 0.16)
+	sb.set_corner_radius_all(4)
+	sb.set_border_width_all(2)
+	sb.border_color = Color(0.725, 0.576, 0.247)  # BRASS
+	sb.set_content_margin_all(3)
+	frame.add_theme_stylebox_override("panel", sb)
+	frame.add_child(portrait)
+	return frame
+
+
+## A force's HUD icon (res://assets/icons/forces/<force>.svg), or null if absent.
+func _force_icon(force_name: String) -> Texture2D:
+	if force_name == "":
+		return null
+	var path := _FORCE_ICON_DIR + force_name.to_lower() + ".svg"
+	return load(path) if ResourceLoader.exists(path) else null
 
 
 func _format_detail(creature: Dictionary, species: SpeciesData, catalog: SpeciesCatalog) -> String:
