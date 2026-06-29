@@ -27,9 +27,9 @@ const CAMP_SCENE := "res://presentation/camp/camp_menu.tscn"
 
 const STEP_COOLDOWN := 0.14  # seconds between grid steps while a direction is held
 const CAMERA_ZOOM := 1.5  # frames ~11 of the 64px painterly tiles around the player
+const DASH_TILES := 3  # max tiles the sigil-dash crosses in one ritual hop (design §3.5)
+const DASH_COOLDOWN := 0.55  # seconds before the ley-line can be ridden again
 
-## The lead creature's real bestiary plate (cameo token that trails the player, HG/SS-style).
-const LEAD_CREATURE_PLATE := "res://assets/creatures/halo_sprout.png"
 const REGION_TITLE := "The Rust Marsh"  # starter region label (force-climate: Eros)
 const REGION_CLIMATE := "Eros climate · a thin place"
 const INK := Color(0.090196, 0.07451, 0.109804)
@@ -49,6 +49,7 @@ var _lead: Sprite2D = null  # lead-creature cameo that trails the player
 var _lead_target: Vector2 = Vector2.ZERO
 var _last_dir: Vector2i = Vector2i.DOWN
 var _step_timer: float = 0.0
+var _dash_timer: float = 0.0
 var _busy: bool = false  # true while a battle hand-off / transition is mid-flight
 ## When false, an encounter still emits encounter_started + autosaves but skips the scene swap
 ## (lets a headless test drive the encounter flow without changing the SceneTree).
@@ -255,6 +256,48 @@ func _hand_off_to_battle() -> void:
 		get_tree().change_scene_to_file(BATTLE_SCENE)
 
 
+## Sigil-dash (design §3.5): a ritual hop of up to DASH_TILES grid steps along `dir`, stopping early
+## at a wall / region edge or the moment a step triggers an encounter (you can dash INTO danger).
+## Returns the number of tiles crossed. Public + HEADLESS-testable (drives try_move; no input/frame
+## dependency), so a test can assert the hop distance + wall/encounter stops.
+func sigil_dash(dir: Vector2i) -> int:
+	if dir == Vector2i.ZERO:
+		return 0
+	var crossed := 0
+	for _i in DASH_TILES:
+		var res := try_move(dir)
+		if not bool(res.get("moved", false)):
+			break
+		crossed += 1
+		if bool(res.get("encounter", false)) or _busy:
+			break
+	if crossed > 0:
+		_last_dir = dir
+		_emit_dash_trail()
+	return crossed
+
+
+## A brief brass spark-burst trailing the tamer on a dash (ley-line residue). No-op headless.
+func _emit_dash_trail() -> void:
+	if _player == null or not is_inside_tree():
+		return
+	var spark := CPUParticles2D.new()
+	spark.one_shot = true
+	spark.emitting = true
+	spark.amount = 18
+	spark.lifetime = 0.5
+	spark.explosiveness = 0.9
+	spark.direction = Vector2(-_last_dir.x, -_last_dir.y)
+	spark.spread = 38.0
+	spark.initial_velocity_min = 40.0
+	spark.initial_velocity_max = 130.0
+	spark.scale_amount_min = 1.0
+	spark.scale_amount_max = 2.6
+	spark.color = BRASS_BRIGHT
+	_player.add_child(spark)
+	get_tree().create_timer(0.9).timeout.connect(spark.queue_free)
+
+
 # === input -> discrete grid steps ============================================================= #
 
 
@@ -272,6 +315,17 @@ func _process(delta: float) -> void:
 		):
 			open_camp()
 			return
+	# Sigil-dash (design §3.5): a ritual hop of up to DASH_TILES along the faced/held direction.
+	_dash_timer = maxf(0.0, _dash_timer - delta)
+	if _dash_timer <= 0.0 and _input.has_method("just_pressed"):
+		if bool(_input.call("just_pressed", InputActions.SIGIL_DASH)):
+			var dash_dir := _read_step_dir()
+			if dash_dir == Vector2i.ZERO:
+				dash_dir = _last_dir
+			if dash_dir != Vector2i.ZERO:
+				sigil_dash(dash_dir)
+				_dash_timer = DASH_COOLDOWN
+				return
 	_step_timer = maxf(0.0, _step_timer - delta)
 	if _step_timer > 0.0:
 		return
@@ -347,12 +401,12 @@ func _make_player_token(diameter: int) -> ImageTexture:
 	return ImageTexture.create_from_image(img)
 
 
-## Spawn the lead-creature cameo (its real bestiary plate, circular-cropped with a brass ring) that
-## trails the tamer HG/SS-style. No-op headless if the plate is missing.
+## Spawn the lead-creature cameo (the ACTUAL party lead's real bestiary plate, circular-cropped with
+## a brass ring) that trails the tamer HG/SS-style. No-op if no plate resolves.
 func _spawn_lead_creature() -> void:
-	if _lead != null or not ResourceLoader.exists(LEAD_CREATURE_PLATE):
+	if _lead != null:
 		return
-	var tex: Texture2D = load(LEAD_CREATURE_PLATE)
+	var tex: Texture2D = SpeciesArt.plate(_lead_species_id())
 	if tex == null:
 		return
 	_lead = Sprite2D.new()
@@ -364,6 +418,17 @@ func _spawn_lead_creature() -> void:
 	var here := Vector2(_player_cell.x * s + s / 2.0, _player_cell.y * s + s / 2.0)
 	_lead.position = here - Vector2(_last_dir) * float(s)
 	_lead_target = _lead.position
+
+
+## The species id of the run's lead party member (party[0]), or "" — used to pick the cameo plate.
+func _lead_species_id() -> String:
+	if _game == null or not _game.has_method("run"):
+		return ""
+	var run: RunContext = _game.call("run")
+	if run == null or not (run.party is Array) or (run.party as Array).is_empty():
+		return ""
+	var lead: Variant = (run.party as Array)[0]
+	return str((lead as Dictionary).get("species_id", "")) if lead is Dictionary else ""
 
 
 ## Build a circular cameo token from a full-body creature plate: centre-crop a square framing the
