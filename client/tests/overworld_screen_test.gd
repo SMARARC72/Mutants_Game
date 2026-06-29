@@ -216,6 +216,30 @@ func test_driving_a_move_into_an_encounter_step_hands_off() -> void:
 	gc.queue_free()
 
 
+func test_overworld_places_talkable_npcs() -> void:
+	var gc := _make_game()
+	gc.call("new_run", TEST_SEED)
+	var ow := _make_overworld(gc)
+	assert_int(int(ow.call("npc_count"))).is_greater(0)
+	ow.queue_free()
+	gc.queue_free()
+
+
+func test_speaking_to_an_npc_emits_its_dialogue_timeline() -> void:
+	# speak_to plays the NPC's authored Dialogic timeline; headless it resolves immediately, but the
+	# dialogue_started signal + returned timeline id prove the beat fired (the overworld<->narrative seam).
+	var gc := _make_game()
+	gc.call("new_run", TEST_SEED)
+	var ow := _make_overworld(gc)
+	var seen := {"id": ""}
+	ow.connect("dialogue_started", func(tid: String) -> void: seen["id"] = tid)
+	var timeline: String = ow.call("speak_to", 0)
+	assert_str(timeline).is_not_empty()
+	assert_str(str(seen["id"])).is_equal(timeline)
+	ow.queue_free()
+	gc.queue_free()
+
+
 ## A cardinal direction from `cell` into a walkable, in-bounds neighbour, or ZERO if hemmed in.
 func _walkable_dir(layout: Layout, cell: Vector2i) -> Vector2i:
 	for dir: Vector2i in [Vector2i(1, 0), Vector2i(0, 1), Vector2i(-1, 0), Vector2i(0, -1)]:
