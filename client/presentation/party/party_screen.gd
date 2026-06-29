@@ -36,6 +36,7 @@ var _roster: VBoxContainer = null
 var _detail_box: VBoxContainer = null
 var _detail_title: Label = null
 var _detail_stats: Label = null
+var _detail_desc: Label = null
 var _detail_portrait: TextureRect = null
 var _detail_forces: HBoxContainer = null
 var _ledger_label: Label = null
@@ -274,6 +275,13 @@ func _build_detail_panel() -> void:
 	_detail_stats.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_detail_box.add_child(_detail_stats)
 
+	# The creature's bestiary description (the funny-grim flavour), in muted parchment text.
+	_detail_desc = Label.new()
+	_detail_desc.name = "DetailDescription"
+	_detail_desc.theme_type_variation = "MutedLabel"
+	_detail_desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_detail_box.add_child(_detail_desc)
+
 	# Active/lead + leveling buttons.
 	var set_active_btn := _make_button("SetActiveButton", "Set as Lead", set_active)
 	_detail_box.add_child(set_active_btn)
@@ -350,6 +358,8 @@ func _refresh_detail() -> void:
 	if creature.is_empty():
 		_detail_title.text = "—"
 		_detail_stats.text = "No creature selected."
+		if _detail_desc != null:
+			_detail_desc.text = ""
 		return
 	var catalog: SpeciesCatalog = _game.call("catalog")
 	var species: SpeciesData = catalog.get_by_id(str(creature.get("species_id", "")))
@@ -359,6 +369,9 @@ func _refresh_detail() -> void:
 		_detail_portrait.texture = SpeciesArt.plate(str(creature.get("species_id", "")))
 	_refresh_detail_forces(species)
 	_detail_stats.text = _format_detail(creature, species, catalog)
+	if _detail_desc != null:
+		var desc := species.description if species != null else ""
+		_detail_desc.text = "“%s”" % desc if desc != "" else ""
 	_refresh_gear_box(creature)
 
 
