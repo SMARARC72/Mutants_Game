@@ -122,16 +122,8 @@ func _add_lead_portrait(box: VBoxContainer) -> void:
 	portrait.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	portrait.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	portrait.texture = plate
-	var frame := PanelContainer.new()
-	var sb := StyleBoxFlat.new()
-	sb.bg_color = Color(0.13, 0.11, 0.16)
-	sb.set_corner_radius_all(4)
-	sb.set_border_width_all(2)
-	sb.border_color = Color(0.725, 0.576, 0.247)  # BRASS
-	sb.set_content_margin_all(3)
-	frame.add_theme_stylebox_override("panel", sb)
+	var frame := PortraitUtil.framed(portrait)
 	frame.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-	frame.add_child(portrait)
 	box.add_child(frame)
 
 

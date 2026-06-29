@@ -23,7 +23,6 @@ const GearServiceScript := preload("res://application/game/gear_service.gd")
 const CAMP_SCENE := "res://presentation/camp/camp_menu.tscn"
 
 const POLE_STATS: Array = ["Bulk", "Celerity", "Ward", "Spike", "Vitality", "Bane"]
-const _FORCE_ICON_DIR := "res://assets/icons/forces/"
 
 var _game: Node = null
 var _transition: Node = null
@@ -255,7 +254,7 @@ func _build_detail_panel() -> void:
 	_detail_portrait.custom_minimum_size = Vector2(132, 132)
 	_detail_portrait.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	_detail_portrait.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	header.add_child(_frame_portrait(_detail_portrait))
+	header.add_child(PortraitUtil.framed(_detail_portrait))
 	var head_col := VBoxContainer.new()
 	head_col.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	head_col.size_flags_vertical = Control.SIZE_SHRINK_CENTER
@@ -384,40 +383,9 @@ func _refresh_detail_forces(species: SpeciesData) -> void:
 	if species == null:
 		return
 	for f: String in [species.force_primary, species.force_secondary]:
-		var icon := _force_icon(f)
-		if icon == null:
-			continue
-		var tr := TextureRect.new()
-		tr.texture = icon
-		tr.custom_minimum_size = Vector2(22, 22)
-		tr.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		tr.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		tr.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-		tr.modulate = GrimoirePalette.force_color(f)
-		tr.tooltip_text = f
-		_detail_forces.add_child(tr)
-
-
-## A brass-bordered ink frame around a portrait so the creature reads as a bestiary plate.
-func _frame_portrait(portrait: TextureRect) -> Control:
-	var frame := PanelContainer.new()
-	var sb := StyleBoxFlat.new()
-	sb.bg_color = Color(0.13, 0.11, 0.16)
-	sb.set_corner_radius_all(4)
-	sb.set_border_width_all(2)
-	sb.border_color = Color(0.725, 0.576, 0.247)  # BRASS
-	sb.set_content_margin_all(3)
-	frame.add_theme_stylebox_override("panel", sb)
-	frame.add_child(portrait)
-	return frame
-
-
-## A force's HUD icon (res://assets/icons/forces/<force>.svg), or null if absent.
-func _force_icon(force_name: String) -> Texture2D:
-	if force_name == "":
-		return null
-	var path := _FORCE_ICON_DIR + force_name.to_lower() + ".svg"
-	return load(path) if ResourceLoader.exists(path) else null
+		var tr := PortraitUtil.force_icon_node(f, 22)
+		if tr != null:
+			_detail_forces.add_child(tr)
 
 
 func _format_detail(creature: Dictionary, species: SpeciesData, catalog: SpeciesCatalog) -> String:
