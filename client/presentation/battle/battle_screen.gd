@@ -29,6 +29,7 @@ const OVERWORLD_SCENE := "res://presentation/overworld/overworld_screen.tscn"
 const _STEP_AWAIT := "await_player"
 const _STEP_RESOLVED := "resolved"
 const _STEP_ENDED := "ended"
+const _FORCE_ICON_DIR := "res://assets/icons/forces/"
 
 var _game: Node = null
 var _transition: Node = null
@@ -48,6 +49,11 @@ var _party_rows: VBoxContainer = null
 var _enemy_rows: VBoxContainer = null
 var _banner: Label = null
 var _root_box: VBoxContainer = null
+## Build-once combatant cards (portrait + force icons + HP bar), then updated in place each refresh so
+## HP tweens / damage floats / hit-flashes can live on persistent nodes. Each entry is a dict of refs.
+var _party_cards: Array = []
+var _enemy_cards: Array = []
+var _player_species: Array = []  # species ids of the run party, by index (for portraits)
 ## When false, _ready does NOT auto-run the pending battle (a headless test drives
 ## run_pending_battle() once explicitly). Default true so production auto-runs on scene entry.
 var _auto_run: bool = true
@@ -97,6 +103,13 @@ func run_pending_battle() -> Dictionary:
 	var battle_seed := int(pending.get("battle_seed", 0))
 	_is_wild = bool(pending.get("is_wild", true))  # overworld encounters are wild by default
 	var catalog: SpeciesCatalog = _game.call("catalog")
+	# Capture the player party's species ids (by index) BEFORE the session builds, so each player card
+	# can show the right bestiary plate (enemy plates resolve via InteractiveBattle.species_for).
+	_player_species = []
+	for p in run.party:
+		_player_species.append(
+			str((p as Dictionary).get("species_id", "")) if p is Dictionary else ""
+		)
 	_session = BattleSessionScript.new(catalog)
 	_battle = _session.begin_interactive(run.party, enemy_party, battle_seed)
 	# Clear the pending flag now so a re-entrant call is a no-op even mid-battle.
@@ -294,6 +307,8 @@ func _banner_text_for(reason: String) -> String:
 func _build_ui() -> void:
 	for child in get_children():
 		child.queue_free()
+	_party_cards.clear()
+	_enemy_cards.clear()
 	set_anchors_preset(Control.PRESET_FULL_RECT)
 
 	var bg := ColorRect.new()
@@ -373,43 +388,156 @@ func _build_ui() -> void:
 	_refresh_transcript()
 
 
-## Build the combatant rows (HP bar + name/force) for both teams from the live Mons.
+## Refresh both teams. Cards are built ONCE then updated in place, so HP changes can flash the
+## portrait without rebuilding (and node identity is stable for animations).
 func _refresh_combatants() -> void:
 	if _battle == null:
 		return
-	_rebuild_rows(_party_rows, _battle.player_team(), false)
-	_rebuild_rows(_enemy_rows, _battle.enemy_team(), true)
+	if _party_cards.is_empty():
+		_build_team_cards(_party_rows, _battle.player_team(), false, _party_cards)
+	if _enemy_cards.is_empty():
+		_build_team_cards(_enemy_rows, _battle.enemy_team(), true, _enemy_cards)
+	_update_team_cards(_party_cards, _battle.player_team())
+	_update_team_cards(_enemy_cards, _battle.enemy_team())
 
 
-func _rebuild_rows(container: VBoxContainer, team: Array, _is_enemy: bool) -> void:
+## Build a team's portrait cards once into `container`, recording node refs in `cards`.
+func _build_team_cards(container: VBoxContainer, team: Array, is_enemy: bool, cards: Array) -> void:
 	if container == null:
 		return
 	for child in container.get_children():
 		child.queue_free()
-	for m in team:
-		var mon := m as BattleEngine.Mon
-		var row := VBoxContainer.new()
-		row.add_theme_constant_override("separation", 1)
-		var name_label := Label.new()
-		var force := mon.prim if mon.sec == "" else "%s/%s" % [mon.prim, mon.sec]
-		var down := "" if mon.alive else "  (down)"
-		name_label.text = "%s — %s%s" % [mon.name, force, down]
-		if not mon.alive:
-			name_label.add_theme_color_override("font_color", Color(0.55, 0.5, 0.55))
-		row.add_child(name_label)
-		var bar := ProgressBar.new()
-		bar.min_value = 0
+	cards.clear()
+	for i in team.size():
+		var mon := team[i] as BattleEngine.Mon
+		cards.append(_make_card(container, mon, _species_id_for(is_enemy, i, mon), is_enemy))
+
+
+## One combatant card: framed bestiary-plate portrait + name + force icon(s) + HP bar + HP text.
+func _make_card(
+	container: VBoxContainer, mon: BattleEngine.Mon, species_id: String, is_enemy: bool
+) -> Dictionary:
+	var card := PanelContainer.new()
+	card.name = ("Enemy" if is_enemy else "Party") + "Card"
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 10)
+	card.add_child(row)
+
+	var portrait := TextureRect.new()
+	portrait.name = "Portrait"
+	portrait.custom_minimum_size = Vector2(88, 88)
+	portrait.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	portrait.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	portrait.texture = SpeciesArt.plate(species_id)
+	row.add_child(_frame_portrait(portrait))
+
+	var info := VBoxContainer.new()
+	info.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	info.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	info.add_theme_constant_override("separation", 3)
+	row.add_child(info)
+	var name_row := HBoxContainer.new()
+	name_row.add_theme_constant_override("separation", 5)
+	var name_label := Label.new()
+	name_label.text = mon.name
+	name_row.add_child(name_label)
+	for f: String in [mon.prim, mon.sec]:
+		var icon := _force_icon(f)
+		if icon != null:
+			var tr := TextureRect.new()
+			tr.texture = icon
+			tr.custom_minimum_size = Vector2(18, 18)
+			tr.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+			tr.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+			tr.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+			tr.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+			tr.modulate = GrimoirePalette.force_color(f)  # color+icon pairing (design §2/§5)
+			tr.tooltip_text = f
+			name_row.add_child(tr)
+	info.add_child(name_row)
+	var bar := ProgressBar.new()
+	bar.min_value = 0
+	bar.max_value = mon.maxhp
+	bar.value = maxi(0, mon.hp)
+	bar.show_percentage = false
+	bar.custom_minimum_size = Vector2(0, 14)
+	_style_hp_bar(bar)
+	info.add_child(bar)
+	var hp_label := Label.new()
+	hp_label.theme_type_variation = "MutedLabel"
+	hp_label.text = "%d / %d" % [maxi(0, mon.hp), mon.maxhp]
+	info.add_child(hp_label)
+
+	container.add_child(card)
+	return {
+		"card": card,
+		"portrait": portrait,
+		"name": name_label,
+		"bar": bar,
+		"hp": hp_label,
+		"last_hp": mon.hp
+	}
+
+
+## Update each card's HP bar / text / alive-dim from the live Mon; flash the portrait on an HP drop.
+func _update_team_cards(cards: Array, team: Array) -> void:
+	for i in mini(cards.size(), team.size()):
+		var mon := team[i] as BattleEngine.Mon
+		var c: Dictionary = cards[i]
+		var bar := c["bar"] as ProgressBar
 		bar.max_value = mon.maxhp
 		bar.value = maxi(0, mon.hp)
-		bar.show_percentage = false
-		bar.custom_minimum_size = Vector2(0, 14)
 		_style_hp_bar(bar)
-		row.add_child(bar)
-		var hp_label := Label.new()
-		hp_label.text = "%d / %d" % [maxi(0, mon.hp), mon.maxhp]
-		hp_label.theme_type_variation = "MutedLabel"
-		row.add_child(hp_label)
-		container.add_child(row)
+		(c["hp"] as Label).text = "%d / %d" % [maxi(0, mon.hp), mon.maxhp]
+		(c["name"] as Label).text = mon.name + ("   (down)" if not mon.alive else "")
+		(c["card"] as Control).modulate = (
+			Color(1, 1, 1, 0.4) if not mon.alive else Color(1, 1, 1, 1)
+		)
+		var last := int(c.get("last_hp", mon.hp))
+		if mon.hp < last:
+			_flash_portrait(c["portrait"] as TextureRect)
+		c["last_hp"] = mon.hp
+
+
+## A brass-bordered ink frame around a portrait so each creature reads as a bestiary plate.
+func _frame_portrait(portrait: TextureRect) -> Control:
+	var frame := PanelContainer.new()
+	var sb := StyleBoxFlat.new()
+	sb.bg_color = Color(0.13, 0.11, 0.16)
+	sb.set_corner_radius_all(4)
+	sb.set_border_width_all(2)
+	sb.border_color = Color(0.725, 0.576, 0.247)  # BRASS
+	sb.set_content_margin_all(3)
+	frame.add_theme_stylebox_override("panel", sb)
+	frame.add_child(portrait)
+	return frame
+
+
+## A quick red→normal flash on a portrait when its creature takes damage (impact juice).
+func _flash_portrait(portrait: TextureRect) -> void:
+	if portrait == null or not is_inside_tree():
+		return
+	portrait.modulate = Color(1.7, 0.55, 0.5)
+	create_tween().tween_property(portrait, "modulate", Color(1, 1, 1, 1), 0.35)
+
+
+## The species id backing a card's Mon (enemy via species_for, player via the captured party order).
+func _species_id_for(is_enemy: bool, index: int, mon: BattleEngine.Mon) -> String:
+	if is_enemy:
+		if _battle != null and _battle.has_method("species_for"):
+			var sd: Variant = _battle.species_for(mon)
+			if sd != null:
+				return str(sd.id)
+		return ""
+	return str(_player_species[index]) if index < _player_species.size() else ""
+
+
+## A force's HUD icon (res://assets/icons/forces/<force>.svg), or null if absent.
+func _force_icon(force_name: String) -> Texture2D:
+	if force_name == "":
+		return null
+	var path := _FORCE_ICON_DIR + force_name.to_lower() + ".svg"
+	return load(path) if ResourceLoader.exists(path) else null
 
 
 ## Colour the HP bar green -> amber -> red by health fraction (an instant read-out) over a dark INK
@@ -448,7 +576,9 @@ func _refresh_turn_label(step: Dictionary) -> void:
 	var turn := int(step.get("turn", 0))
 	var actor := step.get("actor") as BattleEngine.Mon
 	var who := actor.name if actor != null else "—"
-	_turn_label.text = "Turn %d   ·   %s acts" % [turn, who]
+	# Entropy clock (design): the battlefield gets +12%/turn deadlier — surfaced so stalling reads as risk.
+	var entropy := 1.0 + float(maxi(0, turn - 1)) * 0.12
+	_turn_label.text = "Turn %d   ·   %s acts   ·   entropy ×%.2f" % [turn, who, entropy]
 
 
 ## Show the player action menu: Attack (opens the target picker), Capture + Flee (wild only).
