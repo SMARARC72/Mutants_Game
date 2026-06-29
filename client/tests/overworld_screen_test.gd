@@ -301,6 +301,28 @@ func test_talking_to_both_npcs_drives_and_completes_the_intro_quest() -> void:
 	gc.queue_free()
 
 
+func test_quest_progress_and_reward_persist_across_overworld_reload() -> void:
+	# Completing the intro quest applies its reward (add_corruption:1) to the PERSISTED run and saves
+	# quest progress; a rebuilt overworld restores the completed quest and does NOT re-grant the reward.
+	var gc := _make_game()
+	gc.call("new_run", TEST_SEED)
+	var run: RunContext = gc.call("run")
+	var corruption_before := run.corruption
+	var ow := _make_overworld(gc)
+	ow.call("speak_to", 0)
+	ow.call("speak_to", 1)
+	assert_bool(bool(ow.call("quest_done", "marsh_welcome"))).is_true()
+	assert_int(run.corruption).is_equal(corruption_before + 1)
+	ow.queue_free()
+
+	var ow2 := _make_overworld(gc)
+	assert_bool(bool(ow2.call("quest_done", "marsh_welcome"))).is_true()  # restored, not reset
+	ow2.call("speak_to", 0)  # re-talk: quest already done -> no second reward
+	assert_int(run.corruption).is_equal(corruption_before + 1)
+	ow2.queue_free()
+	gc.queue_free()
+
+
 ## A cardinal direction from `cell` into a walkable, in-bounds neighbour, or ZERO if hemmed in.
 func _walkable_dir(layout: Layout, cell: Vector2i) -> Vector2i:
 	for dir: Vector2i in [Vector2i(1, 0), Vector2i(0, 1), Vector2i(-1, 0), Vector2i(0, -1)]:
