@@ -327,22 +327,64 @@ func _first_walkable_cell() -> Vector2i:
 	return Vector2i.ZERO
 
 
-## The walkable cell nearest the region CENTER — the player spawns here (not the top-left corner)
-## so every direction is usable immediately and the camera frames the player mid-region. A corner
-## spawn made W/A read as "nothing happens" (out of bounds), which felt like broken movement.
+## The cell nearest the region CENTRE that belongs to the LARGEST reachable open area — the player
+## spawns here (not the top-left corner) so every direction is usable immediately and the camera
+## frames the player mid-region. Selecting from the biggest 4-connected walkable component (not just
+## any walkable tile) keeps the spawn in the navigable field and OUT of a SEALED set-piece room — a
+## DungeonAssembler room is stamped with a wall ring and no doorway, so a spawn inside its isolated
+## interior could move around the room but never leave, soft-locking the run.
 func _spawn_cell() -> Vector2i:
+	var field := _largest_open_component()
+	if field.is_empty():
+		return _first_walkable_cell()
 	var cx := _layout.width / 2
 	var cy := _layout.height / 2
 	var best := Vector2i(-1, -1)
 	var best_d := 1 << 30
+	for cell: Vector2i in field:
+		var d := (cell.x - cx) * (cell.x - cx) + (cell.y - cy) * (cell.y - cy)
+		if d < best_d:
+			best_d = d
+			best = cell
+	return best if best.x >= 0 else _first_walkable_cell()
+
+
+## The cells of the LARGEST 4-connected component of walkable tiles — the main reachable field. A
+## flood fill seeded from every unvisited walkable cell; the biggest basin wins (sealed rooms and
+## other islands are smaller, so they lose). Empty only if the layout has no walkable tile at all.
+func _largest_open_component() -> Array[Vector2i]:
+	var visited := {}
+	var best: Array[Vector2i] = []
 	for y in _layout.height:
 		for x in _layout.width:
-			if OverworldTileSetScript.is_walkable(_layout.get_cell(x, y)):
-				var d := (x - cx) * (x - cx) + (y - cy) * (y - cy)
-				if d < best_d:
-					best_d = d
-					best = Vector2i(x, y)
-	return best if best.x >= 0 else _first_walkable_cell()
+			var start := Vector2i(x, y)
+			if visited.has(start) or not OverworldTileSetScript.is_walkable(_layout.get_cell(x, y)):
+				continue
+			var component := _flood_open(start, visited)
+			if component.size() > best.size():
+				best = component
+	return best
+
+
+## Flood fill (4-connected, matching the cardinal grid steps of try_move) of the walkable region
+## containing `start`, marking every reached cell in the shared `visited` set so each cell is scanned
+## once across the whole sweep. Returns the cells of that one component.
+func _flood_open(start: Vector2i, visited: Dictionary) -> Array[Vector2i]:
+	var component: Array[Vector2i] = []
+	var queue: Array[Vector2i] = [start]
+	visited[start] = true
+	while not queue.is_empty():
+		var cell: Vector2i = queue.pop_back()
+		component.append(cell)
+		for step: Vector2i in [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]:
+			var n := cell + step
+			if visited.has(n) or not _layout.in_bounds(n.x, n.y):
+				continue
+			if not OverworldTileSetScript.is_walkable(_layout.get_cell(n.x, n.y)):
+				continue
+			visited[n] = true
+			queue.append(n)
+	return component
 
 
 ## Attach a PhantomCamera2D following the player. Fully guarded: if the addon classes are missing
