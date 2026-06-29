@@ -83,12 +83,31 @@ check("real row generatable", ga.is_generatable(row()))
 check("named-but-no-force row generatable", ga.is_generatable(row(force_primary="")))
 # Force-only rows (no name) are real creatures (batch3/4/5) and ARE generatable.
 forceonly = {"id": "Z", "name": "", "force_primary": "Eros", "force_secondary": "",
-             "role": "", "stage": "", "description": "", "status": "reviewed"}
+             "role": "", "stage": "", "description": "", "art_ref": "", "tags": "",
+             "status": "reviewed"}
 check("force-only (no name) row generatable", ga.is_generatable(forceonly))
 fp = ga.build_prompt(forceonly)
 check("force-only prompt has STYLE_ANCHOR", fp.startswith(ga.STYLE_ANCHOR))
 check("force-only prompt has force key", "Primary force Eros" in fp)
 check("force-only prompt names placeholder", "unnamed creature" in fp)
+check("force-only prompt cites its id", "specimen Z" in fp)
+
+# Distinct unnamed-row prompts: two unnamed rows with the SAME force/role/stage but different
+# ids must NOT collapse to byte-identical prompts (Codex P2 — keep unnamed prompts distinct).
+u1 = {"id": "batch3-001", "name": "", "force_primary": "Chaos", "force_secondary": "",
+      "role": "striker", "stage": "", "description": "", "art_ref": "a/1.png",
+      "tags": "demon-lord;boss", "status": "reviewed"}
+u2 = dict(u1, id="batch3-002", art_ref="a/2.png")
+check("sigil_seed is deterministic", ga.sigil_seed(u1) == ga.sigil_seed(dict(u1)))
+check("sigil_seed differs by id", ga.sigil_seed(u1) != ga.sigil_seed(u2))
+check("unnamed same-force rows get distinct prompts",
+      ga.build_prompt(u1) != ga.build_prompt(u2))
+check("unnamed prompt cites its id (1)", "specimen batch3-001" in ga.build_prompt(u1))
+check("unnamed prompt cites its id (2)", "specimen batch3-002" in ga.build_prompt(u2))
+check("unnamed prompt folds in tags", "demon-lord, boss" in ga.build_prompt(u1))
+check("prompt carries a per-individual sigil seed", "sigil seed" in ga.build_prompt(u1))
+# Named rows keep their name (no 'specimen' designation).
+check("named row not labelled specimen", "specimen" not in ga.build_prompt(row()))
 
 rows = [row(id="AD01"), row(id="AD02", batch="demon"),
         row(id="AD03", status="reviewed"), void]
@@ -119,9 +138,13 @@ real = ga.load_registry()
 check("registry has 407 rows", len(real) == 407)
 gen_rows = [r for r in real if ga.is_generatable(r)]
 check("registry has 406 generatable (1 truly-blank void skipped)", len(gen_rows) == 406)
+real_prompts = []
 for r in gen_rows:
     bp = ga.build_prompt(r)
     check("real prompt nonempty %s" % r["id"], len(bp) > len(ga.STYLE_ANCHOR))
+    real_prompts.append(bp)
+# Every generatable creature (named or not) now yields a UNIQUE prompt — no bulk-run dupes.
+check("all 406 registry prompts are distinct", len(set(real_prompts)) == len(gen_rows))
 
 
 # --- API key loading (env + file fallback, no real key) --------------------
@@ -261,6 +284,24 @@ with tempfile.TemporaryDirectory() as td:
     code5, ncalls5 = run_live(td, lambda req: b"RECOVERED")
     check("failed row retried on next run", ncalls5 == 1)
     check("retry marks it done", ga.load_manifest(td)["AD01"]["status"] == "done")
+
+# Mixed batch (Codex P2): one success + one failure must STILL exit non-zero, without crashing
+# the run mid-batch. AD01=Ruinmaw succeeds; AD02=Worldback fails after retries.
+with tempfile.TemporaryDirectory() as td:
+    def mixed(req):
+        if "Worldback" in req["body"]["prompt"]:
+            raise RuntimeError("worldback boom")
+        return b"OKPNG"
+
+    code, ncalls = run_live(td, mixed, only="AD01,AD02")
+    man = ga.load_manifest(td)
+    check("mixed: AD01 done", man["AD01"]["status"] == "done")
+    check("mixed: AD02 failed", man["AD02"]["status"] == "failed")
+    check("mixed run continued past the failure (both attempted)",
+          "AD01" in man and "AD02" in man)
+    check("mixed run exits non-zero when ANY row failed", code == 1)
+    check("mixed run still wrote the successful image",
+          any(f.startswith("AD01_") and f.endswith(".png") for f in os.listdir(td)))
 
 
 # --- dry-run path makes ZERO API calls and needs no key --------------------

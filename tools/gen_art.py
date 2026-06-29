@@ -125,23 +125,47 @@ def force_phrase(force):
     return FORCE_VISUAL_KEY.get((force or "").strip(), "")
 
 
+def sigil_seed(row):
+    """Deterministic per-creature sigil seed derived from the row id (+ art_ref if present).
+
+    Stable across runs and machines (sha256 of a fixed key, not Python's salted hash()), so the
+    'vary it per individual' sigil instruction differs for every creature — including the many
+    unnamed batch3/4/5 rows that would otherwise share force/role/stage.
+    """
+    key = "%s|%s" % ((row.get("id") or "").strip(), (row.get("art_ref") or "").strip())
+    digest = hashlib.sha256(key.encode("utf-8")).hexdigest()
+    return int(digest[:8], 16)
+
+
 def build_prompt(row):
     """Compose the final image prompt for one creature row (a dict from creature_registry.csv).
 
     prompt = STYLE_ANCHOR + primary force-visual-key (+ a touch of secondary) + name/role/stage/
     description + the procedural-sigil uniqueness instruction. Pure: same row -> same string.
+
+    Unnamed rows (batch3/4/5 placeholders) still get a DISTINCT prompt: the subject folds in the
+    unique row id + tags and a deterministic per-row sigil seed, so creatures sharing the same
+    force/role/stage never collapse to a byte-identical prompt (and never spend a run on dupes).
     """
     prim = (row.get("force_primary") or "").strip()
     sec = (row.get("force_secondary") or "").strip()
-    name = (row.get("name") or "").strip() or "an unnamed creature"
+    name = (row.get("name") or "").strip()
     role = (row.get("role") or "").strip()
     stage = (row.get("stage") or "").strip()
     desc = (row.get("description") or "").strip()
+    rid = (row.get("id") or "").strip()
+    tags = (row.get("tags") or "").strip()
 
     parts = [STYLE_ANCHOR]
 
-    # Subject line: name + role.
-    subject = "Subject: %s" % name
+    # Subject line: a real name when present; otherwise an id-keyed designation so each unnamed
+    # creature is individually identified rather than a generic "an unnamed creature".
+    if name:
+        subject = "Subject: %s" % name
+    else:
+        subject = "Subject: specimen %s, an unnamed creature" % (rid or "unknown")
+        if tags:
+            subject += " (%s)" % tags.replace(";", ", ")
     if role:
         subject += ", a %s-role creature" % role
     subject += "."
@@ -162,12 +186,13 @@ def build_prompt(row):
     if note:
         parts.append(note)
 
-    # Procedural-sigil uniqueness instruction (doc §5): vary the seed for one-of-one results.
+    # Procedural-sigil uniqueness instruction (doc §5): a deterministic per-creature seed makes
+    # the one-of-one mark distinct even for otherwise-identical unnamed rows.
     motif = SIGIL_MOTIF.get(prim, "occult")
     parts.append(
-        "Work a unique glowing %s occult sigil/aura into the creature as its one-of-one mark; "
-        "vary it per individual. Portrait 2:3 framing, plain background, no text or border."
-        % motif
+        "Work a unique glowing %s occult sigil/aura into the creature as its one-of-one mark "
+        "(individual sigil seed %d); vary it per individual. Portrait 2:3 framing, plain "
+        "background, no text or border." % (motif, sigil_seed(row))
     )
 
     return " ".join(p.strip() for p in parts if p.strip())
@@ -463,7 +488,12 @@ def run(args):
     print("Done: %d generated, %d failed, %d skipped. Manifest: %s"
           % (generated, failed, len(skipped),
              os.path.relpath(manifest_path(out_dir), ROOT)))
-    return 1 if failed and not generated else 0
+    if failed:
+        print("EXIT 1: %d creature(s) failed after retries (see 'failed' rows in the manifest)."
+              % failed)
+    # Non-zero if ANY row failed, even alongside successes — so batch automation detects a
+    # partial run with failed/missing assets rather than treating it as fully complete.
+    return 1 if failed else 0
 
 
 def build_arg_parser():

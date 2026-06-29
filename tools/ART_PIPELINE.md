@@ -29,10 +29,15 @@ then calls `gpt-image-1` and writes `art/generated/<id>_<name-slug>.png`, record
 `art/generated/manifest.json`. `art/` is **gitignored** — bulk renders never enter git history;
 the curated subset is hand-promoted into `client/assets/**` later (see below).
 
+Many `batch3/4/5` rows have no name yet; those still get a **distinct, deterministic** prompt —
+the subject folds in the unique row id (+ tags) and a per-creature sigil seed derived from the id,
+so creatures that share the same force/role/stage never collapse to identical prompts/images.
+
 **Generate-once / resumable:** any creature already marked `done` in the manifest is skipped, so a
 run interrupted partway through 400+ creatures resumes for free and never double-spends. Failures
 are recorded as `failed` (with the error) and retried on the next run; one bad call never crashes
-the batch.
+the batch. The run **exits non-zero if any creature failed after retries** (while still completing
+the rest of the batch), so automation can detect a partial run.
 
 ---
 
