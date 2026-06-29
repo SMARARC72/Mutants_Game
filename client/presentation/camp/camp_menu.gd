@@ -21,6 +21,7 @@ signal resumed
 const InputActions := preload("res://infrastructure/input/input_actions.gd")
 const PARTY_SCENE := "res://presentation/party/party_screen.tscn"
 const LAB_SCENE := "res://presentation/lab/lab_screen.tscn"
+const CHARACTER_SCENE := "res://presentation/character/character_sheet.tscn"
 const OVERWORLD_SCENE := "res://presentation/overworld/overworld_screen.tscn"
 
 var _transition: Node = null
@@ -90,6 +91,7 @@ func _build() -> void:
 
 	_add_lead_portrait(box)
 	_add_button(box, "PartyButton", "Party & Grimoire", open_party)
+	_add_button(box, "SelfButton", "The Self", open_self)
 	_add_button(box, "LabButton", "Lab", open_lab)
 	_add_button(box, "ResumeButton", "Resume", resume)
 
@@ -147,6 +149,12 @@ func _add_button(
 func open_party() -> String:
 	_navigate(PARTY_SCENE)
 	return PARTY_SCENE
+
+
+## Open the character sheet (the player's morality / Apotheosis trajectory). Returns the target path.
+func open_self() -> String:
+	_navigate(CHARACTER_SCENE)
+	return CHARACTER_SCENE
 
 
 ## The scene path the Lab button targets (a SIBLING track owns the screen). Always returns the path
