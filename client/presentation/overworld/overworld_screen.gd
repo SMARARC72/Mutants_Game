@@ -26,6 +26,7 @@ const BATTLE_SCENE := "res://presentation/battle/battle_screen.tscn"
 const CAMP_SCENE := "res://presentation/camp/camp_menu.tscn"
 
 const STEP_COOLDOWN := 0.14  # seconds between grid steps while a direction is held
+const CAMERA_ZOOM := 3.0  # magnify the 16px tiles so the region fills the view (visual polish)
 
 var _game: Node = null
 var _transition: Node = null
@@ -289,11 +290,21 @@ func _spawn_player() -> void:
 	if _player == null:
 		_player = Node2D.new()
 		_player.name = "Player"
-		var marker := ColorRect.new()
-		marker.color = Color(0.92, 0.78, 0.36)  # brass actor marker (design §1)
+		_player.z_index = 10  # always above the tilemap
 		var s := OverworldTileSetScript.TILE_SIZE
-		marker.size = Vector2(s, s)
-		marker.position = Vector2(-s / 2.0, -s / 2.0)
+		# Dark INK outline backing so the brass marker reads against any floor tile.
+		var border := ColorRect.new()
+		border.color = Color(0.090196, 0.07451, 0.109804)
+		border.size = Vector2(s, s)
+		border.position = Vector2(-s / 2.0, -s / 2.0)
+		_player.add_child(border)
+		# Brass-bright actor marker (design §1), inset so the outline shows.
+		var marker := ColorRect.new()
+		marker.name = "Marker"
+		marker.color = Color(0.878431, 0.72549, 0.352941)  # BRASS_BRIGHT #e0b95a
+		var inset := s * 0.22
+		marker.size = Vector2(s - inset * 2.0, s - inset * 2.0)
+		marker.position = Vector2(-s / 2.0 + inset, -s / 2.0 + inset)
 		_player.add_child(marker)
 		add_child(_player)
 	_position_player()
@@ -322,10 +333,13 @@ func _first_walkable_cell() -> Vector2i:
 func _setup_camera() -> void:
 	if _player == null:
 		return
+	var zoom := Vector2(CAMERA_ZOOM, CAMERA_ZOOM)
 	if ClassDB.class_exists("PhantomCameraHost") and ClassDB.class_exists("PhantomCamera2D"):
 		var cam := Camera2D.new()
 		cam.name = "OverworldCamera"
+		cam.zoom = zoom
 		add_child(cam)
+		cam.make_current()
 		var host: Object = ClassDB.instantiate("PhantomCameraHost")
 		if host is Node:
 			cam.add_child(host as Node)
@@ -335,11 +349,15 @@ func _setup_camera() -> void:
 			# follow_mode 1 == GLUED in PhantomCamera2D.FollowMode (glue to the target).
 			pcam.set("follow_mode", 1)
 			pcam.set("follow_target", _player)
+			pcam.set("zoom", zoom)  # keep the host from resetting the Camera2D zoom to 1x
 		return
-	# Fallback: plain Camera2D parented to the player so it tracks naturally.
+	# Fallback: plain Camera2D parented to the player so it tracks naturally — zoomed + made current
+	# so the small (16px) tiles fill the view and the region is framed around the player.
 	var fallback := Camera2D.new()
 	fallback.name = "OverworldCamera"
+	fallback.zoom = zoom
 	_player.add_child(fallback)
+	fallback.make_current()
 
 
 # === accessors (for tests + sibling slices) ================================================== #
