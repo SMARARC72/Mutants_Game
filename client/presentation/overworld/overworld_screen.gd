@@ -18,6 +18,8 @@ extends Node2D
 ## Emitted when a move triggers a wild encounter (enemy_party + battle_seed). The screen also
 ## auto-hands-off to the battle scene; the signal lets a test/observer react without the scene swap.
 signal encounter_started(enemy_party: Array, battle_seed: int)
+## Emitted when the player speaks to an NPC (the Dialogic timeline id). Lets a test/observer react.
+signal dialogue_started(timeline_id: String)
 
 const EncounterDirectorScript := preload("res://application/overworld/encounter_director.gd")
 const OverworldTileSetScript := preload("res://presentation/overworld/overworld_tileset.gd")
@@ -35,6 +37,13 @@ const REGION_CLIMATE := "Eros climate · a thin place"
 const INK := Color(0.090196, 0.07451, 0.109804)
 const BRASS := Color(0.725, 0.576, 0.247)
 const BRASS_BRIGHT := Color(0.878431, 0.72549, 0.352941)
+
+## Walk-up-and-talk NPCs placed in the starter region. Each plays its authored Dialogic timeline
+## (registered in project.godot dtl_directory) on INTERACT when the tamer stands beside it.
+const NPC_DEFS := [
+	{"name": "Old Marrow", "timeline": "marsh_oracle", "ring": Color(0.667, 0.376, 0.69)},
+	{"name": "Bog-Wretch", "timeline": "marsh_encounter", "ring": Color(0.435, 0.722, 0.839)},
+]
 
 var _game: Node = null
 var _transition: Node = null
@@ -60,6 +69,10 @@ var _auto_hand_off: bool = true
 var _camp_enabled: bool = true
 var _camp_overlay: CanvasLayer = null
 var _camp_menu: Node = null
+## Overworld NPCs: each entry {cell: Vector2i, name, timeline, node}. Talk on INTERACT when adjacent.
+var _npcs: Array = []
+var _dialogue: DialogicFacade = null
+var _in_dialogue: bool = false
 
 
 func _ready() -> void:
@@ -148,6 +161,7 @@ func build_from_game() -> void:
 	_render_layout()
 	_spawn_player()
 	_spawn_lead_creature()
+	_spawn_npcs()
 	_setup_camera()
 	_setup_atmosphere()
 	_setup_hud()
@@ -305,8 +319,15 @@ func _process(delta: float) -> void:
 	# The lead cameo eases toward its trailing target every frame (independent of input/busy state).
 	if _lead != null:
 		_lead.position = _lead.position.lerp(_lead_target, clampf(delta * 9.0, 0.0, 1.0))
-	if _busy or _input == null or _layout == null:
+	if _busy or _in_dialogue or _input == null or _layout == null:
 		return
+	# Talk to an adjacent NPC on the INTERACT action (movement is suspended while a scene plays).
+	if (
+		_input.has_method("just_pressed")
+		and bool(_input.call("just_pressed", InputActions.INTERACT))
+	):
+		if try_interact() != "":
+			return
 	# Slice 3b: open the camp/pause menu on the menu action (guarded by the flag + overlay state).
 	if _camp_enabled and _camp_overlay == null and _input.has_method("just_pressed"):
 		if (
@@ -645,7 +666,118 @@ func _setup_camera() -> void:
 	fallback.make_current()
 
 
+# === NPCs + dialogue ========================================================================== #
+
+
+## Place the region's NPCs on walkable cells near the spawn, each as a parchment token ringed in its
+## colour. No-op if there is no layout. Safe headless (tokens are nodes; nothing renders).
+func _spawn_npcs() -> void:
+	_npcs.clear()
+	if _layout == null:
+		return
+	var cells := _npc_cells(NPC_DEFS.size())
+	for i in mini(cells.size(), NPC_DEFS.size()):
+		var def: Dictionary = NPC_DEFS[i]
+		var cell: Vector2i = cells[i]
+		var node := Node2D.new()
+		node.name = "NPC_%s" % str(def["name"]).replace(" ", "")
+		node.z_index = 16
+		var s := OverworldTileSetScript.TILE_SIZE
+		node.position = Vector2(cell.x * s + s / 2.0, cell.y * s + s / 2.0)
+		var token := Sprite2D.new()
+		token.texture = _make_npc_token(int(s * 0.84), def["ring"] as Color)
+		node.add_child(token)
+		add_child(node)
+		_npcs.append(
+			{"cell": cell, "name": str(def["name"]), "timeline": str(def["timeline"]), "node": node}
+		)
+
+
+## Pick `count` walkable cells near the spawn (manhattan distance 2..6), deterministic, skipping the
+## spawn cell itself — so the tamer can reach the NPCs without crossing the whole region.
+func _npc_cells(count: int) -> Array:
+	var found: Array = []
+	for radius in range(2, 8):
+		for dy in range(-radius, radius + 1):
+			for dx in range(-radius, radius + 1):
+				if abs(dx) + abs(dy) != radius:
+					continue
+				var c := _player_cell + Vector2i(dx, dy)
+				if c == _player_cell or found.has(c):
+					continue
+				if not _layout.in_bounds(c.x, c.y):
+					continue
+				if OverworldTileSetScript.is_walkable(_layout.get_cell(c.x, c.y)):
+					found.append(c)
+					if found.size() >= count:
+						return found
+	return found
+
+
+## A parchment NPC token with a coloured ring + dark sigil dot — distinct from the brass tamer
+## medallion and the creature cameos, so "someone to talk to" reads at a glance.
+func _make_npc_token(diameter: int, ring: Color) -> ImageTexture:
+	var img := Image.create(diameter, diameter, false, Image.FORMAT_RGBA8)
+	img.fill(Color(0, 0, 0, 0))
+	var c := (diameter - 1) * 0.5
+	var rim := maxf(2.5, diameter * 0.12)
+	var r_in := c - rim
+	var r_dot := r_in * 0.34
+	for y in diameter:
+		for x in diameter:
+			var d := Vector2(x - c, y - c).length()
+			if d > c:
+				continue
+			if d > r_in:
+				img.set_pixel(x, y, ring)
+			elif d <= r_dot:
+				img.set_pixel(x, y, INK)
+			else:
+				img.set_pixel(x, y, Color(0.886, 0.831, 0.733))  # parchment
+	return ImageTexture.create_from_image(img)
+
+
+## If the tamer stands on/next to an NPC, speak to it and return its timeline id; else "". Drives the
+## INTERACT action from _process.
+func try_interact() -> String:
+	for i in _npcs.size():
+		var npc: Dictionary = _npcs[i]
+		var cell: Vector2i = npc["cell"]
+		if (cell - _player_cell).length() <= 1.5:
+			return speak_to(i)
+	return ""
+
+
+## Play NPC `index`'s authored Dialogic timeline (a funny-grim beat) + a toast. Returns the timeline
+## id (or ""). Public + headless-safe (DialogicFacade resolves immediately under --headless), so a
+## test can assert the beat fires. Movement is suspended until the scene finishes.
+func speak_to(index: int) -> String:
+	if index < 0 or index >= _npcs.size():
+		return ""
+	var npc: Dictionary = _npcs[index]
+	var timeline := str(npc["timeline"])
+	_in_dialogue = true
+	if _dialogue == null:
+		_dialogue = DialogicFacade.new()
+		_dialogue.scene_finished.connect(_on_dialogue_finished)
+	var toast := get_node_or_null("/root/Toast")
+	if toast != null and toast.has_method("show"):
+		toast.call("show", {"title": str(npc["name"]), "body": "regards you.", "sound": "hum"})
+	dialogue_started.emit(timeline)
+	_dialogue.play_timeline(timeline)
+	return timeline
+
+
+func _on_dialogue_finished(_timeline_id: String) -> void:
+	_in_dialogue = false
+
+
 # === accessors (for tests + sibling slices) ================================================== #
+
+
+## The number of NPCs placed in the region (for tests).
+func npc_count() -> int:
+	return _npcs.size()
 
 
 func player_cell() -> Vector2i:

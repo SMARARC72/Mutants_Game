@@ -41,6 +41,7 @@ GameController="*res://application/game/game_controller.gd"
 directories/dch_directory={}
 directories/dtl_directory={
 "marsh_encounter": "res://presentation/dialogue/marsh_encounter.dtl",
+"marsh_oracle": "res://presentation/dialogue/marsh_oracle.dtl",
 "smoke": "res://presentation/dialogue/smoke.dtl"
 }
 layout/style_directory={}
