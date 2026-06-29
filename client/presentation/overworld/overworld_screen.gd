@@ -39,11 +39,44 @@ const BRASS := Color(0.725, 0.576, 0.247)
 const BRASS_BRIGHT := Color(0.878431, 0.72549, 0.352941)
 
 ## Walk-up-and-talk NPCs placed in the starter region. Each plays its authored Dialogic timeline
-## (registered in project.godot dtl_directory) on INTERACT when the tamer stands beside it.
+## (registered in project.godot dtl_directory) on INTERACT when the tamer stands beside it, and
+## advances `quest_step` of the intro quest.
 const NPC_DEFS := [
-	{"name": "Old Marrow", "timeline": "marsh_oracle", "ring": Color(0.667, 0.376, 0.69)},
-	{"name": "Bog-Wretch", "timeline": "marsh_encounter", "ring": Color(0.435, 0.722, 0.839)},
+	{
+		"name": "Old Marrow",
+		"timeline": "marsh_oracle",
+		"ring": Color(0.667, 0.376, 0.69),
+		"quest_step": "hear_marrow"
+	},
+	{
+		"name": "Bog-Wretch",
+		"timeline": "marsh_encounter",
+		"ring": Color(0.435, 0.722, 0.839),
+		"quest_step": "meet_wretch"
+	},
 ]
+
+## The intro quest, driven by talking to the two marsh NPCs (start on the first, complete on the
+## second). Data-only; QuestService applies the effects to its NarrativeRunState + emits signals.
+const MARSH_QUEST := {
+	"id": "marsh_welcome",
+	"name": "A Thin Welcome",
+	"description": "The marsh has opinions about you. Hear them out.",
+	"steps":
+	[
+		{
+			"id": "hear_marrow",
+			"description": "Heed Old Marrow.",
+			"on_complete": {"set_flag": "met_marrow"}
+		},
+		{
+			"id": "meet_wretch",
+			"description": "Meet the Bog-Wretch.",
+			"on_complete": {"set_flag": "met_wretch"}
+		},
+	],
+	"on_complete": {"set_flag": "marsh_welcomed", "add_corruption": 1},
+}
 
 var _game: Node = null
 var _transition: Node = null
@@ -73,6 +106,7 @@ var _camp_menu: Node = null
 var _npcs: Array = []
 var _dialogue: DialogicFacade = null
 var _in_dialogue: bool = false
+var _quests: QuestService = null  # drives the intro quest from NPC talks (own narrative run-state)
 
 
 func _ready() -> void:
@@ -675,6 +709,9 @@ func _spawn_npcs() -> void:
 	_npcs.clear()
 	if _layout == null:
 		return
+	if _quests == null:
+		_quests = QuestService.new()
+		_quests.register([MARSH_QUEST])
 	var cells := _npc_cells(NPC_DEFS.size())
 	for i in mini(cells.size(), NPC_DEFS.size()):
 		var def: Dictionary = NPC_DEFS[i]
@@ -688,8 +725,17 @@ func _spawn_npcs() -> void:
 		token.texture = _make_npc_token(int(s * 0.84), def["ring"] as Color)
 		node.add_child(token)
 		add_child(node)
-		_npcs.append(
-			{"cell": cell, "name": str(def["name"]), "timeline": str(def["timeline"]), "node": node}
+		(
+			_npcs
+			. append(
+				{
+					"cell": cell,
+					"name": str(def["name"]),
+					"timeline": str(def["timeline"]),
+					"quest_step": str(def.get("quest_step", "")),
+					"node": node,
+				}
+			)
 		)
 
 
@@ -760,16 +806,40 @@ func speak_to(index: int) -> String:
 	if _dialogue == null:
 		_dialogue = DialogicFacade.new()
 		_dialogue.scene_finished.connect(_on_dialogue_finished)
-	var toast := get_node_or_null("/root/Toast")
-	if toast != null and toast.has_method("show"):
-		toast.call("show", {"title": str(npc["name"]), "body": "regards you.", "sound": "hum"})
+	_advance_quest_for(npc)
 	dialogue_started.emit(timeline)
 	_dialogue.play_timeline(timeline)
 	return timeline
 
 
+## Start the intro quest on the first talk and advance the NPC's step; toast the ledger on a real
+## advance. The quest lives in this screen's QuestService (its own narrative run-state) for now.
+func _advance_quest_for(npc: Dictionary) -> void:
+	if _quests == null:
+		return
+	var step := str(npc.get("quest_step", ""))
+	var qid := str(MARSH_QUEST["id"])
+	if step == "":
+		return
+	if not _quests.is_active(qid) and not _quests.is_done(qid):
+		_quests.start(qid)
+	if _quests.is_active(qid) and _quests.advance(qid, step):
+		var toast := get_node_or_null("/root/Toast")
+		if toast != null and toast.has_method("event"):
+			toast.call("event", "quest_update")
+
+
 func _on_dialogue_finished(_timeline_id: String) -> void:
 	_in_dialogue = false
+
+
+## Intro-quest state accessors (for tests + a future quest-log UI).
+func quest_active(quest_id: String) -> bool:
+	return _quests != null and _quests.is_active(quest_id)
+
+
+func quest_done(quest_id: String) -> bool:
+	return _quests != null and _quests.is_done(quest_id)
 
 
 # === accessors (for tests + sibling slices) ================================================== #
