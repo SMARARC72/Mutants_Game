@@ -323,6 +323,29 @@ func test_quest_progress_and_reward_persist_across_overworld_reload() -> void:
 	gc.queue_free()
 
 
+func test_out_of_order_npc_starts_quest_and_the_start_persists() -> void:
+	# Talking to the SECOND intro NPC first (Bog-Wretch, index 1) STARTS the quest but its advance to
+	# step 2 is rejected (step 1 not done). That bare start is durable state and must survive a reload
+	# (Codex #39 P2): a rebuilt overworld restores the active quest so the player can finish it.
+	var gc := _make_game()
+	gc.call("new_run", TEST_SEED)
+	var ow := _make_overworld(gc)
+	ow.call("speak_to", 1)  # out of order: starts marsh_welcome, advance rejected (step 1 pending)
+	assert_bool(bool(ow.call("quest_active", "marsh_welcome"))).is_true()
+	assert_bool(bool(ow.call("quest_done", "marsh_welcome"))).is_false()
+	ow.queue_free()
+
+	var ow2 := _make_overworld(gc)
+	# The start must have persisted: the rebuilt screen sees an ACTIVE (not reset-to-inactive) quest.
+	assert_bool(bool(ow2.call("quest_active", "marsh_welcome"))).is_true()
+	# And it is still finishable in order: step 1 then step 2 completes it.
+	ow2.call("speak_to", 0)
+	ow2.call("speak_to", 1)
+	assert_bool(bool(ow2.call("quest_done", "marsh_welcome"))).is_true()
+	ow2.queue_free()
+	gc.queue_free()
+
+
 ## A cardinal direction from `cell` into a walkable, in-bounds neighbour, or ZERO if hemmed in.
 func _walkable_dir(layout: Layout, cell: Vector2i) -> Vector2i:
 	for dir: Vector2i in [Vector2i(1, 0), Vector2i(0, 1), Vector2i(-1, 0), Vector2i(0, -1)]:
