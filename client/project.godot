@@ -17,14 +17,20 @@ run/main_scene="res://presentation/screens/main_menu.tscn"
 config/features=PackedStringArray("4.7", "Forward Plus")
 config/icon="res://icon.svg"
 
+[rendering]
+
+; Grimoire INK (#17131c) as the global clear color so screens without a full-rect background sit on
+; the themed dark instead of Godot's default grey (TDD §B5 / design §2).
+environment/defaults/default_clear_color=Color(0.090196, 0.07451, 0.109804, 1)
+
 [autoload]
 
-Supabase="*res://addons/supabase/Supabase/supabase.gd"
-Dialogic="*res://addons/dialogic/Core/DialogicGameHandler.gd"
+Supabase="*uid://cgwqtrsm3o3e8"
+Dialogic="*uid://ds2q0uclmolvu"
 PhantomCameraManager="*res://addons/phantom_camera/scripts/managers/phantom_camera_manager.gd"
-BeehaveGlobalMetrics="*res://addons/beehave/metrics/beehave_global_metrics.gd"
-BeehaveGlobalDebugger="*res://addons/beehave/debug/global_debugger.gd"
-Questify="*res://addons/questify/quest_manager.gd"
+BeehaveGlobalMetrics="*uid://c3ktl6ontsdt7"
+BeehaveGlobalDebugger="*uid://bl3ma400hpvsh"
+Questify="*uid://b07jy1yytqpum"
 __InkRuntime="*res://addons/inkgd/ink_runtime.gd"
 GUIDE="*res://addons/guide/guide.gd"
 LimboConsole="*res://addons/limbo_console/limbo_console.gd"
@@ -57,12 +63,6 @@ enabled=PackedStringArray("res://addons/beehave/plugin.cfg", "res://addons/csv-d
 
 register_templates=true
 
-[questify]
-
-general/update_polling=false
-general/update_interval=0.5
-general/add_quests_to_pot_generation=false
-
 [input]
 
 limbo_console_toggle={
@@ -70,3 +70,9 @@ limbo_console_toggle={
 "events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":4194337,"physical_keycode":0,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
 ]
 }
+
+[questify]
+
+general/update_polling=false
+general/update_interval=0.5
+general/add_quests_to_pot_generation=false
