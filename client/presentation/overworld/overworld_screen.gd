@@ -26,7 +26,15 @@ const BATTLE_SCENE := "res://presentation/battle/battle_screen.tscn"
 const CAMP_SCENE := "res://presentation/camp/camp_menu.tscn"
 
 const STEP_COOLDOWN := 0.14  # seconds between grid steps while a direction is held
-const CAMERA_ZOOM := 3.0  # magnify the 16px tiles so the region fills the view (visual polish)
+const CAMERA_ZOOM := 1.5  # frames ~11 of the 64px painterly tiles around the player
+
+## The lead creature's real bestiary plate (cameo token that trails the player, HG/SS-style).
+const LEAD_CREATURE_PLATE := "res://assets/creatures/halo_sprout.png"
+const REGION_TITLE := "The Rust Marsh"  # starter region label (force-climate: Eros)
+const REGION_CLIMATE := "Eros climate · a thin place"
+const INK := Color(0.090196, 0.07451, 0.109804)
+const BRASS := Color(0.725, 0.576, 0.247)
+const BRASS_BRIGHT := Color(0.878431, 0.72549, 0.352941)
 
 var _game: Node = null
 var _transition: Node = null
@@ -37,6 +45,9 @@ var _director: EncounterDirector = null
 var _tile_layer: TileMapLayer = null
 var _player: Node2D = null
 var _player_cell: Vector2i = Vector2i.ZERO
+var _lead: Sprite2D = null  # lead-creature cameo that trails the player
+var _lead_target: Vector2 = Vector2.ZERO
+var _last_dir: Vector2i = Vector2i.DOWN
 var _step_timer: float = 0.0
 var _busy: bool = false  # true while a battle hand-off / transition is mid-flight
 ## When false, an encounter still emits encounter_started + autosaves but skips the scene swap
@@ -135,7 +146,10 @@ func build_from_game() -> void:
 	_director = EncounterDirectorScript.for_region(run.seed, region, catalog)
 	_render_layout()
 	_spawn_player()
+	_spawn_lead_creature()
 	_setup_camera()
+	_setup_atmosphere()
+	_setup_hud()
 
 
 # === movement + encounters ==================================================================== #
@@ -154,8 +168,13 @@ func try_move(dir: Vector2i) -> Dictionary:
 		return {"encounter": false, "moved": false}
 	if not OverworldTileSetScript.is_walkable(_layout.get_cell(target.x, target.y)):
 		return {"encounter": false, "moved": false}
+	var prev_px := _player.position if _player != null else Vector2.ZERO
 	_player_cell = target
+	_last_dir = dir
 	_position_player()
+	# The lead cameo trails into the tile the tamer just left (smoothed in _process).
+	if _lead != null:
+		_lead_target = prev_px
 	var step_index := int(_game.call("advance_step"))
 	# Slice 4: the LEGENDARY-BOSS climax takes precedence at/after the threshold step (once explored
 	# enough + not yet cleared). Deterministic — a pure function of (seed, region, step, cleared flag).
@@ -240,6 +259,9 @@ func _hand_off_to_battle() -> void:
 
 
 func _process(delta: float) -> void:
+	# The lead cameo eases toward its trailing target every frame (independent of input/busy state).
+	if _lead != null:
+		_lead.position = _lead.position.lerp(_lead_target, clampf(delta * 9.0, 0.0, 1.0))
 	if _busy or _input == null or _layout == null:
 		return
 	# Slice 3b: open the camp/pause menu on the menu action (guarded by the flag + overlay state).
@@ -290,24 +312,157 @@ func _spawn_player() -> void:
 	if _player == null:
 		_player = Node2D.new()
 		_player.name = "Player"
-		_player.z_index = 10  # always above the tilemap
-		var s := OverworldTileSetScript.TILE_SIZE
-		# Dark INK outline backing so the brass marker reads against any floor tile.
-		var border := ColorRect.new()
-		border.color = Color(0.090196, 0.07451, 0.109804)
-		border.size = Vector2(s, s)
-		border.position = Vector2(-s / 2.0, -s / 2.0)
-		_player.add_child(border)
-		# Brass-bright actor marker (design §1), inset so the outline shows.
-		var marker := ColorRect.new()
-		marker.name = "Marker"
-		marker.color = Color(0.878431, 0.72549, 0.352941)  # BRASS_BRIGHT #e0b95a
-		var inset := s * 0.22
-		marker.size = Vector2(s - inset * 2.0, s - inset * 2.0)
-		marker.position = Vector2(-s / 2.0 + inset, -s / 2.0 + inset)
-		_player.add_child(marker)
+		_player.z_index = 20  # above the tilemap and the trailing lead cameo
+		var token := Sprite2D.new()
+		token.name = "Token"
+		token.texture = _make_player_token(int(OverworldTileSetScript.TILE_SIZE * 0.92))
+		_player.add_child(token)
 		add_child(_player)
 	_position_player()
+
+
+## A brass medallion token for the tamer: dark INK disc, BRASS_BRIGHT rim + a central sigil dot, so
+## the avatar reads as an occult game-piece on the painted map (not a flat square).
+func _make_player_token(diameter: int) -> ImageTexture:
+	var img := Image.create(diameter, diameter, false, Image.FORMAT_RGBA8)
+	img.fill(Color(0, 0, 0, 0))
+	var c := (diameter - 1) * 0.5
+	var r_out := c
+	var rim := maxf(2.5, diameter * 0.11)
+	var r_in := c - rim
+	var r_dot := r_in * 0.42
+	for y in diameter:
+		for x in diameter:
+			var d := Vector2(x - c, y - c).length()
+			if d > r_out:
+				continue
+			if d > r_in:
+				img.set_pixel(x, y, BRASS_BRIGHT)
+			elif d <= r_dot:
+				img.set_pixel(x, y, BRASS_BRIGHT)
+			elif d <= r_dot + 1.6:
+				img.set_pixel(x, y, BRASS)
+			else:
+				img.set_pixel(x, y, INK)
+	return ImageTexture.create_from_image(img)
+
+
+## Spawn the lead-creature cameo (its real bestiary plate, circular-cropped with a brass ring) that
+## trails the tamer HG/SS-style. No-op headless if the plate is missing.
+func _spawn_lead_creature() -> void:
+	if _lead != null or not ResourceLoader.exists(LEAD_CREATURE_PLATE):
+		return
+	var tex: Texture2D = load(LEAD_CREATURE_PLATE)
+	if tex == null:
+		return
+	_lead = Sprite2D.new()
+	_lead.name = "LeadCreature"
+	_lead.z_index = 15
+	_lead.texture = _make_cameo_token(tex.get_image(), int(OverworldTileSetScript.TILE_SIZE * 1.02))
+	add_child(_lead)
+	var s := OverworldTileSetScript.TILE_SIZE
+	var here := Vector2(_player_cell.x * s + s / 2.0, _player_cell.y * s + s / 2.0)
+	_lead.position = here - Vector2(_last_dir) * float(s)
+	_lead_target = _lead.position
+
+
+## Build a circular cameo token from a full-body creature plate: centre-crop a square framing the
+## creature, downscale, then mask to a disc with a brass ring (the cream plate bg reads as parchment).
+func _make_cameo_token(src: Image, diameter: int) -> ImageTexture:
+	src.convert(Image.FORMAT_RGBA8)
+	var w := src.get_width()
+	var h := src.get_height()
+	var side := mini(w, h)
+	var ox := clampi(int((w - side) * 0.5), 0, maxi(0, w - side))
+	var oy := clampi(int((h - side) * 0.42), 0, maxi(0, h - side))
+	var sq := src.get_region(Rect2i(ox, oy, side, side))
+	sq.resize(diameter, diameter, Image.INTERPOLATE_LANCZOS)
+	var c := (diameter - 1) * 0.5
+	var r_out := c
+	var ring := maxf(2.0, diameter * 0.07)
+	var r_in := c - ring
+	for y in diameter:
+		for x in diameter:
+			var d := Vector2(x - c, y - c).length()
+			if d > r_out:
+				sq.set_pixel(x, y, Color(0, 0, 0, 0))
+			elif d > r_in:
+				sq.set_pixel(x, y, BRASS)
+	return ImageTexture.create_from_image(sq)
+
+
+## A radial vignette texture (transparent centre → soft dark corners) for screen-space atmosphere.
+func _make_vignette(size: int) -> ImageTexture:
+	var img := Image.create(size, size, false, Image.FORMAT_RGBA8)
+	var c := (size - 1) * 0.5
+	var maxd := Vector2(c, c).length()
+	for y in size:
+		for x in size:
+			var t := clampf((Vector2(x - c, y - c).length() / maxd - 0.55) / 0.45, 0.0, 1.0)
+			img.set_pixel(x, y, Color(0.02, 0.015, 0.03, t * t * 0.62))
+	return ImageTexture.create_from_image(img)
+
+
+## A gentle force-climate colour-grade + a vignette overlay, so the region reads as an atmospheric
+## place rather than a bright tile grid. Screen-space vignette sits above the world, below the HUD.
+func _setup_atmosphere() -> void:
+	var tint := CanvasModulate.new()
+	tint.name = "ClimateTint"
+	tint.color = Color(0.84, 0.9, 0.82)  # cool verdant marsh grade
+	add_child(tint)
+	# Faint drifting spore-motes, parented to the tamer so they always fill the framed view.
+	if _player != null:
+		var motes := CPUParticles2D.new()
+		motes.name = "Motes"
+		motes.z_index = 12
+		motes.amount = 36
+		motes.lifetime = 7.0
+		motes.preprocess = 5.0
+		motes.emission_shape = CPUParticles2D.EMISSION_SHAPE_RECTANGLE
+		motes.emission_rect_extents = Vector2(820, 520)
+		motes.gravity = Vector2(0, -5)
+		motes.initial_velocity_min = 3.0
+		motes.initial_velocity_max = 11.0
+		motes.scale_amount_min = 1.0
+		motes.scale_amount_max = 2.4
+		motes.color = Color(0.88, 0.78, 0.42, 0.5)
+		_player.add_child(motes)
+	var layer := CanvasLayer.new()
+	layer.name = "Atmosphere"
+	layer.layer = 1
+	var vig := TextureRect.new()
+	vig.texture = _make_vignette(256)
+	vig.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	vig.stretch_mode = TextureRect.STRETCH_SCALE
+	vig.set_anchors_preset(Control.PRESET_FULL_RECT)
+	vig.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	layer.add_child(vig)
+	add_child(layer)
+
+
+## A small grimoire HUD panel naming the region + its force-climate (the overworld "you are here").
+func _setup_hud() -> void:
+	var layer := CanvasLayer.new()
+	layer.name = "HUD"
+	layer.layer = 2
+	var panel := PanelContainer.new()
+	panel.position = Vector2(18, 14)
+	var box := VBoxContainer.new()
+	box.add_theme_constant_override("separation", 2)
+	var title := Label.new()
+	title.text = REGION_TITLE
+	title.theme_type_variation = "TitleLabel"
+	var sub := Label.new()
+	sub.text = REGION_CLIMATE
+	sub.theme_type_variation = "MutedLabel"
+	box.add_child(title)
+	box.add_child(sub)
+	panel.add_child(box)
+	layer.add_child(panel)
+	add_child(layer)
+	var theme_svc := get_node_or_null("/root/ThemeService")
+	if theme_svc != null and theme_svc.has_method("apply_to"):
+		theme_svc.call("apply_to", panel)
 
 
 func _position_player() -> void:
