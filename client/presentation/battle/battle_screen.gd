@@ -49,6 +49,7 @@ var _party_rows: VBoxContainer = null
 var _enemy_rows: VBoxContainer = null
 var _banner: Label = null
 var _root_box: VBoxContainer = null
+var _fx_layer: Control = null  # full-rect overlay for floating damage numbers (above the cards)
 ## Build-once combatant cards (portrait + force icons + HP bar), then updated in place each refresh so
 ## HP tweens / damage floats / hit-flashes can live on persistent nodes. Each entry is a dict of refs.
 var _party_cards: Array = []
@@ -315,6 +316,14 @@ func _build_ui() -> void:
 	bg.color = Color(0.07, 0.06, 0.09)
 	bg.set_anchors_preset(Control.PRESET_FULL_RECT)
 	add_child(bg)
+	# A radial vignette grades the arena toward its dark edges (atmosphere, not gameplay).
+	var vig := TextureRect.new()
+	vig.texture = _make_vignette(256)
+	vig.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	vig.stretch_mode = TextureRect.STRETCH_SCALE
+	vig.set_anchors_preset(Control.PRESET_FULL_RECT)
+	vig.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(vig)
 
 	var margin := MarginContainer.new()
 	margin.set_anchors_preset(Control.PRESET_FULL_RECT)
@@ -383,6 +392,13 @@ func _build_ui() -> void:
 	_transcript_label.scroll_active = false
 	_transcript_label.custom_minimum_size = Vector2(0, 220)
 	_scroll.add_child(_transcript_label)
+
+	# Top-most overlay for floating damage numbers (mouse-transparent, full-rect).
+	_fx_layer = Control.new()
+	_fx_layer.name = "FxLayer"
+	_fx_layer.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_fx_layer.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(_fx_layer)
 
 	_refresh_combatants()
 	_refresh_transcript()
@@ -495,8 +511,61 @@ func _update_team_cards(cards: Array, team: Array) -> void:
 		)
 		var last := int(c.get("last_hp", mon.hp))
 		if mon.hp < last:
+			var dmg := last - mon.hp
 			_flash_portrait(c["portrait"] as TextureRect)
+			_spawn_damage_number(c["card"] as Control, dmg)
+			_shake(clampf(float(dmg) / float(maxi(1, mon.maxhp)), 0.0, 1.0))
 		c["last_hp"] = mon.hp
+
+
+## Float a "-N" damage number up from a card and fade it (impact feedback). Lives on the FX overlay
+## so the card's container layout never clips it. No-op headless / before layout.
+func _spawn_damage_number(card: Control, amount: int) -> void:
+	if _fx_layer == null or card == null or not is_inside_tree():
+		return
+	var lbl := Label.new()
+	lbl.text = "-%d" % amount
+	lbl.add_theme_font_size_override("font_size", 26)
+	lbl.add_theme_color_override("font_color", Color(0.95, 0.42, 0.36))
+	lbl.add_theme_color_override("font_outline_color", Color(0.07, 0.05, 0.09))
+	lbl.add_theme_constant_override("outline_size", 5)
+	lbl.z_index = 60
+	_fx_layer.add_child(lbl)
+	lbl.position = card.global_position + Vector2(card.size.x * 0.5, 8.0)
+	var tw := create_tween()
+	tw.set_parallel(true)
+	tw.tween_property(lbl, "position", lbl.position + Vector2(0, -42), 0.75).set_trans(
+		Tween.TRANS_QUAD
+	)
+	tw.tween_property(lbl, "modulate:a", 0.0, 0.75).set_delay(0.15)
+	tw.chain().tween_callback(lbl.queue_free)
+
+
+## A brief positional shake of the whole arena, scaled by the hit's HP fraction (juice on big hits).
+func _shake(strength: float) -> void:
+	if not is_inside_tree() or strength <= 0.0:
+		return
+	var amp := clampf(strength, 0.0, 1.0) * 9.0
+	if amp < 1.0:
+		return
+	var tw := create_tween()
+	for i in 4:
+		var off := Vector2(randf_range(-amp, amp), randf_range(-amp, amp))
+		tw.tween_property(self, "position", off, 0.04)
+		amp *= 0.6
+	tw.tween_property(self, "position", Vector2.ZERO, 0.05)
+
+
+## A radial vignette texture (transparent centre -> soft dark edges) for arena atmosphere.
+func _make_vignette(size: int) -> ImageTexture:
+	var img := Image.create(size, size, false, Image.FORMAT_RGBA8)
+	var c := (size - 1) * 0.5
+	var maxd := Vector2(c, c).length()
+	for y in size:
+		for x in size:
+			var t := clampf((Vector2(x - c, y - c).length() / maxd - 0.5) / 0.5, 0.0, 1.0)
+			img.set_pixel(x, y, Color(0.02, 0.012, 0.03, t * t * 0.66))
+	return ImageTexture.create_from_image(img)
 
 
 ## A brass-bordered ink frame around a portrait so each creature reads as a bestiary plate.
