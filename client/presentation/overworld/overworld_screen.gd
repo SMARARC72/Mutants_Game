@@ -420,14 +420,19 @@ func _spawn_lead_creature() -> void:
 	_lead_target = _lead.position
 
 
-## The species id of the run's lead party member (party[0]), or "" — used to pick the cameo plate.
+## The species id of the run's ACTIVE lead creature (not just party[0] — the player may have set a
+## non-first member as lead), or "" — used to pick the trailing cameo plate.
 func _lead_species_id() -> String:
 	if _game == null or not _game.has_method("run"):
 		return ""
 	var run: RunContext = _game.call("run")
 	if run == null or not (run.party is Array) or (run.party as Array).is_empty():
 		return ""
-	var lead: Variant = (run.party as Array)[0]
+	var party: Array = run.party
+	var idx := 0
+	if _game.has_method("active_creature_index"):
+		idx = clampi(int(_game.call("active_creature_index")), 0, party.size() - 1)
+	var lead: Variant = party[idx]
 	return str((lead as Dictionary).get("species_id", "")) if lead is Dictionary else ""
 
 

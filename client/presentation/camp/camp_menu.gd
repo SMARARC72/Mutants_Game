@@ -21,6 +21,7 @@ signal resumed
 const InputActions := preload("res://infrastructure/input/input_actions.gd")
 const PARTY_SCENE := "res://presentation/party/party_screen.tscn"
 const LAB_SCENE := "res://presentation/lab/lab_screen.tscn"
+const CHARACTER_SCENE := "res://presentation/character/character_sheet.tscn"
 const OVERWORLD_SCENE := "res://presentation/overworld/overworld_screen.tscn"
 
 var _transition: Node = null
@@ -88,9 +89,50 @@ func _build() -> void:
 	subtitle.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	box.add_child(subtitle)
 
+	_add_lead_portrait(box)
 	_add_button(box, "PartyButton", "Party & Grimoire", open_party)
+	_add_button(box, "SelfButton", "The Self", open_self)
 	_add_button(box, "LabButton", "Lab", open_lab)
 	_add_button(box, "ResumeButton", "Resume", resume)
+
+
+## Show the lead creature's framed bestiary plate (when a run is live) — a face for "tend your coven".
+## No-op headless / no-run (GameController autoload absent or party empty), so tests are unaffected.
+func _add_lead_portrait(box: VBoxContainer) -> void:
+	var gc := get_node_or_null("/root/GameController")
+	if gc == null or not gc.has_method("run"):
+		return
+	var run: RunContext = gc.call("run")
+	if run == null or not (run.party is Array) or (run.party as Array).is_empty():
+		return
+	# The lead is the ACTIVE creature (the player may have set a non-first member as lead), not party[0].
+	var party: Array = run.party
+	var idx := 0
+	if gc.has_method("active_creature_index"):
+		idx = clampi(int(gc.call("active_creature_index")), 0, party.size() - 1)
+	var lead: Variant = party[idx]
+	if not (lead is Dictionary):
+		return
+	var plate := SpeciesArt.plate(str((lead as Dictionary).get("species_id", "")))
+	if plate == null:
+		return
+	var portrait := TextureRect.new()
+	portrait.name = "LeadPortrait"
+	portrait.custom_minimum_size = Vector2(118, 118)
+	portrait.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	portrait.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	portrait.texture = plate
+	var frame := PanelContainer.new()
+	var sb := StyleBoxFlat.new()
+	sb.bg_color = Color(0.13, 0.11, 0.16)
+	sb.set_corner_radius_all(4)
+	sb.set_border_width_all(2)
+	sb.border_color = Color(0.725, 0.576, 0.247)  # BRASS
+	sb.set_content_margin_all(3)
+	frame.add_theme_stylebox_override("panel", sb)
+	frame.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	frame.add_child(portrait)
+	box.add_child(frame)
 
 
 func _add_button(
@@ -112,6 +154,12 @@ func _add_button(
 func open_party() -> String:
 	_navigate(PARTY_SCENE)
 	return PARTY_SCENE
+
+
+## Open the character sheet (the player's morality / Apotheosis trajectory). Returns the target path.
+func open_self() -> String:
+	_navigate(CHARACTER_SCENE)
+	return CHARACTER_SCENE
 
 
 ## The scene path the Lab button targets (a SIBLING track owns the screen). Always returns the path
