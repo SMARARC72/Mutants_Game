@@ -511,10 +511,8 @@ func _update_team_cards(cards: Array, team: Array) -> void:
 		)
 		var last := int(c.get("last_hp", mon.hp))
 		if mon.hp < last:
-			var dmg := last - mon.hp
 			_flash_portrait(c["portrait"] as TextureRect)
-			_spawn_damage_number(c["card"] as Control, dmg)
-			_shake(clampf(float(dmg) / float(maxi(1, mon.maxhp)), 0.0, 1.0))
+			_spawn_damage_number(c["card"] as Control, last - mon.hp)
 		c["last_hp"] = mon.hp
 
 
@@ -539,21 +537,6 @@ func _spawn_damage_number(card: Control, amount: int) -> void:
 	)
 	tw.tween_property(lbl, "modulate:a", 0.0, 0.75).set_delay(0.15)
 	tw.chain().tween_callback(lbl.queue_free)
-
-
-## A brief positional shake of the whole arena, scaled by the hit's HP fraction (juice on big hits).
-func _shake(strength: float) -> void:
-	if not is_inside_tree() or strength <= 0.0:
-		return
-	var amp := clampf(strength, 0.0, 1.0) * 9.0
-	if amp < 1.0:
-		return
-	var tw := create_tween()
-	for i in 4:
-		var off := Vector2(randf_range(-amp, amp), randf_range(-amp, amp))
-		tw.tween_property(self, "position", off, 0.04)
-		amp *= 0.6
-	tw.tween_property(self, "position", Vector2.ZERO, 0.05)
 
 
 ## A radial vignette texture (transparent centre -> soft dark edges) for arena atmosphere.
