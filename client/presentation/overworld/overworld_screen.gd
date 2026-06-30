@@ -162,6 +162,28 @@ func build_from_game() -> void:
 	_setup_camera()
 	_setup_atmosphere()
 	_setup_hud()
+	_maybe_play_intro()
+
+
+## Play the authored cold-open ("The Knack" — Maddox's thesis) ONCE per run, the first time the
+## overworld builds. Flag-gated in run.flags + persisted, so it never replays on reload. No-op headless
+## without a DialogicFacade target; the `dialogue_started` signal still fires so a test can assert it.
+func _maybe_play_intro() -> void:
+	if _game == null or not _game.has_method("run"):
+		return
+	var run: RunContext = _game.call("run")
+	if run == null or bool(run.flags.get("intro_played", false)):
+		return
+	run.flags["intro_played"] = true
+	if _game.has_method("save_run"):
+		_game.call("save_run")
+	if _dialogue == null:
+		_dialogue = DialogicFacade.new()
+	if not _dialogue.scene_finished.is_connected(_on_dialogue_finished):
+		_dialogue.scene_finished.connect(_on_dialogue_finished)
+	_in_dialogue = true
+	dialogue_started.emit("intro_knack")
+	_dialogue.play_timeline("intro_knack")
 
 
 # === movement + encounters ==================================================================== #
