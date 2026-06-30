@@ -105,6 +105,24 @@ func _objective_for(quest: Dictionary) -> String:
 # === accessors (for tests) ==================================================================== #
 
 
+## The Bloomwarden standing line: "Bloomwardens — <Tier> (<value>)". Reads the GameController's
+## authoritative run.flags standing + tier mapping; a gentle fallback when those accessors are absent.
+func standing_text() -> String:
+	return _standing_text()
+
+
+func _standing_text() -> String:
+	if _game == null:
+		return "Bloomwardens — Stranger"
+	var tier := "Stranger"
+	var value := 0
+	if _game.has_method("bloomwardens_tier"):
+		tier = str(_game.call("bloomwardens_tier"))
+	if _game.has_method("bloomwardens_standing"):
+		value = int(_game.call("bloomwardens_standing"))
+	return "Bloomwardens — %s (%d)" % [tier, value]
+
+
 func entries() -> Array:
 	return _entries.duplicate(true)
 
@@ -147,6 +165,13 @@ func _build_ui() -> void:
 	subtitle.text = "What the marsh is keeping count of."
 	subtitle.theme_type_variation = "MutedLabel"
 	box.add_child(subtitle)
+
+	# FACTION STANDING — the quests nudge Bloomwarden standing; surface it so the player can read the
+	# ledger they're climbing. Authoritative value + tier come from the GameController (run.flags).
+	var standing := Label.new()
+	standing.name = "StandingLine"
+	standing.text = _standing_text()
+	box.add_child(standing)
 
 	var scroll := ScrollContainer.new()
 	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
