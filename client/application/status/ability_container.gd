@@ -107,6 +107,20 @@ func defdown() -> float:
 	return _mon.defdown
 
 
+## The tier the combatant's stats derive from (for the parallel StatusContainer + capture math).
+func tier() -> String:
+	return _tier
+
+
+## Set the combatant's live HP (clamped 0..maxhp); flips alive=false at 0. Used by the interactive
+## status layer to fold DOT damage (computed by StatusEngine) back onto the canonical combat Mon —
+## the shell still computes no number, it just stores the engine-produced HP.
+func set_hp(value: int) -> void:
+	_mon.hp = clampi(value, 0, _mon.maxhp)
+	if _mon.hp <= 0:
+		_mon.alive = false
+
+
 func hp() -> int:
 	return _mon.hp
 
