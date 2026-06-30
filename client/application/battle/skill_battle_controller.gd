@@ -36,8 +36,13 @@ static func act_rng(run_rng: CanonicalRNG) -> CanonicalRNG:
 
 ## Build an interactive, step-wise session over the skill turn loop. teamA/teamB: Array[AbilityContainer].
 ## `player_side` ("A"/"B") is the side the player drives; every other actor is AI-driven via act().
-func interactive(team_a: Array, team_b: Array, player_side: String = "A") -> InteractiveSession:
-	return InteractiveSession.new(self, team_a, team_b, player_side)
+## `with_statuses` enables the STATUS layer (Slice 4): per-turn DOT ticks, control-skip, and Hex-applied
+## statuses, all via StatusEngine through a parallel StatusContainer. It is OFF by default so the parity
+## proof (skill_battle_controller_parity_test) drives the pure loop, byte-identical to SkillEngine.battle().
+func interactive(
+	team_a: Array, team_b: Array, player_side: String = "A", with_statuses: bool = false
+) -> InteractiveSession:
+	return InteractiveSession.new(self, team_a, team_b, player_side, with_statuses)
 
 
 ## The verb of a skill id, from the single-sourced library (presentation/routing only).
@@ -51,6 +56,25 @@ static func verb_of(skill: String) -> String:
 ## True if `verb` is a SUPPORT verb (targets allies; the engine picks the specific ally).
 static func is_support_verb(verb: String) -> bool:
 	return verb == "Mend" or verb == "Ward" or verb == "Rouse"
+
+
+## The STATUS whose force-signature matches `force` (Thanatos->Wither, Cosmos->Seal, ...), or "" if the
+## force owns no status. Data-driven from Constants so a Hex skill applies its force's signature status.
+static func status_for_force(force: String) -> String:
+	var table: Dictionary = Constants.BALANCE["status"]["statuses"]
+	for status_name in table:
+		var s: Dictionary = table[status_name]
+		if str(s.get("kind", "")) != "meta" and str(s.get("force", "")) == force:
+			return status_name
+	return ""
+
+
+## True if `status_name` is a CONTROL status (skips the afflicted actor's action while active).
+static func is_control_status(status_name: String) -> bool:
+	var table: Dictionary = Constants.BALANCE["status"]["statuses"]
+	if not table.has(status_name):
+		return false
+	return str((table[status_name] as Dictionary).get("kind", "")) == "control"
 
 
 ## InteractiveSession — the step-wise driver over the skill turn loop. Owns the live loop position
@@ -96,17 +120,42 @@ class InteractiveSession:
 	var _turn_open: bool = false
 	# The actor currently awaiting a player action (set on AWAIT_PLAYER, consumed by the verbs).
 	var _pending_actor: AbilityContainer = null
+	# STATUS layer (Slice 4, opt-in). When on: a parallel StatusContainer per combatant (AbilityContainer
+	# -> StatusContainer) carries DOTs / controls / corruption; the canonical combat HP stays on the Mon
+	# and DOT damage is folded back onto it. OFF leaves the loop byte-identical to SkillEngine.battle().
+	var _with_statuses: bool = false
+	var _status: Dictionary = {}
 
 	func _init(
-		ctrl: SkillBattleController, team_a: Array, team_b: Array, player_side: String
+		ctrl: SkillBattleController,
+		team_a: Array,
+		team_b: Array,
+		player_side: String,
+		with_statuses: bool = false
 	) -> void:
 		_ctrl = ctrl
 		_team_a = team_a
 		_team_b = team_b
 		_player_side = player_side
+		_with_statuses = with_statuses
 		var sb: Dictionary = Constants.BALANCE["skill"]
 		_turn_cap = int(sb["turn_cap"])
 		_entropy_step = float(sb["entropy_step_per_turn"])
+		if _with_statuses:
+			for ac in _team_a + _team_b:
+				var c := ac as AbilityContainer
+				# StatusEngine.C derives its HP assuming a WILD rank, so it only accepts wild tiers
+				# (T1/T2/T3). A legendary/god creature's tier ("x"/rank tier) would crash its hp calc —
+				# but the C's HP is a throwaway here (we reconcile it from the canonical Mon before every
+				# tick), so a non-wild tier maps to a safe stand-in. Statuses themselves are tier-agnostic.
+				var safe_tier := c.tier()
+				if not (safe_tier == "T1" or safe_tier == "T2" or safe_tier == "T3"):
+					safe_tier = "T3"
+				var sc := StatusContainer.new(
+					c.combatant_name(), c.primary_force(), c.secondary_force(), safe_tier
+				)
+				sc.set_hp(c.hp(), c.max_hp())
+				_status[c] = sc
 
 	# --- the step pump ---------------------------------------------------------------------------- #
 
@@ -133,6 +182,10 @@ class InteractiveSession:
 			var actor := _order[_order_idx] as AbilityContainer
 			_order_idx += 1
 			if not actor.is_alive():
+				continue
+			# STATUS layer: a controlled actor (Petrify/Shock/Seal/Madness) forfeits its action this turn.
+			if _with_statuses and _is_controlled(actor):
+				_log.append("   " + actor.combatant_name() + " is held by a status — skips")
 				continue
 			# Mirror SkillEngine.battle()'s `if not _any_alive(foes): break` — end turn + battle
 			# (_finish appends the turn's trailing "" + the RESULT line, exactly as battle() does).
@@ -173,6 +226,10 @@ class InteractiveSession:
 				combo = _COMBO_MULT
 				_log.append("   >> RESONANCE COMBO (" + actor.primary_force() + " chain) <<")
 			actor.use_damage(skill, tgt, _ent, combo)
+			# STATUS layer: a Hex also inflicts its force's signature status (Wither->Wither DOT,
+			# Bind/Cosmos->Seal control) on the target, beyond the engine's inline defdown.
+			if _with_statuses and verb == "Hex":
+				_apply_hex_status(skill, tgt)
 		_append_delta(actor, before)
 		# act() always returns user.prim — a player action sets the side's prev to the actor's force too.
 		_prev[side] = actor.primary_force()
@@ -234,7 +291,64 @@ class InteractiveSession:
 	func player_won() -> bool:
 		return _any_alive(player_team())
 
+	## The StatusContainer fronting `actor` (statuses / corruption / feral), or null when the status layer
+	## is off / the actor is unknown. The UI reads this to render status icons + a corruption meter.
+	func status_of(actor: AbilityContainer) -> StatusContainer:
+		return _status.get(actor, null)
+
 	# --- internals -------------------------------------------------------------------------------- #
+
+	## Tick every alive combatant's statuses in initiative order: DOT damage (folded onto the canonical
+	## Mon HP) + control countdown, with same-side allies for DOT spread. StatusEngine has no RNG, so this
+	## is deterministic. The Mon stays canonical: its HP seeds the scratch C, then the post-tick HP is
+	## written back (so a DOT can down a creature exactly as a strike would).
+	func _tick_statuses() -> void:
+		for ac in _order:
+			var c := ac as AbilityContainer
+			if not c.is_alive():
+				continue
+			var sc := _status.get(c, null) as StatusContainer
+			if sc == null:
+				continue
+			sc.set_hp(c.hp(), c.max_hp())
+			var delta := sc.tick(_ally_status_containers(c))
+			c.set_hp(sc.hp())
+			for line in delta:
+				_log.append(line)
+
+	## The StatusContainers of `actor`'s living same-side allies (for DOT spread targeting).
+	func _ally_status_containers(actor: AbilityContainer) -> Array:
+		var out: Array = []
+		for ally in _allies_of(actor):
+			var sc: Variant = _status.get(ally, null)
+			if sc != null:
+				out.append(sc)
+		return out
+
+	## True if `actor` currently carries any CONTROL status (so it forfeits its action this turn).
+	func _is_controlled(actor: AbilityContainer) -> bool:
+		var sc := _status.get(actor, null) as StatusContainer
+		if sc == null:
+			return false
+		for status_name in sc.active_statuses():
+			if SkillBattleController.is_control_status(str(status_name)):
+				return true
+		return false
+
+	## Apply a Hex skill's force-signature status to `target` (Wither->Wither, Bind/Cosmos->Seal, ...),
+	## folding the engine's apply log into the transcript. No-op if the force owns no status.
+	func _apply_hex_status(skill: String, target: AbilityContainer) -> void:
+		var lib: Dictionary = Constants.BALANCE["skill"]["library"]
+		var force := str((lib.get(skill, {}) as Dictionary).get("force", ""))
+		var status_name := SkillBattleController.status_for_force(force)
+		if status_name == "":
+			return
+		var sc := _status.get(target, null) as StatusContainer
+		if sc == null:
+			return
+		var delta := sc.apply(status_name)
+		for line in delta:
+			_log.append(line)
 
 	## Resolve an actor via SkillEngine.act() (AI selects + the engine resolves), drawing the act stream
 	## and folding the produced log lines into the shared transcript in order. Shared by enemy turns and
@@ -267,6 +381,10 @@ class InteractiveSession:
 		_order_idx = 0
 		_prev = {"A": "", "B": ""}
 		_turn_open = true
+		# STATUS layer: at the top of each turn, tick DOTs (damage folded onto the canonical Mon) and
+		# count down controls — in initiative order, with same-side allies for DOT spread. No-op when off.
+		if _with_statuses:
+			_tick_statuses()
 
 	## Emit SkillEngine.battle()'s per-turn trailing blank line ONCE (idempotent: a no-op when already
 	## closed). Keeps the pump's blank-line placement identical to battle().

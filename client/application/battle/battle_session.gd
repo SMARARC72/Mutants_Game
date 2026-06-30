@@ -199,7 +199,8 @@ func begin_skill_interactive(
 		return null
 	var run_rng := CanonicalRNG.new(battle_seed)
 	var controller = SkillBattleControllerScript.new(run_rng)
-	var session = controller.interactive(team_a, team_b, "A")
+	# Real play runs WITH the status layer (DOTs / controls); the parity test drives the pure loop.
+	var session = controller.interactive(team_a, team_b, "A", true)
 	var capture := CaptureServiceScript.new(battle_seed)
 	return SkillInteractiveBattle.new(
 		session, capture, _catalog, enemy_built["source"], team_a, team_b

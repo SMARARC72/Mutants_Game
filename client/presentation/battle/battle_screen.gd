@@ -532,8 +532,10 @@ func _update_team_cards(cards: Array, team: Array) -> void:
 		c["last_hp"] = ac.hp()
 
 
-## Rebuild a card's status chips (shield / buff / defdown) from the container's live engine state. Each
-## chip is a tiny coloured Label; absent effects show no chip (the row stays clean until depth applies).
+## Rebuild a card's status chips from the live engine state: shield (◈) / buff (▲) / defdown (▼) from
+## the AbilityContainer, then the active DOT/control STATUSES (Wither/Petrify/...) from the parallel
+## StatusContainer — DOTs show a stack count (×N), controls a remaining duration ([N]). Force-coloured.
+## Absent effects show no chip (the row stays clean until depth applies).
 func _update_card_chips(ac: AbilityContainer, chips: HBoxContainer) -> void:
 	if chips == null:
 		return
@@ -547,6 +549,29 @@ func _update_card_chips(ac: AbilityContainer, chips: HBoxContainer) -> void:
 		chips.add_child(
 			_make_chip("▼ -%d%%" % int(ac.defdown() * 100.0), Color(0.761, 0.251, 0.184))
 		)
+	var sc := _status_for(ac)
+	if sc != null:
+		var table: Dictionary = Constants.BALANCE["status"]["statuses"]
+		for status_name: String in sc.active_statuses():
+			var s: Dictionary = table.get(status_name, {})
+			var force := str(s.get("force", ""))
+			var col := GrimoirePalette.force_color(force) if force != "" else Color(0.82, 0.5, 0.5)
+			var label := str(status_name)
+			if str(s.get("kind", "")) == "dot":
+				label += " ×%d" % sc.stacks_of(status_name)
+			else:
+				label += " [%d]" % sc.duration_of(status_name)
+			chips.add_child(_make_chip(label, col))
+
+
+## The StatusContainer fronting `ac` (statuses / corruption), or null when the status layer is off.
+func _status_for(ac: AbilityContainer) -> StatusContainer:
+	if _battle == null or not _battle.has_method("session"):
+		return null
+	var sess: Variant = _battle.session()
+	if sess == null or not sess.has_method("status_of"):
+		return null
+	return sess.status_of(ac)
 
 
 ## A small coloured status chip (a bordered Label) for the card's effect row.

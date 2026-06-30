@@ -93,6 +93,15 @@ func duration_of(status_name: String) -> int:
 	return int((_c.status[status_name] as Dictionary).get("dur", 0))
 
 
+## Sync the status state's HP to the canonical combat HP before a tick, so a DOT computed by the engine
+## damages the SAME pool the skill battle tracks (the AbilityContainer's Mon is canonical; this C is a
+## per-tick scratch for the engine's DOT math + the persistent status/corruption bookkeeping).
+func set_hp(value: int, max_value: int = -1) -> void:
+	if max_value > 0:
+		_c.maxhp = max_value
+	_c.hp = clampi(value, 0, _c.maxhp)
+
+
 func hp() -> int:
 	return _c.hp
 
