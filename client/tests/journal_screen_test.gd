@@ -117,6 +117,23 @@ func test_journal_builds_quest_cards_ui() -> void:
 	gc.queue_free()
 
 
+func test_journal_surfaces_bloomwarden_standing() -> void:
+	# The journal reads the GameController's authoritative standing + tier; a few catches lift the tier
+	# off Stranger, and the line reflects it (the quests nudge this meter; now it's visible).
+	var gc := _make_game()
+	for _i in range(3):
+		gc.call("adjust_bloomwardens_standing", 5)  # 3 catches' worth -> above Stranger
+	var screen := _make_journal(gc)
+	var line := str(screen.call("standing_text"))
+	assert_str(line).starts_with("Bloomwardens —")
+	assert_int(int(gc.call("bloomwardens_standing"))).is_equal(15)
+	# The rendered line carries the live value.
+	assert_bool(line.contains("15")).is_true()
+	assert_object(screen.find_child("StandingLine", true, false)).is_not_null()
+	screen.queue_free()
+	gc.queue_free()
+
+
 func test_camp_menu_wires_journal_button() -> void:
 	var camp: Node = CampMenuScript.new()
 	camp.call("set_auto_navigate", false)
