@@ -56,6 +56,18 @@ const NPC_DEFS := [
 		"ring": Color("b14b3a"),  # Chaos rust — the kindly-voiced shortcut, the Revel in disguise
 		"bramble_step": "refuse_garran",
 	},
+	{
+		"name": "Sister Wenlow",
+		"timeline": "sister_wenlow",
+		"ring": Color("9ab0a0"),  # hospice grey-green — the Bloomwarden hospice-keeper (SQ-06 giver)
+		"wenlow_step": "hear_wenlow",
+	},
+	{
+		"name": "The Greenwatcher",
+		"timeline": "the_greenwatcher",
+		"ring": Color("6b8f3d"),  # Eros/Thanatos deep green — the gentle apex that plants the living
+		"wenlow_step": "pacify_greenwatcher",
+	},
 ]
 
 ## The intro quest, driven by talking to the two marsh NPCs (start on the first, complete on the
@@ -133,8 +145,34 @@ const BRAMBLE_QUEST := {
 	"on_complete": {"set_flag": "six_petals_true_bred", "nudge_standing": ["bloomwardens", 1]},
 }
 
+## SQ-06 "The Bloom That Won't Bury" — an authored Bloomwarden BOUNTY beat with the soft creed's twist.
+## Sister Wenlow begs you to stop the Greenwatcher (an apex that "plants" living patients out of its own
+## learned mercy) — and NOT to kill it. Hearing her starts it; pacifying the Greenwatcher (the kind way,
+## not the blade) completes it, nudging Bloomwarden standing. Befriend, not butcher: the creed, tested.
+const WENLOW_QUEST := {
+	"id": "the_bloom_that_wont_bury",
+	"name": "The Bloom That Won't Bury",
+	"description":
+	"A Greenwatcher plants the living out of mercy. Sister Wenlow needs it stopped — kindly.",
+	"step_key": "wenlow_step",
+	"steps":
+	[
+		{
+			"id": "hear_wenlow",
+			"description": "Hear Sister Wenlow's grief.",
+			"on_complete": {"set_flag": "met_wenlow"}
+		},
+		{
+			"id": "pacify_greenwatcher",
+			"description": "Pacify the Greenwatcher — do not kill it.",
+			"on_complete": {"set_flag": "greenwatcher_pacified"}
+		},
+	],
+	"on_complete": {"set_flag": "bloom_that_wont_bury", "nudge_standing": ["bloomwardens", 1]},
+}
+
 
 ## Every overworld quest, in one place — the screen registers + dispatches over this list, so a new
 ## quest is a const above + an entry here (plus its NPC_DEFS step entries). No screen-logic change.
 static func quest_defs() -> Array:
-	return [MARSH_QUEST, MELON_QUEST, BRAMBLE_QUEST]
+	return [MARSH_QUEST, MELON_QUEST, BRAMBLE_QUEST, WENLOW_QUEST]
