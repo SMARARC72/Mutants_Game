@@ -95,7 +95,10 @@ def support(user, skill, allies, log):
         tgt.shield += rnd(tgt.maxhp * sk["shield"] * rm)
         log.append("   " + user.name.ljust(9) + skill.ljust(13) + "~> shields " + tgt.name + " (" + str(tgt.shield) + " shield)")
     elif sk["verb"] == "Rouse":
-        tgt = max([a for a in allies if a.alive and a is not user], key=lambda a: a.stats["Spike"] + a.stats["Bane"])
+        cands = [a for a in allies if a.alive and a is not user]
+        if not cands:
+            return  # no eligible OTHER ally (last-survivor/solo) -> no-op (never hit in 3v3 goldens)
+        tgt = max(cands, key=lambda a: a.stats["Spike"] + a.stats["Bane"])
         tgt.buff += sk["buff"] * rm
         log.append("   " + user.name.ljust(9) + skill.ljust(13) + "~> rouses " + tgt.name + " (+" + str(int(tgt.buff * 100)) + "% offense)")
 
