@@ -125,6 +125,11 @@ class InteractiveSession:
 	# and DOT damage is folded back onto it. OFF leaves the loop byte-identical to SkillEngine.battle().
 	var _with_statuses: bool = false
 	var _status: Dictionary = {}
+	# Controls present at the START of the current turn (before the tick counts them down). The skip
+	# decision uses THIS snapshot, not the post-tick state, so a dur-D control yields exactly D skips —
+	# without it, a control applied after a faster target acted lost its final turn to the erase-then-act
+	# (Codex #45). Keyed by AbilityContainer identity.
+	var _controlled_at_start: Dictionary = {}
 
 	func _init(
 		ctrl: SkillBattleController,
@@ -184,7 +189,8 @@ class InteractiveSession:
 			if not actor.is_alive():
 				continue
 			# STATUS layer: a controlled actor (Petrify/Shock/Seal/Madness) forfeits its action this turn.
-			if _with_statuses and _is_controlled(actor):
+			# Uses the turn-start snapshot so the final control turn isn't lost to the tick's erase.
+			if _with_statuses and bool(_controlled_at_start.get(actor, false)):
 				_log.append("   " + actor.combatant_name() + " is held by a status — skips")
 				continue
 			# Mirror SkillEngine.battle()'s `if not _any_alive(foes): break` — end turn + battle
@@ -335,6 +341,15 @@ class InteractiveSession:
 				return true
 		return false
 
+	## Record who is controlled at the START of this turn (before the tick counts controls down), so the
+	## skip decision is stable: a control present now causes a skip even if this turn's tick erases it.
+	func _snapshot_controls() -> void:
+		_controlled_at_start = {}
+		for ac in _order:
+			var c := ac as AbilityContainer
+			if c.is_alive() and _is_controlled(c):
+				_controlled_at_start[c] = true
+
 	## Apply a Hex skill's force-signature status to `target` (Wither->Wither, Bind/Cosmos->Seal, ...),
 	## folding the engine's apply log into the transcript. No-op if the force owns no status.
 	func _apply_hex_status(skill: String, target: AbilityContainer) -> void:
@@ -381,9 +396,11 @@ class InteractiveSession:
 		_order_idx = 0
 		_prev = {"A": "", "B": ""}
 		_turn_open = true
-		# STATUS layer: at the top of each turn, tick DOTs (damage folded onto the canonical Mon) and
-		# count down controls — in initiative order, with same-side allies for DOT spread. No-op when off.
+		# STATUS layer: snapshot who is controlled BEFORE the tick (so the skip uses turn-start state,
+		# not the post-tick state the countdown may have just cleared), then tick DOTs (damage folded onto
+		# the canonical Mon) + count down controls — initiative order, same-side allies for DOT spread.
 		if _with_statuses:
+			_snapshot_controls()
 			_tick_statuses()
 
 	## Emit SkillEngine.battle()'s per-turn trailing blank line ONCE (idempotent: a no-op when already

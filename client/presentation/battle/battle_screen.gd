@@ -203,6 +203,29 @@ func player_capture(target_index: int = -1) -> Dictionary:
 	return _last_step
 
 
+## Forfeit the pending actor's turn (the soft-lock escape for a degenerate no-action kit). Drives the
+## actor through the oracle AI (which does nothing when it has no usable verb), then pumps the enemy.
+func player_pass() -> Dictionary:
+	if _battle == null or _battle.is_ended():
+		return _last_step
+	_hide_menus()
+	_battle.act_neutral()
+	_pending_skill = ""
+	_pump()
+	return _last_step
+
+
+## True when the pending actor has at least one LIVING ally other than itself — the only state in which
+## a Rouse skill (whose engine target excludes the user) can resolve. Read off the live player team.
+func _rouse_has_target() -> bool:
+	if _battle == null or _pending_actor == null:
+		return false
+	for ally in _battle.player_team():
+		if ally != _pending_actor and (ally as AbilityContainer).is_alive():
+			return true
+	return false
+
+
 ## Player FLEE (wild only) — ends the battle, returns to the overworld with the run intact (no xp).
 func player_flee() -> Dictionary:
 	if _battle == null or _battle.is_ended() or not _is_wild:
@@ -690,10 +713,15 @@ func _show_action_menu() -> void:
 	_action_menu.visible = true
 	var lib: Dictionary = Constants.BALANCE["skill"]["library"]
 	var kit: Array = _pending_actor.abilities() if _pending_actor != null else []
+	var actionable := 0
 	for i in kit.size():
 		var skill := str(kit[i])
 		var sk: Dictionary = lib.get(skill, {})
 		var verb := str(sk.get("verb", ""))
+		# A Rouse with no eligible ally (a last-survivor / solo actor) can't resolve — its engine target
+		# excludes the user + the dead — so omit the button rather than offer a turn-wasting no-op.
+		if verb == "Rouse" and not _rouse_has_target():
+			continue
 		var ap := int(sk.get("ap", 1))
 		var btn := Button.new()
 		btn.name = "SkillButton%d" % i
@@ -704,6 +732,7 @@ func _show_action_menu() -> void:
 		else:
 			btn.pressed.connect(func() -> void: _show_target_picker(chosen))
 		_action_menu.add_child(btn)
+		actionable += 1
 	if _is_wild:
 		var capture_btn := Button.new()
 		capture_btn.name = "CaptureButton"
@@ -715,6 +744,15 @@ func _show_action_menu() -> void:
 		flee_btn.text = "Flee"
 		flee_btn.pressed.connect(func() -> void: player_flee())
 		_action_menu.add_child(flee_btn)
+		actionable += 2
+	# Soft-lock guard: if the actor has NO usable action (degenerate empty kit in a non-wild fight),
+	# offer a Pass so the interactive pump can never stall waiting on an impossible player turn.
+	if actionable == 0:
+		var pass_btn := Button.new()
+		pass_btn.name = "PassButton"
+		pass_btn.text = "Pass"
+		pass_btn.pressed.connect(func() -> void: player_pass())
+		_action_menu.add_child(pass_btn)
 
 
 ## Show one button per alive enemy — the target picker for the damage `skill` the player chose.

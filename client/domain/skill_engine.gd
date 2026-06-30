@@ -208,6 +208,11 @@ static func support(user: Mon, skill: String, allies: Array, log: Array) -> void
 		)
 	elif verb == "Rouse":
 		var tgt := _max_by_spike_bane(allies, user)
+		# Rouse buffs the strongest OTHER ally; with no eligible ally (a last-survivor / solo team) the
+		# target is null — no-op instead of a null deref. Unreachable in the 3v3 goldens (they always
+		# have another ally), so this guard never changes a golden vector; it hardens live attrition play.
+		if tgt == null:
+			return
 		tgt.buff += float(sk["buff"]) * rm
 		log.append(
 			(
