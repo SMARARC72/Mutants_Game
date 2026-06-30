@@ -47,7 +47,9 @@ directories/dtl_directory={
 "old_garran": "res://presentation/dialogue/old_garran.dtl",
 "pollen_factor": "res://presentation/dialogue/pollen_factor.dtl",
 "rust_warden": "res://presentation/dialogue/rust_warden.dtl",
+"sister_wenlow": "res://presentation/dialogue/sister_wenlow.dtl",
 "smoke": "res://presentation/dialogue/smoke.dtl",
+"the_greenwatcher": "res://presentation/dialogue/the_greenwatcher.dtl",
 "the_melon": "res://presentation/dialogue/the_melon.dtl"
 }
 layout/style_directory={}

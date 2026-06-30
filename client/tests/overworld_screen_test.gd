@@ -290,6 +290,22 @@ func test_six_petals_quest_is_data_driven_via_step_key() -> void:
 	gc.queue_free()
 
 
+func test_greenwatcher_bounty_quest_runs_via_its_npcs() -> void:
+	# SQ-06 "The Bloom That Won't Bury" — Sister Wenlow (index 8) starts the bounty; pacifying the
+	# Greenwatcher (index 9) completes it (befriend, not butcher), nudging Bloomwarden standing. A 4th
+	# data-driven quest, proving the OverworldContent pattern scales with zero screen-logic change.
+	var gc := _make_game()
+	gc.call("new_run", TEST_SEED)
+	var ow := _make_overworld(gc)
+	assert_bool(bool(ow.call("quest_active", "the_bloom_that_wont_bury"))).is_false()
+	ow.call("speak_to", 8)  # Sister Wenlow
+	assert_bool(bool(ow.call("quest_active", "the_bloom_that_wont_bury"))).is_true()
+	ow.call("speak_to", 9)  # The Greenwatcher
+	assert_bool(bool(ow.call("quest_done", "the_bloom_that_wont_bury"))).is_true()
+	ow.queue_free()
+	gc.queue_free()
+
+
 func test_speaking_to_an_npc_emits_its_dialogue_timeline() -> void:
 	# speak_to plays the NPC's authored Dialogic timeline; headless it resolves immediately, but the
 	# dialogue_started signal + returned timeline id prove the beat fired (the overworld<->narrative seam).
