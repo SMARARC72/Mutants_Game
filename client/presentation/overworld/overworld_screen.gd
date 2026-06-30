@@ -38,95 +38,8 @@ const INK := Color(0.090196, 0.07451, 0.109804)
 const BRASS := Color(0.725, 0.576, 0.247)
 const BRASS_BRIGHT := Color(0.878431, 0.72549, 0.352941)
 
-## Walk-up-and-talk NPCs placed in the starter region. Each plays its authored Dialogic timeline
-## (registered in project.godot dtl_directory) on INTERACT when the tamer stands beside it.
-## `quest_step` advances the intro quest (MARSH_QUEST); `melon_step` advances the side quest
-## (MELON_QUEST). A def may drive both, one, or neither quest. Ring colours are drawn from the
-## six-force palette (GrimoirePalette) so each token reads as a distinct occult game-piece.
-const NPC_DEFS := [
-	{
-		"name": "Old Marrow",
-		"timeline": "marsh_oracle",
-		"ring": Color(0.667, 0.376, 0.69),  # Thanatos violet — the bog oracle
-		"quest_step": "hear_marrow"
-	},
-	{
-		"name": "Bog-Wretch",
-		"timeline": "marsh_encounter",
-		"ring": Color(0.435, 0.722, 0.839),  # Ouranos silver-blue — the penny-coloured wretch
-		"quest_step": "meet_wretch"
-	},
-	{
-		"name": "Matron Sevvy",
-		"timeline": "bloom_matron",
-		"ring": Color("e0658c"),  # Eros rose — the Bloomwarden Greenmother
-	},
-	{
-		"name": "Pollen-Factor Dree",
-		"timeline": "pollen_factor",
-		"ring": Color("d6248c"),  # Chaos magenta — the absurdist cursed-goods merchant
-		"melon_step": "covet_melon",
-	},
-	{
-		"name": "The Melon",
-		"timeline": "the_melon",
-		"ring": Color("e8d8a0"),  # Cosmos gold — the patient melon that waits
-		"melon_step": "wait_with_melon",
-	},
-	{
-		"name": "Rust Warden",
-		"timeline": "rust_warden",
-		"ring": Color("e0b95a"),  # lit brass — the Bloomwarden lore/mentor
-	},
-]
-
-## The intro quest, driven by talking to the two marsh NPCs (start on the first, complete on the
-## second). Data-only; QuestService applies the effects to its NarrativeRunState + emits signals.
-const MARSH_QUEST := {
-	"id": "marsh_welcome",
-	"name": "A Thin Welcome",
-	"description": "The marsh has opinions about you. Hear them out.",
-	"steps":
-	[
-		{
-			"id": "hear_marrow",
-			"description": "Heed Old Marrow.",
-			"on_complete": {"set_flag": "met_marrow"}
-		},
-		{
-			"id": "meet_wretch",
-			"description": "Meet the Bog-Wretch.",
-			"on_complete": {"set_flag": "met_wretch"}
-		},
-	],
-	"on_complete": {"set_flag": "marsh_welcomed", "add_corruption": 1},
-}
-
-## SQ-04 "The Melon That Waits" — an authored absurdist non-combat side quest. The Pollen-Factor
-## covets the melon (start); the tamer then sits and waits with the patient melon (complete). A
-## second QuestService quest, mirroring MARSH_QUEST but driven by a separate pair of NPCs — it does
-## NOT butcher anything (a Bloomwarden-flavoured beat: some things you outlast, not befriend). The
-## payoff nudges Bloomwarden standing rather than corruption: patience is husbandry.
-const MELON_QUEST := {
-	"id": "the_melon_that_waits",
-	"name": "The Melon That Waits",
-	"description":
-	"Pollen-Factor Dree wants the melon. The melon has other plans. So, now, do you.",
-	"steps":
-	[
-		{
-			"id": "covet_melon",
-			"description": "Hear Pollen-Factor Dree out.",
-			"on_complete": {"set_flag": "heard_the_factor"}
-		},
-		{
-			"id": "wait_with_melon",
-			"description": "Wait with the melon.",
-			"on_complete": {"set_flag": "waited_with_melon"}
-		},
-	],
-	"on_complete": {"set_flag": "melon_outlasted", "nudge_standing": ["bloomwardens", 1]},
-}
+## NPC + quest CONTENT data lives in OverworldContent (separated so adding content never bloats this
+## screen logic). NPCs play authored Dialogic timelines on INTERACT; quests advance via their step_key.
 
 var _game: Node = null
 var _transition: Node = null
@@ -761,11 +674,11 @@ func _spawn_npcs() -> void:
 		return
 	if _quests == null:
 		_quests = QuestService.new()
-		_quests.register([MARSH_QUEST, MELON_QUEST])
+		_quests.register(_quest_defs())  # all overworld quests (MARSH/MELON/BRAMBLE/...) in one place
 		_restore_quests()
-	var cells := _npc_cells(NPC_DEFS.size())
-	for i in mini(cells.size(), NPC_DEFS.size()):
-		var def: Dictionary = NPC_DEFS[i]
+	var cells := _npc_cells(OverworldContent.NPC_DEFS.size())
+	for i in mini(cells.size(), OverworldContent.NPC_DEFS.size()):
+		var def: Dictionary = OverworldContent.NPC_DEFS[i]
 		var cell: Vector2i = cells[i]
 		var node := Node2D.new()
 		node.name = "NPC_%s" % str(def["name"]).replace(" ", "")
@@ -776,19 +689,12 @@ func _spawn_npcs() -> void:
 		token.texture = _make_npc_token(int(s * 0.84), def["ring"] as Color)
 		node.add_child(token)
 		add_child(node)
-		(
-			_npcs
-			. append(
-				{
-					"cell": cell,
-					"name": str(def["name"]),
-					"timeline": str(def["timeline"]),
-					"quest_step": str(def.get("quest_step", "")),
-					"melon_step": str(def.get("melon_step", "")),
-					"node": node,
-				}
-			)
-		)
+		# Carry ALL of the def's keys (name/timeline/ring + every quest step_key) so the data-driven
+		# quest dispatch sees each NPC's steps — a new quest's step_key needs no change here.
+		var entry: Dictionary = def.duplicate(true)
+		entry["cell"] = cell
+		entry["node"] = node
+		_npcs.append(entry)
 
 
 ## Pick `count` walkable cells near the spawn (manhattan distance 2..6), deterministic, skipping the
@@ -872,8 +778,12 @@ func speak_to(index: int) -> String:
 func _advance_quest_for(npc: Dictionary) -> void:
 	if _quests == null:
 		return
-	_advance_quest_step(str(MARSH_QUEST["id"]), str(npc.get("quest_step", "")))
-	_advance_quest_step(str(MELON_QUEST["id"]), str(npc.get("melon_step", "")))
+	# Data-driven: each quest names the NPC_DEFS key (step_key) whose value is the step this NPC drives,
+	# so adding a quest is pure data (a quest def + NPC entries) — no new dispatch code here.
+	for q: Dictionary in _quest_defs():
+		var step_key := str(q.get("step_key", ""))
+		if step_key != "":
+			_advance_quest_step(str(q["id"]), str(npc.get(step_key, "")))
 
 
 ## Start `quest_id` on the first talk that names a step, advance to that step, and toast the ledger
@@ -904,9 +814,10 @@ func _advance_quest_step(quest_id: String, step: String) -> void:
 			toast.call("event", "quest_update")
 
 
-## All quest definitions this screen drives (for lookup + restore).
+## All quest definitions this screen drives (for lookup + restore) — single-sourced from the content
+## data module, so adding a quest there flows through registration, dispatch, restore, and effects.
 func _quest_defs() -> Array:
-	return [MARSH_QUEST, MELON_QUEST]
+	return OverworldContent.quest_defs()
 
 
 func _quest_def_by_id(quest_id: String) -> Dictionary:

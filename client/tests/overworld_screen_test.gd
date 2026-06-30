@@ -231,7 +231,7 @@ func test_overworld_places_all_authored_npcs() -> void:
 	var gc := _make_game()
 	gc.call("new_run", TEST_SEED)
 	var ow := _make_overworld(gc)
-	assert_int(int(ow.call("npc_count"))).is_equal(OverworldScreenScript.NPC_DEFS.size())
+	assert_int(int(ow.call("npc_count"))).is_equal(OverworldContent.NPC_DEFS.size())
 	assert_int(int(ow.call("npc_count"))).is_greater_equal(6)
 	ow.queue_free()
 	gc.queue_free()
@@ -267,6 +267,25 @@ func test_side_quest_starts_and_completes_via_its_npcs() -> void:
 	assert_bool(bool(ow.call("quest_active", "marsh_welcome"))).is_false()
 	ow.call("speak_to", 4)
 	assert_bool(bool(ow.call("quest_done", "the_melon_that_waits"))).is_true()
+	ow.queue_free()
+	gc.queue_free()
+
+
+func test_six_petals_quest_is_data_driven_via_step_key() -> void:
+	# SQ-05 "Six Petals, True-Bred" — the THIRD overworld quest, wired purely as data (a quest def with
+	# a step_key + two NPC entries). Hearthward Ona (index 6) starts it; Old Garran (index 7) completes
+	# it (the shortcut refused), nudging Bloomwarden standing. Proves the data-driven dispatch scales.
+	var gc := _make_game()
+	gc.call("new_run", TEST_SEED)
+	var ow := _make_overworld(gc)
+	assert_bool(bool(ow.call("quest_active", "six_petals_true_bred"))).is_false()
+	ow.call("speak_to", 6)  # Hearthward Ona
+	assert_bool(bool(ow.call("quest_active", "six_petals_true_bred"))).is_true()
+	# The husbandry NPCs must not disturb the intro or melon quests.
+	assert_bool(bool(ow.call("quest_active", "marsh_welcome"))).is_false()
+	assert_bool(bool(ow.call("quest_active", "the_melon_that_waits"))).is_false()
+	ow.call("speak_to", 7)  # Old Garran
+	assert_bool(bool(ow.call("quest_done", "six_petals_true_bred"))).is_true()
 	ow.queue_free()
 	gc.queue_free()
 
