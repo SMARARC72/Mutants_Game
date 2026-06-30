@@ -41,8 +41,10 @@ GameController="*res://application/game/game_controller.gd"
 directories/dch_directory={}
 directories/dtl_directory={
 "bloom_matron": "res://presentation/dialogue/bloom_matron.dtl",
+"hearthward_ona": "res://presentation/dialogue/hearthward_ona.dtl",
 "marsh_encounter": "res://presentation/dialogue/marsh_encounter.dtl",
 "marsh_oracle": "res://presentation/dialogue/marsh_oracle.dtl",
+"old_garran": "res://presentation/dialogue/old_garran.dtl",
 "pollen_factor": "res://presentation/dialogue/pollen_factor.dtl",
 "rust_warden": "res://presentation/dialogue/rust_warden.dtl",
 "smoke": "res://presentation/dialogue/smoke.dtl",
