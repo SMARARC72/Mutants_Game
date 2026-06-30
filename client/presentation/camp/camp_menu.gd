@@ -22,6 +22,7 @@ const InputActions := preload("res://infrastructure/input/input_actions.gd")
 const PARTY_SCENE := "res://presentation/party/party_screen.tscn"
 const LAB_SCENE := "res://presentation/lab/lab_screen.tscn"
 const CHARACTER_SCENE := "res://presentation/character/character_sheet.tscn"
+const JOURNAL_SCENE := "res://presentation/journal/journal_screen.tscn"
 const OVERWORLD_SCENE := "res://presentation/overworld/overworld_screen.tscn"
 
 var _transition: Node = null
@@ -92,6 +93,7 @@ func _build() -> void:
 	_add_lead_portrait(box)
 	_add_button(box, "PartyButton", "Party & Grimoire", open_party)
 	_add_button(box, "SelfButton", "The Self", open_self)
+	_add_button(box, "JournalButton", "The Ledger", open_journal)
 	_add_button(box, "LabButton", "Lab", open_lab)
 	_add_button(box, "ResumeButton", "Resume", resume)
 
@@ -152,6 +154,12 @@ func open_party() -> String:
 func open_self() -> String:
 	_navigate(CHARACTER_SCENE)
 	return CHARACTER_SCENE
+
+
+## Open the quest journal (the Ledger — active/done quests). Returns the target path.
+func open_journal() -> String:
+	_navigate(JOURNAL_SCENE)
+	return JOURNAL_SCENE
 
 
 ## The scene path the Lab button targets (a SIBLING track owns the screen). Always returns the path
