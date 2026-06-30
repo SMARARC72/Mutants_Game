@@ -306,6 +306,20 @@ func test_greenwatcher_bounty_quest_runs_via_its_npcs() -> void:
 	gc.queue_free()
 
 
+func test_hud_quest_tracker_tracks_the_active_objective() -> void:
+	# The overworld HUD shows the active quest's current objective (a quest tracker), updated live when
+	# a talk advances a quest — surfacing the quest the player is on without opening the Ledger.
+	var gc := _make_game()
+	gc.call("new_run", TEST_SEED)
+	var ow := _make_overworld(gc)
+	assert_str(str(ow.call("objective_text"))).is_empty()  # nothing active at the start
+	ow.call("speak_to", 0)  # Old Marrow -> starts marsh_welcome, advances to step 2
+	assert_str(str(ow.call("objective_text"))).contains("Meet the Bog-Wretch.")
+	assert_object(ow.find_child("ObjectiveTracker", true, false)).is_not_null()
+	ow.queue_free()
+	gc.queue_free()
+
+
 func test_intro_cold_open_plays_once_per_run() -> void:
 	# The authored cold-open ("The Knack" — Maddox's thesis) plays ONCE on the first overworld build of
 	# a run (flag-gated + persisted), giving the game narrative framing; it never replays on reload.

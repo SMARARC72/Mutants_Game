@@ -70,6 +70,7 @@ var _npcs: Array = []
 var _dialogue: DialogicFacade = null
 var _in_dialogue: bool = false
 var _quests: QuestService = null  # drives the intro quest from NPC talks (own narrative run-state)
+var _objective_label: Label = null  # HUD quest-tracker: the active quest's current objective
 
 
 func _ready() -> void:
@@ -567,12 +568,48 @@ func _setup_hud() -> void:
 	sub.theme_type_variation = "MutedLabel"
 	box.add_child(title)
 	box.add_child(sub)
+	# Quest tracker: the active quest's current objective, always visible (hidden when none). Surfaces
+	# the quest the player is on without opening the Ledger; updated live on each quest advance.
+	_objective_label = Label.new()
+	_objective_label.name = "ObjectiveTracker"
+	box.add_child(_objective_label)
 	panel.add_child(box)
 	layer.add_child(panel)
 	add_child(layer)
 	var theme_svc := get_node_or_null("/root/ThemeService")
 	if theme_svc != null and theme_svc.has_method("apply_to"):
 		theme_svc.call("apply_to", panel)
+	_refresh_objective()
+
+
+## Update the HUD quest tracker to the active quest's current objective (hidden when no quest is active).
+func _refresh_objective() -> void:
+	if _objective_label == null:
+		return
+	var text := _active_objective()
+	_objective_label.text = text
+	_objective_label.visible = text != ""
+
+
+## "✦ <Quest>: <current step description>" for the first active quest, or "" if none is active. Reads
+## the same QuestService + authored defs the Ledger does, so the HUD and the journal never disagree.
+func _active_objective() -> String:
+	if _quests == null:
+		return ""
+	for q: Dictionary in OverworldContent.quest_defs():
+		var qid := str(q.get("id", ""))
+		if not _quests.is_active(qid):
+			continue
+		var cursor := int((_quests.state().get(qid, {}) as Dictionary).get("step_cursor", 0))
+		var steps: Array = q.get("steps", [])
+		if cursor >= 0 and cursor < steps.size():
+			return (
+				"✦ "
+				+ str(q.get("name", ""))
+				+ ": "
+				+ str((steps[cursor] as Dictionary).get("description", ""))
+			)
+	return ""
 
 
 func _position_player() -> void:
@@ -829,6 +866,7 @@ func _advance_quest_step(quest_id: String, step: String) -> void:
 	if not (started or advanced):
 		return
 	_persist_quests()
+	_refresh_objective()  # keep the HUD tracker in step with the quest the player just moved
 	# Only a real advance is a player-facing "quest update"; a bare start with no advance is silent.
 	if advanced:
 		var toast := get_node_or_null("/root/Toast")
@@ -905,6 +943,12 @@ func _on_dialogue_finished(_timeline_id: String) -> void:
 
 
 ## Intro-quest state accessors (for tests + a future quest-log UI).
+## The HUD quest-tracker text (the active quest's current objective, or "" when none). For tests +
+## observers; computed live from QuestService so it never lags the label node.
+func objective_text() -> String:
+	return _active_objective()
+
+
 func quest_active(quest_id: String) -> bool:
 	return _quests != null and _quests.is_active(quest_id)
 
