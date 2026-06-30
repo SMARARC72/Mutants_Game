@@ -19,6 +19,7 @@ const SaveEnvelopeScript := preload("res://application/persistence/save_envelope
 const EncounterCatalogScript := preload("res://application/overworld/encounter_catalog.gd")
 const EncounterDirectorScript := preload("res://application/overworld/encounter_director.gd")
 const BattleSessionScript := preload("res://application/battle/battle_session.gd")
+const SkillBattleControllerScript := preload("res://application/battle/skill_battle_controller.gd")
 const OverworldScreenScript := preload("res://presentation/overworld/overworld_screen.gd")
 const BattleScreenScript := preload("res://presentation/battle/battle_screen.gd")
 const LabScreenScript := preload("res://presentation/lab/lab_screen.gd")
@@ -54,17 +55,36 @@ func _new_game() -> Node:
 	return gc
 
 
-## Drive an interactive battle to its end by always attacking the first enemy. Bounded.
+## Drive an interactive SKILL battle to its end: each player turn use the actor's first damage skill on
+## the first enemy (or its first skill if it's a pure support). Bounded.
 func _play_attacking(screen: Control) -> Dictionary:
 	var step: Dictionary = screen.call("run_pending_battle")
 	var guard := 0
-	while str(step.get("kind", "")) != "ended" and guard < 200:
+	while str(step.get("kind", "")) != "ended" and guard < 300:
 		guard += 1
 		if str(step.get("kind", "")) == "await_player":
-			step = screen.call("player_attack", 0)
+			var actor: Variant = step.get("actor")
+			var skill := _first_damage_skill(actor)
+			if skill == "":
+				var kit: Array = (actor as AbilityContainer).abilities() if actor != null else []
+				skill = str(kit[0]) if not kit.is_empty() else ""
+			if skill == "":
+				break
+			step = screen.call("player_use_skill", skill, 0)
 		else:
 			break
 	return screen.call("result")
+
+
+## The first DAMAGE skill in a combatant's kit (Strike/Drain/Gambit/Hex), else "" (pure support).
+func _first_damage_skill(actor: Variant) -> String:
+	if actor == null:
+		return ""
+	for skill: String in (actor as AbilityContainer).abilities():
+		var verb := SkillBattleControllerScript.verb_of(skill)
+		if not SkillBattleControllerScript.is_support_verb(verb):
+			return skill
+	return ""
 
 
 func test_full_core_loop_composes_end_to_end() -> void:

@@ -23,6 +23,7 @@ extends Control
 
 const BattleSessionScript := preload("res://application/battle/battle_session.gd")
 const CaptureServiceScript := preload("res://application/battle/capture_service.gd")
+const SkillBattleControllerScript := preload("res://application/battle/skill_battle_controller.gd")
 const InputActions := preload("res://infrastructure/input/input_actions.gd")
 const OVERWORLD_SCENE := "res://presentation/overworld/overworld_screen.tscn"
 
@@ -34,13 +35,17 @@ var _game: Node = null
 var _transition: Node = null
 var _input: Node = null
 var _result: Dictionary = {}
-var _battle: BattleSession.InteractiveBattle = null
-var _session: BattleSession = null  # the BattleSession (for result_for)
+var _battle: BattleSession.SkillInteractiveBattle = null
+var _session: BattleSession = null  # the BattleSession (for skill_result_for)
 var _is_wild: bool = true
 var _last_step: Dictionary = {}
 var _continue_button: Button = null
 var _action_menu: VBoxContainer = null
 var _target_picker: VBoxContainer = null
+## The actor awaiting a skill choice (set on an await_player step) + the damage skill awaiting a target
+## (set when the player picks a foe-targeting skill, consumed by the target picker). null when idle.
+var _pending_actor: AbilityContainer = null
+var _pending_skill: String = ""
 var _turn_label: Label = null
 var _transcript_label: RichTextLabel = null
 var _scroll: ScrollContainer = null
@@ -104,14 +109,15 @@ func run_pending_battle() -> Dictionary:
 	_is_wild = bool(pending.get("is_wild", true))  # overworld encounters are wild by default
 	var catalog: SpeciesCatalog = _game.call("catalog")
 	# Capture the player party's species ids (by index) BEFORE the session builds, so each player card
-	# can show the right bestiary plate (enemy plates resolve via InteractiveBattle.species_for).
+	# can show the right bestiary plate (enemy plates resolve via SkillInteractiveBattle.species_for).
 	_player_species = []
 	for p in run.party:
 		_player_species.append(
 			str((p as Dictionary).get("species_id", "")) if p is Dictionary else ""
 		)
 	_session = BattleSessionScript.new(catalog)
-	_battle = _session.begin_interactive(run.party, enemy_party, battle_seed)
+	# The richer SKILL battle (force-pool skills, combos, shields/buffs) is THE interactive battle.
+	_battle = _session.begin_skill_interactive(run.party, enemy_party, battle_seed)
 	# Clear the pending flag now so a re-entrant call is a no-op even mid-battle.
 	run.flags.erase("pending_battle")
 	_build_ui()
@@ -146,23 +152,30 @@ func _apply_step(step: Dictionary) -> void:
 	_refresh_combatants()
 	_refresh_transcript()
 	if kind == _STEP_AWAIT:
+		_pending_actor = step.get("actor") as AbilityContainer
 		_refresh_turn_label(step)
 		_show_action_menu()
 	elif kind == _STEP_ENDED:
 		_finish_battle(step)
 
 
-## Player ATTACK the enemy at `target_index` (in the enemy team's order). Resolves the strike, then
-## pumps the enemy's responses. Public so the UI buttons + tests drive it.
-func player_attack(target_index: int) -> Dictionary:
-	if _battle == null or _battle.is_ended():
+## Player uses `skill` (from the pending actor's kit). SUPPORT skills (Mend/Ward/Rouse) resolve at once
+## (the engine picks the ally); DAMAGE/Hex skills hit the foe at `target_index` (default: first alive).
+## Resolves through the oracle, then pumps the enemy's responses. Public so the UI buttons + tests drive.
+func player_use_skill(skill: String, target_index: int = -1) -> Dictionary:
+	if _battle == null or _battle.is_ended() or skill == "":
 		return _last_step
-	var foes := _battle.enemy_team()
-	var target: BattleEngine.Mon = null
-	if target_index >= 0 and target_index < foes.size():
-		target = foes[target_index] as BattleEngine.Mon
 	_hide_menus()
-	_battle.attack(target)
+	var verb := SkillBattleControllerScript.verb_of(skill)
+	if SkillBattleControllerScript.is_support_verb(verb):
+		_battle.use_skill(skill, null)
+	else:
+		var foes := _battle.enemy_team()
+		var target: AbilityContainer = null
+		if target_index >= 0 and target_index < foes.size():
+			target = foes[target_index] as AbilityContainer
+		_battle.use_skill(skill, target)
+	_pending_skill = ""
 	_pump()
 	return _last_step
 
@@ -180,6 +193,7 @@ func player_capture(target_index: int = -1) -> Dictionary:
 	_hide_menus()
 	var gear := _gear_ids()
 	var outcome := _battle.attempt_capture(target, gear)
+	_pending_skill = ""
 	if str(outcome.get("kind", "")) == _STEP_ENDED:
 		_last_step = outcome
 		_apply_step(outcome)
@@ -206,7 +220,7 @@ func _finish_battle(step: Dictionary) -> void:
 	if _session == null or _battle == null:
 		return
 	var reason := str(step.get("reason", ""))
-	_result = _session.result_for(_battle.session(), _battle.caught())
+	_result = _session.skill_result_for(_battle.session(), _battle.caught())
 	if _game != null and _game.has_method("apply_battle_result"):
 		_game.call("apply_battle_result", _result)
 	if _game != null and _game.has_method("save_run"):
@@ -231,7 +245,7 @@ func last_step() -> Dictionary:
 
 
 ## The live interactive battle wrapper (for tests that want to read teams / capture math directly).
-func battle() -> BattleSession.InteractiveBattle:
+func battle() -> BattleSession.SkillInteractiveBattle:
 	return _battle
 
 
@@ -260,14 +274,14 @@ func _process(_delta: float) -> void:
 # === helpers ================================================================================== #
 
 
-func _resolve_capture_target(foes: Array, target_index: int) -> BattleEngine.Mon:
+func _resolve_capture_target(foes: Array, target_index: int) -> AbilityContainer:
 	if target_index >= 0 and target_index < foes.size():
-		var chosen := foes[target_index] as BattleEngine.Mon
-		if chosen != null and chosen.alive:
+		var chosen := foes[target_index] as AbilityContainer
+		if chosen != null and chosen.is_alive():
 			return chosen
 	for f in foes:
-		var m := f as BattleEngine.Mon
-		if m.alive:
+		var m := f as AbilityContainer
+		if m.is_alive():
 			return m
 	return null
 
@@ -424,13 +438,15 @@ func _build_team_cards(container: VBoxContainer, team: Array, is_enemy: bool, ca
 		child.queue_free()
 	cards.clear()
 	for i in team.size():
-		var mon := team[i] as BattleEngine.Mon
-		cards.append(_make_card(container, mon, _species_id_for(is_enemy, i, mon), is_enemy))
+		var ac := team[i] as AbilityContainer
+		cards.append(_make_card(container, ac, _species_id_for(is_enemy, i, ac), is_enemy))
 
 
-## One combatant card: framed bestiary-plate portrait + name + force icon(s) + HP bar + HP text.
+## One combatant card: framed bestiary-plate portrait + name + force icon(s) + HP bar (with a SHIELD
+## overlay) + HP text + a status-chip row (shield / buff / defdown). Reads the AbilityContainer's
+## engine-owned state; computes nothing.
 func _make_card(
-	container: VBoxContainer, mon: BattleEngine.Mon, species_id: String, is_enemy: bool
+	container: VBoxContainer, ac: AbilityContainer, species_id: String, is_enemy: bool
 ) -> Dictionary:
 	var card := PanelContainer.new()
 	card.name = ("Enemy" if is_enemy else "Party") + "Card"
@@ -454,56 +470,92 @@ func _make_card(
 	var name_row := HBoxContainer.new()
 	name_row.add_theme_constant_override("separation", 5)
 	var name_label := Label.new()
-	name_label.text = mon.name
+	name_label.text = ac.combatant_name()
 	name_row.add_child(name_label)
-	for f: String in [mon.prim, mon.sec]:
+	for f: String in [ac.primary_force(), ac.secondary_force()]:
 		var tr := PortraitUtil.force_icon_node(f)
 		if tr != null:
 			name_row.add_child(tr)
 	info.add_child(name_row)
 	var bar := ProgressBar.new()
 	bar.min_value = 0
-	bar.max_value = mon.maxhp
-	bar.value = maxi(0, mon.hp)
+	bar.max_value = ac.max_hp()
+	bar.value = maxi(0, ac.hp())
 	bar.show_percentage = false
 	bar.custom_minimum_size = Vector2(0, 14)
 	_style_hp_bar(bar)
 	info.add_child(bar)
 	var hp_label := Label.new()
 	hp_label.theme_type_variation = "MutedLabel"
-	hp_label.text = "%d / %d" % [maxi(0, mon.hp), mon.maxhp]
+	hp_label.text = "%d / %d" % [maxi(0, ac.hp()), ac.max_hp()]
 	info.add_child(hp_label)
+	# A status-chip row: shield / buff / defdown, surfaced only when active (the skill-battle depth).
+	var chips := HBoxContainer.new()
+	chips.name = "Chips"
+	chips.add_theme_constant_override("separation", 6)
+	info.add_child(chips)
 
 	container.add_child(card)
-	return {
+	var refs := {
 		"card": card,
 		"portrait": portrait,
 		"name": name_label,
 		"bar": bar,
 		"hp": hp_label,
-		"last_hp": mon.hp
+		"chips": chips,
+		"last_hp": ac.hp()
 	}
+	_update_card_chips(ac, chips)
+	return refs
 
 
-## Update each card's HP bar / text / alive-dim from the live Mon; flash the portrait on an HP drop.
+## Update each card's HP bar / text / alive-dim from the live container; flash the portrait on an HP
+## drop and refresh the shield/buff/defdown chips (the skill-battle state a plain HP bar can't show).
 func _update_team_cards(cards: Array, team: Array) -> void:
 	for i in mini(cards.size(), team.size()):
-		var mon := team[i] as BattleEngine.Mon
+		var ac := team[i] as AbilityContainer
 		var c: Dictionary = cards[i]
 		var bar := c["bar"] as ProgressBar
-		bar.max_value = mon.maxhp
-		bar.value = maxi(0, mon.hp)
+		bar.max_value = ac.max_hp()
+		bar.value = maxi(0, ac.hp())
 		_style_hp_bar(bar)
-		(c["hp"] as Label).text = "%d / %d" % [maxi(0, mon.hp), mon.maxhp]
-		(c["name"] as Label).text = mon.name + ("   (down)" if not mon.alive else "")
+		(c["hp"] as Label).text = "%d / %d" % [maxi(0, ac.hp()), ac.max_hp()]
+		(c["name"] as Label).text = ac.combatant_name() + ("   (down)" if not ac.is_alive() else "")
 		(c["card"] as Control).modulate = (
-			Color(1, 1, 1, 0.4) if not mon.alive else Color(1, 1, 1, 1)
+			Color(1, 1, 1, 0.4) if not ac.is_alive() else Color(1, 1, 1, 1)
 		)
-		var last := int(c.get("last_hp", mon.hp))
-		if mon.hp < last:
+		_update_card_chips(ac, c["chips"] as HBoxContainer)
+		var last := int(c.get("last_hp", ac.hp()))
+		if ac.hp() < last:
 			_flash_portrait(c["portrait"] as TextureRect)
-			_spawn_damage_number(c["card"] as Control, last - mon.hp)
-		c["last_hp"] = mon.hp
+			_spawn_damage_number(c["card"] as Control, last - ac.hp())
+		c["last_hp"] = ac.hp()
+
+
+## Rebuild a card's status chips (shield / buff / defdown) from the container's live engine state. Each
+## chip is a tiny coloured Label; absent effects show no chip (the row stays clean until depth applies).
+func _update_card_chips(ac: AbilityContainer, chips: HBoxContainer) -> void:
+	if chips == null:
+		return
+	for child in chips.get_children():
+		child.queue_free()
+	if ac.shield() > 0:
+		chips.add_child(_make_chip("◈ %d" % ac.shield(), Color(0.435, 0.722, 0.839)))  # Ouranos blue
+	if ac.buff() > 0.0:
+		chips.add_child(_make_chip("▲ +%d%%" % int(ac.buff() * 100.0), Color(0.498, 0.682, 0.353)))
+	if ac.defdown() > 0.0:
+		chips.add_child(
+			_make_chip("▼ -%d%%" % int(ac.defdown() * 100.0), Color(0.761, 0.251, 0.184))
+		)
+
+
+## A small coloured status chip (a bordered Label) for the card's effect row.
+func _make_chip(text: String, color: Color) -> Label:
+	var chip := Label.new()
+	chip.text = text
+	chip.add_theme_font_size_override("font_size", 12)
+	chip.add_theme_color_override("font_color", color)
+	return chip
 
 
 ## Float a "-N" damage number up from a card and fade it (impact feedback). Lives on the FX overlay
@@ -549,11 +601,11 @@ func _flash_portrait(portrait: TextureRect) -> void:
 	create_tween().tween_property(portrait, "modulate", Color(1, 1, 1, 1), 0.35)
 
 
-## The species id backing a card's Mon (enemy via species_for, player via the captured party order).
-func _species_id_for(is_enemy: bool, index: int, mon: BattleEngine.Mon) -> String:
+## The species id backing a card's combatant (enemy via species_for, player via the captured party order).
+func _species_id_for(is_enemy: bool, index: int, ac: AbilityContainer) -> String:
 	if is_enemy:
 		if _battle != null and _battle.has_method("species_for"):
-			var sd: Variant = _battle.species_for(mon)
+			var sd: Variant = _battle.species_for(ac)
 			if sd != null:
 				return str(sd.id)
 		return ""
@@ -594,14 +646,16 @@ func _refresh_turn_label(step: Dictionary) -> void:
 	if _turn_label == null:
 		return
 	var turn := int(step.get("turn", 0))
-	var actor := step.get("actor") as BattleEngine.Mon
-	var who := actor.name if actor != null else "—"
+	var actor := step.get("actor") as AbilityContainer
+	var who := actor.combatant_name() if actor != null else "—"
 	# Entropy clock (design): the battlefield gets +12%/turn deadlier — surfaced so stalling reads as risk.
 	var entropy := 1.0 + float(maxi(0, turn - 1)) * 0.12
 	_turn_label.text = "Turn %d   ·   %s acts   ·   entropy ×%.2f" % [turn, who, entropy]
 
 
-## Show the player action menu: Attack (opens the target picker), Capture + Flee (wild only).
+## Show the player action menu: ONE button per skill in the acting creature's kit (verb · name · AP
+## cost), plus Capture + Flee (wild only). A SUPPORT skill resolves at once; a DAMAGE/Hex skill opens
+## the foe target picker. One skill = the actor's single action this turn (mirrors the engine's loop).
 func _show_action_menu() -> void:
 	_hide_target_picker()
 	if _action_menu == null:
@@ -609,11 +663,22 @@ func _show_action_menu() -> void:
 	for child in _action_menu.get_children():
 		child.queue_free()
 	_action_menu.visible = true
-	var attack_btn := Button.new()
-	attack_btn.name = "AttackButton"
-	attack_btn.text = "Attack"
-	attack_btn.pressed.connect(_show_target_picker)
-	_action_menu.add_child(attack_btn)
+	var lib: Dictionary = Constants.BALANCE["skill"]["library"]
+	var kit: Array = _pending_actor.abilities() if _pending_actor != null else []
+	for i in kit.size():
+		var skill := str(kit[i])
+		var sk: Dictionary = lib.get(skill, {})
+		var verb := str(sk.get("verb", ""))
+		var ap := int(sk.get("ap", 1))
+		var btn := Button.new()
+		btn.name = "SkillButton%d" % i
+		btn.text = "%s · %s   (%d AP)" % [verb, skill, ap]
+		var chosen := skill
+		if SkillBattleControllerScript.is_support_verb(verb):
+			btn.pressed.connect(func() -> void: player_use_skill(chosen))
+		else:
+			btn.pressed.connect(func() -> void: _show_target_picker(chosen))
+		_action_menu.add_child(btn)
 	if _is_wild:
 		var capture_btn := Button.new()
 		capture_btn.name = "CaptureButton"
@@ -627,23 +692,25 @@ func _show_action_menu() -> void:
 		_action_menu.add_child(flee_btn)
 
 
-## Show one button per alive enemy (the Attack target picker).
-func _show_target_picker() -> void:
+## Show one button per alive enemy — the target picker for the damage `skill` the player chose.
+func _show_target_picker(skill: String) -> void:
 	if _target_picker == null or _battle == null:
 		return
 	for child in _target_picker.get_children():
 		child.queue_free()
+	_pending_skill = skill
 	_target_picker.visible = true
 	var foes := _battle.enemy_team()
 	for i in foes.size():
-		var mon := foes[i] as BattleEngine.Mon
-		if not mon.alive:
+		var ac := foes[i] as AbilityContainer
+		if not ac.is_alive():
 			continue
 		var btn := Button.new()
 		btn.name = "Target%d" % i
-		btn.text = "→ %s  (%d/%d)" % [mon.name, maxi(0, mon.hp), mon.maxhp]
+		btn.text = "→ %s  (%d/%d)" % [ac.combatant_name(), maxi(0, ac.hp()), ac.max_hp()]
 		var idx := i
-		btn.pressed.connect(func() -> void: player_attack(idx))
+		var chosen := skill
+		btn.pressed.connect(func() -> void: player_use_skill(chosen, idx))
 		_target_picker.add_child(btn)
 
 

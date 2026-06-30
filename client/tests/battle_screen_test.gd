@@ -1,22 +1,22 @@
 extends GdUnitTestSuite
-## Phase 5 · Slice 2 — INTERACTIVE Battle screen DoD, driven HEADLESSLY.
+## Phase 10 · Slice 3 — INTERACTIVE SKILL Battle screen DoD, driven HEADLESSLY.
 ##   * the battle screen reads the pending battle GameController stashed (the overworld -> battle
-##     hand-off) and builds an INTERACTIVE session (player drives side A; enemy is brain-driven);
-##   * a player turn yields an await_player step; player_attack/capture/flee drive the battle;
+##     hand-off) and builds an INTERACTIVE SKILL session (player drives side A; enemy is AI-driven);
+##   * a player turn yields an await_player step; player_use_skill / capture / flee drive the battle;
 ##   * a scripted player-choice sequence is DETERMINISTIC (same seed+choices => identical transcript);
 ##   * the result is applied back to the run (xp on a win) and the pending battle is cleared;
-##   * the screen builds its themed UI (banner + party/enemy rows + action menu + transcript) headless.
+##   * the screen builds its themed UI (banner + party/enemy rows + a per-skill action menu + transcript).
 ## Drives a CODE-INSTANTIATED GameController + battle screen with an injected FakeDal.
 
 const GameControllerScript := preload("res://application/game/game_controller.gd")
 const FakeDalScript := preload("res://infrastructure/dal/fake_dal.gd")
 const BattleScreenScript := preload("res://presentation/battle/battle_screen.gd")
+const SkillBattleControllerScript := preload("res://application/battle/skill_battle_controller.gd")
 
 const TEST_SEED := 0xBA771E5
 const BATTLE_SEED := 0x5117E1
 
-# A weak enemy team so the player (3-strong starter party) reliably wins by attacking — keeps the
-# scripted "always attack target 0" sequence terminating in a player victory.
+# A weak enemy team so the player (3-strong starter party) reliably resolves the fight by acting.
 const ENEMY_PARTY := [{"species_id": "SB33"}, {"species_id": "SB14"}]
 
 
@@ -43,15 +43,33 @@ func _make_screen(gc: Node) -> Control:
 	return screen
 
 
-## Drive the interactive battle to its end by always attacking the first enemy on each player turn.
-## Returns the final result dict. Bounded so a non-terminating bug fails fast instead of hanging.
-func _play_attacking(screen: Control) -> Dictionary:
+## The first DAMAGE skill in a combatant's kit (Strike/Drain/Gambit/Hex), else "" (pure support).
+func _first_damage_skill(actor: Variant) -> String:
+	if actor == null:
+		return ""
+	for skill: String in (actor as AbilityContainer).abilities():
+		var verb := SkillBattleControllerScript.verb_of(skill)
+		if not SkillBattleControllerScript.is_support_verb(verb):
+			return skill
+	return ""
+
+
+## Drive the interactive skill battle to its end: on each player turn use the actor's first damage skill
+## on the first enemy (or its first skill if it's a pure support). Returns the final result. Bounded.
+func _play_skills(screen: Control) -> Dictionary:
 	var step: Dictionary = screen.call("run_pending_battle")
 	var guard := 0
-	while str(step.get("kind", "")) != "ended" and guard < 200:
+	while str(step.get("kind", "")) != "ended" and guard < 300:
 		guard += 1
 		if str(step.get("kind", "")) == "await_player":
-			step = screen.call("player_attack", 0)
+			var actor: Variant = step.get("actor")
+			var skill := _first_damage_skill(actor)
+			if skill == "":
+				var kit: Array = (actor as AbilityContainer).abilities() if actor != null else []
+				skill = str(kit[0]) if not kit.is_empty() else ""
+			if skill == "":
+				break
+			step = screen.call("player_use_skill", skill, 0)
 		else:
 			break
 	return screen.call("result")
@@ -71,18 +89,18 @@ func test_battle_starts_interactive_and_awaits_the_player() -> void:
 	gc.queue_free()
 
 
-func test_attacking_to_the_end_returns_a_result_and_applies_it() -> void:
+func test_playing_to_the_end_returns_a_result_and_applies_it() -> void:
 	var gc := _make_game_with_pending_battle()
 	var screen := _make_screen(gc)
 	var run: RunContext = gc.call("run")
 	var essence_before := run.essence
-	var result := _play_attacking(screen)
+	var result := _play_skills(screen)
 	assert_bool(bool(result["valid"])).is_true()
 	assert_str(str(result["winner"])).is_not_empty()
 	assert_int((result["transcript"] as Array).size()).is_greater(0)
 	# Outcome flag recorded for the overworld to read on return.
 	assert_bool(run.flags.has("last_battle_won")).is_true()
-	# xp folds into essence on a win (Slice 1 economy preserved); unchanged on a loss.
+	# xp folds into essence on a win (economy preserved); unchanged on a loss.
 	if bool(result["player_won"]):
 		assert_int(run.essence).is_equal(essence_before + int(result["xp"]))
 	else:
@@ -95,11 +113,11 @@ func test_scripted_choices_are_deterministic() -> void:
 	# Same (seed, teams, player-choice sequence) => byte-identical transcript + result.
 	var gc_a := _make_game_with_pending_battle()
 	var screen_a := _make_screen(gc_a)
-	var result_a := _play_attacking(screen_a)
+	var result_a := _play_skills(screen_a)
 
 	var gc_b := _make_game_with_pending_battle()
 	var screen_b := _make_screen(gc_b)
-	var result_b := _play_attacking(screen_b)
+	var result_b := _play_skills(screen_b)
 
 	assert_str(str(result_a["winner"])).is_equal(str(result_b["winner"]))
 	assert_int(int(result_a["turns"])).is_equal(int(result_b["turns"]))
@@ -119,8 +137,8 @@ func test_screen_builds_interactive_ui() -> void:
 	assert_object(screen.find_child("TranscriptLog", true, false)).is_not_null()
 	assert_object(screen.find_child("PartyRows", true, false)).is_not_null()
 	assert_object(screen.find_child("EnemyRows", true, false)).is_not_null()
-	# On a player turn the action menu is populated with at least an Attack affordance.
-	assert_object(screen.find_child("AttackButton", true, false)).is_not_null()
+	# On a player turn the action menu is populated with at least one SKILL affordance (the kit's bar).
+	assert_object(screen.find_child("SkillButton0", true, false)).is_not_null()
 	# Wild battle => Capture + Flee are offered too.
 	assert_object(screen.find_child("CaptureButton", true, false)).is_not_null()
 	assert_object(screen.find_child("FleeButton", true, false)).is_not_null()
