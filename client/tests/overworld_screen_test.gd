@@ -306,6 +306,30 @@ func test_greenwatcher_bounty_quest_runs_via_its_npcs() -> void:
 	gc.queue_free()
 
 
+func test_intro_cold_open_plays_once_per_run() -> void:
+	# The authored cold-open ("The Knack" — Maddox's thesis) plays ONCE on the first overworld build of
+	# a run (flag-gated + persisted), giving the game narrative framing; it never replays on reload.
+	var gc := _make_game()
+	var run: RunContext = gc.call("new_run", TEST_SEED)
+	assert_bool(bool(run.flags.get("intro_played", false))).is_false()
+	var ow: Node2D = OverworldScreenScript.new()
+	ow.call("set_game", gc)
+	ow.call("set_auto_hand_off", false)
+	var seen := {"count": 0}
+	var on_intro := func(tid: String) -> void:
+		if tid == "intro_knack":
+			seen["count"] = int(seen["count"]) + 1
+	ow.connect("dialogue_started", on_intro)
+	add_child(ow)  # _ready -> build_from_game -> the intro fires exactly once
+	assert_int(int(seen["count"])).is_equal(1)
+	assert_bool(bool(run.flags.get("intro_played", false))).is_true()
+	# A rebuild (e.g. returning from a battle) must NOT replay the intro.
+	ow.call("build_from_game")
+	assert_int(int(seen["count"])).is_equal(1)
+	ow.queue_free()
+	gc.queue_free()
+
+
 func test_speaking_to_an_npc_emits_its_dialogue_timeline() -> void:
 	# speak_to plays the NPC's authored Dialogic timeline; headless it resolves immediately, but the
 	# dialogue_started signal + returned timeline id prove the beat fired (the overworld<->narrative seam).
