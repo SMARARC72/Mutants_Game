@@ -51,10 +51,19 @@ static func chance_for(
 	method: String = "",
 	bond: float = 0.0
 ) -> float:
-	var use_method := method if method != "" else DEFAULT_METHOD
 	var tier := species.tier if species != null else "T1"
-	var hp_frac := _hp_frac(target)
-	return LootEngine.capture_chance(use_method, tier, hp_frac, bond, gear)
+	return chance_from(tier, _hp_frac(target), gear, method, bond)
+
+
+## Decoupled chance — the SAME oracle math as chance_for() but from raw (tier, hp_frac), so a SKILL
+## battle (whose combatants are AbilityContainers, not BattleEngine.Mon) computes an identical capture
+## chance. chance_for() delegates here so the two paths never drift.
+static func chance_from(
+	tier: String, hp_frac: float, gear: Array, method: String = "", bond: float = 0.0
+) -> float:
+	var use_method := method if method != "" else DEFAULT_METHOD
+	var use_tier := tier if tier != "" else "T1"
+	return LootEngine.capture_chance(use_method, use_tier, clampf(hp_frac, 0.0, 1.0), bond, gear)
 
 
 ## Attempt a capture of `target`. Computes the chance (chance_for) then draws ONE value from the
@@ -69,12 +78,30 @@ func attempt(
 	method: String = "",
 	bond: float = 0.0
 ) -> Dictionary:
-	var chance := chance_for(target, species, gear, method, bond)
+	var tier := species.tier if species != null else "T1"
+	var name := target.name if target != null else ""
+	return attempt_from(name, tier, _hp_frac(target), species, gear, method, bond)
+
+
+## Decoupled attempt — the SAME canonical roll + instance shaping as attempt(), from raw inputs (name,
+## tier, hp_frac, species). For the SKILL battle (AbilityContainer combatants). Draws the NEXT value on
+## the shared capture sub-stream, so a skill capture is the same canonical draw an attack capture would
+## be. attempt() delegates here so both paths consume the stream identically.
+func attempt_from(
+	name: String,
+	tier: String,
+	hp_frac: float,
+	species: SpeciesData,
+	gear: Array,
+	method: String = "",
+	bond: float = 0.0
+) -> Dictionary:
+	var chance := chance_from(tier, hp_frac, gear, method, bond)
 	var roll := _rng.random()
 	var success := roll < chance
 	var instance: Dictionary = {}
 	if success:
-		instance = to_creature_instance(target, species)
+		instance = to_creature_instance_named(name, species)
 	return {
 		"success": success,
 		"chance": chance,
@@ -87,8 +114,13 @@ func attempt(
 ## the `creature_instances` columns. Data only (no stat math — the oracle derives stats from the
 ## genome later). `lineage.captured` records the provenance (caught wild, not bred/fused).
 static func to_creature_instance(target: BattleEngine.Mon, species: SpeciesData) -> Dictionary:
+	return to_creature_instance_named(target.name if target != null else "", species)
+
+
+## Shape a creature_instance from a raw `name` + species (the BattleEngine.Mon-free variant, for the
+## skill battle). to_creature_instance() delegates here so the party-entry shape is single-sourced.
+static func to_creature_instance_named(nickname: String, species: SpeciesData) -> Dictionary:
 	var species_id := species.id if species != null else ""
-	var nickname := target.name if target != null else ""
 	return {
 		"species_id": species_id,
 		"nickname": nickname,

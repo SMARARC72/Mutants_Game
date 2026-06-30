@@ -19,6 +19,8 @@ extends RefCounted
 const BattleControllerScript := preload("res://application/battle/battle_controller.gd")
 const CombatBrainScript := preload("res://application/ai/combat_brain.gd")
 const MonFactoryScript := preload("res://application/battle/mon_factory.gd")
+const SkillMonFactoryScript := preload("res://application/battle/skill_mon_factory.gd")
+const SkillBattleControllerScript := preload("res://application/battle/skill_battle_controller.gd")
 const CaptureServiceScript := preload("res://application/battle/capture_service.gd")
 
 ## XP awarded to the winning side per defeated enemy (Slice 1 placeholder economy; the real
@@ -178,7 +180,90 @@ func result_for(
 	}
 
 
+# --- SKILL interactive (Phase 10) ------------------------------------------------------------- #
+
+
+## Begin an INTERACTIVE SKILL battle (the richer combat system: force-pool skills, 8 verbs, combos,
+## shields/buffs). The SKILL counterpart to begin_interactive(): builds AbilityContainer teams (with the
+## enemy container→creature source map for capture) via SkillMonFactory, the SkillBattleController
+## interactive session (player on side "A"), and a CaptureService on the SAME battle_seed (a disjoint
+## canonical capture sub-stream). Returns a SkillInteractiveBattle wrapper, or null if a team is
+## unassemblable. Determinism is the SkillBattleController's (see its parity test).
+func begin_skill_interactive(
+	player_party: Array, enemy_party: Array, battle_seed: int
+) -> SkillInteractiveBattle:
+	var team_a: Array = SkillMonFactoryScript.team_from_creatures(player_party, _catalog)
+	var enemy_built: Dictionary = SkillMonFactoryScript.team_with_source(enemy_party, _catalog)
+	var team_b: Array = enemy_built["team"]
+	if team_a.is_empty() or team_b.is_empty():
+		return null
+	var run_rng := CanonicalRNG.new(battle_seed)
+	var controller = SkillBattleControllerScript.new(run_rng)
+	var session = controller.interactive(team_a, team_b, "A")
+	var capture := CaptureServiceScript.new(battle_seed)
+	return SkillInteractiveBattle.new(
+		session, capture, _catalog, enemy_built["source"], team_a, team_b
+	)
+
+
+## Build the Slice-1-shaped result dict from a FINISHED skill session (so the overworld + save path
+## treat a skill battle like any other). `caught` adds the captured creature_instance. Uses the session's
+## own turn() (the skill RESULT line format differs from the BattleEngine one, so we don't parse it).
+func skill_result_for(session, caught: Dictionary = {}) -> Dictionary:
+	var team_a: Array = session.player_team()
+	var team_b: Array = session.enemy_team()
+	var reason := str(session.end_reason())
+	var player_won := bool(session.player_won())
+	var enemy_defeated := _dead_count_ac(team_b)
+	var xp := XP_PER_DEFEAT * enemy_defeated if player_won else 0
+	var winner := "player" if player_won else "enemy"
+	if reason == SkillBattleControllerScript.InteractiveSession.END_CAUGHT:
+		winner = "player"
+		player_won = true
+	elif reason == SkillBattleControllerScript.InteractiveSession.END_FLED:
+		winner = "fled"
+		xp = 0
+	return {
+		"winner": winner,
+		"player_won": player_won,
+		"reason": reason,
+		"turns": int(session.turn()),
+		"player_survivors": _alive_names_ac(team_a),
+		"enemy_survivors": _alive_names_ac(team_b),
+		"player_defeated": _dead_count_ac(team_a),
+		"enemy_defeated": enemy_defeated,
+		"xp": xp,
+		"caught": caught.duplicate(true),
+		"transcript": session.transcript(),
+		"valid": true,
+	}
+
+
 # --- helpers ---------------------------------------------------------------------------------- #
+
+
+static func _any_alive_ac(team: Array) -> bool:
+	for ac in team:
+		if (ac as AbilityContainer).is_alive():
+			return true
+	return false
+
+
+static func _alive_names_ac(team: Array) -> Array:
+	var out: Array = []
+	for ac in team:
+		var c := ac as AbilityContainer
+		if c.is_alive():
+			out.append(c.combatant_name())
+	return out
+
+
+static func _dead_count_ac(team: Array) -> int:
+	var n := 0
+	for ac in team:
+		if not (ac as AbilityContainer).is_alive():
+			n += 1
+	return n
 
 
 static func _invalid_result() -> Dictionary:
@@ -330,6 +415,106 @@ class InteractiveBattle:
 	# --- internals -------------------------------------------------------------------------------- #
 
 	func _species_for(target: BattleEngine.Mon) -> SpeciesData:
+		var creature: Variant = _enemy_source.get(target, null)
+		if creature == null or not (creature is Dictionary):
+			return null
+		return _catalog.get_by_id(str((creature as Dictionary).get("species_id", "")))
+
+
+## SkillInteractiveBattle — the wrapper the UI/test drives for a step-wise SKILL battle. The skill
+## counterpart to InteractiveBattle: owns the SkillBattleController.InteractiveSession + the
+## CaptureService + the enemy AbilityContainer→creature source map. Thin passthroughs to the session for
+## the pump + player verbs (use_skill / act_neutral / flee), plus a capture attempt that resolves the
+## oracle chance + canonical roll on the AbilityContainer's live hp/tier (the decoupled CaptureService
+## path). NO Node — headless-testable.
+class SkillInteractiveBattle:
+	extends RefCounted
+
+	var _session
+	var _capture: CaptureService
+	var _catalog: SpeciesCatalog
+	var _enemy_source: Dictionary  # AbilityContainer -> creature dict (its species_id)
+	var _team_a: Array
+	var _team_b: Array
+	var _caught: Dictionary = {}
+	var _last_capture: Dictionary = {}
+
+	func _init(
+		session,
+		capture: CaptureService,
+		catalog: SpeciesCatalog,
+		enemy_source: Dictionary,
+		team_a: Array,
+		team_b: Array
+	) -> void:
+		_session = session
+		_capture = capture
+		_catalog = catalog
+		_enemy_source = enemy_source
+		_team_a = team_a
+		_team_b = team_b
+
+	# --- pump + player verbs (thin passthroughs to the session) ----------------------------------- #
+
+	func advance() -> Dictionary:
+		return _session.advance()
+
+	func use_skill(skill: String, target: AbilityContainer = null) -> Dictionary:
+		return _session.use_skill(skill, target)
+
+	func act_neutral() -> Dictionary:
+		return _session.act_neutral()
+
+	func flee() -> Dictionary:
+		return _session.flee()
+
+	## Attempt to CAPTURE a wild enemy AbilityContainer. Computes the gear-/HP-modified chance via the
+	## oracle (from the container's live hp/maxhp + its species tier), rolls on the canonical capture
+	## sub-stream, and on success shapes + caches the creature_instance. Then drives the session's capture
+	## verb (SUCCESS → caught/end; FAILURE → the turn is spent, the enemy acts). Returns the next step.
+	func attempt_capture(target: AbilityContainer, gear: Array = []) -> Dictionary:
+		var species := _species_for(target)
+		var tier := species.tier if species != null else "T1"
+		var hp_frac := 1.0
+		if target != null and target.max_hp() > 0:
+			hp_frac = float(target.hp()) / float(target.max_hp())
+		var name := target.combatant_name() if target != null else ""
+		var outcome := _capture.attempt_from(name, tier, hp_frac, species, gear)
+		_last_capture = outcome
+		if bool(outcome["success"]):
+			_caught = outcome["creature_instance"]
+		return _session.capture(bool(outcome["success"]))
+
+	# --- reads ------------------------------------------------------------------------------------ #
+
+	func session():
+		return _session
+
+	func player_team() -> Array:
+		return _team_a
+
+	func enemy_team() -> Array:
+		return _team_b
+
+	func transcript() -> Array:
+		return _session.transcript()
+
+	func is_ended() -> bool:
+		return _session.is_ended()
+
+	func caught() -> Dictionary:
+		return _caught
+
+	func last_capture() -> Dictionary:
+		return _last_capture
+
+	## The SpeciesData backing an enemy AbilityContainer (via the source map), or null if unknown.
+	func species_for(target: AbilityContainer) -> SpeciesData:
+		return _species_for(target)
+
+	# --- internals -------------------------------------------------------------------------------- #
+
+	func _species_for(target: AbilityContainer) -> SpeciesData:
 		var creature: Variant = _enemy_source.get(target, null)
 		if creature == null or not (creature is Dictionary):
 			return null
