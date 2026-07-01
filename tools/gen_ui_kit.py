@@ -10,9 +10,16 @@ Outputs (both routed through GrimoirePalette hexes — no new colours):
                                         Consumed by GrimoireTheme's "ParchmentPanel"
                                         StyleBoxTexture (24px texture/content margins).
 
+  client/assets/ui/boot_splash.png      1152x648 boot splash (Wave 6): brass eight-point
+                                        sigil star centered on INK #17131c — shown by the
+                                        engine the instant the window exists, so the ~5s
+                                        boot never reads as a hang. project.godot points
+                                        application/boot_splash at it (bg_color = INK).
+
 Deterministic (fixed seed) — re-running yields identical bytes. Run:
   python -B tools/gen_ui_kit.py
 """
+import math
 import os
 import sys
 
@@ -33,6 +40,7 @@ INK = (0x17, 0x13, 0x1C)
 TILE_SIZE = 256
 FRAME_SIZE = 96
 FRAME_MARGIN = 24  # must match GrimoireTheme's ParchmentPanel texture margin
+SPLASH_W, SPLASH_H = 1152, 648  # the project's design half-res 16:9 (crisp at any window)
 
 
 def _periodic_noise(rng, size, sigma_y, sigma_x):
@@ -95,13 +103,40 @@ def gen_frame(path):
     img.save(path, optimize=True)
 
 
+def gen_boot_splash(path):
+    """1152x648 boot splash: the brass eight-point sigil star (the same crest the player
+    token / main menu carry — long cardinal rays, short diagonals, ring + bright hub)
+    centered on flat INK. Pure geometry, no rng — identical bytes every run."""
+    img = Image.new("RGB", (SPLASH_W, SPLASH_H), INK)
+    draw = ImageDraw.Draw(img)
+    cx, cy = SPLASH_W / 2.0, SPLASH_H / 2.0
+    r_long, r_short = 190.0, 118.0
+    for i in range(8):
+        ang = math.pi / 4.0 * i
+        reach = r_long if i % 2 == 0 else r_short
+        half = 11.0 if i % 2 == 0 else 7.5  # ray half-width at the hub
+        tip = (cx + math.cos(ang) * reach, cy + math.sin(ang) * reach)
+        left = (cx + math.cos(ang + math.pi / 2) * half, cy + math.sin(ang + math.pi / 2) * half)
+        right = (cx + math.cos(ang - math.pi / 2) * half, cy + math.sin(ang - math.pi / 2) * half)
+        draw.polygon([tip, left, right], fill=BRASS)
+    # Sigil ring around the star + a bright hub — the medallion read.
+    ring_r = r_long + 28.0
+    draw.ellipse([cx - ring_r, cy - ring_r, cx + ring_r, cy + ring_r], outline=BRASS, width=3)
+    draw.ellipse([cx - ring_r + 8, cy - ring_r + 8, cx + ring_r - 8, cy + ring_r - 8],
+                 outline=BRASS, width=1)
+    draw.ellipse([cx - 15, cy - 15, cx + 15, cy + 15], fill=BRASS_BRIGHT)
+    img.save(path, optimize=True)
+
+
 def main():
     os.makedirs(OUT_DIR, exist_ok=True)
     tile = os.path.join(OUT_DIR, "parchment_tile.png")
     frame = os.path.join(OUT_DIR, "parchment_frame.png")
+    splash = os.path.join(OUT_DIR, "boot_splash.png")
     gen_tile(tile)
     gen_frame(frame)
-    for p in (tile, frame):
+    gen_boot_splash(splash)
+    for p in (tile, frame, splash):
         print("wrote", os.path.relpath(p, ROOT))
     return 0
 

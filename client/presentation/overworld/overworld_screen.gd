@@ -25,12 +25,14 @@ const EncounterDirectorScript := preload("res://application/overworld/encounter_
 const OverworldTileSetScript := preload("res://presentation/overworld/overworld_tileset.gd")
 const OverworldLoopStateScript := preload("res://presentation/overworld/overworld_loop_state.gd")
 const OverworldTokensScript := preload("res://presentation/overworld/overworld_tokens.gd")
+const OverworldMotionScript := preload("res://presentation/overworld/overworld_motion.gd")
+const OverworldSpawnScript := preload("res://presentation/overworld/overworld_spawn.gd")
 const ControlsChipScript := preload("res://presentation/overworld/controls_chip.gd")
 const InputActions := preload("res://infrastructure/input/input_actions.gd")
 const BATTLE_SCENE := "res://presentation/battle/battle_screen.tscn"
-const CAMP_SCENE := "res://presentation/camp/camp_menu.tscn"
+## Wave 6 spike diet: const-preload the camp scene (a load() on first ESC read as a hitch).
+const CampMenuScene: PackedScene = preload("res://presentation/camp/camp_menu.tscn")
 
-const STEP_COOLDOWN := 0.14  # seconds between grid steps while a direction is held
 const CAMERA_ZOOM := 2.35  # frames ~13 tiles across the 1920px baseline — no raw void at the edges
 const DASH_TILES := 3  # max tiles the sigil-dash crosses in one ritual hop (design §3.5)
 const DASH_COOLDOWN := 0.55  # seconds before the ley-line can be ridden again
@@ -55,7 +57,11 @@ var _home_cell: Vector2i = Vector2i.ZERO
 var _lead: Sprite2D = null  # lead-creature cameo that trails the player
 var _lead_target: Vector2 = Vector2.ZERO
 var _last_dir: Vector2i = Vector2i.DOWN
-var _step_timer: float = 0.0
+## Wave 6: visual motion + input pacing (step glide / buffering / turn-in-place / thunk / dash
+## whoosh) lives in OverworldMotion; grid logic here stays synchronous. The camera rig object
+## (PhantomCamera2D or fallback Camera2D) takes the walk-direction look-ahead.
+var _motion: OverworldMotion = OverworldMotionScript.new()
+var _cam_rig: Object = null
 var _dash_timer: float = 0.0
 var _busy: bool = false  # true while a battle hand-off / transition is mid-flight
 ## When false, an encounter still emits encounter_started + autosaves but skips the scene swap
@@ -104,6 +110,12 @@ func set_camp_enabled(enabled: bool) -> void:
 	_camp_enabled = enabled
 
 
+## Wave 6 test flag: force INSTANT visual placement (no tweens) even where the tree could
+## animate. Headless runs are instant automatically; this pins it for timing-sensitive tests.
+func set_instant_moves(enabled: bool) -> void:
+	_motion.instant_moves = enabled
+
+
 ## Open the camp/pause menu as an OVERLAY (a CanvasLayer above the overworld, NOT a scene swap, so
 ## the overworld stays live beneath it). Idempotent: a second call while open returns the SAME live
 ## camp menu (no duplicate). Returns the camp menu node (or null if the scene is missing). Public so
@@ -111,16 +123,10 @@ func set_camp_enabled(enabled: bool) -> void:
 func open_camp() -> Node:
 	if _camp_overlay != null and is_instance_valid(_camp_overlay):
 		return _camp_menu
-	if not ResourceLoader.exists(CAMP_SCENE):
-		push_warning("OverworldScreen.open_camp: missing camp scene '%s'" % CAMP_SCENE)
-		return null
-	var packed: PackedScene = load(CAMP_SCENE)
-	if packed == null:
-		return null
 	var layer := CanvasLayer.new()
 	layer.name = "CampOverlay"
 	layer.layer = 50  # above gameplay, below Transition (100) + Toast (128)
-	var menu := packed.instantiate()
+	var menu := CampMenuScene.instantiate()
 	layer.add_child(menu)
 	add_child(layer)
 	_camp_overlay = layer
@@ -207,13 +213,16 @@ func try_move(dir: Vector2i, roll_encounter: bool = true) -> Dictionary:
 		return {"encounter": false, "moved": false}
 	var target := _player_cell + dir
 	if not _layout.in_bounds(target.x, target.y):
+		_motion.thunk(dir, _cell_center(_player_cell))
 		return {"encounter": false, "moved": false}
 	if not OverworldTileSetScript.is_walkable(_layout.get_cell(target.x, target.y)):
+		_motion.thunk(dir, _cell_center(_player_cell))
 		return {"encounter": false, "moved": false}
-	var prev_px := _player.position if _player != null else Vector2.ZERO
+	var prev_px := _cell_center(_player_cell)
 	_player_cell = target
-	_last_dir = dir
-	_position_player()
+	_set_facing(dir)
+	# Wave 6: the LOGIC above is done instantly; only the token's VISUAL position glides.
+	_motion.step_to(_cell_center(_player_cell))
 	# The lead cameo trails into the tile the tamer just left (smoothed in _process).
 	if _lead != null:
 		_lead_target = prev_px
@@ -342,6 +351,8 @@ func _hand_off_to_battle() -> void:
 func sigil_dash(dir: Vector2i) -> int:
 	if dir == Vector2i.ZERO:
 		return 0
+	# Wave 6: suppress per-tile glides — the dash lands as ONE accelerated whoosh + ghosts.
+	_motion.dash_begin()
 	var crossed := 0
 	var last_step := -1
 	var landing_graced := false
@@ -357,8 +368,9 @@ func sigil_dash(dir: Vector2i) -> int:
 			stopped = true
 			break
 	if crossed > 0:
-		_last_dir = dir
+		_set_facing(dir)
 		_emit_dash_trail()
+	_motion.dash_finish(_cell_center(_player_cell), crossed > 0)
 	if crossed > 0 and not stopped and not landing_graced and last_step >= 0:
 		var roll := _director.roll_step(last_step)
 		if bool(roll.get("encounter", false)):
@@ -426,13 +438,9 @@ func _process(delta: float) -> void:
 				sigil_dash(dash_dir)
 				_dash_timer = DASH_COOLDOWN
 				return
-	_step_timer = maxf(0.0, _step_timer - delta)
-	if _step_timer > 0.0:
-		return
-	var dir := _read_step_dir()
-	if dir != Vector2i.ZERO:
-		try_move(dir)
-		_step_timer = STEP_COOLDOWN
+	# Wave 6: stepping is paced by tween-chaining + input buffering (turn-in-place taps only
+	# pivot; a hold walks). OverworldMotion falls back to the wall-clock cooldown headless.
+	_motion.tick(delta, _read_step_dir())
 
 
 ## Read a single cardinal step from InputService (prefers the dominant axis so diagonal holds still
@@ -487,7 +495,7 @@ func _scatter_props() -> void:
 
 
 func _spawn_player() -> void:
-	_home_cell = _spawn_cell()
+	_home_cell = OverworldSpawnScript.spawn_cell(_layout)
 	# Wave 3 position persistence: prefer the pre-battle cell + facing stashed by the autosave (when
 	# present + walkable) so a post-battle/reloaded overworld puts the player exactly where the fight
 	# started — never back at spawn. Falls back to the canonical spawn.
@@ -504,6 +512,7 @@ func _spawn_player() -> void:
 		)
 		_player.add_child(token)
 		add_child(_player)
+	_motion.setup(_player, try_move, _set_facing, _get_facing)
 	_position_player()
 
 
@@ -512,14 +521,15 @@ func _spawn_player() -> void:
 func _spawn_lead_creature() -> void:
 	if _lead != null:
 		return
-	var tex: Texture2D = SpeciesArt.plate(_lead_species_id())
+	var species := _lead_species_id()
+	var tex: Texture2D = SpeciesArt.plate(species)
 	if tex == null:
 		return
 	_lead = Sprite2D.new()
 	_lead.name = "LeadCreature"
 	_lead.z_index = 15
 	_lead.texture = OverworldTokensScript.creature_cameo(
-		tex, int(OverworldTileSetScript.TILE_SIZE * 1.18)
+		tex, int(OverworldTileSetScript.TILE_SIZE * 1.18), species
 	)
 	add_child(_lead)
 	var s := OverworldTileSetScript.TILE_SIZE
@@ -649,88 +659,46 @@ func _active_objective() -> String:
 	return ""
 
 
+## Snap the token to its cell centre (spawn/restore placement; steps GLIDE via OverworldMotion).
 func _position_player() -> void:
 	if _player == null:
 		return
+	_player.position = _cell_center(_player_cell)
+
+
+## Pixel centre of a grid cell — the token's rest position on that tile.
+func _cell_center(cell: Vector2i) -> Vector2:
 	var s := OverworldTileSetScript.TILE_SIZE
-	_player.position = Vector2(_player_cell.x * s + s / 2.0, _player_cell.y * s + s / 2.0)
+	return Vector2(cell.x * s + s / 2.0, cell.y * s + s / 2.0)
 
 
-## The first walkable cell scanning row-major; falls back to (0,0) if the layout is somehow all
-## walls (the authored fallback guarantees an interior floor, so this is defensive).
-func _first_walkable_cell() -> Vector2i:
-	for y in _layout.height:
-		for x in _layout.width:
-			if OverworldTileSetScript.is_walkable(_layout.get_cell(x, y)):
-				return Vector2i(x, y)
-	return Vector2i.ZERO
+## Pivot: set facing, flip the lead cameo to the faced side, lean the camera ahead. Called by a
+## turn-in-place tap (via OverworldMotion) and by every real step/dash.
+func _set_facing(dir: Vector2i) -> void:
+	if dir == Vector2i.ZERO:
+		return
+	_last_dir = dir
+	if _lead != null and dir.x != 0:
+		_lead.flip_h = dir.x < 0
+	OverworldCameraRig.set_lookahead(_cam_rig, _lookahead_dir())
 
 
-## The cell nearest the region CENTRE that belongs to the LARGEST reachable open area — the player
-## spawns here (not the top-left corner) so every direction is usable immediately and the camera
-## frames the player mid-region. Selecting from the biggest 4-connected walkable component (not just
-## any walkable tile) keeps the spawn in the navigable field and OUT of a SEALED set-piece room — a
-## DungeonAssembler room is stamped with a wall ring and no doorway, so a spawn inside its isolated
-## interior could move around the room but never leave, soft-locking the run.
-func _spawn_cell() -> Vector2i:
-	var field := _largest_open_component()
-	if field.is_empty():
-		return _first_walkable_cell()
-	var cx := _layout.width / 2
-	var cy := _layout.height / 2
-	var best := Vector2i(-1, -1)
-	var best_d := 1 << 30
-	for cell: Vector2i in field:
-		var d := (cell.x - cx) * (cell.x - cx) + (cell.y - cy) * (cell.y - cy)
-		if d < best_d:
-			best_d = d
-			best = cell
-	return best if best.x >= 0 else _first_walkable_cell()
+func _get_facing() -> Vector2i:
+	return _last_dir
 
 
-## The cells of the LARGEST 4-connected component of walkable tiles — the main reachable field. A
-## flood fill seeded from every unvisited walkable cell; the biggest basin wins (sealed rooms and
-## other islands are smaller, so they lose). Empty only if the layout has no walkable tile at all.
-func _largest_open_component() -> Array[Vector2i]:
-	var visited := {}
-	var best: Array[Vector2i] = []
-	for y in _layout.height:
-		for x in _layout.width:
-			var start := Vector2i(x, y)
-			if visited.has(start) or not OverworldTileSetScript.is_walkable(_layout.get_cell(x, y)):
-				continue
-			var component := _flood_open(start, visited)
-			if component.size() > best.size():
-				best = component
-	return best
-
-
-## Flood fill (4-connected, matching the cardinal grid steps of try_move) of the walkable region
-## containing `start`, marking every reached cell in the shared `visited` set so each cell is scanned
-## once across the whole sweep. Returns the cells of that one component.
-func _flood_open(start: Vector2i, visited: Dictionary) -> Array[Vector2i]:
-	var component: Array[Vector2i] = []
-	var queue: Array[Vector2i] = [start]
-	visited[start] = true
-	while not queue.is_empty():
-		var cell: Vector2i = queue.pop_back()
-		component.append(cell)
-		for step: Vector2i in [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]:
-			var n := cell + step
-			if visited.has(n) or not _layout.in_bounds(n.x, n.y):
-				continue
-			if not OverworldTileSetScript.is_walkable(_layout.get_cell(n.x, n.y)):
-				continue
-			visited[n] = true
-			queue.append(n)
-	return component
+## The camera look-ahead direction: the last walk direction, or ZERO under reduce_motion (the
+## lean is a constant drift some players switch off).
+func _lookahead_dir() -> Vector2i:
+	return Vector2i.ZERO if OverworldMotionScript.reduce_motion() else _last_dir
 
 
 ## Attach a PhantomCamera2D following the player. Fully guarded: if the addon classes are missing
 ## (stripped build / headless import quirk) it falls back to a plain Camera2D so the scene still
-## builds and the slice never errors.
+## builds and the slice never errors. Wave 6/C8: SIMPLE follow + damping + look-ahead (rig kept).
 func _setup_camera() -> void:
-	OverworldCameraRig.setup(self, _player, _layout_pixel_rect(), CAMERA_ZOOM)
+	_cam_rig = OverworldCameraRig.setup(self, _player, _layout_pixel_rect(), CAMERA_ZOOM)
+	OverworldCameraRig.set_lookahead(_cam_rig, _lookahead_dir())
 
 
 ## The painted layout rect in pixels — the camera clamps to it so the view never pans

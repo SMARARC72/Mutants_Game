@@ -13,10 +13,18 @@ const PARCHMENT := Color(0.909804, 0.866667, 0.768627)
 const BRASS := Color(0.725, 0.576, 0.247)
 const BRASS_BRIGHT := Color(0.878431, 0.72549, 0.352941)
 
+## Wave 6 spike diet: built token/cameo textures cached by identity+size, so the set_pixel
+## builders run once per (species/name, size) — never again on every battle return.
+static var _texture_cache: Dictionary = {}
+
 
 ## The tamer: ink disc, brass rim, and an eight-point sigil star (long cardinal rays, short
 ## diagonal rays) — the player piece reads as the crest, not a flat ring.
 static func player_token(diameter: int) -> ImageTexture:
+	var key := "player|%d" % diameter
+	var hit: Variant = _texture_cache.get(key)
+	if hit is ImageTexture:
+		return hit
 	var img := Image.create(diameter, diameter, false, Image.FORMAT_RGBA8)
 	img.fill(Color(0, 0, 0, 0))
 	var c := (diameter - 1) * 0.5
@@ -45,12 +53,18 @@ static func player_token(diameter: int) -> ImageTexture:
 			var width := 0.16 * (1.0 - d / (reach + 0.001)) + 0.02
 			if d <= reach and delta < width:
 				img.set_pixel(x, y, BRASS_BRIGHT if d < reach * 0.85 else BRASS)
-	return ImageTexture.create_from_image(img)
+	var tex := ImageTexture.create_from_image(img)
+	_texture_cache[key] = tex
+	return tex
 
 
 ## An NPC wax-seal: parchment disc, coloured wax rim (identity colour kept — colourblind-safe
 ## because the RUNE, hashed from the name, is the second cue), ink rune strokes. One seal per soul.
 static func npc_token(diameter: int, ring: Color, seal_name: String) -> ImageTexture:
+	var key := "npc|%s|%d" % [seal_name, diameter]
+	var hit: Variant = _texture_cache.get(key)
+	if hit is ImageTexture:
+		return hit
 	var img := Image.create(diameter, diameter, false, Image.FORMAT_RGBA8)
 	img.fill(Color(0, 0, 0, 0))
 	var c := (diameter - 1) * 0.5
@@ -68,12 +82,21 @@ static func npc_token(diameter: int, ring: Color, seal_name: String) -> ImageTex
 			else:
 				img.set_pixel(x, y, PARCHMENT)
 	_draw_rune(img, c, r_in * 0.62, seal_name)
-	return ImageTexture.create_from_image(img)
+	var out := ImageTexture.create_from_image(img)
+	_texture_cache[key] = out
+	return out
 
 
 ## The lead-creature cameo: the painterly CUTOUT itself, fitted into a square box with a soft
-## elliptical ground shadow — a creature walking with you, not a coin.
-static func creature_cameo(tex: Texture2D, box: int) -> ImageTexture:
+## elliptical ground shadow — a creature walking with you, not a coin. Pass the species id as
+## `cache_key` to reuse the built texture across rebuilds (Wave 6 spike diet); "" skips caching.
+static func creature_cameo(tex: Texture2D, box: int, cache_key: String = "") -> ImageTexture:
+	var key := ""
+	if cache_key != "":
+		key = "cameo|%s|%d" % [cache_key, box]
+		var hit: Variant = _texture_cache.get(key)
+		if hit is ImageTexture:
+			return hit
 	var src := tex.get_image()
 	src.convert(Image.FORMAT_RGBA8)
 	var fit := float(box) / maxf(float(src.get_width()), float(src.get_height()))
@@ -91,7 +114,10 @@ static func creature_cameo(tex: Texture2D, box: int) -> ImageTexture:
 			if n < 1.0:
 				img.set_pixel(x, y, Color(0.02, 0.015, 0.03, 0.38 * (1.0 - n)))
 	img.blend_rect(src, Rect2i(0, 0, w, h), Vector2i((box - w) / 2, box - h))
-	return ImageTexture.create_from_image(img)
+	var out := ImageTexture.create_from_image(img)
+	if key != "":
+		_texture_cache[key] = out
+	return out
 
 
 ## A radial vignette texture (transparent centre → soft dark corners) for screen-space atmosphere.

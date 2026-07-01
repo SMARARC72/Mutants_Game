@@ -168,6 +168,11 @@ const _REGION_CATALOG := "res://catalog/region_layouts.json"
 ## region id -> force cache (loaded once from the region catalog).
 static var _region_forces: Dictionary = {}
 
+## Wave 6 spike diet: built TileSets cached per force-climate. A rebuild measured 55.8ms on
+## EVERY battle return; the atlas is a pure function of the force palette, so one build per
+## force serves the whole session (the TileSet is shared read-only by the map layer).
+static var _built_sets: Dictionary = {}
+
 
 ## True if a tile id can be walked onto (everything but the wall id and the void sentinel).
 static func is_walkable(tile_id: int) -> bool:
@@ -234,8 +239,11 @@ static func is_thin_place(x: int, y: int) -> bool:
 ## stacks GROUND_VARIANTS texture rows (atlas coords (0, 0..2) = hero/common/rare ground); every
 ## other id sits at row 0. So set_cell(pos, 0, Vector2i(tile_id, 0)) Just Works for non-ground,
 ## and ground uses (0, variant). `force_climate` picks the region palette (see force_for_region);
-## unknown forces fall back to the default.
+## unknown forces fall back to the default. Cached per force (Wave 6 spike diet).
 static func build(force_climate: String = _DEFAULT_FORCE) -> TileSet:
+	var cached: Variant = _built_sets.get(force_climate)
+	if cached is TileSet:
+		return cached
 	var palette: Dictionary = PALETTES.get(force_climate, PALETTES[_DEFAULT_FORCE])
 	var ids := palette.keys()
 	ids.sort()
@@ -272,6 +280,7 @@ static func build(force_climate: String = _DEFAULT_FORCE) -> TileSet:
 		else:
 			source.create_tile(Vector2i(int(id), 0))
 	tile_set.add_source(source, 0)
+	_built_sets[force_climate] = tile_set
 	return tile_set
 
 
