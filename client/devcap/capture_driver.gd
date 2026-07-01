@@ -5,7 +5,11 @@ extends Node2D
 const OUT := "C:/Users/arahi/AppData/Local/Temp/claude/c--Users-arahi-Documents-Claude-Projects-Mutants-Game/25f1769e-3108-40a6-aa8b-e78af8055c80/scratchpad/caps2"
 const SHOTS: Array = [
 	{"name": "main_menu", "scene": "res://presentation/screens/main_menu.tscn", "needs_run": false},
-	{"name": "overworld", "scene": "res://presentation/overworld/overworld_screen.tscn", "needs_run": true},
+	{
+		"name": "overworld",
+		"scene": "res://presentation/overworld/overworld_screen.tscn",
+		"needs_run": true
+	},
 	{"name": "party", "scene": "res://presentation/party/party_screen.tscn", "needs_run": true},
 	{"name": "lab", "scene": "res://presentation/lab/lab_screen.tscn", "needs_run": true},
 ]
