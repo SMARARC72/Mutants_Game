@@ -49,7 +49,7 @@ func _build() -> void:
 	title.theme_type_variation = "TitleLabel"
 	box.add_child(title)
 
-	_add_volume_row(box, "Master", "audio", "master_volume")
+	var first_row := _add_volume_row(box, "Master", "audio", "master_volume")
 	_add_volume_row(box, "Music", "audio", "music_volume")
 	_add_volume_row(box, "Effects", "audio", "sfx_volume")
 	_add_toggle_row(box, "Fullscreen", "video", "fullscreen")
@@ -69,7 +69,10 @@ func _build() -> void:
 	back.text = "Back"
 	box.add_child(back)
 	back.pressed.connect(_on_back)
-	back.grab_focus()
+	# W1 focus pass: land on the FIRST setting (W0 focused Back) — up/down walks the sheet,
+	# left/right adjusts the focused slider, Back stays reachable at the bottom of the chain.
+	if first_row != null and first_row.is_inside_tree():
+		first_row.grab_focus()
 
 
 ## ESC / cancel always exits Options — the screen must never trap the player.
@@ -87,9 +90,10 @@ func _on_back() -> void:
 		get_tree().change_scene_to_file(MAIN_MENU_SCENE)
 
 
+## Build one volume row; returns its slider so the focus pass can land on the first row.
 func _add_volume_row(
 	parent: VBoxContainer, label_text: String, section: String, key: String
-) -> void:
+) -> HSlider:
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", 12)
 	parent.add_child(row)
@@ -110,6 +114,7 @@ func _add_volume_row(
 				_settings.call("set_value", section, key, v)
 				_settings.call("save_settings")
 	)
+	return slider
 
 
 func _add_toggle_row(

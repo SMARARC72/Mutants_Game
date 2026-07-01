@@ -89,7 +89,7 @@ func _build() -> void:
 	tagline.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	box.add_child(tagline)
 
-	_add_button(box, "Begin the Descent (New Run)", _on_new_run)
+	var first := _add_button(box, "Begin the Descent (New Run)", _on_new_run)
 	var continue_button := _add_button(box, "Continue", _on_continue)
 	# Disable Continue when there is no readable local save (slice DoD: menu gating).
 	if _game == null or not _game.has_method("has_save") or not bool(_game.call("has_save")):
@@ -97,6 +97,10 @@ func _build() -> void:
 	_add_button(box, "Sample Plate", _on_play)
 	_add_button(box, "Options", _on_options)
 	_add_button(box, "Abandon Hope (Quit)", _on_quit)
+	# W1 focus pass: the first verb owns focus so keyboard/gamepad play works from frame one
+	# (container order gives the column its focus neighbours automatically).
+	if first.is_inside_tree():
+		first.grab_focus()
 
 
 func _add_button(parent: VBoxContainer, text: String, handler: Callable) -> Button:

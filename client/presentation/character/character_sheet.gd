@@ -202,6 +202,9 @@ func _build_ui() -> void:
 	back.text = "Return to the descent"
 	back.pressed.connect(return_to_overworld)
 	box.add_child(back)
+	# W1 focus pass: the sheet is read-only, so its one verb (Back) owns focus.
+	if back.is_inside_tree():
+		back.grab_focus()
 
 
 ## One morality axis row: left pole label, a track ProgressBar (-100..100), right pole label. The fill

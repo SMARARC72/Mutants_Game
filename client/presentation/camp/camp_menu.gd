@@ -91,11 +91,14 @@ func _build() -> void:
 	box.add_child(subtitle)
 
 	_add_lead_portrait(box)
-	_add_button(box, "PartyButton", "Party & Grimoire", open_party)
+	var party_button := _add_button(box, "PartyButton", "Party & Grimoire", open_party)
 	_add_button(box, "SelfButton", "The Self", open_self)
 	_add_button(box, "JournalButton", "The Ledger", open_journal)
 	_add_button(box, "LabButton", "Lab", open_lab)
 	_add_button(box, "ResumeButton", "Resume", resume)
+	# W1 focus pass: the first camp verb owns focus (arrow keys walk the column natively).
+	if party_button.is_inside_tree():
+		party_button.grab_focus()
 
 
 ## Show the lead creature's framed bestiary plate (when a run is live) — a face for "tend your coven".
