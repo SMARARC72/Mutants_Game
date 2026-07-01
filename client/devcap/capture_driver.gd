@@ -2,7 +2,11 @@ extends Node2D
 ## Dev-only screenshot driver (NOT shipped; devcap/ is a local harness). Boots a run, walks a
 ## few screens, saves viewport PNGs to the OUT dir, then quits. Run windowed (rendering needed).
 
-const OUT := "C:/Users/arahi/AppData/Local/Temp/claude/c--Users-arahi-Documents-Claude-Projects-Mutants-Game/25f1769e-3108-40a6-aa8b-e78af8055c80/scratchpad/caps2"
+const OUT := (
+	"C:/Users/arahi/AppData/Local/Temp/claude"
+	+ "/c--Users-arahi-Documents-Claude-Projects-Mutants-Game"
+	+ "/25f1769e-3108-40a6-aa8b-e78af8055c80/scratchpad/caps2"
+)
 const SHOTS: Array = [
 	{"name": "main_menu", "scene": "res://presentation/screens/main_menu.tscn", "needs_run": false},
 	{
