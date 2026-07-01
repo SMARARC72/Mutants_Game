@@ -135,8 +135,8 @@ func test_commit_adds_one_instance_equal_to_oracle_on_same_config_and_seed() -> 
 	var res: Dictionary = screen.call("commit")
 	assert_int(int(res["verdict"])).is_equal(LegalitySolverScript.Verdict.LEGAL)
 
-	# Exactly ONE creature added.
-	assert_int(run.party.size()).is_equal(before + 1)
+	# Exactly ONE creature added — and (Wave 5: costs bite) BOTH parents consumed: 2 leave, 1 arrives.
+	assert_int(run.party.size()).is_equal(before - 1)
 	var added: Dictionary = run.party[run.party.size() - 1]
 	assert_bool(bool(added["lineage"]["spliced"])).is_true()
 	assert_str(str(added["lineage"]["op"])).is_equal("fuse")
@@ -177,7 +177,10 @@ func test_legal_mutate_commit_debits_the_consumed_gene() -> void:
 	screen.call("toggle_ingredient", "ironblood")
 	var res: Dictionary = screen.call("commit")
 	assert_int(int(res["verdict"])).is_equal(LegalitySolverScript.Verdict.LEGAL)
-	assert_int(run.party.size()).is_equal(before + 1)
+	# Wave 5 (costs bite): the mutate HOST is consumed and the hybrid replaces it — same size.
+	assert_int(run.party.size()).is_equal(before)
+	var newborn: Dictionary = run.party[run.party.size() - 1]
+	assert_bool(bool((newborn["lineage"] as Dictionary).get("spliced", false))).is_true()
 	# EXACT debit: one ironblood removed, one remains; the unrelated scale untouched.
 	assert_int(inv.count("gene", "ironblood")).is_equal(1)
 	assert_int(inv.count("plating", "scale")).is_equal(1)
@@ -202,6 +205,116 @@ func test_illegal_commit_adds_and_consumes_nothing() -> void:
 	assert_bool(res.has("creature")).is_false()  # no garbage creature
 	assert_int(run.party.size()).is_equal(before)  # nothing added
 	assert_int(inv.count("gene", "servo_weave")).is_equal(1)  # nothing consumed
+	screen.queue_free()
+	gc.queue_free()
+
+
+# --- Wave 5: costs bite + recursion + fresh-run reagents --------------------------------------- #
+
+
+func test_commit_consumes_parents_and_applies_costs() -> void:
+	# A gate-met TABOO fuse (run corruption 50 >= T_abom 40) is LEGAL and carries the oracle's
+	# corruption ledger: committing must land that corruption on the RUN track, drink essence, and
+	# CONSUME the parents — the hybrid replaces them in the roster.
+	var gc := _make_game(PARTY_OPPOSED)
+	var run: RunContext = gc.call("run")
+	run.corruption = 50
+	run.essence = 40
+	var screen := _make_screen(gc)
+	screen.call("select_op", "fuse")
+	screen.call("set_creature_a", 0)
+	screen.call("set_creature_b", 1)
+	var res: Dictionary = screen.call("commit")
+	assert_int(int(res["verdict"])).is_equal(LegalitySolverScript.Verdict.LEGAL)
+	var creature: Dictionary = res["creature"]
+	assert_bool(bool(creature["taboo"])).is_true()
+	assert_int(int(creature["corruption"])).is_greater(0)
+	# The oracle's corruption ledger lands on the run track; essence is debited by the rite cost.
+	assert_int(run.corruption).is_equal(50 + int(creature["corruption"]))
+	assert_int(run.essence).is_equal(40 - LabScreenScript.SPLICE_ESSENCE_COST)
+	# Parents consumed: the hybrid REPLACES them (2 -> 1); no parent species remains in the party.
+	assert_int(run.party.size()).is_equal(1)
+	var newborn: Dictionary = run.party[0]
+	assert_bool(bool((newborn["lineage"] as Dictionary).get("spliced", false))).is_true()
+	for entry in run.party:
+		var sid := str((entry as Dictionary).get("species_id", ""))
+		assert_bool(["AD04", "AD01"].has(sid)).is_false()
+	screen.queue_free()
+	gc.queue_free()
+
+
+func test_essence_debit_floors_at_zero() -> void:
+	# The rite drinks essence but never below zero — a fresh (essence-poor) run can still splice.
+	var gc := _make_game(PARTY_LEGAL)
+	var run: RunContext = gc.call("run")
+	run.essence = 3
+	var screen := _make_screen(gc)
+	screen.call("select_op", "fuse")
+	screen.call("set_creature_a", 0)
+	screen.call("set_creature_b", 1)
+	var res: Dictionary = screen.call("commit")
+	assert_int(int(res["verdict"])).is_equal(LegalitySolverScript.Verdict.LEGAL)
+	assert_int(run.essence).is_equal(0)
+	screen.queue_free()
+	gc.queue_free()
+
+
+func test_committed_hybrid_is_repickable_and_respliceable() -> void:
+	# RECURSION: a committed hybrid resolves to a real bench tuple (from stats_cached) and can itself
+	# be fused again — stronger, stranger, one-of-one.
+	var gc := _make_game([{"species_id": "SB07"}, {"species_id": "AD10"}, {"species_id": "SB05"}])
+	var run: RunContext = gc.call("run")
+	var screen := _make_screen(gc)
+	screen.call("select_op", "fuse")
+	screen.call("set_creature_a", 0)
+	screen.call("set_creature_b", 1)
+	var first: Dictionary = screen.call("commit")
+	assert_int(int(first["verdict"])).is_equal(LegalitySolverScript.Verdict.LEGAL)
+	# Party is now [SB05, hybrid]; the hybrid carries no catalog id but a full cached identity.
+	assert_int(run.party.size()).is_equal(2)
+	var hybrid: Dictionary = run.party[1]
+	assert_str(str(hybrid.get("species_id", ""))).is_equal("")
+	# Re-splice: hybrid (subject) x SB05 (donor) previews LEGAL and commits into a new one-of-one.
+	screen.call("set_creature_a", 1)
+	screen.call("set_creature_b", 0)
+	var v: Dictionary = screen.call("preview")
+	assert_int(int(v["verdict"])).is_equal(LegalitySolverScript.Verdict.LEGAL)
+	var second: Dictionary = screen.call("commit")
+	assert_int(int(second["verdict"])).is_equal(LegalitySolverScript.Verdict.LEGAL)
+	assert_int(run.party.size()).is_equal(1)
+	var deep: Dictionary = run.party[0]
+	var lineage: Dictionary = deep["lineage"]
+	assert_bool(bool(lineage.get("spliced", false))).is_true()
+	# The plate identity survives the recursion (the dominant line still renders a real plate).
+	assert_str(str(lineage.get("portrait_species", ""))).is_not_empty()
+	screen.queue_free()
+	gc.queue_free()
+
+
+func test_fresh_run_mutate_is_committable_with_seeded_reagents() -> void:
+	# Wave 5: new_run seeds 1 gene-vial + 2 organs (REAL splice_rules.json keys) so Mutate is
+	# committable on a brand-new run — no farming required before the first rite.
+	var gc: Node = GameControllerScript.new()
+	add_child(gc)
+	gc.call("configure", FakeDalScript.make())
+	var run: RunContext = gc.call("new_run", TEST_SEED)
+	var inv: InventoryAdapter = gc.call("inventory")
+	assert_int(inv.count("gene", "verdant")).is_equal(1)
+	assert_int(inv.count("organ", "claw")).is_equal(1)
+	assert_int(inv.count("organ", "horn")).is_equal(1)
+	var party_size := run.party.size()
+	var screen := _make_screen(gc)
+	screen.call("select_op", "mutate")
+	screen.call("set_creature_a", 0)  # the starter lead (Eros/Gaia) — verdant (Eros) is in-force
+	screen.call("toggle_ingredient", "verdant")
+	var v: Dictionary = screen.call("preview")
+	assert_int(int(v["verdict"])).is_equal(LegalitySolverScript.Verdict.LEGAL)
+	assert_bool(bool(v["ingredients_available"])).is_true()
+	var res: Dictionary = screen.call("commit")
+	assert_int(int(res["verdict"])).is_equal(LegalitySolverScript.Verdict.LEGAL)
+	# The gene-vial was consumed; the host was replaced by the hybrid (party size unchanged).
+	assert_int(inv.count("gene", "verdant")).is_equal(0)
+	assert_int(run.party.size()).is_equal(party_size)
 	screen.queue_free()
 	gc.queue_free()
 

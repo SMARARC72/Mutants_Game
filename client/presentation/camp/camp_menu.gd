@@ -115,7 +115,9 @@ func _add_lead_portrait(box: VBoxContainer) -> void:
 	var lead: Variant = party[idx]
 	if not (lead is Dictionary):
 		return
-	var plate := SpeciesArt.plate(str((lead as Dictionary).get("species_id", "")))
+	# Hybrids render their dominant parent's plate + the deterministic corruption tint (PortraitUtil),
+	# so camp shows the same face party/lab/battle do.
+	var plate := PortraitUtil.creature_plate(lead as Dictionary)
 	if plate == null:
 		return
 	var portrait := TextureRect.new()
@@ -124,6 +126,7 @@ func _add_lead_portrait(box: VBoxContainer) -> void:
 	portrait.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	portrait.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	portrait.texture = plate
+	portrait.self_modulate = PortraitUtil.creature_tint(lead as Dictionary)
 	var frame := PortraitUtil.framed(portrait)
 	frame.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	box.add_child(frame)

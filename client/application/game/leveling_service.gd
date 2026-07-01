@@ -148,8 +148,11 @@ static func _apply_awaken(rng: CanonicalRNG, creature: Dictionary) -> Dictionary
 	var result := LevelEngine.awaken(rng, expression, gene_bonus, genes)
 	creature["expression"] = float(result["expression"])
 	creature["awakenings"] = int(creature.get("awakenings", 0)) + 1
-	# Invalidate any cached display stats so the screen recomputes from the new expression.
-	creature["stats_cached"] = {}
+	# Invalidate any cached display stats so the screen recomputes from the new expression — but
+	# NEVER for a spliced hybrid (species_id == ""): its stats_cached IS the oracle ceiling cached at
+	# lab commit (there is no species row to re-derive from), so wiping it would orphan the creature.
+	if str(creature.get("species_id", "")) != "":
+		creature["stats_cached"] = {}
 	return result
 
 

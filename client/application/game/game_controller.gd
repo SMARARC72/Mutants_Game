@@ -29,6 +29,16 @@ const GearCatalogScript := preload("res://infrastructure/catalog/gear_catalog.gd
 const ACTIVE_CREATURE_FLAG := "active_creature"
 const InventoryAdapterScript := preload("res://infrastructure/inventory/inventory_adapter.gd")
 
+## Fresh-run Lab reagents (Wave 5): one in-force gene-vial + two organs so the Mutate rite is
+## committable on a brand-new run. REAL keys from client/catalog/splice_rules.json — "verdant"
+## (gene_compat: Eros, the starter line's force) and "claw"/"horn" (ingredient_compat organs).
+## [item_type, item_key, qty] rows fed through the InventoryAdapter.
+const STARTER_REAGENTS := [
+	["gene", "verdant", 1],
+	["organ", "claw", 1],
+	["organ", "horn", 1],
+]
+
 ## Slice 4 — Bloomwardens faction standing. The run.flags key holding the standing integer (0 =
 ## Stranger baseline).
 const BLOOMWARDENS_STANDING_FLAG := "bloomwardens_standing"
@@ -108,6 +118,7 @@ func new_run(seed: int) -> RunContext:
 	run.world_state = {"active_region": EncounterCatalogScript.STARTING_REGION, "steps": 0}
 	run.unlocked_regions = {EncounterCatalogScript.STARTING_REGION: true}
 	run.flags = {}
+	run.inventory = _starter_inventory_rows()
 	_run = run
 	_base_save_version = 0
 	_inventory = null  # drop any prior run's live drawer; rebuild lazily from the new run's rows
@@ -390,6 +401,16 @@ func has_save() -> bool:
 
 
 # === internals =============================================================================== #
+
+
+## The data-only inventory rows a fresh run starts with (STARTER_REAGENTS through the adapter, so
+## stacking/shape stay single-sourced). Pure data — no gameplay number is computed here.
+static func _starter_inventory_rows() -> Array:
+	var inv: InventoryAdapter = InventoryAdapterScript.new()
+	for entry in STARTER_REAGENTS:
+		var row: Array = entry
+		inv.add(str(row[0]), str(row[1]), int(row[2]))
+	return inv.to_dict()
 
 
 static func _as_string_array(value: Variant) -> Array:

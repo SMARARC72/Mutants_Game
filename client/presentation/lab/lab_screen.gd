@@ -32,6 +32,11 @@ const OVERWORLD_SCENE := "res://presentation/overworld/overworld_screen.tscn"
 ## The two MVP ops this bench exposes. (graft/self_splice/reanimate are out of this slice's scope.)
 const OPS: Array = ["fuse", "mutate"]
 
+## Essence a sealed splice drinks (Wave 5 — costs bite). Application-side economy bookkeeping
+## (mirrors LevelingService.RESONANCE_ESSENCE_COST — not an oracle number). Debited on a LEGAL
+## commit, FLOORED AT ZERO so a fresh (essence-0) run can still seal its first rite.
+const SPLICE_ESSENCE_COST := 10
+
 var _game: Node = null
 var _transition: Node = null
 var _input: Node = null
@@ -194,16 +199,30 @@ func commit() -> Dictionary:
 		_toast_outcome(result, false)
 		return result
 
-	# LEGAL: the oracle already produced the creature; shape it into a party creature_instance and add.
+	# LEGAL: the oracle already produced the creature; shape it into a party creature_instance
+	# (BEFORE the parents leave the roster — the lineage tags read them by index).
 	var creature: Dictionary = result.get("creature", {})
 	var instance := _to_creature_instance(creature, result.get("splice_config", {}), op_id)
+	# COSTS BITE (Wave 5): the oracle's corruption ledger lands on the RUN track, the rite drinks
+	# essence (floored at 0), and the PARENTS ARE CONSUMED — the hybrid replaces them.
+	run.corruption += int(creature.get("corruption", 0))
+	run.essence = maxi(0, run.essence - SPLICE_ESSENCE_COST)
+	_consume_parents(run)
 	if _game.has_method("add_party_member"):
 		_game.call("add_party_member", instance)
+	# Re-aim the bench at the newborn (recursion: the committed hybrid is itself pickable again).
+	var party: Array = _party()
+	_idx_a = party.size() - 1
+	_idx_b = -1
+	for i in party.size():
+		if i != _idx_a:
+			_idx_b = i
+			break
 	if _game.has_method("save_run"):
 		_game.call("save_run")
 	_render_commit(creature)
 	_toast_outcome(result, true)
-	refresh()  # the consumed parts are gone — rebuild the ingredient drawer
+	refresh()  # the consumed parts + parents are gone — rebuild the pickers and drawer
 	return result
 
 
@@ -254,7 +273,9 @@ func _build_recipe() -> LabRecipe:
 
 
 ## Map a party creature_instance (by index) into the LabBench tuple [name, prim, sec, tier] by reading
-## its species row through the catalog (mirrors MonFactory.from_creature). Returns [] if unresolvable.
+## its species row through the catalog (mirrors MonFactory.from_creature). A spliced hybrid
+## (species_id == "") resolves from the oracle identity cached at commit (stats_cached), so a
+## committed hybrid is itself pickable/spliceable again. Returns [] if unresolvable.
 func _creature_tuple(party_index: int) -> Array:
 	var party: Array = _party()
 	if party_index < 0 or party_index >= party.size():
@@ -264,6 +285,8 @@ func _creature_tuple(party_index: int) -> Array:
 		return []
 	var creature: Dictionary = entry
 	var species_id := str(creature.get("species_id", ""))
+	if species_id == "":
+		return _cached_tuple(creature)
 	var catalog: SpeciesCatalog = _game.call("catalog")
 	var species: SpeciesData = catalog.get_by_id(species_id) if catalog != null else null
 	if species == null:
@@ -272,6 +295,40 @@ func _creature_tuple(party_index: int) -> Array:
 	if display_name == "":
 		display_name = species.name
 	return [display_name, species.force_primary, species.force_secondary, species.tier]
+
+
+## A spliced hybrid's LabBench tuple, from the prim/sec/tier the oracle reported at commit
+## (stats_cached — cached verbatim, never recomputed). [] when the cache is absent/incomplete.
+func _cached_tuple(creature: Dictionary) -> Array:
+	var cached_raw: Variant = creature.get("stats_cached", {})
+	if not (cached_raw is Dictionary):
+		return []
+	var cached: Dictionary = cached_raw
+	var prim := str(cached.get("prim", ""))
+	var tier := str(cached.get("tier", ""))
+	if prim == "" or tier == "":
+		return []
+	var display_name := str(creature.get("nickname", ""))
+	if display_name == "":
+		display_name = "Splice"
+	return [display_name, prim, str(cached.get("sec", "")), tier]
+
+
+## Remove the sealed splice's PARENT creature_instances from the run's party (fuse: subject + donor;
+## mutate: the host). Descending index order so the second erase is not shifted by the first. The
+## caller then appends the hybrid — the newborn replaces its parents in the roster.
+func _consume_parents(run: RunContext) -> void:
+	if run == null:
+		return
+	var indices: Array = [_idx_a]
+	if _op == "fuse" and _idx_b != _idx_a:
+		indices.append(_idx_b)
+	indices.sort()
+	indices.reverse()
+	for idx in indices:
+		var i := int(idx)
+		if i >= 0 and i < run.party.size():
+			run.party.remove_at(i)
 
 
 ## Shape the oracle's creature dict into a creature_instance (RunContext.party shape / the
@@ -311,6 +368,10 @@ func _to_creature_instance(
 			"spliced": true,
 			"op": _op,
 			"parents": parents,
+			# Presentation provenance: which parent's plate represents this hybrid (dominant parent —
+			# the one whose primary force carried into the blend; subject wins ties). Propagated
+			# through hybrid-of-hybrid lineages so a deep splice still renders its founding line.
+			"portrait_species": _dominant_portrait_species(creature, parents),
 			"splice_config": splice_config.duplicate(true),
 			"rng_seed_tag": op_id,
 			"taboo": bool(creature.get("taboo", false)),
@@ -320,6 +381,8 @@ func _to_creature_instance(
 
 
 ## A compact, non-numeric provenance tag for a parent party creature (for lineage.parents).
+## portrait_species carries the parent's OWN plate identity (its species, or — for a hybrid parent —
+## its recorded dominant ancestor), so hybrid portraits survive recursive splices.
 func _parent_tag(party_index: int) -> Dictionary:
 	var party: Array = _party()
 	if party_index < 0 or party_index >= party.size() or not (party[party_index] is Dictionary):
@@ -328,7 +391,33 @@ func _parent_tag(party_index: int) -> Dictionary:
 	return {
 		"species_id": str(entry.get("species_id", "")),
 		"nickname": str(entry.get("nickname", "")),
+		"portrait_species": PortraitUtil.portrait_species_of(entry),
 	}
+
+
+## The DOMINANT parent's plate identity for a newborn hybrid: the parent whose primary force equals
+## the oracle-blended prim (the face the blend kept), the subject on ties/absence. Falls through to
+## any parent with a resolvable plate. Pure data pick — no numbers.
+func _dominant_portrait_species(creature: Dictionary, parents: Array) -> String:
+	var hybrid_prim := str(creature.get("prim", ""))
+	var ordered: Array = []
+	var tuples: Array = [_creature_tuple(_idx_a)]
+	if _op == "fuse":
+		tuples.append(_creature_tuple(_idx_b))
+	# Prefer the parent whose primary force the blend kept (index-aligned with `parents`).
+	for i in parents.size():
+		var tuple: Array = tuples[i] if i < tuples.size() else []
+		if tuple.size() >= 4 and str(tuple[1]) == hybrid_prim:
+			ordered.append(parents[i])
+	for parent in parents:
+		if not ordered.has(parent):
+			ordered.append(parent)
+	for parent in ordered:
+		if parent is Dictionary:
+			var pid := str((parent as Dictionary).get("portrait_species", ""))
+			if pid != "":
+				return pid
+	return ""
 
 
 ## A reproducible-but-distinct op id for a commit: the op + the chosen party indices + a per-run
@@ -542,11 +631,14 @@ func _rebuild_creature_picker(
 		btn.toggle_mode = true
 		btn.button_pressed = i == selected_index
 		btn.text = ("• " if i == selected_index else "  ") + label
-		var plate := SpeciesArt.plate(str(entry.get("species_id", "")))
+		# Hybrids render their dominant parent's plate with the deterministic corruption tint
+		# (PortraitUtil), so the lab shows the same face party/battle/camp do.
+		var plate := PortraitUtil.creature_plate(entry as Dictionary)
 		if plate != null:
 			btn.icon = plate
 			btn.expand_icon = true
 			btn.add_theme_constant_override("icon_max_width", 36)
+			PortraitUtil.tint_button_icon(btn, entry as Dictionary)
 		btn.custom_minimum_size = Vector2(0, 44)
 		var idx := i
 		btn.pressed.connect(func() -> void: on_pick.call(idx))

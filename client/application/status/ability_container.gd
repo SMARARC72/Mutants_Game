@@ -85,6 +85,15 @@ func choose_and_act(
 	)
 
 
+## Compose the AWAKENING growth model onto the engine-built CEILING stats (Wave 5 — awakenings felt).
+## The number still comes from the ORACLE (LevelEngine.current_stats = ceiling x (expression +
+## gene_bonus)); the shell computes nothing, it just stores the oracle-produced block. HP/maxhp stay
+## ceiling-derived (the growth model scales pole stats, not HP). Called by SkillMonFactory at build
+## time; battle containers are rebuilt through the factory every battle, so this never persists.
+func compose_growth(expression: float, gene_bonus: Dictionary) -> void:
+	_mon.stats = LevelEngine.current_stats(_mon.stats, expression, gene_bonus)
+
+
 # --- presentation reads (engine-owned Mon state; no math) ------------------------------------- #
 
 
