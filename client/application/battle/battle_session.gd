@@ -192,7 +192,10 @@ func result_for(
 func begin_skill_interactive(
 	player_party: Array, enemy_party: Array, battle_seed: int
 ) -> SkillInteractiveBattle:
-	var team_a: Array = SkillMonFactoryScript.team_from_creatures(player_party, _catalog)
+	# The player team keeps its container→creature-dict source map too (Wave 3): the battle screen
+	# uses it to write live end-of-battle HP back to the exact run.party entries (skip-proof).
+	var player_built: Dictionary = SkillMonFactoryScript.team_with_source(player_party, _catalog)
+	var team_a: Array = player_built["team"]
 	var enemy_built: Dictionary = SkillMonFactoryScript.team_with_source(enemy_party, _catalog)
 	var team_b: Array = enemy_built["team"]
 	if team_a.is_empty() or team_b.is_empty():
@@ -203,13 +206,16 @@ func begin_skill_interactive(
 	var session = controller.interactive(team_a, team_b, "A", true)
 	var capture := CaptureServiceScript.new(battle_seed)
 	return SkillInteractiveBattle.new(
-		session, capture, _catalog, enemy_built["source"], team_a, team_b
+		session, capture, _catalog, enemy_built["source"], team_a, team_b, player_built["source"]
 	)
 
 
 ## Build the Slice-1-shaped result dict from a FINISHED skill session (so the overworld + save path
 ## treat a skill battle like any other). `caught` adds the captured creature_instance. Uses the session's
 ## own turn() (the skill RESULT line format differs from the BattleEngine one, so we don't parse it).
+## Wave 3 honesty: an END_DEFEAT with BOTH sides still standing is the TURN CAP expiring — a
+## STALEMATE, not a victory. It is flagged (`stalemate`) and pays HALF spoils, so neither the banner
+## nor the reward lies about an enemy that simply outlasted the clock.
 func skill_result_for(session, caught: Dictionary = {}) -> Dictionary:
 	var team_a: Array = session.player_team()
 	var team_b: Array = session.enemy_team()
@@ -218,6 +224,13 @@ func skill_result_for(session, caught: Dictionary = {}) -> Dictionary:
 	var enemy_defeated := _dead_count_ac(team_b)
 	var xp := XP_PER_DEFEAT * enemy_defeated if player_won else 0
 	var winner := "player" if player_won else "enemy"
+	var stalemate := (
+		reason == SkillBattleControllerScript.InteractiveSession.END_DEFEAT
+		and player_won
+		and _any_alive_ac(team_b)
+	)
+	if stalemate:
+		xp = int(xp / 2.0)  # reduced reward: the wild slinks away with half the spoils
 	if reason == SkillBattleControllerScript.InteractiveSession.END_CAUGHT:
 		winner = "player"
 		player_won = true
@@ -228,6 +241,7 @@ func skill_result_for(session, caught: Dictionary = {}) -> Dictionary:
 		"winner": winner,
 		"player_won": player_won,
 		"reason": reason,
+		"stalemate": stalemate,
 		"turns": int(session.turn()),
 		"player_survivors": _alive_names_ac(team_a),
 		"enemy_survivors": _alive_names_ac(team_b),
@@ -435,6 +449,7 @@ class SkillInteractiveBattle:
 	var _capture: CaptureService
 	var _catalog: SpeciesCatalog
 	var _enemy_source: Dictionary  # AbilityContainer -> creature dict (its species_id)
+	var _player_source: Dictionary = {}  # AbilityContainer -> the ORIGINAL run.party dict (Wave 3)
 	var _team_a: Array
 	var _team_b: Array
 	var _caught: Dictionary = {}
@@ -446,7 +461,8 @@ class SkillInteractiveBattle:
 		catalog: SpeciesCatalog,
 		enemy_source: Dictionary,
 		team_a: Array,
-		team_b: Array
+		team_b: Array,
+		player_source: Dictionary = {}
 	) -> void:
 		_session = session
 		_capture = capture
@@ -454,6 +470,7 @@ class SkillInteractiveBattle:
 		_enemy_source = enemy_source
 		_team_a = team_a
 		_team_b = team_b
+		_player_source = player_source
 
 	# --- pump + player verbs (thin passthroughs to the session) ----------------------------------- #
 
@@ -508,6 +525,11 @@ class SkillInteractiveBattle:
 
 	func last_capture() -> Dictionary:
 		return _last_capture
+
+	## The player-side AbilityContainer → ORIGINAL creature-dict map (identity-keyed, Wave 3): the
+	## battle screen maps live end-of-battle HP back onto the exact run.party entries through it.
+	func player_source() -> Dictionary:
+		return _player_source
 
 	## The SpeciesData backing an enemy AbilityContainer (via the source map), or null if unknown.
 	func species_for(target: AbilityContainer) -> SpeciesData:

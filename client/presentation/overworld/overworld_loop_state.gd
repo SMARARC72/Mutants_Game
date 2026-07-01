@@ -1,0 +1,89 @@
+class_name OverworldLoopState
+extends RefCounted
+## Wave 3 "Loop Truth" — the run.world_state bookkeeping the overworld leans on between battles:
+##   * PRE-BATTLE POSITION: the exact cell + facing where a fight started, stashed alongside the
+##     pending_battle autosave so the post-battle overworld restores the player to the same tile;
+##   * POST-BATTLE GRACE: a small step counter armed before every hand-off — the first few steps
+##     after a fight never roll a wild encounter (explicitly interim, master-plan tension 8);
+##   * ONE-SHOT BOSS LAIR: the flag that records the region climax has already ambushed once, so a
+##     lost/fled boss fight never re-ambushes on every subsequent step.
+## Pure data helpers over RunContext.world_state (JSON-safe values only — ints in arrays, bools),
+## no Node, extracted OverworldCameraRig-style so overworld_screen.gd stays under the file cap.
+
+const OverworldTileSetScript := preload("res://presentation/overworld/overworld_tileset.gd")
+
+const PLAYER_CELL_KEY := "player_cell"
+const PLAYER_FACING_KEY := "player_facing"
+const GRACE_KEY := "encounter_grace"
+const BOSS_FIRED_PREFIX := "boss_lair_fired_"
+
+
+## Stash the pre-battle position (cell + facing, JSON-safe int pairs) and arm the post-battle
+## encounter grace window. Called just before the pending_battle autosave so one save carries all.
+static func stash_prebattle(
+	run: RunContext, cell: Vector2i, facing: Vector2i, grace_steps: int
+) -> void:
+	if run == null:
+		return
+	run.world_state[PLAYER_CELL_KEY] = [cell.x, cell.y]
+	run.world_state[PLAYER_FACING_KEY] = [facing.x, facing.y]
+	run.world_state[GRACE_KEY] = grace_steps
+
+
+## The persisted pre-battle cell when present + in-bounds + walkable on `layout`, else `fallback`
+## (the canonical spawn). JSON round-trips numbers as floats — int()-coerced here.
+static func restore_cell(run: RunContext, layout: Layout, fallback: Vector2i) -> Vector2i:
+	var saved := _int_pair(run, PLAYER_CELL_KEY)
+	if saved.is_empty() or layout == null:
+		return fallback
+	var cell := Vector2i(int(saved[0]), int(saved[1]))
+	if not layout.in_bounds(cell.x, cell.y):
+		return fallback
+	if not OverworldTileSetScript.is_walkable(layout.get_cell(cell.x, cell.y)):
+		return fallback
+	return cell
+
+
+## The persisted pre-battle facing (a non-zero int pair), else `fallback`.
+static func restore_facing(run: RunContext, fallback: Vector2i) -> Vector2i:
+	var saved := _int_pair(run, PLAYER_FACING_KEY)
+	if saved.is_empty():
+		return fallback
+	var facing := Vector2i(int(saved[0]), int(saved[1]))
+	return facing if facing != Vector2i.ZERO else fallback
+
+
+## Consume one step of the post-battle grace window. Returns true while the step is graced (the
+## caller skips the wild roll); the counter decrements toward 0 and persists in world_state.
+static func consume_grace(run: RunContext) -> bool:
+	if run == null:
+		return false
+	var grace := int(run.world_state.get(GRACE_KEY, 0))
+	if grace <= 0:
+		return false
+	run.world_state[GRACE_KEY] = grace - 1
+	return true
+
+
+## True once the region's boss lair has ambushed (the one-shot trigger already fired this run).
+static func boss_fired(run: RunContext, region_id: String) -> bool:
+	if run == null:
+		return false
+	return bool(run.world_state.get(BOSS_FIRED_PREFIX + region_id, false))
+
+
+## Record the one-shot boss ambush for `region_id` (persisted by the pre-battle autosave).
+static func mark_boss_fired(run: RunContext, region_id: String) -> void:
+	if run == null:
+		return
+	run.world_state[BOSS_FIRED_PREFIX + region_id] = true
+
+
+## A world_state value as a 2-element numeric Array, or [] when absent/malformed.
+static func _int_pair(run: RunContext, key: String) -> Array:
+	if run == null:
+		return []
+	var value: Variant = run.world_state.get(key, null)
+	if value is Array and (value as Array).size() == 2:
+		return value
+	return []

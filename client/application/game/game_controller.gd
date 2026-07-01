@@ -181,6 +181,21 @@ func apply_battle_result(result: Dictionary) -> RunContext:
 		return null
 	var gained := int(result.get("xp", 0))
 	_run.essence += gained  # Slice 1 stand-in growth resource.
+	# Wave 3 consequence: DEFEAT costs ~25% of banked essence (round down, floor 0) — losing has a
+	# price the run actually feels. A flee is an escape, not a defeat; it stays cost-free.
+	if not bool(result.get("player_won", false)) and str(result.get("winner", "")) != "fled":
+		_run.essence = maxi(0, _run.essence - int(_run.essence / 4.0))
+	# Wave 3 consequence: fold the live end-of-battle HP back onto the party — the battle leaves
+	# marks. Entries are shaped by the battle screen ({index, hp, max_hp} per surviving mapping);
+	# results without the key (auto/boss round-trips, older callers) are untouched.
+	for entry: Variant in result.get("party_hp", []) as Array:
+		if not (entry is Dictionary):
+			continue
+		var idx := int((entry as Dictionary).get("index", -1))
+		if idx >= 0 and idx < _run.party.size() and _run.party[idx] is Dictionary:
+			var creature: Dictionary = _run.party[idx]
+			creature["hp"] = int((entry as Dictionary).get("hp", 0))
+			creature["max_hp"] = int((entry as Dictionary).get("max_hp", 0))
 	_run.flags["last_battle_won"] = bool(result.get("player_won", false))
 	_run.flags["last_battle_reason"] = str(result.get("reason", ""))
 	# Slice 2: a captured wild creature joins the party (shaped as a creature_instance by the capture
