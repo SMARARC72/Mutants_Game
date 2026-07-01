@@ -57,6 +57,10 @@ jobs:
           echo "AI selection purity: clean"
       - name: Catalog parity (Cluster 2 — CSV cols + client catalog/Resource/seed id-set ≡, ADR-006)
         run: node tools/test_catalog_parity.mjs
+      - name: Asset contract (W2 — size/dim caps, LFS pointers in index, .import presence)
+        # Index/pointer inspection only — no LFS download, no Godot; <1s. Dimension checks
+        # run wherever real PNG bytes are present (locally always; skipped on pointer files).
+        run: PYTHONUTF8=1 python -B tools/check_asset_contract.py
 
   oracle:
     name: Oracle — constants + RNG parity + determinism + golden (D4/P1)
@@ -98,9 +102,28 @@ jobs:
       - name: Slice 4 balance check (MVP targets — no one-shots; ~5-8 turn band)
         run: PYTHONUTF8=1 python -B tools/balance_slice_check.py
 
+  # W2 CI reclaim: the Supabase stack (start + reset + pgTAP + smoke) is the slowest job in the
+  # pipeline and Supabase is de-scoped this pass (plan tension 13) — run it only when supabase/**
+  # actually changes. Detection is a cheap job so `database` keeps its required-check identity.
+  changes:
+    name: Paths filter (supabase/**)
+    runs-on: ubuntu-latest
+    outputs:
+      supabase: ${{ steps.filter.outputs.supabase }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            supabase:
+              - 'supabase/**'
+
   database:
     name: DB migrations + RLS (pgTAP) + anon smoke (D2/D3/D5)
     runs-on: ubuntu-latest
+    needs: changes
+    if: needs.changes.outputs.supabase == 'true'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
