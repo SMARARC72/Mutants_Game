@@ -732,23 +732,37 @@ func _render_verdict(verdict: Dictionary) -> void:
 		return
 	_result_label.text = ""
 	if verdict.is_empty():
-		_verdict_label.text = "[color=#9a8fb0]Choose your subjects.[/color]"
+		_verdict_label.text = (
+			"[color=#%s]Choose your subjects.[/color]" % _parchment_hex(GrimoirePalette.TEXT_MUTED)
+		)
 		return
 	var code := int(verdict.get("verdict", -1))
 	var configs: Array = verdict.get("configs", [])
 	var cfg: Dictionary = configs[0] if configs.size() > 0 else {}
 	match code:
 		LegalitySolverScript.Verdict.LEGAL:
-			_verdict_label.text = "[color=#8cd96f]LEGAL[/color]\n" + _config_summary(cfg)
+			_verdict_label.text = (
+				"[color=#%s]LEGAL[/color]\n" % _parchment_hex(GrimoirePalette.SUCCESS)
+				+ _config_summary(cfg)
+			)
 		LegalitySolverScript.Verdict.TABOO:
 			var reason := str(verdict.get("reason", "this rite is forbidden"))
 			var cost := _cost_summary(verdict.get("unlock_cost", {}))
 			_verdict_label.text = (
-				"[color=#d9a86f]TABOO[/color]  %s\n%s\n%s" % [reason, cost, _config_summary(cfg)]
+				"[color=#%s]TABOO[/color]  %s\n%s\n%s"
+				% [_parchment_hex(GrimoirePalette.WARNING), reason, cost, _config_summary(cfg)]
 			)
 		_:
 			var why := str(verdict.get("reason", "the flesh refuses"))
-			_verdict_label.text = "[color=#d96f6f]ILLEGAL[/color]  " + why
+			_verdict_label.text = (
+				"[color=#%s]ILLEGAL[/color]  " % _parchment_hex(GrimoirePalette.DANGER) + why
+			)
+
+
+## BBCode hex for an accent deepened for the parchment verdict page (Wave 8 contrast pass — the
+## bright on-ink colours washed out on ParchmentPanel; GrimoirePalette owns the adjustment).
+static func _parchment_hex(color: Color) -> String:
+	return GrimoirePalette.on_parchment(color).to_html(false)
 
 
 ## A non-numeric-source summary of the candidate config's forces/tier (the oracle reports the final
@@ -766,9 +780,10 @@ func _config_summary(cfg: Dictionary) -> String:
 			force += "/" + str(fi[1])
 	var tier := str(cfg.get("tier_target", ""))
 	var cls := str(cfg.get("class_target", ""))
+	var label_hex := _parchment_hex(GrimoirePalette.THANATOS)
 	return (
-		"[color=#c7bce0]forces[/color] %s   [color=#c7bce0]tier[/color] %s   [color=#c7bce0]class[/color] %s"
-		% [force, tier, cls]
+		"[color=#%s]forces[/color] %s   [color=#%s]tier[/color] %s   [color=#%s]class[/color] %s"
+		% [label_hex, force, label_hex, tier, label_hex, cls]
 	)
 
 
@@ -783,7 +798,7 @@ func _cost_summary(cost: Dictionary) -> String:
 	if cost.has("part"):
 		parts.append("a %s" % str(cost["part"]))
 	return (
-		"[color=#d9a86f]unlock cost:[/color] "
+		"[color=#%s]unlock cost:[/color] " % _parchment_hex(GrimoirePalette.WARNING)
 		+ ", ".join(PackedStringArray(parts.map(func(s: Variant) -> String: return str(s))))
 	)
 
@@ -798,19 +813,29 @@ func _render_commit(creature: Dictionary) -> void:
 	if str(creature.get("sec", "")) != "":
 		force += "/" + str(creature.get("sec", ""))
 	var head := (
-		"[color=#8cd96f]Spliced:[/color] %s  —  %s %s"
-		% [str(creature.get("name", "")), force, str(creature.get("tier", ""))]
+		"[color=#%s]Spliced:[/color] %s  —  %s %s"
+		% [
+			_parchment_hex(GrimoirePalette.SUCCESS),
+			str(creature.get("name", "")),
+			force,
+			str(creature.get("tier", "")),
+		]
 	)
+	var label_hex := _parchment_hex(GrimoirePalette.THANATOS)
 	var ledger := (
-		"[color=#c7bce0]HP[/color] %d   [color=#c7bce0]BST[/color] %d   "
-		+ "[color=#c7bce0]entropy[/color] %d   [color=#c7bce0]corruption[/color] %d"
+		"[color=#%s]HP[/color] %d   [color=#%s]BST[/color] %d   "
+		+ "[color=#%s]entropy[/color] %d   [color=#%s]corruption[/color] %d"
 	)
 	ledger = (
 		ledger
 		% [
+			label_hex,
 			int(creature.get("hp", 0)),
+			label_hex,
 			int(creature.get("bst", 0)),
+			label_hex,
 			int(creature.get("entropy", 0)),
+			label_hex,
 			int(creature.get("corruption", 0)),
 		]
 	)

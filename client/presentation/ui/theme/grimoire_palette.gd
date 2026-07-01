@@ -70,3 +70,14 @@ static func force_color(force_name: String) -> Color:
 ## (design §2). One place owns the "rot intensifies as it fills" rule.
 static func corruption_color(t: float) -> Color:
 	return CORRUPTION_LOW.lerp(CORRUPTION_HIGH, clampf(t, 0.0, 1.0))
+
+
+## Adapt an accent colour for PARCHMENT surfaces (Wave 8 contrast pass): the palette's accents are
+## tuned for ink-dark panels and wash out on aged paper, so deepen the value and push saturation
+## before using one on a ParchmentPanel (e.g. the lab verdict's bbcode force/tier colours).
+## Pure function — one place owns the "readable on paper" rule, no per-screen hexes.
+static func on_parchment(color: Color) -> Color:
+	var out := color
+	out.s = clampf(out.s * 1.35 + 0.05, 0.0, 1.0)
+	out.v = minf(out.v, 0.55)
+	return out
