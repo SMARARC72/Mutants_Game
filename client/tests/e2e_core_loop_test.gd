@@ -165,7 +165,8 @@ func test_full_core_loop_composes_end_to_end() -> void:
 	lab.call("set_creature_b", 2)
 	var lab_res: Dictionary = lab.call("commit")
 	assert_int(int(lab_res["verdict"])).is_equal(LegalitySolverScript.Verdict.LEGAL)
-	assert_int(run.party.size()).is_equal(party_before_lab + 1)
+	# Wave 5 — costs bite: the fuse CONSUMES both parents and adds the newborn (net -1).
+	assert_int(run.party.size()).is_equal(party_before_lab - 1)
 	var spliced: Dictionary = run.party[run.party.size() - 1]
 	assert_bool(bool((spliced["lineage"] as Dictionary).get("spliced", false))).is_true()
 	lab.queue_free()

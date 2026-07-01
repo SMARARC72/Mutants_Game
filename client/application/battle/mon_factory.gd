@@ -15,13 +15,23 @@ extends RefCounted
 
 const DEFAULT_CLASS := "organic"
 
+## The rank a spliced hybrid's stats derive from. LabEngine.fuse cached its stat block via
+## StatEngine.stat_block(prim, sec, "wild", tier, "organic") — rebuilding the Mon through the SAME
+## oracle inputs reproduces the stats_cached numbers verbatim (deterministic, no genome).
+const HYBRID_RANK := "wild"
 
-## Build one BattleEngine.Mon from a creature dict + the catalog. Returns null if the species id is
-## absent from the catalog (caller decides how to handle a missing-content gap).
+## The display name a nameless hybrid falls back to (a lab creature always carries its oracle name).
+const HYBRID_FALLBACK_NAME := "Splice"
+
+
+## Build one BattleEngine.Mon from a creature dict + the catalog. A spliced hybrid (species_id == "")
+## is built from the oracle numbers cached at lab commit (stats_cached.prim/sec/tier). Returns null if
+## the species id is absent from the catalog AND no cached stats exist (caller decides how to handle
+## the missing-content gap).
 static func from_creature(creature: Dictionary, catalog: SpeciesCatalog) -> BattleEngine.Mon:
 	var species_id := str(creature.get("species_id", ""))
 	if species_id == "":
-		return null
+		return _from_cached_stats(creature)
 	var species: SpeciesData = catalog.get_by_id(species_id)
 	if species == null:
 		return null
@@ -29,7 +39,7 @@ static func from_creature(creature: Dictionary, catalog: SpeciesCatalog) -> Batt
 	if display_name == "":
 		display_name = species.name
 	var cls := species.species_class if species.species_class != "" else DEFAULT_CLASS
-	return BattleEngine.Mon.new(
+	var mon := BattleEngine.Mon.new(
 		display_name,
 		species.force_primary,
 		species.force_secondary,
@@ -37,6 +47,47 @@ static func from_creature(creature: Dictionary, catalog: SpeciesCatalog) -> Batt
 		species.tier,
 		cls
 	)
+	_compose_growth(mon, creature)
+	return mon
+
+
+## Build a spliced hybrid's Mon from the stats_cached the Lab commit wrote (the oracle's own prim /
+## sec / tier). The Mon constructor re-derives the stat block through the SAME oracle call LabEngine
+## used (rank "wild", class "organic", no genome), so its stats + HP EQUAL the cached numbers — no
+## number is computed here. Returns null when the cache is absent/incomplete (a malformed entry).
+static func _from_cached_stats(creature: Dictionary) -> BattleEngine.Mon:
+	var cached_raw: Variant = creature.get("stats_cached", {})
+	if not (cached_raw is Dictionary):
+		return null
+	var cached: Dictionary = cached_raw
+	var prim := str(cached.get("prim", ""))
+	var tier := str(cached.get("tier", ""))
+	if prim == "" or tier == "":
+		return null
+	var display_name := str(creature.get("nickname", ""))
+	if display_name == "":
+		display_name = HYBRID_FALLBACK_NAME
+	var mon := BattleEngine.Mon.new(
+		display_name, prim, str(cached.get("sec", "")), HYBRID_RANK, tier, DEFAULT_CLASS
+	)
+	_compose_growth(mon, creature)
+	return mon
+
+
+## AWAKENINGS FELT (application-layer composition; the domain stays untouched): scale the Mon's
+## engine-built CEILING stat block by the creature's growth state via the ORACLE's own model —
+## LevelEngine.current_stats(ceiling, expression, gene_bonus). A dict WITHOUT growth state (wild
+## enemies, starter/legacy entries) composes at expression 1.0 — the full ceiling, exactly the
+## pre-composition behavior — so canonical battle streams over growth-less teams are unchanged.
+## HP stays ceiling-derived (the growth model scales pole stats, not HP — mirrors
+## CreatureSheet.effective_stats / hp_of).
+static func _compose_growth(mon: BattleEngine.Mon, creature: Dictionary) -> void:
+	var expression := float(creature.get("expression", 1.0))
+	var gene_bonus_raw: Variant = creature.get("gene_bonus", {})
+	var gene_bonus: Dictionary = gene_bonus_raw if gene_bonus_raw is Dictionary else {}
+	if expression == 1.0 and gene_bonus.is_empty():
+		return
+	mon.stats = LevelEngine.current_stats(mon.stats, expression, gene_bonus)
 
 
 ## Build a team (Array[BattleEngine.Mon]) from an Array of creature dicts. Skips any entry whose

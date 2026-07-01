@@ -9,13 +9,23 @@ extends RefCounted
 
 const DEFAULT_CLASS := "organic"
 
+## The rank a spliced hybrid's stats derive from. LabEngine.fuse cached its stat block via
+## StatEngine.stat_block(prim, sec, "wild", tier, "organic") — rebuilding the container through the
+## SAME oracle inputs reproduces the stats_cached numbers verbatim (deterministic, no genome).
+const HYBRID_RANK := "wild"
 
-## Build one AbilityContainer from a creature dict + the catalog. Returns null if the species id is
-## absent from the catalog (caller decides how to handle the missing-content gap).
+## The display name a nameless hybrid falls back to (a lab creature always carries its oracle name).
+const HYBRID_FALLBACK_NAME := "Splice"
+
+
+## Build one AbilityContainer from a creature dict + the catalog. A spliced hybrid (species_id == "")
+## is built from the oracle numbers cached at lab commit (stats_cached.prim/sec/tier). Returns null if
+## the species id is absent from the catalog AND no cached stats exist (caller decides how to handle
+## the missing-content gap).
 static func from_creature(creature: Dictionary, catalog: SpeciesCatalog) -> AbilityContainer:
 	var species_id := str(creature.get("species_id", ""))
 	if species_id == "":
-		return null
+		return _from_cached_stats(creature)
 	var species: SpeciesData = catalog.get_by_id(species_id)
 	if species == null:
 		return null
@@ -23,7 +33,7 @@ static func from_creature(creature: Dictionary, catalog: SpeciesCatalog) -> Abil
 	if display_name == "":
 		display_name = species.name
 	var kit := KitFactory.kit_for(species.force_primary, species.force_secondary)
-	return AbilityContainer.new(
+	var ac := AbilityContainer.new(
 		display_name,
 		species.force_primary,
 		species.force_secondary,
@@ -31,6 +41,48 @@ static func from_creature(creature: Dictionary, catalog: SpeciesCatalog) -> Abil
 		species.tier,
 		kit
 	)
+	_compose_growth(ac, creature)
+	return ac
+
+
+## Build a spliced hybrid's AbilityContainer from the stats_cached the Lab commit wrote (the oracle's
+## own prim/sec/tier). The container re-derives the stat block through the SAME oracle call LabEngine
+## used (rank "wild", no genome), so its stats + HP EQUAL the cached numbers — no number is computed
+## here. The kit derives from the cached forces (the same KitFactory policy every species uses).
+## Returns null when the cache is absent/incomplete (a malformed entry).
+static func _from_cached_stats(creature: Dictionary) -> AbilityContainer:
+	var cached_raw: Variant = creature.get("stats_cached", {})
+	if not (cached_raw is Dictionary):
+		return null
+	var cached: Dictionary = cached_raw
+	var prim := str(cached.get("prim", ""))
+	var tier := str(cached.get("tier", ""))
+	if prim == "" or tier == "":
+		return null
+	var sec := str(cached.get("sec", ""))
+	var display_name := str(creature.get("nickname", ""))
+	if display_name == "":
+		display_name = HYBRID_FALLBACK_NAME
+	var kit := KitFactory.kit_for(prim, sec)
+	var ac := AbilityContainer.new(display_name, prim, sec, HYBRID_RANK, tier, kit)
+	_compose_growth(ac, creature)
+	return ac
+
+
+## AWAKENINGS FELT (application-layer composition; the domain stays untouched): scale the container's
+## engine-built CEILING stat block by the creature's growth state via the ORACLE's own model —
+## LevelEngine.current_stats(ceiling, expression, gene_bonus). A dict WITHOUT growth state (wild
+## enemies, starter/legacy entries) composes at expression 1.0 — the full ceiling, exactly the
+## pre-composition behavior — so canonical battle streams over growth-less teams are unchanged.
+## HP stays ceiling-derived (the growth model scales pole stats, not HP — mirrors
+## CreatureSheet.effective_stats / hp_of).
+static func _compose_growth(ac: AbilityContainer, creature: Dictionary) -> void:
+	var expression := float(creature.get("expression", 1.0))
+	var gene_bonus_raw: Variant = creature.get("gene_bonus", {})
+	var gene_bonus: Dictionary = gene_bonus_raw if gene_bonus_raw is Dictionary else {}
+	if expression == 1.0 and gene_bonus.is_empty():
+		return
+	ac.compose_growth(expression, gene_bonus)
 
 
 ## Build a team (Array[AbilityContainer]) from an Array of creature dicts. Skips any entry whose

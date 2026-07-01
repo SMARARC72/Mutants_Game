@@ -537,14 +537,34 @@ func _build_team_cards(container: VBoxContainer, team: Array, is_enemy: bool, ca
 	cards.clear()
 	for i in team.size():
 		var ac := team[i] as AbilityContainer
-		cards.append(_make_card(container, ac, _species_id_for(is_enemy, i, ac), is_enemy))
+		var creature := _creature_dict_for(is_enemy, i)
+		cards.append(
+			_make_card(container, ac, _species_id_for(is_enemy, i, ac), is_enemy, creature)
+		)
+
+
+## The run-party creature_instance backing a PLAYER card (by team index), so hybrids (species_id "")
+## can render their dominant-parent plate + corruption tint. {} for enemies / unresolvable indices
+## (the species-id path covers those).
+func _creature_dict_for(is_enemy: bool, index: int) -> Dictionary:
+	if is_enemy or _game == null:
+		return {}
+	var run: RunContext = _game.call("run")
+	if run == null or index < 0 or index >= run.party.size():
+		return {}
+	var entry: Variant = run.party[index]
+	return entry if entry is Dictionary else {}
 
 
 ## One combatant card: framed bestiary-plate portrait + name + force icon(s) + HP bar (with a SHIELD
 ## overlay) + HP text + a status-chip row (shield / buff / defdown). Reads the AbilityContainer's
 ## engine-owned state; computes nothing.
 func _make_card(
-	container: VBoxContainer, ac: AbilityContainer, species_id: String, is_enemy: bool
+	container: VBoxContainer,
+	ac: AbilityContainer,
+	species_id: String,
+	is_enemy: bool,
+	creature: Dictionary = {}
 ) -> Dictionary:
 	var card := PanelContainer.new()
 	card.name = ("Enemy" if is_enemy else "Party") + "Card"
@@ -557,7 +577,11 @@ func _make_card(
 	portrait.custom_minimum_size = Vector2(88, 88)
 	portrait.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	portrait.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	portrait.texture = SpeciesArt.plate(species_id)
+	# Hybrids render their dominant parent's plate + a deterministic corruption tint (PortraitUtil,
+	# same face as party/lab/camp). self_modulate composes with the damage-flash modulate tween.
+	var portrait_source := creature if not creature.is_empty() else {"species_id": species_id}
+	portrait.texture = PortraitUtil.creature_plate(portrait_source)
+	portrait.self_modulate = PortraitUtil.creature_tint(portrait_source)
 	row.add_child(PortraitUtil.framed(portrait))
 
 	var info := VBoxContainer.new()
