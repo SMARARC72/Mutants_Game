@@ -24,6 +24,7 @@ signal dialogue_started(timeline_id: String)
 const EncounterDirectorScript := preload("res://application/overworld/encounter_director.gd")
 const OverworldTileSetScript := preload("res://presentation/overworld/overworld_tileset.gd")
 const OverworldTokensScript := preload("res://presentation/overworld/overworld_tokens.gd")
+const ControlsChipScript := preload("res://presentation/overworld/controls_chip.gd")
 const InputActions := preload("res://infrastructure/input/input_actions.gd")
 const BATTLE_SCENE := "res://presentation/battle/battle_screen.tscn"
 const CAMP_SCENE := "res://presentation/camp/camp_menu.tscn"
@@ -73,6 +74,7 @@ var _dialogue: DialogicFacade = null
 var _in_dialogue: bool = false
 var _quests: QuestService = null  # drives the intro quest from NPC talks (own narrative run-state)
 var _objective_label: Label = null  # HUD quest-tracker: the active quest's current objective
+var _controls_chip: Node = null  # the live-verbs HUD chip (W1/C13), collapsible via TOGGLE_CONTROLS
 
 
 func _ready() -> void:
@@ -351,6 +353,10 @@ func _process(delta: float) -> void:
 	):
 		if try_interact() != "":
 			return
+	# Collapse/expand the controls chip (H) — input-truth surface; never consumes a move.
+	if _controls_chip != null and _input.has_method("just_pressed"):
+		if bool(_input.call("just_pressed", InputActions.TOGGLE_CONTROLS)):
+			_controls_chip.call("toggle")
 	# Slice 3b: open the camp/pause menu on the menu action (guarded by the flag + overlay state).
 	if _camp_enabled and _camp_overlay == null and _input.has_method("just_pressed"):
 		if (
@@ -556,6 +562,9 @@ func _setup_hud() -> void:
 	box.add_child(_objective_label)
 	panel.add_child(box)
 	layer.add_child(panel)
+	# Controls chip (W1/C13): the live verbs, always on, bottom-left, collapsible with H.
+	_controls_chip = ControlsChipScript.new(_input)
+	layer.add_child(_controls_chip)
 	add_child(layer)
 	var theme_svc := get_node_or_null("/root/ThemeService")
 	if theme_svc != null and theme_svc.has_method("apply_to"):
@@ -906,6 +915,11 @@ func quest_done(quest_id: String) -> bool:
 ## The number of NPCs placed in the region (for tests).
 func npc_count() -> int:
 	return _npcs.size()
+
+
+## The HUD controls chip node (for tests + future waves).
+func controls_chip() -> Node:
+	return _controls_chip
 
 
 func player_cell() -> Vector2i:

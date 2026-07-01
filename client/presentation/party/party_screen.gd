@@ -32,6 +32,7 @@ var _selected_index: int = 0
 
 # Code-built UI handles (kept so refreshes target the right nodes; all guarded for headless).
 var _roster: VBoxContainer = null
+var _selected_row_button: Button = null  # the live selected roster row (focus target, W1)
 var _detail_box: VBoxContainer = null
 var _detail_title: Label = null
 var _detail_stats: Label = null
@@ -80,6 +81,8 @@ func build_from_game() -> void:
 	_build_ui()
 	_refresh_roster()
 	_refresh_detail()
+	# W1 focus pass: the roster owns first focus so arrows walk the coven immediately.
+	_focus_selected_row()
 
 
 # === player actions (headless-testable; the UI buttons call the same methods) ================== #
@@ -93,6 +96,8 @@ func select_creature(index: int) -> int:
 	_selected_index = clampi(index, 0, party_count - 1)
 	_refresh_roster()
 	_refresh_detail()
+	# The rows were rebuilt (the old ones are dying) — refocus so keyboard traversal stays alive.
+	_focus_selected_row()
 	return _selected_index
 
 
@@ -326,6 +331,7 @@ func _refresh_roster() -> void:
 		return
 	for child in _roster.get_children():
 		child.queue_free()
+	_selected_row_button = null
 	var party := _party()
 	var active_index := int(_game.call("active_creature_index")) if _game != null else 0
 	for i in party.size():
@@ -336,6 +342,8 @@ func _refresh_roster() -> void:
 		btn.text = label
 		btn.toggle_mode = true
 		btn.button_pressed = i == _selected_index
+		if i == _selected_index:
+			_selected_row_button = btn
 		var plate := SpeciesArt.plate(str(creature.get("species_id", "")))
 		if plate != null:
 			btn.icon = plate
@@ -509,6 +517,17 @@ func _process(_delta: float) -> void:
 
 
 # === helpers ================================================================================== #
+
+
+## Focus the selected roster row (W1 focus pass). Uses the captured node ref, NOT a name lookup —
+## the freed rows linger until end of frame, so a name lookup could hit a dying duplicate.
+func _focus_selected_row() -> void:
+	if (
+		_selected_row_button != null
+		and is_instance_valid(_selected_row_button)
+		and _selected_row_button.is_inside_tree()
+	):
+		_selected_row_button.grab_focus()
 
 
 func _make_button(node_name: String, text: String, handler: Callable) -> Button:

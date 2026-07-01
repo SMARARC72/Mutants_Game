@@ -209,6 +209,9 @@ func _build_ui() -> void:
 	back.text = "Back to Camp"
 	back.pressed.connect(return_to_camp)
 	box.add_child(back)
+	# W1 focus pass: the Ledger is read-only, so its one verb (Back) owns focus.
+	if back.is_inside_tree():
+		back.grab_focus()
 
 
 ## One quest card: name + a status badge (In Progress / Complete) + the current objective when active.

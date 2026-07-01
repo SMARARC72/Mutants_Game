@@ -769,6 +769,9 @@ func _show_action_menu() -> void:
 		pass_btn.text = "Pass"
 		pass_btn.pressed.connect(func() -> void: player_pass())
 		_action_menu.add_child(pass_btn)
+	# W1 focus pass: the first action owns focus EVERY time the menu shows, so each new turn is
+	# immediately keyboard/gamepad-drivable (the rebuilt buttons wiped any prior focus).
+	_focus_first_button(_action_menu)
 
 
 ## Show one button per alive enemy — the target picker for the damage `skill` the player chose.
@@ -791,6 +794,19 @@ func _show_target_picker(skill: String) -> void:
 		var chosen := skill
 		btn.pressed.connect(func() -> void: player_use_skill(chosen, idx))
 		_target_picker.add_child(btn)
+	# Focus follows the decision: the first target owns focus while the picker is up.
+	_focus_first_button(_target_picker)
+
+
+## Focus a menu's first LIVE Button (W1 focus pass). Skips buttons already queue_freed by the
+## rebuild (they linger as children until end of frame). No-op before the menu enters the tree.
+func _focus_first_button(menu: Container) -> void:
+	if menu == null or not menu.is_inside_tree():
+		return
+	for child in menu.get_children():
+		if child is Button and not child.is_queued_for_deletion():
+			(child as Button).grab_focus()
+			return
 
 
 func _hide_menus() -> void:

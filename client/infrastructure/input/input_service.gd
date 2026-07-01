@@ -19,12 +19,19 @@ const DEVICE_KEY := "key"
 const DEVICE_MOUSE := "mouse"
 const DEVICE_JOY := "joy"
 
+## Left-stick deadzone for the fallback InputMap joypad-motion bindings (W1 gamepad truth).
+const JOY_AXIS_DEADZONE := 0.5
+
 var _contexts := {}  # context id -> GUIDEMappingContext
 var _actions := {}  # action id -> GUIDEAction
 var _current_context := ""
 var _guide_ready := false
 ## action id -> {device, code} override (JSON-serialisable; mirrored into Settings).
 var _remaps := {}
+## action id -> Engine.get_process_frames() stamp of its latest just_triggered EDGE (W1 input
+## truth). GUIDEAction emits just_triggered only on the COMPLETED→TRIGGERED transition, so a held
+## key stamps exactly one frame — the just_pressed() contract.
+var _press_stamps := {}
 
 
 func _ready() -> void:
@@ -45,11 +52,18 @@ func is_pressed(action_id: String) -> bool:
 	return InputMap.has_action(action_id) and Input.is_action_pressed(action_id)
 
 
-## True only on the frame the action began (edge).
+## True only on the frame the action began (edge). CONTRACT: a held key fires exactly ONCE —
+## holding E must not replay a dialogue, holding Enter must not re-trigger a battle end.
 func just_pressed(action_id: String) -> bool:
 	if _guide_ready and _actions.has(action_id):
-		var act: Object = _actions[action_id]
-		return act.is_triggered() and act.is_ongoing() == false
+		# Frame-stamp edge: each GUIDEAction's one-shot just_triggered signal stamps the frame it
+		# fired on (see _stamp_press). While the key stays held the action stays TRIGGERED but
+		# just_triggered never re-fires, so the stamp goes stale after one frame. (The old
+		# is_triggered()/is_ongoing() poll stayed true EVERY held frame — the W1 audit re-fire bug.)
+		return int(_press_stamps.get(action_id, -1)) == Engine.get_process_frames()
+	# Godot InputMap fallback (the path ACTIVE at runtime — G.U.I.D.E ships as an autoload node,
+	# not an engine singleton, so _guide_ready is false): is_action_just_pressed is already a true
+	# one-frame edge. Verified by input_service_edge_test.
 	return InputMap.has_action(action_id) and Input.is_action_just_pressed(action_id)
 
 
@@ -109,6 +123,8 @@ func clear_rebind(action_id: String) -> void:
 	_remaps.erase(action_id)
 	if _guide_ready:
 		_rebuild_action_mappings(action_id)
+	else:
+		_rebuild_fallback_action(action_id)
 	_save_remaps_to_settings()
 
 
@@ -134,6 +150,7 @@ func _build_guide() -> void:
 		action.set("display_name", _humanise(action_id))
 		action.set("is_remappable", true)
 		_actions[action_id] = action
+		_subscribe_edge(action_id, action)
 
 	for ctx_id: String in InputActions.context_actions().keys():
 		var context: Object = ClassDB.instantiate("GUIDEMappingContext")
@@ -143,6 +160,18 @@ func _build_guide() -> void:
 			mappings.append(_make_action_mapping(action_id))
 		context.set("mappings", mappings)
 		_contexts[ctx_id] = context
+
+
+## Subscribe an action's one-shot `just_triggered` edge into the frame-stamp dict (the
+## just_pressed contract). Kept separate so a headless test can wire a raw GUIDEAction through it
+## and drive the state transitions directly (the GUIDE singleton is absent under --headless).
+func _subscribe_edge(action_id: String, action: Object) -> void:
+	if action != null and action.has_signal("just_triggered"):
+		action.connect("just_triggered", _stamp_press.bind(action_id))
+
+
+func _stamp_press(action_id: String) -> void:
+	_press_stamps[action_id] = Engine.get_process_frames()
 
 
 func _make_action_mapping(action_id: String) -> Object:
@@ -203,6 +232,9 @@ func _make_input(device: String, code: int) -> Object:
 func _apply_remap(action_id: String) -> void:
 	if _guide_ready:
 		_rebuild_action_mappings(action_id)
+	else:
+		# Keep the fallback InputMap truthful too — a rebind must change what actually fires.
+		_rebuild_fallback_action(action_id)
 
 
 ## Rebuild the input mappings for one action's mapping in every context that holds it.
@@ -218,26 +250,43 @@ func _rebuild_action_mappings(action_id: String) -> void:
 		switch_context(_current_context)
 
 
-# === Godot InputMap fallback (no G.U.I.D.E) ========================================
+# === Godot InputMap fallback (no G.U.I.D.E — the path ACTIVE at runtime) ===========
 func _build_godot_fallback() -> void:
-	var keys: Dictionary = InputActions.default_keys()
-	var pads: Dictionary = InputActions.default_gamepad()
 	for action_id: String in _all_action_ids():
-		if not InputMap.has_action(action_id):
-			InputMap.add_action(action_id)
-		var binding: Dictionary = binding_of(action_id)
-		if binding.has("device") and binding["device"] == DEVICE_KEY:
-			var ev := InputEventKey.new()
-			ev.physical_keycode = binding["code"]
-			InputMap.action_add_event(action_id, ev)
-		elif keys.has(action_id):
-			var kev := InputEventKey.new()
-			kev.physical_keycode = keys[action_id]
-			InputMap.action_add_event(action_id, kev)
-		if pads.has(action_id) and pads[action_id] != -1:
-			var jev := InputEventJoypadButton.new()
-			jev.button_index = pads[action_id]
-			InputMap.action_add_event(action_id, jev)
+		_rebuild_fallback_action(action_id)
+
+
+## (Re)build ONE action's InputMap events: keyboard (remap-aware) + gamepad button + left-stick
+## axis (W1 gamepad truth). Erases the action's prior events first so repeated builds (the
+## autoload + a test instance share the global InputMap) never stack duplicates.
+func _rebuild_fallback_action(action_id: String) -> void:
+	if not InputMap.has_action(action_id):
+		InputMap.add_action(action_id)
+	else:
+		InputMap.action_erase_events(action_id)
+	InputMap.action_set_deadzone(action_id, JOY_AXIS_DEADZONE)
+	var keys: Dictionary = InputActions.default_keys()
+	var binding: Dictionary = binding_of(action_id)
+	if binding.has("device") and binding["device"] == DEVICE_KEY:
+		var ev := InputEventKey.new()
+		ev.physical_keycode = binding["code"]
+		InputMap.action_add_event(action_id, ev)
+	elif keys.has(action_id):
+		var kev := InputEventKey.new()
+		kev.physical_keycode = keys[action_id]
+		InputMap.action_add_event(action_id, kev)
+	var pads: Dictionary = InputActions.default_gamepad()
+	if pads.has(action_id) and pads[action_id] != -1:
+		var jev := InputEventJoypadButton.new()
+		jev.button_index = pads[action_id]
+		InputMap.action_add_event(action_id, jev)
+	var axes: Dictionary = InputActions.default_gamepad_axes()
+	if axes.has(action_id):
+		var axis: Dictionary = axes[action_id]
+		var mev := InputEventJoypadMotion.new()
+		mev.axis = int(axis["axis"])
+		mev.axis_value = float(axis["value"])
+		InputMap.action_add_event(action_id, mev)
 
 
 # === persistence (ADR-012 JSON via Settings) =======================================

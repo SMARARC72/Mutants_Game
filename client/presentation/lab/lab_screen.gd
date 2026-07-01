@@ -61,6 +61,7 @@ var _verdict_label: RichTextLabel = null
 var _result_label: RichTextLabel = null
 var _preview_button: Button = null
 var _commit_button: Button = null
+var _first_op_button: Button = null  # first rite button (the W1 focus anchor)
 
 
 func _ready() -> void:
@@ -111,6 +112,8 @@ func build() -> void:
 	_idx_b = 1 if party.size() >= 2 else -1
 	_build_ui()
 	refresh()
+	# W1 focus pass: the op row owns first focus so the bench is keyboard/gamepad-drivable.
+	_focus_op_row()
 
 
 # === op + input selection (public so UI buttons AND headless tests drive them) ================ #
@@ -376,6 +379,27 @@ func refresh() -> void:
 	# A live preview keeps the verdict panel honest with the current selection.
 	preview()
 	_update_commit_enabled()
+	_ensure_focus()
+
+
+## Keep keyboard focus ALIVE across refreshes: the pickers rebuild their buttons (queue_free), so
+## a click/activation can leave focus on a dying node — re-anchor it to the op row when that
+## happens. Never steals focus from a live control.
+func _ensure_focus() -> void:
+	if not is_inside_tree():
+		return
+	var focused := get_viewport().gui_get_focus_owner()
+	if focused == null or focused.is_queued_for_deletion():
+		_focus_op_row()
+
+
+func _focus_op_row() -> void:
+	if (
+		_first_op_button != null
+		and is_instance_valid(_first_op_button)
+		and _first_op_button.is_inside_tree()
+	):
+		_first_op_button.grab_focus()
 
 
 func _build_ui() -> void:
@@ -508,6 +532,7 @@ func _render_op_row() -> void:
 		return
 	for child in _op_row.get_children():
 		child.queue_free()
+	_first_op_button = null
 	for op in OPS:
 		var btn := Button.new()
 		btn.name = "Op_" + op
@@ -517,6 +542,8 @@ func _render_op_row() -> void:
 		var chosen: String = op
 		btn.pressed.connect(func() -> void: select_op(chosen))
 		_op_row.add_child(btn)
+		if _first_op_button == null:
+			_first_op_button = btn
 
 
 func _render_creature_pickers() -> void:
