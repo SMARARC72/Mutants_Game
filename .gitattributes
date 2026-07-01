@@ -22,8 +22,17 @@
 *.md    text
 *.py    text
 *.sql   text
-*.gd    text
 *.json  text
 *.csv   text
-*.tscn  text
-*.gd    text
+
+# Godot-authored text files: force LF everywhere (W2 hygiene).
+# Godot 4 always writes these with LF; with core.autocrlf=true the smudge
+# side rewrites checkouts to CRLF and every editor/import run then reports
+# hundreds of phantom-modified files (pure-EOL churn). Pinning eol=lf makes
+# the round-trip stable on every OS.
+*.gd     text eol=lf
+*.tscn   text eol=lf
+*.tres   text eol=lf
+*.import text eol=lf
+*.godot  text eol=lf
+*.uid    text eol=lf
