@@ -47,7 +47,7 @@ const NPC_DEFS := [
 	{
 		"name": "Hearthward Ona",
 		"timeline": "hearthward_ona",
-		"ring": Color("8ec07c"),  # Eros/Gaia green — the husbandry tutor (SQ-05 giver)
+		"ring": GrimoirePalette.VERDANT,  # living green — the husbandry tutor (SQ-05 giver)
 		"bramble_step": "tend_with_ona",
 	},
 	{
@@ -59,13 +59,15 @@ const NPC_DEFS := [
 	{
 		"name": "Sister Wenlow",
 		"timeline": "sister_wenlow",
-		"ring": Color("9ab0a0"),  # hospice grey-green — the Bloomwarden hospice-keeper (SQ-06 giver)
+		# hospice grey-green — the Bloomwarden hospice-keeper (SQ-06 giver)
+		"ring": GrimoirePalette.VERDANT_ASH,
 		"wenlow_step": "hear_wenlow",
 	},
 	{
 		"name": "The Greenwatcher",
 		"timeline": "the_greenwatcher",
-		"ring": Color("6b8f3d"),  # Eros/Thanatos deep green — the gentle apex that plants the living
+		# deep shaded green — the gentle apex that plants the living
+		"ring": GrimoirePalette.VERDANT_DIM,
 		"wenlow_step": "pacify_greenwatcher",
 	},
 ]

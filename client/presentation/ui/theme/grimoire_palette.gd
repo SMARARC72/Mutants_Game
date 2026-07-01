@@ -40,6 +40,11 @@ const SUCCESS := Color("7fae5a")
 const WARNING := Color("d6a23f")
 const DANGER := Color("c2402f")
 
+# --- Verdant accents (Bloomwarden greens — overworld NPC rings & husbandry beats) --
+const VERDANT := Color("8ec07c")  # living growth — the husbandry creed at work
+const VERDANT_DIM := Color("6b8f3d")  # deep shaded canopy — the gentle apex
+const VERDANT_ASH := Color("9ab0a0")  # hospice grey-green — mercy gone quiet
+
 
 ## Force name -> colour, for data-driven creature/force UI. Lowercase keys match the
 ## catalog/icon folders (`client/assets/icons/forces/*`).

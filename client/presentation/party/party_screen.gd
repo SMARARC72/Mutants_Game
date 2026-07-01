@@ -233,8 +233,10 @@ func _build_ui() -> void:
 	_roster.add_theme_constant_override("separation", 4)
 	roster_panel.add_child(_roster)
 
-	# Right: the detail + leveling + gear panel for the selected creature.
+	# Right: the detail + leveling + gear panel for the selected creature — an open grimoire
+	# page (ParchmentPanel), so its labels flip to ink text (TEXT_ON_PARCHMENT) below.
 	var detail_panel := PanelContainer.new()
+	detail_panel.theme_type_variation = "ParchmentPanel"
 	detail_panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	columns.add_child(detail_panel)
 	_detail_box = VBoxContainer.new()
@@ -263,6 +265,7 @@ func _build_detail_panel() -> void:
 	_detail_title = Label.new()
 	_detail_title.name = "DetailTitle"
 	_detail_title.theme_type_variation = "TitleLabel"
+	_ink_text(_detail_title)
 	head_col.add_child(_detail_title)
 	_detail_forces = HBoxContainer.new()
 	_detail_forces.name = "DetailForces"
@@ -272,13 +275,15 @@ func _build_detail_panel() -> void:
 	_detail_stats = Label.new()
 	_detail_stats.name = "DetailStats"
 	_detail_stats.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_ink_text(_detail_stats)
 	_detail_box.add_child(_detail_stats)
 
-	# The creature's bestiary description (the funny-grim flavour), in muted parchment text.
+	# The creature's bestiary description (the funny-grim flavour), in ink on the page.
 	_detail_desc = Label.new()
 	_detail_desc.name = "DetailDescription"
 	_detail_desc.theme_type_variation = "MutedLabel"
 	_detail_desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_ink_text(_detail_desc)
 	_detail_box.add_child(_detail_desc)
 
 	# Active/lead + leveling buttons.
@@ -288,6 +293,7 @@ func _build_detail_panel() -> void:
 	var level_label := Label.new()
 	level_label.text = "Leveling"
 	level_label.theme_type_variation = "MutedLabel"
+	_ink_text(level_label)
 	_detail_box.add_child(level_label)
 	_detail_box.add_child(
 		_make_button("AwakenButton", "Resonance Awaken (essence)", awaken_resonance)
@@ -298,6 +304,7 @@ func _build_detail_panel() -> void:
 	var gear_label := Label.new()
 	gear_label.text = "Gear"
 	gear_label.theme_type_variation = "MutedLabel"
+	_ink_text(gear_label)
 	_detail_box.add_child(gear_label)
 	_gear_box = VBoxContainer.new()
 	_gear_box.name = "GearBox"
@@ -309,6 +316,7 @@ func _build_detail_panel() -> void:
 	_ledger_label.name = "LedgerLabel"
 	_ledger_label.theme_type_variation = "MutedLabel"
 	_ledger_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_ink_text(_ledger_label)
 	_detail_box.add_child(_ledger_label)
 
 
@@ -422,6 +430,7 @@ func _refresh_gear_box(creature: Dictionary) -> void:
 	var slot_label := Label.new()
 	slot_label.name = "EquippedLabel"
 	slot_label.text = "Slot: %s" % (gc.name_of(equipped) if equipped != "" else "(empty)")
+	_ink_text(slot_label)
 	_gear_box.add_child(slot_label)
 	for row in gc.all():
 		var gid := str(row["id"])
@@ -508,6 +517,12 @@ func _make_button(node_name: String, text: String, handler: Callable) -> Button:
 	button.text = text
 	button.pressed.connect(handler)
 	return button
+
+
+## Flip a label to ink text — the parchment-tone default (TEXT_ON_INK) is authored for dark
+## surfaces and vanishes against the detail panel's ParchmentPanel page.
+func _ink_text(label: Label) -> void:
+	label.add_theme_color_override("font_color", GrimoirePalette.TEXT_ON_PARCHMENT)
 
 
 func _run() -> RunContext:
