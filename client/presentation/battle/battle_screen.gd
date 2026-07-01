@@ -373,19 +373,32 @@ func _build_ui() -> void:
 	margin.add_child(box)
 	_root_box = box
 
+	# The combatant area scrolls if it ever overflows, so the action verbs below are
+	# ALWAYS on-screen — no viewport size may ever clip Flee/Capture off the bottom.
+	var top_scroll := ScrollContainer.new()
+	top_scroll.name = "CombatantScroll"
+	top_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	top_scroll.size_flags_stretch_ratio = 3.0
+	top_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	box.add_child(top_scroll)
+	var top_box := VBoxContainer.new()
+	top_box.add_theme_constant_override("separation", 8)
+	top_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	top_scroll.add_child(top_box)
+
 	_banner = Label.new()
 	_banner.name = "ResultBanner"
 	_banner.theme_type_variation = "TitleLabel"
-	box.add_child(_banner)
+	top_box.add_child(_banner)
 
 	_turn_label = Label.new()
 	_turn_label.name = "TurnIndicator"
 	_turn_label.theme_type_variation = "MutedLabel"
-	box.add_child(_turn_label)
+	top_box.add_child(_turn_label)
 
 	var teams := HBoxContainer.new()
 	teams.add_theme_constant_override("separation", 24)
-	box.add_child(teams)
+	top_box.add_child(teams)
 
 	var party_box := VBoxContainer.new()
 	party_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -426,7 +439,10 @@ func _build_ui() -> void:
 	_transcript_label.name = "TranscriptLog"
 	_transcript_label.fit_content = true
 	_transcript_label.scroll_active = false
-	_transcript_label.custom_minimum_size = Vector2(0, 220)
+	# Cap the transcript's reserved height to a viewport fraction — on small windows the
+	# old fixed 220px starved the layout and pushed the action verbs off-screen.
+	var log_min_h := minf(220.0, get_viewport_rect().size.y * 0.18)
+	_transcript_label.custom_minimum_size = Vector2(0, log_min_h)
 	_scroll.add_child(_transcript_label)
 
 	# Top-most overlay for floating damage numbers (mouse-transparent, full-rect).

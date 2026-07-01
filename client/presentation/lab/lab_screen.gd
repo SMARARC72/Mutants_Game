@@ -406,29 +406,41 @@ func _build_ui() -> void:
 	title.theme_type_variation = "TitleLabel"
 	box.add_child(title)
 
+	# The bench stack (rite / subject / donor / reagents) scrolls if it overflows so the
+	# verdict panel and the Divine/Splice/Back verbs below stay on-screen at any size.
+	var bench_scroll := ScrollContainer.new()
+	bench_scroll.name = "BenchScroll"
+	bench_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	bench_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	box.add_child(bench_scroll)
+	var bench_box := VBoxContainer.new()
+	bench_box.add_theme_constant_override("separation", 10)
+	bench_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	bench_scroll.add_child(bench_box)
+
 	# Op selector row (Fuse / Mutate).
 	var op_title := Label.new()
 	op_title.text = "Rite"
 	op_title.theme_type_variation = "MutedLabel"
-	box.add_child(op_title)
+	bench_box.add_child(op_title)
 	_op_row = HBoxContainer.new()
 	_op_row.name = "OpRow"
 	_op_row.add_theme_constant_override("separation", 8)
-	box.add_child(_op_row)
+	bench_box.add_child(_op_row)
 
 	# Creature A picker (host / first parent).
 	var a_title := Label.new()
 	a_title.text = "Subject"
 	a_title.theme_type_variation = "MutedLabel"
-	box.add_child(a_title)
+	bench_box.add_child(a_title)
 	_a_picker = VBoxContainer.new()
 	_a_picker.name = "CreatureAPicker"
-	box.add_child(_a_picker)
+	bench_box.add_child(_a_picker)
 
 	# Creature B section (fuse only).
 	_b_section = VBoxContainer.new()
 	_b_section.name = "CreatureBSection"
-	box.add_child(_b_section)
+	bench_box.add_child(_b_section)
 	var b_title := Label.new()
 	b_title.text = "Donor"
 	b_title.theme_type_variation = "MutedLabel"
@@ -442,10 +454,10 @@ func _build_ui() -> void:
 	var ing_title := Label.new()
 	ing_title.text = "Reagents"
 	ing_title.theme_type_variation = "MutedLabel"
-	box.add_child(ing_title)
+	bench_box.add_child(ing_title)
 	_ingredient_picker = VBoxContainer.new()
 	_ingredient_picker.name = "IngredientPicker"
-	box.add_child(_ingredient_picker)
+	bench_box.add_child(_ingredient_picker)
 
 	# Verdict + result panels.
 	var verdict_panel := PanelContainer.new()

@@ -183,12 +183,17 @@ func open_lab() -> String:
 	return LAB_SCENE
 
 
-## Resume play: emit `resumed` and close the menu (back to the overworld). The overlay simply frees
-## itself; the overworld scene is untouched beneath it.
+## Resume play: emit `resumed` and close the menu (back to the overworld). As an OVERLAY the menu
+## simply frees itself (the overworld is untouched beneath it) — but when the camp is the ROOT
+## scene (returned to via a Party/Lab scene swap) freeing would leave a black screen, so it swaps
+## back to the overworld instead. Interim soft-lock guard; the screen router (W17) replaces it.
 func resume() -> void:
 	resumed.emit()
 	if _input != null and _input.has_method("switch_context"):
 		_input.call("switch_context", InputActions.CTX_OVERWORLD)
+	if is_inside_tree() and get_tree().current_scene == self:
+		_navigate(OVERWORLD_SCENE)
+		return
 	queue_free()
 
 

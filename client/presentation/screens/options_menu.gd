@@ -9,6 +9,7 @@ extends Control
 ## own Resource-based config.
 
 const InputActions := preload("res://infrastructure/input/input_actions.gd")
+const MAIN_MENU_SCENE := "res://presentation/screens/main_menu.tscn"
 
 var _settings: Node
 var _input: Node
@@ -63,6 +64,28 @@ func _build() -> void:
 	_add_rebind_row(box, "Confirm", InputActions.CONFIRM)
 	_add_rebind_row(box, "Interact", InputActions.INTERACT)
 
+	box.add_child(HSeparator.new())
+	var back := Button.new()
+	back.text = "Back"
+	box.add_child(back)
+	back.pressed.connect(_on_back)
+	back.grab_focus()
+
+
+## ESC / cancel always exits Options — the screen must never trap the player.
+func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("ui_cancel"):
+		get_viewport().set_input_as_handled()
+		_on_back()
+
+
+func _on_back() -> void:
+	var transition := get_node_or_null("/root/Transition")
+	if transition != null:
+		await transition.call("change_scene_ritual", MAIN_MENU_SCENE)
+	else:
+		get_tree().change_scene_to_file(MAIN_MENU_SCENE)
+
 
 func _add_volume_row(
 	parent: VBoxContainer, label_text: String, section: String, key: String
@@ -79,7 +102,7 @@ func _add_volume_row(
 	slider.max_value = 1.0
 	slider.step = 0.01
 	slider.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	slider.value = float(_get(section, key, 1.0))
+	slider.value = float(_setting_value(section, key, 1.0))
 	row.add_child(slider)
 	slider.value_changed.connect(
 		func(v: float) -> void:
@@ -94,7 +117,7 @@ func _add_toggle_row(
 ) -> void:
 	var check := CheckButton.new()
 	check.text = label_text
-	check.button_pressed = bool(_get(section, key, false))
+	check.button_pressed = bool(_setting_value(section, key, false))
 	parent.add_child(check)
 	check.toggled.connect(
 		func(on: bool) -> void:
@@ -136,7 +159,9 @@ func _binding_text(action_id: String) -> String:
 	return "Unbound"
 
 
-func _get(section: String, key: String, fallback: Variant) -> Variant:
+## NOTE: deliberately NOT named `_get` — that would override Object's native virtual
+## with an incompatible signature and break the script under Godot 4.
+func _setting_value(section: String, key: String, fallback: Variant) -> Variant:
 	if _settings != null:
 		return _settings.call("get_value", section, key, fallback)
 	return fallback

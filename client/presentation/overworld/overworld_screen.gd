@@ -28,7 +28,7 @@ const BATTLE_SCENE := "res://presentation/battle/battle_screen.tscn"
 const CAMP_SCENE := "res://presentation/camp/camp_menu.tscn"
 
 const STEP_COOLDOWN := 0.14  # seconds between grid steps while a direction is held
-const CAMERA_ZOOM := 1.5  # frames ~11 of the 64px painterly tiles around the player
+const CAMERA_ZOOM := 2.35  # frames ~13 tiles across the 1920px baseline — no raw void at the edges
 const DASH_TILES := 3  # max tiles the sigil-dash crosses in one ritual hop (design §3.5)
 const DASH_COOLDOWN := 0.55  # seconds before the ley-line can be ridden again
 
@@ -693,33 +693,16 @@ func _flood_open(start: Vector2i, visited: Dictionary) -> Array[Vector2i]:
 ## (stripped build / headless import quirk) it falls back to a plain Camera2D so the scene still
 ## builds and the slice never errors.
 func _setup_camera() -> void:
-	if _player == null:
-		return
-	var zoom := Vector2(CAMERA_ZOOM, CAMERA_ZOOM)
-	if ClassDB.class_exists("PhantomCameraHost") and ClassDB.class_exists("PhantomCamera2D"):
-		var cam := Camera2D.new()
-		cam.name = "OverworldCamera"
-		cam.zoom = zoom
-		add_child(cam)
-		cam.make_current()
-		var host: Object = ClassDB.instantiate("PhantomCameraHost")
-		if host is Node:
-			cam.add_child(host as Node)
-		var pcam: Object = ClassDB.instantiate("PhantomCamera2D")
-		if pcam is Node2D:
-			add_child(pcam as Node2D)
-			# follow_mode 1 == GLUED in PhantomCamera2D.FollowMode (glue to the target).
-			pcam.set("follow_mode", 1)
-			pcam.set("follow_target", _player)
-			pcam.set("zoom", zoom)  # keep the host from resetting the Camera2D zoom to 1x
-		return
-	# Fallback: plain Camera2D parented to the player so it tracks naturally — zoomed + made current
-	# so the small (16px) tiles fill the view and the region is framed around the player.
-	var fallback := Camera2D.new()
-	fallback.name = "OverworldCamera"
-	fallback.zoom = zoom
-	_player.add_child(fallback)
-	fallback.make_current()
+	OverworldCameraRig.setup(self, _player, _layout_pixel_rect(), CAMERA_ZOOM)
+
+
+## The painted layout rect in pixels — the camera clamps to it so the view never pans
+## into raw void beyond the region's edge.
+func _layout_pixel_rect() -> Rect2:
+	if _layout == null:
+		return Rect2()
+	var s := float(OverworldTileSetScript.TILE_SIZE)
+	return Rect2(Vector2.ZERO, Vector2(_layout.width * s, _layout.height * s))
 
 
 # === NPCs + dialogue ========================================================================== #

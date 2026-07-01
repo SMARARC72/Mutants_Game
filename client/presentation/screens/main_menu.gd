@@ -36,13 +36,16 @@ func _build() -> void:
 	add_child(bg)
 
 	# Atmosphere: drifting motes + a radial vignette, so the menu feels like an open grimoire.
+	# Geometry derives from the live viewport so the 1920x1080 baseline (and any window
+	# size) fills edge to edge instead of assuming the old 1152x648 default.
+	var vp := get_viewport_rect().size
 	var motes := CPUParticles2D.new()
-	motes.position = Vector2(576, 700)
+	motes.position = Vector2(vp.x * 0.5, vp.y * 0.97)
 	motes.amount = 30
 	motes.lifetime = 8.0
 	motes.preprocess = 6.0
 	motes.emission_shape = CPUParticles2D.EMISSION_SHAPE_RECTANGLE
-	motes.emission_rect_extents = Vector2(700, 60)
+	motes.emission_rect_extents = Vector2(vp.x * 0.62, 60)
 	motes.gravity = Vector2(0, -7)
 	motes.initial_velocity_min = 3.0
 	motes.initial_velocity_max = 12.0
