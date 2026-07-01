@@ -173,8 +173,55 @@ const WENLOW_QUEST := {
 	"on_complete": {"set_flag": "bloom_that_wont_bury", "nudge_standing": ["bloomwardens", 1]},
 }
 
+## Wave 3 (red-team C13) — the BOSS-GOAL quest: active from RUN START (no NPC gives it; the
+## overworld auto-starts it), naming the run's goal so the first five minutes communicate what a
+## run is FOR. Its single step completes on the boss victory via the existing quest_state flags
+## path (the overworld advances it when GameController.slice_cleared() reads true) — so it
+## surfaces in the shipped Phase-13c HUD tracker and the Ledger like every other quest. Its
+## step_key ("boss_step") is carried by NO NPC, so the NPC dispatch never touches it.
+const BOSS_QUEST := {
+	"id": "what_guards_the_deep",
+	"name": "What Guards the Deep",
+	"description":
+	"The marsh counts your steps. Somewhere past thirty of them, something old is counting too.",
+	"step_key": "boss_step",
+	"steps":
+	[
+		{
+			"id": "walk_the_deep_path",
+			"description":
+			"Something old guards the deep glut — grow, then walk the deep path (30 steps in).",
+			"on_complete": {"set_flag": "deep_glut_warden_felled"}
+		},
+	],
+	"on_complete": {"set_flag": "what_guards_the_deep_done"},
+}
+
+## Region id -> display TITLE for the overworld HUD (Wave 3: the HUD names the region the systems
+## actually run — verdant_glut, not a hard-coded "The Rust Marsh"). Falls back to the raw id.
+const REGION_TITLES := {
+	"verdant_glut": "The Verdant Glut",
+}
+
+## Region id -> force-climate SUBTITLE for the overworld HUD. Falls back to "" (subtitle hidden).
+const REGION_CLIMATES := {
+	"verdant_glut": "Eros climate · a thin place",
+}
+
 
 ## Every overworld quest, in one place — the screen registers + dispatches over this list, so a new
 ## quest is a const above + an entry here (plus its NPC_DEFS step entries). No screen-logic change.
+## BOSS_QUEST rides last so an NPC-given quest's objective outranks it in the HUD tracker once one
+## is active (the boss goal is the always-on floor, not a squatter).
 static func quest_defs() -> Array:
-	return [MARSH_QUEST, MELON_QUEST, BRAMBLE_QUEST, WENLOW_QUEST]
+	return [MARSH_QUEST, MELON_QUEST, BRAMBLE_QUEST, WENLOW_QUEST, BOSS_QUEST]
+
+
+## The HUD title for a region id ("The Verdant Glut"), falling back to the id itself.
+static func region_title(region_id: String) -> String:
+	return str(REGION_TITLES.get(region_id, region_id))
+
+
+## The HUD force-climate subtitle for a region id, or "" when unmapped (the HUD hides it).
+static func region_climate(region_id: String) -> String:
+	return str(REGION_CLIMATES.get(region_id, ""))

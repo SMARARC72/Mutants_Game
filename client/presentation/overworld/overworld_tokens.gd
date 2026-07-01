@@ -94,6 +94,18 @@ static func creature_cameo(tex: Texture2D, box: int) -> ImageTexture:
 	return ImageTexture.create_from_image(img)
 
 
+## A radial vignette texture (transparent centre → soft dark corners) for screen-space atmosphere.
+static func vignette(size: int) -> ImageTexture:
+	var img := Image.create(size, size, false, Image.FORMAT_RGBA8)
+	var c := (size - 1) * 0.5
+	var maxd := Vector2(c, c).length()
+	for y in size:
+		for x in size:
+			var t := clampf((Vector2(x - c, y - c).length() / maxd - 0.55) / 0.45, 0.0, 1.0)
+			img.set_pixel(x, y, Color(0.02, 0.015, 0.03, t * t * 0.62))
+	return ImageTexture.create_from_image(img)
+
+
 ## A 3-4 stroke rune hashed from the seal name (deterministic; distinct per NPC). Strokes pick
 ## from a small vocabulary of line segments across the seal face.
 static func _draw_rune(img: Image, c: float, r: float, seal_name: String) -> void:

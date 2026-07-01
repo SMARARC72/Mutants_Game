@@ -31,6 +31,12 @@ const _STEP_AWAIT := "await_player"
 const _STEP_RESOLVED := "resolved"
 const _STEP_ENDED := "ended"
 
+## Wave 3 honesty: the distinct turn-cap-with-enemies-alive banner (the interim authored line the
+## W16 VoiceBook ingest replaces) + its toast body, VERBATIM from docs/content/voice_library.md
+## §5.5 "A creature that refuses to fight".
+const STALEMATE_BANNER := "THE WILD SLINKS AWAY — STALEMATE"
+const STALEMATE_VOICE_LINE := "No battle today. It's tired, you're tired, the gods are dead — what's the point, really?"
+
 var _game: Node = null
 var _transition: Node = null
 var _input: Node = null
@@ -38,6 +44,7 @@ var _result: Dictionary = {}
 var _battle: BattleSession.SkillInteractiveBattle = null
 var _session: BattleSession = null  # the BattleSession (for skill_result_for)
 var _is_wild: bool = true
+var _is_boss: bool = false  # Wave 3: pending.is_boss — a played boss win must clear the slice
 var _last_step: Dictionary = {}
 var _continue_button: Button = null
 var _action_menu: VBoxContainer = null
@@ -107,6 +114,7 @@ func run_pending_battle() -> Dictionary:
 	var enemy_party: Array = pending.get("enemy_party", [])
 	var battle_seed := int(pending.get("battle_seed", 0))
 	_is_wild = bool(pending.get("is_wild", true))  # overworld encounters are wild by default
+	_is_boss = bool(pending.get("is_boss", false))  # Wave 3: the lair hand-off tags the climax
 	var catalog: SpeciesCatalog = _game.call("catalog")
 	# Capture the player party's species ids (by index) BEFORE the session builds, so each player card
 	# can show the right bestiary plate (enemy plates resolve via SkillInteractiveBattle.species_for).
@@ -244,6 +252,16 @@ func _finish_battle(step: Dictionary) -> void:
 		return
 	var reason := str(step.get("reason", ""))
 	_result = _session.skill_result_for(_battle.session(), _battle.caught())
+	# Wave 3 boss wiring: a PLAYED boss fight reports boss_win (player standing + boss side wiped)
+	# so GameController._mark_slice_cleared fires through the same apply path as the auto battle.
+	if _is_boss:
+		_result["boss_win"] = (
+			bool(_result.get("player_won", false))
+			and (_result.get("enemy_survivors", []) as Array).is_empty()
+		)
+	# Wave 3 consequence: carry the live end-of-battle HP home; GameController folds it into
+	# run.party so the next fight starts with the wounds this one left.
+	_result["party_hp"] = _live_party_hp()
 	if _game != null and _game.has_method("apply_battle_result"):
 		_game.call("apply_battle_result", _result)
 	if _game != null and _game.has_method("save_run"):
@@ -318,17 +336,58 @@ func _gear_ids() -> Array:
 	return CaptureServiceScript.gear_ids(run.gear)
 
 
+## The live end-of-battle HP of every player combatant, mapped back to its run.party INDEX through
+## the SkillInteractiveBattle's player source map (identity-safe even if the factory skipped an
+## unassemblable entry). Shape: [{ "index": int, "hp": int, "max_hp": int }, ...] — the payload
+## GameController.apply_battle_result folds into run.party (Wave 3 consequence).
+func _live_party_hp() -> Array:
+	var out: Array = []
+	if _battle == null or _game == null or not _battle.has_method("player_source"):
+		return out
+	var run: RunContext = _game.call("run")
+	if run == null:
+		return out
+	var source: Dictionary = _battle.player_source()
+	for ac_v in _battle.player_team():
+		var ac := ac_v as AbilityContainer
+		var creature: Variant = source.get(ac, null)
+		if creature == null:
+			continue
+		for i in run.party.size():
+			if run.party[i] is Dictionary and is_same(run.party[i], creature):
+				out.append({"index": i, "hp": maxi(0, ac.hp()), "max_hp": ac.max_hp()})
+				break
+	return out
+
+
 func _toast_outcome(reason: String) -> void:
 	var toast := get_node_or_null("/root/Toast")
 	if toast == null:
 		return
 	if reason == "caught" and toast.has_method("event"):
 		toast.call("event", "creature_caught")
+	elif bool(_result.get("stalemate", false)) and toast.has_method("show"):
+		# The verbatim voice line (§5.5) + the reduced-reward note — the honest stalemate copy.
+		(
+			toast
+			. call(
+				"show",
+				{
+					"title": STALEMATE_BANNER,
+					"body": STALEMATE_VOICE_LINE + "\n(Spoils halved.)",
+					"sound": "chime",
+				}
+			)
+		)
 	elif toast.has_method("show"):
 		toast.call("show", {"title": _banner_text_for(reason), "body": "", "sound": "chime"})
 
 
 func _banner_text_for(reason: String) -> String:
+	# Wave 3 honesty: the turn cap expiring with enemies still standing is NOT a victory — the
+	# distinct stalemate banner replaces the old lying VICTORY over an undamaged enemy.
+	if bool(_result.get("stalemate", false)):
+		return STALEMATE_BANNER
 	match reason:
 		"caught":
 			return "CAUGHT"
@@ -712,14 +771,20 @@ func _refresh_turn_label(step: Dictionary) -> void:
 	var turn := int(step.get("turn", 0))
 	var actor := step.get("actor") as AbilityContainer
 	var who := actor.combatant_name() if actor != null else "—"
-	# Entropy clock (design): the battlefield gets +12%/turn deadlier — surfaced so stalling reads as risk.
-	var entropy := 1.0 + float(maxi(0, turn - 1)) * 0.12
+	# Entropy clock (design): the battlefield gets deadlier each turn — read from the SESSION (the
+	# single source the oracle loop actually uses; Wave 3 deleted the duplicated local math).
+	var entropy := 1.0
+	if _battle != null:
+		entropy = float(_battle.session().entropy())
 	_turn_label.text = "Turn %d   ·   %s acts   ·   entropy ×%.2f" % [turn, who, entropy]
 
 
-## Show the player action menu: ONE button per skill in the acting creature's kit (verb · name · AP
-## cost), plus Capture + Flee (wild only). A SUPPORT skill resolves at once; a DAMAGE/Hex skill opens
+## Show the player action menu: ONE button per skill in the acting creature's kit (verb · name),
+## plus Capture + Flee (wild only). A SUPPORT skill resolves at once; a DAMAGE/Hex skill opens
 ## the foe target picker. One skill = the actor's single action this turn (mirrors the engine's loop).
+## Wave 3 (plan tension 5): the "(N AP)" suffix is DELETED — no AP pool exists in the engine, and
+## the surface never advertises unbuilt mechanics. No AP chip returns until an oracle-first AP
+## phase ships.
 func _show_action_menu() -> void:
 	_hide_target_picker()
 	if _action_menu == null:
@@ -738,10 +803,9 @@ func _show_action_menu() -> void:
 		# excludes the user + the dead — so omit the button rather than offer a turn-wasting no-op.
 		if verb == "Rouse" and not _rouse_has_target():
 			continue
-		var ap := int(sk.get("ap", 1))
 		var btn := Button.new()
 		btn.name = "SkillButton%d" % i
-		btn.text = "%s · %s   (%d AP)" % [verb, skill, ap]
+		btn.text = "%s · %s" % [verb, skill]
 		var chosen := skill
 		if SkillBattleControllerScript.is_support_verb(verb):
 			btn.pressed.connect(func() -> void: player_use_skill(chosen))

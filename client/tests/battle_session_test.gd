@@ -77,6 +77,65 @@ func test_invalid_team_returns_graceful_result() -> void:
 	assert_int((result["transcript"] as Array).size()).is_equal(0)
 
 
+## A minimal stand-in for a FINISHED SkillBattleController.InteractiveSession (duck-typed — the
+## real skill_result_for reads exactly these members), so the stalemate contract is testable
+## without steering a live battle into the turn cap.
+class StubSkillSession:
+	extends RefCounted
+
+	var team_a: Array = []
+	var team_b: Array = []
+	var reason := "enemy_defeated"
+
+	func player_team() -> Array:
+		return team_a
+
+	func enemy_team() -> Array:
+		return team_b
+
+	func end_reason() -> String:
+		return reason
+
+	func player_won() -> bool:
+		for ac in team_a:
+			if (ac as AbilityContainer).is_alive():
+				return true
+		return false
+
+	func turn() -> int:
+		return 10
+
+	func transcript() -> Array:
+		return ["RESULT: TEAM A wins (turn 10)"]
+
+
+func test_skill_result_flags_stalemate_and_halves_the_reward() -> void:
+	# Wave 3 honesty: END_DEFEAT with BOTH sides standing (the turn cap expired) is a STALEMATE —
+	# flagged on the result, and the spoils are HALVED (reduced reward). A genuine wipe stays a
+	# full-reward, non-stalemate win.
+	var stub := StubSkillSession.new()
+	var ally: AbilityContainer = SkillMonFactory.from_creature({"species_id": "SB07"}, _catalog)
+	var foe_down: AbilityContainer = SkillMonFactory.from_creature({"species_id": "SB33"}, _catalog)
+	var foe_up: AbilityContainer = SkillMonFactory.from_creature({"species_id": "SB14"}, _catalog)
+	foe_down.set_hp(0)
+	stub.team_a = [ally]
+	stub.team_b = [foe_down, foe_up]
+	var session: BattleSession = BattleSessionScript.new(_catalog)
+
+	var result := session.skill_result_for(stub)
+	assert_bool(bool(result["stalemate"])).is_true()
+	assert_bool(bool(result["player_won"])).is_true()
+	# One downed foe would pay 12 xp; the stalemate halves it.
+	assert_int(int(result["xp"])).is_equal(int(BattleSessionScript.XP_PER_DEFEAT / 2.0))
+	assert_int((result["enemy_survivors"] as Array).size()).is_equal(1)
+
+	# A clean wipe of the same team is NOT a stalemate and pays in full.
+	foe_up.set_hp(0)
+	var win := session.skill_result_for(stub)
+	assert_bool(bool(win["stalemate"])).is_false()
+	assert_int(int(win["xp"])).is_equal(BattleSessionScript.XP_PER_DEFEAT * 2)
+
+
 func test_mon_factory_builds_from_catalog_species() -> void:
 	var mon: BattleEngine.Mon = MonFactoryScript.from_creature({"species_id": "SB07"}, _catalog)
 	assert_object(mon).is_not_null()
