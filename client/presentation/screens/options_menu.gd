@@ -113,6 +113,13 @@ func _add_volume_row(
 			if _settings != null:
 				_settings.call("set_value", section, key, v)
 				_settings.call("save_settings")
+			# WAVE-SND: the sliders stopped lying — apply to the live AudioServer buses,
+			# and let SFX-affecting rows audibly demonstrate the new level.
+			var sfx := get_node_or_null("/root/SfxService")
+			if sfx != null:
+				sfx.call("apply_volumes")
+				if key != "music_volume":
+					sfx.call("play", "ui_click")
 	)
 	return slider
 
