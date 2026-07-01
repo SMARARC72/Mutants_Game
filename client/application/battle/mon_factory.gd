@@ -48,6 +48,7 @@ static func from_creature(creature: Dictionary, catalog: SpeciesCatalog) -> Batt
 		cls
 	)
 	_compose_growth(mon, creature)
+	_apply_persisted_hp(mon, creature)
 	return mon
 
 
@@ -71,7 +72,20 @@ static func _from_cached_stats(creature: Dictionary) -> BattleEngine.Mon:
 		display_name, prim, str(cached.get("sec", "")), HYBRID_RANK, tier, DEFAULT_CLASS
 	)
 	_compose_growth(mon, creature)
+	_apply_persisted_hp(mon, creature)
 	return mon
+
+
+## FIGHTS LEAVE MARKS (Codex #54 P2): a creature dict carrying persisted battle wounds ("hp"
+## written back by GameController.apply_battle_result) enters the next battle at that HP, not
+## the rebuilt ceiling. Clamped to [1, maxhp] — the 1-floor keeps a 0-HP survivor playable
+## until permadeath (plan W18) owns death for real. Dicts without the key (fresh captures,
+## wild enemies) keep the full-HP rebuild, so canonical enemy streams are untouched.
+static func _apply_persisted_hp(mon: BattleEngine.Mon, creature: Dictionary) -> void:
+	if not creature.has("hp"):
+		return
+	mon.hp = clampi(int(creature.get("hp", 0)), 1, mon.maxhp)
+	mon.alive = mon.hp > 0
 
 
 ## AWAKENINGS FELT (application-layer composition; the domain stays untouched): scale the Mon's

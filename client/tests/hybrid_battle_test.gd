@@ -228,3 +228,42 @@ func test_awakened_creature_enters_battle_stronger_than_fresh_capture() -> void:
 	var ac_fresh: AbilityContainer = SkillMonFactoryScript.from_creature(fresh, catalog)
 	var ac_awake: AbilityContainer = SkillMonFactoryScript.from_creature(awakened, catalog)
 	assert_int(ac_awake.stat("Spike")).is_greater(ac_fresh.stat("Spike"))
+
+
+func test_persisted_wounds_carry_into_the_next_battle() -> void:
+	# FIGHTS LEAVE MARKS (Codex #54 P2): apply_battle_result writes hp back onto the
+	# creature dict; BOTH factories must rebuild the combatant AT that hp (clamped to
+	# [1, max]), not at the full ceiling — else the consequence evaporates between fights.
+	var gc: Node = GameControllerScript.new()
+	gc.call("configure", FakeDalScript.make())
+	var run: RunContext = gc.call("new_run", TEST_SEED)
+	var catalog: SpeciesCatalog = gc.call("catalog")
+	var wounded: Dictionary = (run.party[0] as Dictionary).duplicate(true)
+
+	var full_mon: BattleEngine.Mon = MonFactoryScript.from_creature(wounded, catalog)
+	var ceiling_hp := full_mon.maxhp
+	wounded["hp"] = int(ceiling_hp * 0.4)
+	wounded["max_hp"] = ceiling_hp
+
+	var mon: BattleEngine.Mon = MonFactoryScript.from_creature(wounded, catalog)
+	assert_int(mon.hp).is_equal(int(ceiling_hp * 0.4))
+	assert_int(mon.maxhp).is_equal(ceiling_hp)
+	var ac: AbilityContainer = SkillMonFactoryScript.from_creature(wounded, catalog)
+	assert_int(ac.hp()).is_equal(int(ceiling_hp * 0.4))
+
+	# A 0-HP survivor floors at 1 (playable until permadeath owns death — plan W18);
+	# a dict WITHOUT the key keeps the full-HP rebuild (fresh captures, wild enemies).
+	wounded["hp"] = 0
+	assert_int((MonFactoryScript.from_creature(wounded, catalog) as BattleEngine.Mon).hp).is_equal(
+		1
+	)
+	(
+		assert_int((SkillMonFactoryScript.from_creature(wounded, catalog) as AbilityContainer).hp())
+		. is_equal(1)
+	)
+	var fresh: Dictionary = (run.party[0] as Dictionary).duplicate(true)
+	fresh.erase("hp")
+	assert_int((MonFactoryScript.from_creature(fresh, catalog) as BattleEngine.Mon).hp).is_equal(
+		ceiling_hp
+	)
+	gc.queue_free()

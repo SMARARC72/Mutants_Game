@@ -42,6 +42,7 @@ static func from_creature(creature: Dictionary, catalog: SpeciesCatalog) -> Abil
 		kit
 	)
 	_compose_growth(ac, creature)
+	_apply_persisted_hp(ac, creature)
 	return ac
 
 
@@ -66,6 +67,7 @@ static func _from_cached_stats(creature: Dictionary) -> AbilityContainer:
 	var kit := KitFactory.kit_for(prim, sec)
 	var ac := AbilityContainer.new(display_name, prim, sec, HYBRID_RANK, tier, kit)
 	_compose_growth(ac, creature)
+	_apply_persisted_hp(ac, creature)
 	return ac
 
 
@@ -83,6 +85,18 @@ static func _compose_growth(ac: AbilityContainer, creature: Dictionary) -> void:
 	if expression == 1.0 and gene_bonus.is_empty():
 		return
 	ac.compose_growth(expression, gene_bonus)
+
+
+## FIGHTS LEAVE MARKS (Codex #54 P2): a creature dict carrying persisted battle wounds ("hp"
+## written back by GameController.apply_battle_result) enters the next battle at that HP, not
+## the rebuilt ceiling. Clamped to [1, max_hp] — the 1-floor keeps a 0-HP survivor playable
+## until permadeath (plan W18) owns death for real. Dicts without the key (fresh captures,
+## wild enemies) keep the full-HP rebuild, so canonical enemy streams are untouched.
+static func _apply_persisted_hp(ac: AbilityContainer, creature: Dictionary) -> void:
+	if not creature.has("hp"):
+		return
+	var stored := int(creature.get("hp", 0))
+	ac.set_hp(clampi(stored, 1, ac.max_hp()))
 
 
 ## Build a team (Array[AbilityContainer]) from an Array of creature dicts. Skips any entry whose
