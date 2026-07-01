@@ -19,14 +19,25 @@ const BORDER := 2
 const PAD_X := 14
 const PAD_Y := 8
 const FONT_BODY := 18
-const FONT_TITLE := 30
+const FONT_TITLE := 34
 const FONT_SMALL := 14
+
+# The grimoire type pairing (client/assets/fonts, SIL OFL — see PROVENANCE.md there):
+# Alegreya = the readable literary book-body; Cinzel = engraved Roman-capital titles.
+# Loaded with load() (not preload) so a missing import degrades to the default font
+# instead of breaking the script parse.
+const FONT_BODY_PATH := "res://assets/fonts/Alegreya.ttf"
+const FONT_TITLE_PATH := "res://assets/fonts/Cinzel.ttf"
+const PARCHMENT_FRAME_PATH := "res://assets/ui/parchment_frame.png"
 
 
 ## Build and return the grimoire Theme. Call once; cache via `ThemeService`.
 static func build() -> Theme:
 	var theme := Theme.new()
 	theme.default_font_size = FONT_BODY
+	var body_font: Resource = load(FONT_BODY_PATH)
+	if body_font is Font:
+		theme.default_font = body_font as Font
 
 	_apply_panel(theme)
 	_apply_button(theme)
@@ -35,6 +46,7 @@ static func build() -> Theme:
 	_apply_progress(theme)
 	_apply_check(theme)
 	_apply_tab_and_scroll(theme)
+	_apply_surface_variations(theme)
 	return theme
 
 
@@ -79,10 +91,13 @@ static func _apply_button(theme: Theme) -> void:
 static func _apply_label(theme: Theme) -> void:
 	theme.set_color("font_color", "Label", P.TEXT_ON_INK)
 	theme.set_font_size("font_size", "Label", FONT_BODY)
-	# Title variation (use via `theme_type_variation = "TitleLabel"`).
+	# Title variation (use via `theme_type_variation = "TitleLabel"`) — engraved Cinzel capitals.
 	theme.set_type_variation("TitleLabel", "Label")
 	theme.set_color("font_color", "TitleLabel", P.BRASS_BRIGHT)
 	theme.set_font_size("font_size", "TitleLabel", FONT_TITLE)
+	var title_font: Resource = load(FONT_TITLE_PATH)
+	if title_font is Font:
+		theme.set_font("font", "TitleLabel", title_font as Font)
 	# Muted/secondary variation.
 	theme.set_type_variation("MutedLabel", "Label")
 	theme.set_color("font_color", "MutedLabel", P.TEXT_MUTED)
@@ -117,3 +132,26 @@ static func _apply_tab_and_scroll(theme: Theme) -> void:
 	theme.set_stylebox("panel", "TabContainer", _box(P.INK_PANEL, P.BRASS))
 	theme.set_color("font_selected_color", "TabContainer", P.BRASS_BRIGHT)
 	theme.set_color("font_unselected_color", "TabContainer", P.TEXT_MUTED)
+
+
+static func _apply_surface_variations(theme: Theme) -> void:
+	# "ParchmentPanel" — an open-grimoire-page surface (use via
+	# `theme_type_variation = "ParchmentPanel"` on a PanelContainer): the aged-parchment
+	# 9-patch frame with the brass double-rule border (client/assets/ui/parchment_frame.png).
+	# CONTENT GUIDANCE: labels/rich-text INSIDE a parchment panel MUST flip to
+	# `P.TEXT_ON_PARCHMENT` (ink text) — the parchment-tone default (`P.TEXT_ON_INK`) is
+	# authored for dark ink surfaces and vanishes against the light paper.
+	theme.set_type_variation("ParchmentPanel", "PanelContainer")
+	var frame_tex: Resource = load(PARCHMENT_FRAME_PATH)
+	if frame_tex is Texture2D:
+		var parchment := StyleBoxTexture.new()
+		parchment.texture = frame_tex as Texture2D
+		parchment.set_texture_margin_all(24.0)
+		parchment.set_content_margin_all(24.0)
+		theme.set_stylebox("panel", "ParchmentPanel", parchment)
+	else:
+		# Headless/no-import fallback: a flat parchment box so the variation still resolves.
+		theme.set_stylebox("panel", "ParchmentPanel", _box(P.PARCHMENT, P.BRASS))
+	# "PlatePanel" — a raised ink specimen plate with lit-brass rules (portrait frames, cards).
+	theme.set_type_variation("PlatePanel", "PanelContainer")
+	theme.set_stylebox("panel", "PlatePanel", _box(P.INK_PANEL, P.BRASS_BRIGHT))
