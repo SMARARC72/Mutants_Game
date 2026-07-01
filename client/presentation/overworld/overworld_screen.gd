@@ -285,48 +285,43 @@ func _region_id() -> String:
 
 
 func _on_encounter(roll: Dictionary) -> void:
+	# Wild fight: Capture/Flee available (Slice 2).
+	_stash_and_hand_off(roll, {"is_wild": true})
+
+
+## Hand off the LEGENDARY-BOSS climax (Slice 4) through the SAME pending_battle path as a wild fight,
+## tagged is_boss with the boss role brain so the battle screen runs it via BattleSession.run_boss.
+func _on_boss_encounter(roll: Dictionary) -> void:
+	# The boss is not capturable / fleeable like a wild mon.
+	_stash_and_hand_off(
+		roll,
+		{"is_wild": false, "is_boss": true, "boss_brain": str(roll.get("boss_brain", "controller"))}
+	)
+
+
+## Stash the battle hand-off on the run (`extra` carries the wild/boss tags), arm the Wave 3
+## pre-battle position/grace stash, autosave, and swap to the battle scene. The pending dict also
+## carries the region + force climate (Wave 8 backdrop-lite: the arena is picked by force).
+func _stash_and_hand_off(roll: Dictionary, extra: Dictionary) -> void:
 	var enemy_party: Array = roll.get("enemy_party", [])
 	var battle_seed := int(roll.get("battle_seed", 0))
 	encounter_started.emit(enemy_party, battle_seed)
-	# Stash the battle params on the run so the battle screen (a fresh scene) can read them.
 	var run := _run_ctx()
 	if run != null:
-		run.flags["pending_battle"] = {
+		var pending := {
 			"enemy_party": enemy_party,
 			"battle_seed": battle_seed,
-			"is_wild": true,  # overworld encounters are wild (Capture/Flee available, Slice 2)
+			"region": _region_id(),
+			"force": _force_climate,
 		}
+		pending.merge(extra, true)
+		run.flags["pending_battle"] = pending
 		# Wave 3: the pre-battle autosave carries the exact cell + facing (the post-battle
 		# overworld restores them) and arms the post-battle encounter grace window.
 		OverworldLoopStateScript.stash_prebattle(
 			run, _player_cell, _last_dir, EncounterDirectorScript.POST_BATTLE_GRACE_STEPS
 		)
 	# Save on encounter-end boundary (autosave the run before the fight resolves the loop).
-	if _game != null and _game.has_method("save_run"):
-		_game.call("save_run")
-	if _auto_hand_off:
-		_hand_off_to_battle()
-
-
-## Hand off the LEGENDARY-BOSS climax (Slice 4) through the SAME pending_battle path as a wild fight,
-## tagged is_boss with the boss role brain so the battle screen runs it via BattleSession.run_boss.
-func _on_boss_encounter(roll: Dictionary) -> void:
-	var enemy_party: Array = roll.get("enemy_party", [])
-	var battle_seed := int(roll.get("battle_seed", 0))
-	encounter_started.emit(enemy_party, battle_seed)
-	var run := _run_ctx()
-	if run != null:
-		run.flags["pending_battle"] = {
-			"enemy_party": enemy_party,
-			"battle_seed": battle_seed,
-			"is_wild": false,  # the boss is not capturable / fleeable like a wild mon
-			"is_boss": true,
-			"boss_brain": str(roll.get("boss_brain", "controller")),
-		}
-		# Wave 3: same pre-battle stash as a wild fight (position restore + grace on return).
-		OverworldLoopStateScript.stash_prebattle(
-			run, _player_cell, _last_dir, EncounterDirectorScript.POST_BATTLE_GRACE_STEPS
-		)
 	if _game != null and _game.has_method("save_run"):
 		_game.call("save_run")
 	if _auto_hand_off:
