@@ -1,0 +1,62 @@
+{
+  "gaia": [
+    "gaia_mountain_ledge.png",
+    "gaia_mountain_ledge_battle.png",
+    "gaia_mountain_ledge_b.png"
+  ],
+  "ouranos": [
+    "ouranos_sky_temple.png",
+    "ouranos_sky_temple_battle.png",
+    "ouranos_sky_temple_b.png"
+  ],
+  "cosmos": [
+    "cosmos_sanctum.png",
+    "cosmos_sanctum_battle.png",
+    "cosmos_sanctum_b.png"
+  ],
+  "chaos": [
+    "chaos_volcanic_rift.png",
+    "chaos_volcanic_rift_battle.png",
+    "chaos_volcanic_rift_b.png"
+  ],
+  "eros": [
+    "eros_blooming_grove.png",
+    "eros_blooming_grove_battle.png",
+    "eros_blooming_grove_b.png"
+  ],
+  "thanatos": [
+    "thanatos_graveyard.png",
+    "thanatos_graveyard_battle.png",
+    "thanatos_graveyard_b.png"
+  ],
+  "desert": [
+    "desert_ruin.png"
+  ],
+  "glacier": [
+    "glacier_cavern.png"
+  ],
+  "abyss": [
+    "abyssal_trench.png"
+  ],
+  "jungle": [
+    "jungle_clearing.png"
+  ],
+  "swamp": [
+    "swamp_mire.png"
+  ],
+  "tundra": [
+    "tundra_waste.png"
+  ],
+  "crystal": [
+    "crystal_cavern.png"
+  ],
+  "void": [
+    "void_rift.png"
+  ],
+  "ruin": [
+    "temple_ruin.png"
+  ],
+  "aurora": [
+    "aurora_altar.png"
+  ]
+}
