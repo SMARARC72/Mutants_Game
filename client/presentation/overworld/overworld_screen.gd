@@ -48,6 +48,7 @@ var _input: Node = null
 var _layout: Layout = null
 var _director: EncounterDirector = null
 var _tile_layer: TileMapLayer = null
+var _force_climate: String = "Eros"  # active region's force palette (set in build_from_game)
 var _player: Node2D = null
 var _player_cell: Vector2i = Vector2i.ZERO
 var _lead: Sprite2D = null  # lead-creature cameo that trails the player
@@ -156,6 +157,7 @@ func build_from_game() -> void:
 	# Generate-once + reuse: first visit solves + persists into world_state; later loads rehydrate.
 	_layout = world_gen.get_or_generate(region, run.seed, run.world_state)
 	_director = EncounterDirectorScript.for_region(run.seed, region, catalog)
+	_force_climate = OverworldTileSetScript.force_for_region(region)
 	_render_layout()
 	_spawn_player()
 	_spawn_lead_creature()
@@ -397,9 +399,34 @@ func _render_layout() -> void:
 		_tile_layer.queue_free()
 	_tile_layer = TileMapLayer.new()
 	_tile_layer.name = "RegionTiles"
-	_tile_layer.tile_set = OverworldTileSetScript.build()
+	_tile_layer.tile_set = OverworldTileSetScript.build(_force_climate)
 	add_child(_tile_layer)
 	OverworldTileSetScript.paint(_tile_layer, _layout)
+	_scatter_props()
+
+
+## Prop decals on feature cells: a deterministic minority of feature-classified cells (chosen by
+## OverworldTileSet.prop_texture — pure function of force + cell, so the same map always dresses
+## the same way) get a painterly decal sprite (boulder ledge / moss mound / crystals / bones / ward
+## stone) drawn above the ground tiles. Walkability is untouched — these are set dressing.
+func _scatter_props() -> void:
+	if _layout == null or _tile_layer == null:
+		return
+	var s := OverworldTileSetScript.TILE_SIZE
+	for y in _layout.height:
+		for x in _layout.width:
+			if _layout.get_cell(x, y) != OverworldTileSetScript.FEATURE_TILE:
+				continue
+			var tex: Texture2D = OverworldTileSetScript.prop_texture(_force_climate, x, y)
+			if tex == null:
+				continue
+			var prop := Sprite2D.new()
+			prop.texture = tex
+			prop.z_index = 5  # above ground tiles, below the lead cameo (15) and player (20)
+			var fit := (s * 0.94) / maxf(float(tex.get_width()), float(tex.get_height()))
+			prop.scale = Vector2(fit, fit)
+			prop.position = Vector2(x * s + s / 2.0, y * s + s / 2.0)
+			_tile_layer.add_child(prop)
 
 
 func _spawn_player() -> void:

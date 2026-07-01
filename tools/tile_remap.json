@@ -1,0 +1,155 @@
+{
+  "_doc": "Wave 6.5 source audit of assets/tiles/topdown (30 painterly 512px plates). FILENAMES ARE UNRELIABLE — 'true_content' below is what the image ACTUALLY shows (verified by eye on labeled contact sheets). 'role' is how the realization pipeline uses it: ground / ground-variant / path / wall / ritual / prop-diorama / unusable-for-now. 'output' is the semantic asset tools/make_tiles.py emits under client/assets/tiles/.",
+  "TILE-031_gaia-stoneground.png": {
+    "true_content": "golden desert sand dunes, wind-rippled, scattered pebbles",
+    "role": "ground-variant",
+    "output": "topdown/sand-dunes.png"
+  },
+  "TILE-032_ouranos-cloudfield.png": {
+    "true_content": "pale-blue glacial ice sheet with deep cracks",
+    "role": "ground-variant",
+    "output": "topdown/ice-cracks.png"
+  },
+  "TILE-033_cosmos-order-floor.png": {
+    "true_content": "dark forest floor: roots, leaf litter, green ferns",
+    "role": "ground-variant",
+    "output": "topdown/forest-floor.png"
+  },
+  "TILE-034_chaos-scorch-earth.png": {
+    "true_content": "black basalt crust with glowing orange lava seams",
+    "role": "ground",
+    "output": "topdown/basalt-lava.png"
+  },
+  "TILE-035_eros-bloom-meadow.png": {
+    "true_content": "dark moss-bloom meadow, grass tufts + pale moss clusters (Verdant hero ground)",
+    "role": "ground",
+    "output": "topdown/moss-bloom-meadow.png"
+  },
+  "TILE-036_thanatos-grave-ash.png": {
+    "true_content": "turquoise reef shallows with corals (top-down water)",
+    "role": "ground-variant",
+    "output": "topdown/reef-shallows.png"
+  },
+  "TILE-037_tidewater.png": {
+    "true_content": "frosted tundra scrub tufts on grey stony ground",
+    "role": "ground-variant",
+    "output": "topdown/tundra-frost.png"
+  },
+  "TILE-038_worn-path.png": {
+    "true_content": "dry amber steppe grass",
+    "role": "ground",
+    "output": "topdown/amber-grass.png"
+  },
+  "TILE-039_wallcliff.png": {
+    "true_content": "violet/teal crystal outcrops on dark cavern ground (NOT a wall)",
+    "role": "ground-variant",
+    "output": "topdown/crystal-cavern.png"
+  },
+  "TILE-040_ritual-circle.png": {
+    "true_content": "star-flecked void chasm rimmed by rocks + purple crystals (NOT a ritual circle)",
+    "role": "ground-variant",
+    "output": "topdown/void-null.png"
+  },
+  "TILE-041_desert-sand.png": {
+    "true_content": "diorama plate: mossy stone ground with one large baked-in boulder",
+    "role": "unusable-for-now",
+    "output": null,
+    "why": "boulder is baked into a full stone-ground plate (no clean background), so neither a clean ground tile nor a clean prop knockout"
+  },
+  "TILE-042_glacier-ice.png": {
+    "true_content": "diorama plate: teal/blue stone-brick WALL face",
+    "role": "wall",
+    "output": "topdown/stone-brick-wall.png"
+  },
+  "TILE-043_jungle-floor.png": {
+    "true_content": "diorama plate: mossy tan flagstone/cobble ground (isotropic paving)",
+    "role": "path",
+    "output": "topdown/mossy-cobble-path.png"
+  },
+  "TILE-044_volcanic-basalt.png": {
+    "true_content": "diorama: floating mossy rock plateau/ledge on gradient background",
+    "role": "prop-diorama",
+    "output": "props/rock-ledge.png"
+  },
+  "TILE-045_swamp-bog.png": {
+    "true_content": "diorama plate: dark stone slab engraved with a silver compass-rose sigil",
+    "role": "ritual",
+    "output": "topdown/sigil-slab.png"
+  },
+  "TILE-046_reef-shallows.png": {
+    "true_content": "diorama: round green moss mound / low canopy on gradient background",
+    "role": "prop-diorama",
+    "output": "props/moss-mound.png"
+  },
+  "TILE-047_tundra-scrub.png": {
+    "true_content": "diorama: blue crystal cluster on a mossy grass patch",
+    "role": "prop-diorama",
+    "output": "props/crystal-cluster.png"
+  },
+  "TILE-048_savanna-grass.png": {
+    "true_content": "diorama: bone pile / skeletal remains on a grass patch",
+    "role": "prop-diorama",
+    "output": "props/bone-pile.png"
+  },
+  "TILE-049_cavern-crystal.png": {
+    "true_content": "diorama: ruined sandstone brick junction section on gradient background",
+    "role": "prop-diorama",
+    "output": "props/ruin-bricks.png"
+  },
+  "TILE-050_void-null.png": {
+    "true_content": "diorama: conical ward-stone with glowing teal spiral rune on a moss base",
+    "role": "prop-diorama",
+    "output": "props/ward-stone.png"
+  },
+  "TILE-051_boulder.png": {
+    "true_content": "grey cracked stone slabs with moss seams",
+    "role": "ground",
+    "output": "topdown/stone-slabs.png"
+  },
+  "TILE-052_tree.png": {
+    "true_content": "blue-grey cloud field with white wind wisps (sky ground)",
+    "role": "ground",
+    "output": "topdown/cloud-field.png"
+  },
+  "TILE-053_water-edge.png": {
+    "true_content": "white marble geometric order-floor: gold lattice + amethyst gems",
+    "role": "ground",
+    "output": "topdown/order-floor.png"
+  },
+  "TILE-054_crystal-cluster.png": {
+    "true_content": "dense black scorched crust with bright lava cracks (heavier than TILE-034)",
+    "role": "ground-variant",
+    "output": "topdown/lava-flow.png"
+  },
+  "TILE-055_bone-pile.png": {
+    "true_content": "floral rose-and-vine tapestry meadow",
+    "role": "ground-variant",
+    "output": "topdown/bloom-tapestry.png"
+  },
+  "TILE-056_bloom-patch.png": {
+    "true_content": "violet-grey cracked ash field littered with bones and skulls (Thanatos hero ground)",
+    "role": "ground",
+    "output": "topdown/grave-ash.png"
+  },
+  "TILE-057_lava-crack.png": {
+    "true_content": "turquoise shallow tidewater, caustic ripples, submerged stones/plants",
+    "role": "ground-variant",
+    "output": "topdown/tidewater.png"
+  },
+  "TILE-058_ice-patch.png": {
+    "true_content": "dirt ground with a vertical cobbled trail (directional path strip)",
+    "role": "unusable-for-now",
+    "output": null,
+    "why": "the painter applies random flip/transpose per cell, which would scramble a directional strip; TILE-043 is the isotropic path instead"
+  },
+  "TILE-059_path-junction.png": {
+    "true_content": "stacked grey rock strata cliff with moss (top-down cliff face) — the distinct WALL hero",
+    "role": "wall",
+    "output": "topdown/cliff-wall.png"
+  },
+  "TILE-060_ward-stone.png": {
+    "true_content": "glowing purple ritual/summoning circle inscribed on dark ash ground",
+    "role": "ritual",
+    "output": "topdown/ritual-circle.png"
+  }
+}
