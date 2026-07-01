@@ -51,6 +51,18 @@ func test_boss_never_triggers_once_cleared() -> void:
 	assert_bool(d.should_trigger_boss(min_steps + 100, true)).is_false()
 
 
+func test_boss_lair_is_one_shot_via_the_fired_flag() -> void:
+	# Wave 3: the climax is a ONE-SHOT lair trigger. Once it has ambushed (already_fired), it never
+	# re-fires on later steps — even while the slice is still uncleared (a lost/fled boss fight).
+	var trigger := EncounterCatalogScript.boss_trigger_for(REGION)
+	var min_steps := int(trigger["min_steps"])
+	var d := _director()
+	assert_bool(d.should_trigger_boss(min_steps, false, true)).is_false()
+	assert_bool(d.should_trigger_boss(min_steps + 50, false, true)).is_false()
+	# The default (not yet fired) still triggers at the threshold — the added flag changed nothing.
+	assert_bool(d.should_trigger_boss(min_steps, false)).is_true()
+
+
 func test_boss_step_builds_a_valid_legendary_team() -> void:
 	var d := _director()
 	var step := int(EncounterCatalogScript.boss_trigger_for(REGION)["min_steps"])

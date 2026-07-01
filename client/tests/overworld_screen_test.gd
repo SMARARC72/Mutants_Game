@@ -309,10 +309,12 @@ func test_greenwatcher_bounty_quest_runs_via_its_npcs() -> void:
 func test_hud_quest_tracker_tracks_the_active_objective() -> void:
 	# The overworld HUD shows the active quest's current objective (a quest tracker), updated live when
 	# a talk advances a quest — surfacing the quest the player is on without opening the Ledger.
+	# Wave 3 (C13): the boss-goal quest is active from RUN START, so the tracker is never empty — the
+	# first five minutes name what the run is FOR; an NPC-given quest then outranks it in the tracker.
 	var gc := _make_game()
 	gc.call("new_run", TEST_SEED)
 	var ow := _make_overworld(gc)
-	assert_str(str(ow.call("objective_text"))).is_empty()  # nothing active at the start
+	assert_str(str(ow.call("objective_text"))).contains("deep glut")  # the run's goal, from step 0
 	ow.call("speak_to", 0)  # Old Marrow -> starts marsh_welcome, advances to step 2
 	assert_str(str(ow.call("objective_text"))).contains("Meet the Bog-Wretch.")
 	assert_object(ow.find_child("ObjectiveTracker", true, false)).is_not_null()

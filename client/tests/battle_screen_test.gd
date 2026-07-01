@@ -170,3 +170,80 @@ func test_reentrant_run_pending_battle_is_a_no_op() -> void:
 	assert_str(str(second.get("kind", ""))).is_equal(str(first.get("kind", "")))
 	screen.queue_free()
 	gc.queue_free()
+
+
+func test_played_boss_win_marks_slice_cleared() -> void:
+	# Wave 3 boss wiring: a pending battle tagged is_boss, PLAYED to a win (boss side wiped), reports
+	# boss_win so GameController._mark_slice_cleared fires — beating the boss actually ends the slice.
+	# The player fields a GROWN roster (a legendary) against a weak stand-in so the played win path is
+	# short + decisive within the turn cap (the design intends growth-then-boss); the wiring under
+	# test reads pending.is_boss, not the species.
+	var gc: Node = GameControllerScript.new()
+	add_child(gc)
+	gc.call("configure", FakeDalScript.make())
+	var run: RunContext = gc.call("new_run", TEST_SEED)
+	run.party = [{"species_id": "DM06", "nickname": "Grown Champion"}]
+	run.flags["pending_battle"] = {
+		"enemy_party": [{"species_id": "SB33"}],
+		"battle_seed": BATTLE_SEED,
+		"is_wild": false,
+		"is_boss": true,
+		"boss_brain": "controller",
+	}
+	var screen := _make_screen(gc)
+	assert_bool(bool(gc.call("slice_cleared"))).is_false()
+	var result := _play_skills(screen)
+	assert_bool(bool(result["valid"])).is_true()
+	assert_bool(bool(result["player_won"])).is_true()
+	assert_int((result["enemy_survivors"] as Array).size()).is_equal(0)
+	assert_bool(bool(result["boss_win"])).is_true()
+	assert_bool(bool(gc.call("slice_cleared"))).is_true()
+	screen.queue_free()
+	gc.queue_free()
+
+
+func test_skill_buttons_do_not_advertise_ap() -> void:
+	# Wave 3 (plan tension 5): no AP pool exists in the engine, so the skill buttons must not claim
+	# one — the lying "(N AP)" suffix is gone.
+	var gc := _make_game_with_pending_battle()
+	var screen := _make_screen(gc)
+	screen.call("run_pending_battle")
+	var btn := screen.find_child("SkillButton0", true, false) as Button
+	assert_object(btn).is_not_null()
+	assert_bool(btn.text.contains("AP")).is_false()
+	screen.queue_free()
+	gc.queue_free()
+
+
+func test_battle_end_writes_live_hp_back_to_party() -> void:
+	# Wave 3 consequence: the fight leaves marks — every starter carries its live end-of-battle HP
+	# (and max) on its run.party dict after the result applies. No player ever again sees a fresh
+	# full-HP roster after a mauling.
+	var gc := _make_game_with_pending_battle()
+	var screen := _make_screen(gc)
+	var run: RunContext = gc.call("run")
+	var party_size := run.party.size()
+	var result := _play_skills(screen)
+	assert_bool(bool(result["valid"])).is_true()
+	assert_int((result["party_hp"] as Array).size()).is_equal(party_size)
+	for member: Variant in run.party:
+		var m := member as Dictionary
+		assert_bool(m.has("hp")).is_true()
+		assert_bool(m.has("max_hp")).is_true()
+		assert_int(int(m["max_hp"])).is_greater(0)
+		assert_int(int(m["hp"])).is_between(0, int(m["max_hp"]))
+	screen.queue_free()
+	gc.queue_free()
+
+
+func test_stalemate_result_shows_the_distinct_banner() -> void:
+	# Wave 3 honesty: a stalemate-flagged result banners as the wild slinking away — never VICTORY.
+	var gc := _make_game_with_pending_battle()
+	var screen := _make_screen(gc)
+	screen.call("run_pending_battle")
+	screen.set("_result", {"stalemate": true, "player_won": true})
+	var text := str(screen.call("_banner_text_for", "enemy_defeated"))
+	assert_str(text).is_equal(BattleScreenScript.STALEMATE_BANNER)
+	assert_bool(text.contains("STALEMATE")).is_true()
+	screen.queue_free()
+	gc.queue_free()

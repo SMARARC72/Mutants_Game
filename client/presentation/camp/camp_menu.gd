@@ -91,11 +91,14 @@ func _build() -> void:
 	box.add_child(subtitle)
 
 	_add_lead_portrait(box)
-	_add_button(box, "PartyButton", "Party & Grimoire", open_party)
+	var party_button := _add_button(box, "PartyButton", "Party & Grimoire", open_party)
 	_add_button(box, "SelfButton", "The Self", open_self)
 	_add_button(box, "JournalButton", "The Ledger", open_journal)
 	_add_button(box, "LabButton", "Lab", open_lab)
 	_add_button(box, "ResumeButton", "Resume", resume)
+	# W1 focus pass: the first camp verb owns focus (arrow keys walk the column natively).
+	if party_button.is_inside_tree():
+		party_button.grab_focus()
 
 
 ## Show the lead creature's framed bestiary plate (when a run is live) — a face for "tend your coven".
@@ -115,7 +118,9 @@ func _add_lead_portrait(box: VBoxContainer) -> void:
 	var lead: Variant = party[idx]
 	if not (lead is Dictionary):
 		return
-	var plate := SpeciesArt.plate(str((lead as Dictionary).get("species_id", "")))
+	# Hybrids render their dominant parent's plate + the deterministic corruption tint (PortraitUtil),
+	# so camp shows the same face party/lab/battle do.
+	var plate := PortraitUtil.creature_plate(lead as Dictionary)
 	if plate == null:
 		return
 	var portrait := TextureRect.new()
@@ -124,6 +129,7 @@ func _add_lead_portrait(box: VBoxContainer) -> void:
 	portrait.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	portrait.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	portrait.texture = plate
+	portrait.self_modulate = PortraitUtil.creature_tint(lead as Dictionary)
 	var frame := PortraitUtil.framed(portrait)
 	frame.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	box.add_child(frame)
@@ -183,12 +189,17 @@ func open_lab() -> String:
 	return LAB_SCENE
 
 
-## Resume play: emit `resumed` and close the menu (back to the overworld). The overlay simply frees
-## itself; the overworld scene is untouched beneath it.
+## Resume play: emit `resumed` and close the menu (back to the overworld). As an OVERLAY the menu
+## simply frees itself (the overworld is untouched beneath it) — but when the camp is the ROOT
+## scene (returned to via a Party/Lab scene swap) freeing would leave a black screen, so it swaps
+## back to the overworld instead. Interim soft-lock guard; the screen router (W17) replaces it.
 func resume() -> void:
 	resumed.emit()
 	if _input != null and _input.has_method("switch_context"):
 		_input.call("switch_context", InputActions.CTX_OVERWORLD)
+	if is_inside_tree() and get_tree().current_scene == self:
+		_navigate(OVERWORLD_SCENE)
+		return
 	queue_free()
 
 

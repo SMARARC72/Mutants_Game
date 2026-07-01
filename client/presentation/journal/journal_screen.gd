@@ -150,20 +150,30 @@ func _build_ui() -> void:
 		margin.add_theme_constant_override("margin_" + side, 28)
 	add_child(margin)
 
+	# The journal PAGE — an open grimoire page (ParchmentPanel); every label directly on the
+	# page flips to ink text (TEXT_ON_PARCHMENT) or it vanishes against the paper. The quest
+	# cards keep their raised-ink panels and parchment-tone text.
+	var page := PanelContainer.new()
+	page.name = "JournalPage"
+	page.theme_type_variation = "ParchmentPanel"
+	margin.add_child(page)
+
 	var box := VBoxContainer.new()
 	box.name = "JournalBox"
 	box.add_theme_constant_override("separation", 12)
-	margin.add_child(box)
+	page.add_child(box)
 
 	var title := Label.new()
 	title.name = "JournalTitle"
 	title.text = "The Ledger"
 	title.theme_type_variation = "TitleLabel"
+	title.add_theme_color_override("font_color", GrimoirePalette.TEXT_ON_PARCHMENT)
 	box.add_child(title)
 
 	var subtitle := Label.new()
 	subtitle.text = "What the marsh is keeping count of."
 	subtitle.theme_type_variation = "MutedLabel"
+	subtitle.add_theme_color_override("font_color", GrimoirePalette.TEXT_ON_PARCHMENT)
 	box.add_child(subtitle)
 
 	# FACTION STANDING — the quests nudge Bloomwarden standing; surface it so the player can read the
@@ -171,6 +181,7 @@ func _build_ui() -> void:
 	var standing := Label.new()
 	standing.name = "StandingLine"
 	standing.text = _standing_text()
+	standing.add_theme_color_override("font_color", GrimoirePalette.TEXT_ON_PARCHMENT)
 	box.add_child(standing)
 
 	var scroll := ScrollContainer.new()
@@ -187,6 +198,7 @@ func _build_ui() -> void:
 		empty.name = "EmptyNote"
 		empty.text = "No errands yet. Go let the marsh have its opinions."
 		empty.theme_type_variation = "MutedLabel"
+		empty.add_theme_color_override("font_color", GrimoirePalette.TEXT_ON_PARCHMENT)
 		_list.add_child(empty)
 	else:
 		for entry: Dictionary in _entries:
@@ -197,6 +209,9 @@ func _build_ui() -> void:
 	back.text = "Back to Camp"
 	back.pressed.connect(return_to_camp)
 	box.add_child(back)
+	# W1 focus pass: the Ledger is read-only, so its one verb (Back) owns focus.
+	if back.is_inside_tree():
+		back.grab_focus()
 
 
 ## One quest card: name + a status badge (In Progress / Complete) + the current objective when active.
@@ -216,7 +231,7 @@ func _make_quest_card(entry: Dictionary) -> PanelContainer:
 	var done := str(entry.get("status", "")) == "done"
 	badge.text = "✓ Complete" if done else "• In Progress"
 	badge.add_theme_color_override(
-		"font_color", Color(0.498, 0.682, 0.353) if done else Color(0.839, 0.635, 0.247)
+		"font_color", GrimoirePalette.SUCCESS if done else GrimoirePalette.WARNING
 	)
 	header.add_child(badge)
 	col.add_child(header)

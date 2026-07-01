@@ -32,6 +32,7 @@ var _selected_index: int = 0
 
 # Code-built UI handles (kept so refreshes target the right nodes; all guarded for headless).
 var _roster: VBoxContainer = null
+var _selected_row_button: Button = null  # the live selected roster row (focus target, W1)
 var _detail_box: VBoxContainer = null
 var _detail_title: Label = null
 var _detail_stats: Label = null
@@ -80,6 +81,8 @@ func build_from_game() -> void:
 	_build_ui()
 	_refresh_roster()
 	_refresh_detail()
+	# W1 focus pass: the roster owns first focus so arrows walk the coven immediately.
+	_focus_selected_row()
 
 
 # === player actions (headless-testable; the UI buttons call the same methods) ================== #
@@ -93,6 +96,8 @@ func select_creature(index: int) -> int:
 	_selected_index = clampi(index, 0, party_count - 1)
 	_refresh_roster()
 	_refresh_detail()
+	# The rows were rebuilt (the old ones are dying) — refocus so keyboard traversal stays alive.
+	_focus_selected_row()
 	return _selected_index
 
 
@@ -233,8 +238,10 @@ func _build_ui() -> void:
 	_roster.add_theme_constant_override("separation", 4)
 	roster_panel.add_child(_roster)
 
-	# Right: the detail + leveling + gear panel for the selected creature.
+	# Right: the detail + leveling + gear panel for the selected creature — an open grimoire
+	# page (ParchmentPanel), so its labels flip to ink text (TEXT_ON_PARCHMENT) below.
 	var detail_panel := PanelContainer.new()
+	detail_panel.theme_type_variation = "ParchmentPanel"
 	detail_panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	columns.add_child(detail_panel)
 	_detail_box = VBoxContainer.new()
@@ -263,6 +270,7 @@ func _build_detail_panel() -> void:
 	_detail_title = Label.new()
 	_detail_title.name = "DetailTitle"
 	_detail_title.theme_type_variation = "TitleLabel"
+	_ink_text(_detail_title)
 	head_col.add_child(_detail_title)
 	_detail_forces = HBoxContainer.new()
 	_detail_forces.name = "DetailForces"
@@ -272,13 +280,15 @@ func _build_detail_panel() -> void:
 	_detail_stats = Label.new()
 	_detail_stats.name = "DetailStats"
 	_detail_stats.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_ink_text(_detail_stats)
 	_detail_box.add_child(_detail_stats)
 
-	# The creature's bestiary description (the funny-grim flavour), in muted parchment text.
+	# The creature's bestiary description (the funny-grim flavour), in ink on the page.
 	_detail_desc = Label.new()
 	_detail_desc.name = "DetailDescription"
 	_detail_desc.theme_type_variation = "MutedLabel"
 	_detail_desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_ink_text(_detail_desc)
 	_detail_box.add_child(_detail_desc)
 
 	# Active/lead + leveling buttons.
@@ -288,6 +298,7 @@ func _build_detail_panel() -> void:
 	var level_label := Label.new()
 	level_label.text = "Leveling"
 	level_label.theme_type_variation = "MutedLabel"
+	_ink_text(level_label)
 	_detail_box.add_child(level_label)
 	_detail_box.add_child(
 		_make_button("AwakenButton", "Resonance Awaken (essence)", awaken_resonance)
@@ -298,6 +309,7 @@ func _build_detail_panel() -> void:
 	var gear_label := Label.new()
 	gear_label.text = "Gear"
 	gear_label.theme_type_variation = "MutedLabel"
+	_ink_text(gear_label)
 	_detail_box.add_child(gear_label)
 	_gear_box = VBoxContainer.new()
 	_gear_box.name = "GearBox"
@@ -309,6 +321,7 @@ func _build_detail_panel() -> void:
 	_ledger_label.name = "LedgerLabel"
 	_ledger_label.theme_type_variation = "MutedLabel"
 	_ledger_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_ink_text(_ledger_label)
 	_detail_box.add_child(_ledger_label)
 
 
@@ -318,6 +331,7 @@ func _refresh_roster() -> void:
 		return
 	for child in _roster.get_children():
 		child.queue_free()
+	_selected_row_button = null
 	var party := _party()
 	var active_index := int(_game.call("active_creature_index")) if _game != null else 0
 	for i in party.size():
@@ -328,11 +342,16 @@ func _refresh_roster() -> void:
 		btn.text = label
 		btn.toggle_mode = true
 		btn.button_pressed = i == _selected_index
-		var plate := SpeciesArt.plate(str(creature.get("species_id", "")))
+		if i == _selected_index:
+			_selected_row_button = btn
+		# Hybrids render their dominant parent's plate with the deterministic corruption tint
+		# (PortraitUtil), so the roster shows the same face lab/battle/camp do.
+		var plate := PortraitUtil.creature_plate(creature)
 		if plate != null:
 			btn.icon = plate
 			btn.expand_icon = true
 			btn.add_theme_constant_override("icon_max_width", 38)
+			PortraitUtil.tint_button_icon(btn, creature)
 		btn.custom_minimum_size = Vector2(0, 46)
 		var idx := i
 		btn.pressed.connect(func() -> void: select_creature(idx))
@@ -345,7 +364,9 @@ func _roster_line(creature: Dictionary, is_active: bool) -> String:
 	var nick := str(creature.get("nickname", ""))
 	var nm := nick if nick != "" else (species.name if species != null else "?")
 	var lead := "★ " if is_active else "   "
-	var tier := species.tier if species != null else "?"
+	# identity_of resolves species AND spliced hybrids (stats_cached), so a hybrid shows its real tier.
+	var ident := CreatureSheetScript.identity_of(creature, catalog)
+	var tier := str(ident.get("tier", "?")) if not ident.is_empty() else "?"
 	return "%s%s  [%s]" % [lead, nm, tier]
 
 
@@ -365,37 +386,43 @@ func _refresh_detail() -> void:
 	var nick := str(creature.get("nickname", ""))
 	_detail_title.text = nick if nick != "" else (species.name if species != null else "?")
 	if _detail_portrait != null:
-		_detail_portrait.texture = SpeciesArt.plate(str(creature.get("species_id", "")))
-	_refresh_detail_forces(species)
-	_detail_stats.text = _format_detail(creature, species, catalog)
+		# Hybrids render their dominant parent's plate + the deterministic corruption tint.
+		_detail_portrait.texture = PortraitUtil.creature_plate(creature)
+		_detail_portrait.self_modulate = PortraitUtil.creature_tint(creature)
+	_refresh_detail_forces(creature, catalog)
+	_detail_stats.text = _format_detail(creature, catalog)
 	if _detail_desc != null:
 		var desc := species.description if species != null else ""
 		_detail_desc.text = "“%s”" % desc if desc != "" else ""
 	_refresh_gear_box(creature)
 
 
-## Fill the detail force-icon row from the species' primary/secondary forces (colour+icon pairing).
-func _refresh_detail_forces(species: SpeciesData) -> void:
+## Fill the detail force-icon row from the creature's primary/secondary forces (colour+icon pairing).
+## identity_of resolves species AND spliced hybrids (stats_cached), so hybrids get real force icons.
+func _refresh_detail_forces(creature: Dictionary, catalog: SpeciesCatalog) -> void:
 	if _detail_forces == null:
 		return
 	for child in _detail_forces.get_children():
 		child.queue_free()
-	if species == null:
+	var ident := CreatureSheetScript.identity_of(creature, catalog)
+	if ident.is_empty():
 		return
-	for f: String in [species.force_primary, species.force_secondary]:
+	for f: String in [str(ident.get("prim", "")), str(ident.get("sec", ""))]:
 		var tr := PortraitUtil.force_icon_node(f, 22)
 		if tr != null:
 			_detail_forces.add_child(tr)
 
 
-func _format_detail(creature: Dictionary, species: SpeciesData, catalog: SpeciesCatalog) -> String:
+func _format_detail(creature: Dictionary, catalog: SpeciesCatalog) -> String:
 	var force := "?"
 	var tier := "?"
-	if species != null:
-		force = species.force_primary
-		if species.force_secondary != "":
-			force = "%s/%s" % [species.force_primary, species.force_secondary]
-		tier = species.tier
+	# identity_of resolves species AND spliced hybrids (stats_cached) — real force/tier for both.
+	var ident := CreatureSheetScript.identity_of(creature, catalog)
+	if not ident.is_empty():
+		force = str(ident.get("prim", "?"))
+		if str(ident.get("sec", "")) != "":
+			force = "%s/%s" % [force, str(ident.get("sec", ""))]
+		tier = str(ident.get("tier", "?"))
 	var hp := CreatureSheetScript.hp_of(creature, catalog)
 	var stats := CreatureSheetScript.effective_stats(creature, catalog)
 	var expr := int(round(CreatureSheetScript.expression_of(creature) * 100.0))
@@ -422,6 +449,7 @@ func _refresh_gear_box(creature: Dictionary) -> void:
 	var slot_label := Label.new()
 	slot_label.name = "EquippedLabel"
 	slot_label.text = "Slot: %s" % (gc.name_of(equipped) if equipped != "" else "(empty)")
+	_ink_text(slot_label)
 	_gear_box.add_child(slot_label)
 	for row in gc.all():
 		var gid := str(row["id"])
@@ -502,12 +530,29 @@ func _process(_delta: float) -> void:
 # === helpers ================================================================================== #
 
 
+## Focus the selected roster row (W1 focus pass). Uses the captured node ref, NOT a name lookup —
+## the freed rows linger until end of frame, so a name lookup could hit a dying duplicate.
+func _focus_selected_row() -> void:
+	if (
+		_selected_row_button != null
+		and is_instance_valid(_selected_row_button)
+		and _selected_row_button.is_inside_tree()
+	):
+		_selected_row_button.grab_focus()
+
+
 func _make_button(node_name: String, text: String, handler: Callable) -> Button:
 	var button := Button.new()
 	button.name = node_name
 	button.text = text
 	button.pressed.connect(handler)
 	return button
+
+
+## Flip a label to ink text — the parchment-tone default (TEXT_ON_INK) is authored for dark
+## surfaces and vanishes against the detail panel's ParchmentPanel page.
+func _ink_text(label: Label) -> void:
+	label.add_theme_color_override("font_color", GrimoirePalette.TEXT_ON_PARCHMENT)
 
 
 func _run() -> RunContext:

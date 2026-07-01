@@ -23,23 +23,23 @@ signal dialogue_started(timeline_id: String)
 
 const EncounterDirectorScript := preload("res://application/overworld/encounter_director.gd")
 const OverworldTileSetScript := preload("res://presentation/overworld/overworld_tileset.gd")
+const OverworldLoopStateScript := preload("res://presentation/overworld/overworld_loop_state.gd")
+const OverworldTokensScript := preload("res://presentation/overworld/overworld_tokens.gd")
+const OverworldMotionScript := preload("res://presentation/overworld/overworld_motion.gd")
+const OverworldSpawnScript := preload("res://presentation/overworld/overworld_spawn.gd")
+const ControlsChipScript := preload("res://presentation/overworld/controls_chip.gd")
 const InputActions := preload("res://infrastructure/input/input_actions.gd")
 const BATTLE_SCENE := "res://presentation/battle/battle_screen.tscn"
-const CAMP_SCENE := "res://presentation/camp/camp_menu.tscn"
+## Wave 6 spike diet: const-preload the camp scene (a load() on first ESC read as a hitch).
+const CampMenuScene: PackedScene = preload("res://presentation/camp/camp_menu.tscn")
 
-const STEP_COOLDOWN := 0.14  # seconds between grid steps while a direction is held
-const CAMERA_ZOOM := 1.5  # frames ~11 of the 64px painterly tiles around the player
+const CAMERA_ZOOM := 2.35  # frames ~13 tiles across the 1920px baseline — no raw void at the edges
 const DASH_TILES := 3  # max tiles the sigil-dash crosses in one ritual hop (design §3.5)
 const DASH_COOLDOWN := 0.55  # seconds before the ley-line can be ridden again
 
-const REGION_TITLE := "The Rust Marsh"  # starter region label (force-climate: Eros)
-const REGION_CLIMATE := "Eros climate · a thin place"
-const INK := Color(0.090196, 0.07451, 0.109804)
-const BRASS := Color(0.725, 0.576, 0.247)
-const BRASS_BRIGHT := Color(0.878431, 0.72549, 0.352941)
-
 ## NPC + quest CONTENT data lives in OverworldContent (separated so adding content never bloats this
 ## screen logic). NPCs play authored Dialogic timelines on INTERACT; quests advance via their step_key.
+## Token/vignette texture builders live in OverworldTokens; colors come from GrimoirePalette.
 
 var _game: Node = null
 var _transition: Node = null
@@ -48,12 +48,20 @@ var _input: Node = null
 var _layout: Layout = null
 var _director: EncounterDirector = null
 var _tile_layer: TileMapLayer = null
+var _force_climate: String = "Eros"  # active region's force palette (set in build_from_game)
 var _player: Node2D = null
 var _player_cell: Vector2i = Vector2i.ZERO
+## The canonical spawn cell (centre of the largest open field). NPC placement anchors here — not on
+## the (possibly battle-restored) player cell — so the cast never drifts around the map post-battle.
+var _home_cell: Vector2i = Vector2i.ZERO
 var _lead: Sprite2D = null  # lead-creature cameo that trails the player
 var _lead_target: Vector2 = Vector2.ZERO
 var _last_dir: Vector2i = Vector2i.DOWN
-var _step_timer: float = 0.0
+## Wave 6: visual motion + input pacing (step glide / buffering / turn-in-place / thunk / dash
+## whoosh) lives in OverworldMotion; grid logic here stays synchronous. The camera rig object
+## (PhantomCamera2D or fallback Camera2D) takes the walk-direction look-ahead.
+var _motion: OverworldMotion = OverworldMotionScript.new()
+var _cam_rig: Object = null
 var _dash_timer: float = 0.0
 var _busy: bool = false  # true while a battle hand-off / transition is mid-flight
 ## When false, an encounter still emits encounter_started + autosaves but skips the scene swap
@@ -71,6 +79,7 @@ var _dialogue: DialogicFacade = null
 var _in_dialogue: bool = false
 var _quests: QuestService = null  # drives the intro quest from NPC talks (own narrative run-state)
 var _objective_label: Label = null  # HUD quest-tracker: the active quest's current objective
+var _controls_chip: Node = null  # the live-verbs HUD chip (W1/C13), collapsible via TOGGLE_CONTROLS
 
 
 func _ready() -> void:
@@ -101,6 +110,12 @@ func set_camp_enabled(enabled: bool) -> void:
 	_camp_enabled = enabled
 
 
+## Wave 6 test flag: force INSTANT visual placement (no tweens) even where the tree could
+## animate. Headless runs are instant automatically; this pins it for timing-sensitive tests.
+func set_instant_moves(enabled: bool) -> void:
+	_motion.instant_moves = enabled
+
+
 ## Open the camp/pause menu as an OVERLAY (a CanvasLayer above the overworld, NOT a scene swap, so
 ## the overworld stays live beneath it). Idempotent: a second call while open returns the SAME live
 ## camp menu (no duplicate). Returns the camp menu node (or null if the scene is missing). Public so
@@ -108,16 +123,10 @@ func set_camp_enabled(enabled: bool) -> void:
 func open_camp() -> Node:
 	if _camp_overlay != null and is_instance_valid(_camp_overlay):
 		return _camp_menu
-	if not ResourceLoader.exists(CAMP_SCENE):
-		push_warning("OverworldScreen.open_camp: missing camp scene '%s'" % CAMP_SCENE)
-		return null
-	var packed: PackedScene = load(CAMP_SCENE)
-	if packed == null:
-		return null
 	var layer := CanvasLayer.new()
 	layer.name = "CampOverlay"
 	layer.layer = 50  # above gameplay, below Transition (100) + Toast (128)
-	var menu := packed.instantiate()
+	var menu := CampMenuScene.instantiate()
 	layer.add_child(menu)
 	add_child(layer)
 	_camp_overlay = layer
@@ -156,6 +165,7 @@ func build_from_game() -> void:
 	# Generate-once + reuse: first visit solves + persists into world_state; later loads rehydrate.
 	_layout = world_gen.get_or_generate(region, run.seed, run.world_state)
 	_director = EncounterDirectorScript.for_region(run.seed, region, catalog)
+	_force_climate = OverworldTileSetScript.force_for_region(region)
 	_render_layout()
 	_spawn_player()
 	_spawn_lead_creature()
@@ -194,19 +204,25 @@ func _maybe_play_intro() -> void:
 ## roll result for the step (see EncounterDirector.roll_step), or an empty/no-op dict if the move
 ## was blocked by a wall / out of bounds / no layout. On a real move it advances the run step
 ## counter (so the encounter index persists across save/load) and rolls the canonical encounter.
-## HEADLESS-TESTABLE: pure logic, no input/frame dependency.
-func try_move(dir: Vector2i) -> Dictionary:
+## `roll_encounter=false` moves + advances the counter WITHOUT the wild roll (the sigil-dash rolls
+## ONCE at its landing step, not per crossed tile — Wave 3). A step inside the post-battle grace
+## window (world_state) also skips the wild roll ("graced": true in the result); the boss climax is
+## never graced. HEADLESS-TESTABLE: pure logic, no input/frame dependency.
+func try_move(dir: Vector2i, roll_encounter: bool = true) -> Dictionary:
 	if _busy or _layout == null or _director == null or _game == null:
 		return {"encounter": false, "moved": false}
 	var target := _player_cell + dir
 	if not _layout.in_bounds(target.x, target.y):
+		_motion.thunk(dir, _cell_center(_player_cell))
 		return {"encounter": false, "moved": false}
 	if not OverworldTileSetScript.is_walkable(_layout.get_cell(target.x, target.y)):
+		_motion.thunk(dir, _cell_center(_player_cell))
 		return {"encounter": false, "moved": false}
-	var prev_px := _player.position if _player != null else Vector2.ZERO
+	var prev_px := _cell_center(_player_cell)
 	_player_cell = target
-	_last_dir = dir
-	_position_player()
+	_set_facing(dir)
+	# Wave 6: the LOGIC above is done instantly; only the token's VISUAL position glides.
+	_motion.step_to(_cell_center(_player_cell))
 	# The lead cameo trails into the tile the tamer just left (smoothed in _process).
 	if _lead != null:
 		_lead_target = prev_px
@@ -218,62 +234,94 @@ func try_move(dir: Vector2i) -> Dictionary:
 		boss_roll["moved"] = true
 		_on_boss_encounter(boss_roll)
 		return boss_roll
+	# Wave 3: every moved step consumes one grace tick; a graced (or roll-suppressed) step never
+	# rolls, and later steps still roll their OWN step-indexed streams — determinism holds.
+	var graced := OverworldLoopStateScript.consume_grace(_run_ctx())
+	if graced or not roll_encounter:
+		return {
+			"encounter": false,
+			"enemy_party": [],
+			"battle_seed": 0,
+			"step": step_index,
+			"moved": true,
+			"graced": graced,
+		}
 	var roll := _director.roll_step(step_index)
 	roll["moved"] = true
+	roll["graced"] = false
 	if bool(roll.get("encounter", false)):
 		_on_encounter(roll)
 	return roll
 
 
 ## Build the deterministic boss encounter for `step_index` IF the climax should fire now, else {}.
-## Reads the cleared flag from the run so a cleared slice never re-triggers the boss.
+## Reads the cleared flag from the run so a cleared slice never re-triggers the boss, and the Wave-3
+## ONE-SHOT lair flag so a lost/fled boss fight never re-ambushes on every later step (the flag is
+## set the moment the lair fires + persisted by the pre-battle autosave).
 func _maybe_boss(step_index: int) -> Dictionary:
 	if _director == null or _game == null:
 		return {}
 	var cleared := false
 	if _game.has_method("slice_cleared"):
 		cleared = bool(_game.call("slice_cleared"))
-	if not _director.should_trigger_boss(step_index, cleared):
+	var run := _run_ctx()
+	var fired := OverworldLoopStateScript.boss_fired(run, _region_id())
+	if not _director.should_trigger_boss(step_index, cleared, fired):
 		return {}
+	OverworldLoopStateScript.mark_boss_fired(run, _region_id())
 	return _director.boss_step(step_index)
 
 
+## The active RunContext, or null (single accessor for the many world_state read/write sites).
+func _run_ctx() -> RunContext:
+	if _game == null or not _game.has_method("run"):
+		return null
+	return _game.call("run")
+
+
+## The active region id, or "" without a game.
+func _region_id() -> String:
+	return str(_game.call("active_region")) if _game != null else ""
+
+
 func _on_encounter(roll: Dictionary) -> void:
-	var enemy_party: Array = roll.get("enemy_party", [])
-	var battle_seed := int(roll.get("battle_seed", 0))
-	encounter_started.emit(enemy_party, battle_seed)
-	# Stash the battle params on the run so the battle screen (a fresh scene) can read them.
-	if _game != null:
-		var run: RunContext = _game.call("run")
-		if run != null:
-			run.flags["pending_battle"] = {
-				"enemy_party": enemy_party,
-				"battle_seed": battle_seed,
-				"is_wild": true,  # overworld encounters are wild (Capture/Flee available, Slice 2)
-			}
-	# Save on encounter-end boundary (autosave the run before the fight resolves the loop).
-	if _game != null and _game.has_method("save_run"):
-		_game.call("save_run")
-	if _auto_hand_off:
-		_hand_off_to_battle()
+	# Wild fight: Capture/Flee available (Slice 2).
+	_stash_and_hand_off(roll, {"is_wild": true})
 
 
 ## Hand off the LEGENDARY-BOSS climax (Slice 4) through the SAME pending_battle path as a wild fight,
 ## tagged is_boss with the boss role brain so the battle screen runs it via BattleSession.run_boss.
 func _on_boss_encounter(roll: Dictionary) -> void:
+	# The boss is not capturable / fleeable like a wild mon.
+	_stash_and_hand_off(
+		roll,
+		{"is_wild": false, "is_boss": true, "boss_brain": str(roll.get("boss_brain", "controller"))}
+	)
+
+
+## Stash the battle hand-off on the run (`extra` carries the wild/boss tags), arm the Wave 3
+## pre-battle position/grace stash, autosave, and swap to the battle scene. The pending dict also
+## carries the region + force climate (Wave 8 backdrop-lite: the arena is picked by force).
+func _stash_and_hand_off(roll: Dictionary, extra: Dictionary) -> void:
 	var enemy_party: Array = roll.get("enemy_party", [])
 	var battle_seed := int(roll.get("battle_seed", 0))
 	encounter_started.emit(enemy_party, battle_seed)
-	if _game != null:
-		var run: RunContext = _game.call("run")
-		if run != null:
-			run.flags["pending_battle"] = {
-				"enemy_party": enemy_party,
-				"battle_seed": battle_seed,
-				"is_wild": false,  # the boss is not capturable / fleeable like a wild mon
-				"is_boss": true,
-				"boss_brain": str(roll.get("boss_brain", "controller")),
-			}
+	var run := _run_ctx()
+	if run != null:
+		var pending := {
+			"enemy_party": enemy_party,
+			"battle_seed": battle_seed,
+			"region": _region_id(),
+			"force": _force_climate,
+		}
+		pending.merge(extra, true)
+		run.flags["pending_battle"] = pending
+		# Wave 3: the pre-battle autosave carries the exact cell + facing (the post-battle
+		# overworld restores them) and arms the post-battle encounter grace window.
+		OverworldLoopStateScript.stash_prebattle(
+			run, _player_cell, _last_dir, EncounterDirectorScript.POST_BATTLE_GRACE_STEPS
+		)
+	# Save on encounter-end boundary (autosave the run before the fight resolves the loop).
 	if _game != null and _game.has_method("save_run"):
 		_game.call("save_run")
 	if _auto_hand_off:
@@ -291,23 +339,37 @@ func _hand_off_to_battle() -> void:
 
 
 ## Sigil-dash (design §3.5): a ritual hop of up to DASH_TILES grid steps along `dir`, stopping early
-## at a wall / region edge or the moment a step triggers an encounter (you can dash INTO danger).
-## Returns the number of tiles crossed. Public + HEADLESS-testable (drives try_move; no input/frame
-## dependency), so a test can assert the hop distance + wall/encounter stops.
+## at a wall / region edge / the boss climax. Wave 3: the dash rolls the wild encounter ONCE, at the
+## LANDING step (not per crossed tile — a dash is one ritual move, not three treadmill steps); the
+## landing roll uses that step's own canonical stream, so dashing to step N meets exactly what
+## walking to step N would have met. Returns the number of tiles crossed. Public + HEADLESS-testable.
 func sigil_dash(dir: Vector2i) -> int:
 	if dir == Vector2i.ZERO:
 		return 0
+	# Wave 6: suppress per-tile glides — the dash lands as ONE accelerated whoosh + ghosts.
+	_motion.dash_begin()
 	var crossed := 0
+	var last_step := -1
+	var landing_graced := false
+	var stopped := false  # boss climax / hand-off mid-dash forfeits the landing roll
 	for _i in DASH_TILES:
-		var res := try_move(dir)
+		var res := try_move(dir, false)
 		if not bool(res.get("moved", false)):
 			break
 		crossed += 1
-		if bool(res.get("encounter", false)) or _busy:
+		last_step = int(res.get("step", -1))
+		landing_graced = bool(res.get("graced", false))
+		if _busy or bool(res.get("boss", false)):
+			stopped = true
 			break
 	if crossed > 0:
-		_last_dir = dir
+		_set_facing(dir)
 		_emit_dash_trail()
+	_motion.dash_finish(_cell_center(_player_cell), crossed > 0)
+	if crossed > 0 and not stopped and not landing_graced and last_step >= 0:
+		var roll := _director.roll_step(last_step)
+		if bool(roll.get("encounter", false)):
+			_on_encounter(roll)
 	return crossed
 
 
@@ -327,7 +389,7 @@ func _emit_dash_trail() -> void:
 	spark.initial_velocity_max = 130.0
 	spark.scale_amount_min = 1.0
 	spark.scale_amount_max = 2.6
-	spark.color = BRASS_BRIGHT
+	spark.color = GrimoirePalette.BRASS_BRIGHT
 	_player.add_child(spark)
 	get_tree().create_timer(0.9).timeout.connect(spark.queue_free)
 
@@ -348,6 +410,10 @@ func _process(delta: float) -> void:
 	):
 		if try_interact() != "":
 			return
+	# Collapse/expand the controls chip (H) — input-truth surface; never consumes a move.
+	if _controls_chip != null and _input.has_method("just_pressed"):
+		if bool(_input.call("just_pressed", InputActions.TOGGLE_CONTROLS)):
+			_controls_chip.call("toggle")
 	# Slice 3b: open the camp/pause menu on the menu action (guarded by the flag + overlay state).
 	if _camp_enabled and _camp_overlay == null and _input.has_method("just_pressed"):
 		if (
@@ -367,13 +433,9 @@ func _process(delta: float) -> void:
 				sigil_dash(dash_dir)
 				_dash_timer = DASH_COOLDOWN
 				return
-	_step_timer = maxf(0.0, _step_timer - delta)
-	if _step_timer > 0.0:
-		return
-	var dir := _read_step_dir()
-	if dir != Vector2i.ZERO:
-		try_move(dir)
-		_step_timer = STEP_COOLDOWN
+	# Wave 6: stepping is paced by tween-chaining + input buffering (turn-in-place taps only
+	# pivot; a hold walks). OverworldMotion falls back to the wall-clock cooldown headless.
+	_motion.tick(delta, _read_step_dir())
 
 
 ## Read a single cardinal step from InputService (prefers the dominant axis so diagonal holds still
@@ -397,49 +459,56 @@ func _render_layout() -> void:
 		_tile_layer.queue_free()
 	_tile_layer = TileMapLayer.new()
 	_tile_layer.name = "RegionTiles"
-	_tile_layer.tile_set = OverworldTileSetScript.build()
+	_tile_layer.tile_set = OverworldTileSetScript.build(_force_climate)
 	add_child(_tile_layer)
 	OverworldTileSetScript.paint(_tile_layer, _layout)
+	_scatter_props()
+
+
+## Prop decals on feature cells: a deterministic minority of feature-classified cells (chosen by
+## OverworldTileSet.prop_texture — pure function of force + cell, so the same map always dresses
+## the same way) get a painterly decal sprite (boulder ledge / moss mound / crystals / bones / ward
+## stone) drawn above the ground tiles. Walkability is untouched — these are set dressing.
+func _scatter_props() -> void:
+	if _layout == null or _tile_layer == null:
+		return
+	var s := OverworldTileSetScript.TILE_SIZE
+	for y in _layout.height:
+		for x in _layout.width:
+			if _layout.get_cell(x, y) != OverworldTileSetScript.FEATURE_TILE:
+				continue
+			var tex: Texture2D = OverworldTileSetScript.prop_texture(_force_climate, x, y)
+			if tex == null:
+				continue
+			var prop := Sprite2D.new()
+			prop.texture = tex
+			prop.z_index = 5  # above ground tiles, below the lead cameo (15) and player (20)
+			var fit := (s * 0.94) / maxf(float(tex.get_width()), float(tex.get_height()))
+			prop.scale = Vector2(fit, fit)
+			prop.position = Vector2(x * s + s / 2.0, y * s + s / 2.0)
+			_tile_layer.add_child(prop)
 
 
 func _spawn_player() -> void:
-	_player_cell = _spawn_cell()
+	_home_cell = OverworldSpawnScript.spawn_cell(_layout)
+	# Wave 3 position persistence: prefer the pre-battle cell + facing stashed by the autosave (when
+	# present + walkable) so a post-battle/reloaded overworld puts the player exactly where the fight
+	# started — never back at spawn. Falls back to the canonical spawn.
+	_player_cell = OverworldLoopStateScript.restore_cell(_run_ctx(), _layout, _home_cell)
+	_last_dir = OverworldLoopStateScript.restore_facing(_run_ctx(), _last_dir)
 	if _player == null:
 		_player = Node2D.new()
 		_player.name = "Player"
 		_player.z_index = 20  # above the tilemap and the trailing lead cameo
 		var token := Sprite2D.new()
 		token.name = "Token"
-		token.texture = _make_player_token(int(OverworldTileSetScript.TILE_SIZE * 0.92))
+		token.texture = OverworldTokensScript.player_token(
+			int(OverworldTileSetScript.TILE_SIZE * 0.92)
+		)
 		_player.add_child(token)
 		add_child(_player)
+	_motion.setup(_player, try_move, _set_facing, _get_facing)
 	_position_player()
-
-
-## A brass medallion token for the tamer: dark INK disc, BRASS_BRIGHT rim + a central sigil dot, so
-## the avatar reads as an occult game-piece on the painted map (not a flat square).
-func _make_player_token(diameter: int) -> ImageTexture:
-	var img := Image.create(diameter, diameter, false, Image.FORMAT_RGBA8)
-	img.fill(Color(0, 0, 0, 0))
-	var c := (diameter - 1) * 0.5
-	var r_out := c
-	var rim := maxf(2.5, diameter * 0.11)
-	var r_in := c - rim
-	var r_dot := r_in * 0.42
-	for y in diameter:
-		for x in diameter:
-			var d := Vector2(x - c, y - c).length()
-			if d > r_out:
-				continue
-			if d > r_in:
-				img.set_pixel(x, y, BRASS_BRIGHT)
-			elif d <= r_dot:
-				img.set_pixel(x, y, BRASS_BRIGHT)
-			elif d <= r_dot + 1.6:
-				img.set_pixel(x, y, BRASS)
-			else:
-				img.set_pixel(x, y, INK)
-	return ImageTexture.create_from_image(img)
 
 
 ## Spawn the lead-creature cameo (the ACTUAL party lead's real bestiary plate, circular-cropped with
@@ -447,13 +516,16 @@ func _make_player_token(diameter: int) -> ImageTexture:
 func _spawn_lead_creature() -> void:
 	if _lead != null:
 		return
-	var tex: Texture2D = SpeciesArt.plate(_lead_species_id())
+	var species := _lead_species_id()
+	var tex: Texture2D = SpeciesArt.plate(species)
 	if tex == null:
 		return
 	_lead = Sprite2D.new()
 	_lead.name = "LeadCreature"
 	_lead.z_index = 15
-	_lead.texture = _make_cameo_token(tex.get_image(), int(OverworldTileSetScript.TILE_SIZE * 1.02))
+	_lead.texture = OverworldTokensScript.creature_cameo(
+		tex, int(OverworldTileSetScript.TILE_SIZE * 1.18), species
+	)
 	add_child(_lead)
 	var s := OverworldTileSetScript.TILE_SIZE
 	var here := Vector2(_player_cell.x * s + s / 2.0, _player_cell.y * s + s / 2.0)
@@ -475,43 +547,6 @@ func _lead_species_id() -> String:
 		idx = clampi(int(_game.call("active_creature_index")), 0, party.size() - 1)
 	var lead: Variant = party[idx]
 	return str((lead as Dictionary).get("species_id", "")) if lead is Dictionary else ""
-
-
-## Build a circular cameo token from a full-body creature plate: centre-crop a square framing the
-## creature, downscale, then mask to a disc with a brass ring (the cream plate bg reads as parchment).
-func _make_cameo_token(src: Image, diameter: int) -> ImageTexture:
-	src.convert(Image.FORMAT_RGBA8)
-	var w := src.get_width()
-	var h := src.get_height()
-	var side := mini(w, h)
-	var ox := clampi(int((w - side) * 0.5), 0, maxi(0, w - side))
-	var oy := clampi(int((h - side) * 0.42), 0, maxi(0, h - side))
-	var sq := src.get_region(Rect2i(ox, oy, side, side))
-	sq.resize(diameter, diameter, Image.INTERPOLATE_LANCZOS)
-	var c := (diameter - 1) * 0.5
-	var r_out := c
-	var ring := maxf(2.0, diameter * 0.07)
-	var r_in := c - ring
-	for y in diameter:
-		for x in diameter:
-			var d := Vector2(x - c, y - c).length()
-			if d > r_out:
-				sq.set_pixel(x, y, Color(0, 0, 0, 0))
-			elif d > r_in:
-				sq.set_pixel(x, y, BRASS)
-	return ImageTexture.create_from_image(sq)
-
-
-## A radial vignette texture (transparent centre → soft dark corners) for screen-space atmosphere.
-func _make_vignette(size: int) -> ImageTexture:
-	var img := Image.create(size, size, false, Image.FORMAT_RGBA8)
-	var c := (size - 1) * 0.5
-	var maxd := Vector2(c, c).length()
-	for y in size:
-		for x in size:
-			var t := clampf((Vector2(x - c, y - c).length() / maxd - 0.55) / 0.45, 0.0, 1.0)
-			img.set_pixel(x, y, Color(0.02, 0.015, 0.03, t * t * 0.62))
-	return ImageTexture.create_from_image(img)
 
 
 ## A gentle force-climate colour-grade + a vignette overlay, so the region reads as an atmospheric
@@ -542,7 +577,7 @@ func _setup_atmosphere() -> void:
 	layer.name = "Atmosphere"
 	layer.layer = 1
 	var vig := TextureRect.new()
-	vig.texture = _make_vignette(256)
+	vig.texture = OverworldTokensScript.vignette(256)
 	vig.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	vig.stretch_mode = TextureRect.STRETCH_SCALE
 	vig.set_anchors_preset(Control.PRESET_FULL_RECT)
@@ -560,11 +595,15 @@ func _setup_hud() -> void:
 	panel.position = Vector2(18, 14)
 	var box := VBoxContainer.new()
 	box.add_theme_constant_override("separation", 2)
+	# Wave 3: the HUD names the region the systems actually RUN (data-driven from the active region
+	# id via OverworldContent, falling back to the raw id) — no more hard-coded "The Rust Marsh".
 	var title := Label.new()
-	title.text = REGION_TITLE
+	title.name = "RegionTitle"
+	title.text = OverworldContent.region_title(_region_id())
 	title.theme_type_variation = "TitleLabel"
 	var sub := Label.new()
-	sub.text = REGION_CLIMATE
+	sub.text = OverworldContent.region_climate(_region_id())
+	sub.visible = sub.text != ""
 	sub.theme_type_variation = "MutedLabel"
 	box.add_child(title)
 	box.add_child(sub)
@@ -575,6 +614,9 @@ func _setup_hud() -> void:
 	box.add_child(_objective_label)
 	panel.add_child(box)
 	layer.add_child(panel)
+	# Controls chip (W1/C13): the live verbs, always on, bottom-left, collapsible with H.
+	_controls_chip = ControlsChipScript.new(_input)
+	layer.add_child(_controls_chip)
 	add_child(layer)
 	var theme_svc := get_node_or_null("/root/ThemeService")
 	if theme_svc != null and theme_svc.has_method("apply_to"):
@@ -612,114 +654,55 @@ func _active_objective() -> String:
 	return ""
 
 
+## Snap the token to its cell centre (spawn/restore placement; steps GLIDE via OverworldMotion).
 func _position_player() -> void:
 	if _player == null:
 		return
+	_player.position = _cell_center(_player_cell)
+
+
+## Pixel centre of a grid cell — the token's rest position on that tile.
+func _cell_center(cell: Vector2i) -> Vector2:
 	var s := OverworldTileSetScript.TILE_SIZE
-	_player.position = Vector2(_player_cell.x * s + s / 2.0, _player_cell.y * s + s / 2.0)
+	return Vector2(cell.x * s + s / 2.0, cell.y * s + s / 2.0)
 
 
-## The first walkable cell scanning row-major; falls back to (0,0) if the layout is somehow all
-## walls (the authored fallback guarantees an interior floor, so this is defensive).
-func _first_walkable_cell() -> Vector2i:
-	for y in _layout.height:
-		for x in _layout.width:
-			if OverworldTileSetScript.is_walkable(_layout.get_cell(x, y)):
-				return Vector2i(x, y)
-	return Vector2i.ZERO
+## Pivot: set facing, flip the lead cameo to the faced side, lean the camera ahead. Called by a
+## turn-in-place tap (via OverworldMotion) and by every real step/dash.
+func _set_facing(dir: Vector2i) -> void:
+	if dir == Vector2i.ZERO:
+		return
+	_last_dir = dir
+	if _lead != null and dir.x != 0:
+		_lead.flip_h = dir.x < 0
+	OverworldCameraRig.set_lookahead(_cam_rig, _lookahead_dir())
 
 
-## The cell nearest the region CENTRE that belongs to the LARGEST reachable open area — the player
-## spawns here (not the top-left corner) so every direction is usable immediately and the camera
-## frames the player mid-region. Selecting from the biggest 4-connected walkable component (not just
-## any walkable tile) keeps the spawn in the navigable field and OUT of a SEALED set-piece room — a
-## DungeonAssembler room is stamped with a wall ring and no doorway, so a spawn inside its isolated
-## interior could move around the room but never leave, soft-locking the run.
-func _spawn_cell() -> Vector2i:
-	var field := _largest_open_component()
-	if field.is_empty():
-		return _first_walkable_cell()
-	var cx := _layout.width / 2
-	var cy := _layout.height / 2
-	var best := Vector2i(-1, -1)
-	var best_d := 1 << 30
-	for cell: Vector2i in field:
-		var d := (cell.x - cx) * (cell.x - cx) + (cell.y - cy) * (cell.y - cy)
-		if d < best_d:
-			best_d = d
-			best = cell
-	return best if best.x >= 0 else _first_walkable_cell()
+func _get_facing() -> Vector2i:
+	return _last_dir
 
 
-## The cells of the LARGEST 4-connected component of walkable tiles — the main reachable field. A
-## flood fill seeded from every unvisited walkable cell; the biggest basin wins (sealed rooms and
-## other islands are smaller, so they lose). Empty only if the layout has no walkable tile at all.
-func _largest_open_component() -> Array[Vector2i]:
-	var visited := {}
-	var best: Array[Vector2i] = []
-	for y in _layout.height:
-		for x in _layout.width:
-			var start := Vector2i(x, y)
-			if visited.has(start) or not OverworldTileSetScript.is_walkable(_layout.get_cell(x, y)):
-				continue
-			var component := _flood_open(start, visited)
-			if component.size() > best.size():
-				best = component
-	return best
-
-
-## Flood fill (4-connected, matching the cardinal grid steps of try_move) of the walkable region
-## containing `start`, marking every reached cell in the shared `visited` set so each cell is scanned
-## once across the whole sweep. Returns the cells of that one component.
-func _flood_open(start: Vector2i, visited: Dictionary) -> Array[Vector2i]:
-	var component: Array[Vector2i] = []
-	var queue: Array[Vector2i] = [start]
-	visited[start] = true
-	while not queue.is_empty():
-		var cell: Vector2i = queue.pop_back()
-		component.append(cell)
-		for step: Vector2i in [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]:
-			var n := cell + step
-			if visited.has(n) or not _layout.in_bounds(n.x, n.y):
-				continue
-			if not OverworldTileSetScript.is_walkable(_layout.get_cell(n.x, n.y)):
-				continue
-			visited[n] = true
-			queue.append(n)
-	return component
+## The camera look-ahead direction: the last walk direction, or ZERO under reduce_motion (the
+## lean is a constant drift some players switch off).
+func _lookahead_dir() -> Vector2i:
+	return Vector2i.ZERO if OverworldMotionScript.reduce_motion() else _last_dir
 
 
 ## Attach a PhantomCamera2D following the player. Fully guarded: if the addon classes are missing
 ## (stripped build / headless import quirk) it falls back to a plain Camera2D so the scene still
-## builds and the slice never errors.
+## builds and the slice never errors. Wave 6/C8: SIMPLE follow + damping + look-ahead (rig kept).
 func _setup_camera() -> void:
-	if _player == null:
-		return
-	var zoom := Vector2(CAMERA_ZOOM, CAMERA_ZOOM)
-	if ClassDB.class_exists("PhantomCameraHost") and ClassDB.class_exists("PhantomCamera2D"):
-		var cam := Camera2D.new()
-		cam.name = "OverworldCamera"
-		cam.zoom = zoom
-		add_child(cam)
-		cam.make_current()
-		var host: Object = ClassDB.instantiate("PhantomCameraHost")
-		if host is Node:
-			cam.add_child(host as Node)
-		var pcam: Object = ClassDB.instantiate("PhantomCamera2D")
-		if pcam is Node2D:
-			add_child(pcam as Node2D)
-			# follow_mode 1 == GLUED in PhantomCamera2D.FollowMode (glue to the target).
-			pcam.set("follow_mode", 1)
-			pcam.set("follow_target", _player)
-			pcam.set("zoom", zoom)  # keep the host from resetting the Camera2D zoom to 1x
-		return
-	# Fallback: plain Camera2D parented to the player so it tracks naturally — zoomed + made current
-	# so the small (16px) tiles fill the view and the region is framed around the player.
-	var fallback := Camera2D.new()
-	fallback.name = "OverworldCamera"
-	fallback.zoom = zoom
-	_player.add_child(fallback)
-	fallback.make_current()
+	_cam_rig = OverworldCameraRig.setup(self, _player, _layout_pixel_rect(), CAMERA_ZOOM)
+	OverworldCameraRig.set_lookahead(_cam_rig, _lookahead_dir())
+
+
+## The painted layout rect in pixels — the camera clamps to it so the view never pans
+## into raw void beyond the region's edge.
+func _layout_pixel_rect() -> Rect2:
+	if _layout == null:
+		return Rect2()
+	var s := float(OverworldTileSetScript.TILE_SIZE)
+	return Rect2(Vector2.ZERO, Vector2(_layout.width * s, _layout.height * s))
 
 
 # === NPCs + dialogue ========================================================================== #
@@ -735,6 +718,7 @@ func _spawn_npcs() -> void:
 		_quests = QuestService.new()
 		_quests.register(_quest_defs())  # all overworld quests (MARSH/MELON/BRAMBLE/...) in one place
 		_restore_quests()
+	_sync_boss_goal_quest()
 	var cells := _npc_cells(OverworldContent.NPC_DEFS.size())
 	for i in mini(cells.size(), OverworldContent.NPC_DEFS.size()):
 		var def: Dictionary = OverworldContent.NPC_DEFS[i]
@@ -745,7 +729,9 @@ func _spawn_npcs() -> void:
 		var s := OverworldTileSetScript.TILE_SIZE
 		node.position = Vector2(cell.x * s + s / 2.0, cell.y * s + s / 2.0)
 		var token := Sprite2D.new()
-		token.texture = _make_npc_token(int(s * 0.84), def["ring"] as Color)
+		token.texture = OverworldTokensScript.npc_token(
+			int(s * 0.84), def["ring"] as Color, str(def["name"])
+		)
 		node.add_child(token)
 		add_child(node)
 		# Carry ALL of the def's keys (name/timeline/ring + every quest step_key) so the data-driven
@@ -756,8 +742,9 @@ func _spawn_npcs() -> void:
 		_npcs.append(entry)
 
 
-## Pick `count` walkable cells near the spawn (manhattan distance 2..6), deterministic, skipping the
-## spawn cell itself — so the tamer can reach the NPCs without crossing the whole region.
+## Pick `count` walkable cells near the CANONICAL spawn (manhattan distance 2..6), deterministic,
+## skipping the spawn cell itself — anchored on _home_cell (not the battle-restored player cell) so
+## the cast stays put across battles and reloads.
 func _npc_cells(count: int) -> Array:
 	var found: Array = []
 	for radius in range(2, 8):
@@ -765,8 +752,8 @@ func _npc_cells(count: int) -> Array:
 			for dx in range(-radius, radius + 1):
 				if abs(dx) + abs(dy) != radius:
 					continue
-				var c := _player_cell + Vector2i(dx, dy)
-				if c == _player_cell or found.has(c):
+				var c := _home_cell + Vector2i(dx, dy)
+				if c == _home_cell or found.has(c):
 					continue
 				if not _layout.in_bounds(c.x, c.y):
 					continue
@@ -775,29 +762,6 @@ func _npc_cells(count: int) -> Array:
 					if found.size() >= count:
 						return found
 	return found
-
-
-## A parchment NPC token with a coloured ring + dark sigil dot — distinct from the brass tamer
-## medallion and the creature cameos, so "someone to talk to" reads at a glance.
-func _make_npc_token(diameter: int, ring: Color) -> ImageTexture:
-	var img := Image.create(diameter, diameter, false, Image.FORMAT_RGBA8)
-	img.fill(Color(0, 0, 0, 0))
-	var c := (diameter - 1) * 0.5
-	var rim := maxf(2.5, diameter * 0.12)
-	var r_in := c - rim
-	var r_dot := r_in * 0.34
-	for y in diameter:
-		for x in diameter:
-			var d := Vector2(x - c, y - c).length()
-			if d > c:
-				continue
-			if d > r_in:
-				img.set_pixel(x, y, ring)
-			elif d <= r_dot:
-				img.set_pixel(x, y, INK)
-			else:
-				img.set_pixel(x, y, Color(0.886, 0.831, 0.733))  # parchment
-	return ImageTexture.create_from_image(img)
 
 
 ## If the tamer stands on/next to an NPC, speak to it and return its timeline id; else "". Drives the
@@ -872,6 +836,23 @@ func _advance_quest_step(quest_id: String, step: String) -> void:
 		var toast := get_node_or_null("/root/Toast")
 		if toast != null and toast.has_method("event"):
 			toast.call("event", "quest_update")
+
+
+## Wave 3 (red-team C13): the BOSS-GOAL quest is active from RUN START (no NPC gives it — started
+## here on every build until it sticks) and completes through the existing quest_state flags path
+## the moment the slice reads cleared (a played boss win sets the victory flag via
+## GameController._mark_slice_cleared). Surfaces the run's goal in the Phase-13c HUD tracker.
+func _sync_boss_goal_quest() -> void:
+	if _quests == null:
+		return
+	var qid := str(OverworldContent.BOSS_QUEST["id"])
+	if _quests.is_done(qid):
+		return
+	if not _quests.is_active(qid) and _quests.start(qid):
+		_persist_quests()
+		_refresh_objective()
+	if _game != null and _game.has_method("slice_cleared") and bool(_game.call("slice_cleared")):
+		_advance_quest_step(qid, "walk_the_deep_path")
 
 
 ## All quest definitions this screen drives (for lookup + restore) — single-sourced from the content
@@ -963,6 +944,11 @@ func quest_done(quest_id: String) -> bool:
 ## The number of NPCs placed in the region (for tests).
 func npc_count() -> int:
 	return _npcs.size()
+
+
+## The HUD controls chip node (for tests + future waves).
+func controls_chip() -> Node:
+	return _controls_chip
 
 
 func player_cell() -> Vector2i:

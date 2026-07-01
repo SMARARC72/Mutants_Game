@@ -36,13 +36,16 @@ func _build() -> void:
 	add_child(bg)
 
 	# Atmosphere: drifting motes + a radial vignette, so the menu feels like an open grimoire.
+	# Geometry derives from the live viewport so the 1920x1080 baseline (and any window
+	# size) fills edge to edge instead of assuming the old 1152x648 default.
+	var vp := get_viewport_rect().size
 	var motes := CPUParticles2D.new()
-	motes.position = Vector2(576, 700)
+	motes.position = Vector2(vp.x * 0.5, vp.y * 0.97)
 	motes.amount = 30
 	motes.lifetime = 8.0
 	motes.preprocess = 6.0
 	motes.emission_shape = CPUParticles2D.EMISSION_SHAPE_RECTANGLE
-	motes.emission_rect_extents = Vector2(700, 60)
+	motes.emission_rect_extents = Vector2(vp.x * 0.62, 60)
 	motes.gravity = Vector2(0, -7)
 	motes.initial_velocity_min = 3.0
 	motes.initial_velocity_max = 12.0
@@ -86,7 +89,7 @@ func _build() -> void:
 	tagline.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	box.add_child(tagline)
 
-	_add_button(box, "Begin the Descent (New Run)", _on_new_run)
+	var first := _add_button(box, "Begin the Descent (New Run)", _on_new_run)
 	var continue_button := _add_button(box, "Continue", _on_continue)
 	# Disable Continue when there is no readable local save (slice DoD: menu gating).
 	if _game == null or not _game.has_method("has_save") or not bool(_game.call("has_save")):
@@ -94,6 +97,10 @@ func _build() -> void:
 	_add_button(box, "Sample Plate", _on_play)
 	_add_button(box, "Options", _on_options)
 	_add_button(box, "Abandon Hope (Quit)", _on_quit)
+	# W1 focus pass: the first verb owns focus so keyboard/gamepad play works from frame one
+	# (container order gives the column its focus neighbours automatically).
+	if first.is_inside_tree():
+		first.grab_focus()
 
 
 func _add_button(parent: VBoxContainer, text: String, handler: Callable) -> Button:

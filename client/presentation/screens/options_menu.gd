@@ -9,6 +9,7 @@ extends Control
 ## own Resource-based config.
 
 const InputActions := preload("res://infrastructure/input/input_actions.gd")
+const MAIN_MENU_SCENE := "res://presentation/screens/main_menu.tscn"
 
 var _settings: Node
 var _input: Node
@@ -48,7 +49,7 @@ func _build() -> void:
 	title.theme_type_variation = "TitleLabel"
 	box.add_child(title)
 
-	_add_volume_row(box, "Master", "audio", "master_volume")
+	var first_row := _add_volume_row(box, "Master", "audio", "master_volume")
 	_add_volume_row(box, "Music", "audio", "music_volume")
 	_add_volume_row(box, "Effects", "audio", "sfx_volume")
 	_add_toggle_row(box, "Fullscreen", "video", "fullscreen")
@@ -63,10 +64,36 @@ func _build() -> void:
 	_add_rebind_row(box, "Confirm", InputActions.CONFIRM)
 	_add_rebind_row(box, "Interact", InputActions.INTERACT)
 
+	box.add_child(HSeparator.new())
+	var back := Button.new()
+	back.text = "Back"
+	box.add_child(back)
+	back.pressed.connect(_on_back)
+	# W1 focus pass: land on the FIRST setting (W0 focused Back) — up/down walks the sheet,
+	# left/right adjusts the focused slider, Back stays reachable at the bottom of the chain.
+	if first_row != null and first_row.is_inside_tree():
+		first_row.grab_focus()
 
+
+## ESC / cancel always exits Options — the screen must never trap the player.
+func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("ui_cancel"):
+		get_viewport().set_input_as_handled()
+		_on_back()
+
+
+func _on_back() -> void:
+	var transition := get_node_or_null("/root/Transition")
+	if transition != null:
+		await transition.call("change_scene_ritual", MAIN_MENU_SCENE)
+	else:
+		get_tree().change_scene_to_file(MAIN_MENU_SCENE)
+
+
+## Build one volume row; returns its slider so the focus pass can land on the first row.
 func _add_volume_row(
 	parent: VBoxContainer, label_text: String, section: String, key: String
-) -> void:
+) -> HSlider:
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", 12)
 	parent.add_child(row)
@@ -79,14 +106,22 @@ func _add_volume_row(
 	slider.max_value = 1.0
 	slider.step = 0.01
 	slider.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	slider.value = float(_get(section, key, 1.0))
+	slider.value = float(_setting_value(section, key, 1.0))
 	row.add_child(slider)
 	slider.value_changed.connect(
 		func(v: float) -> void:
 			if _settings != null:
 				_settings.call("set_value", section, key, v)
 				_settings.call("save_settings")
+			# WAVE-SND: the sliders stopped lying — apply to the live AudioServer buses,
+			# and let SFX-affecting rows audibly demonstrate the new level.
+			var sfx := get_node_or_null("/root/SfxService")
+			if sfx != null:
+				sfx.call("apply_volumes")
+				if key != "music_volume":
+					sfx.call("play", "ui_click")
 	)
+	return slider
 
 
 func _add_toggle_row(
@@ -94,7 +129,7 @@ func _add_toggle_row(
 ) -> void:
 	var check := CheckButton.new()
 	check.text = label_text
-	check.button_pressed = bool(_get(section, key, false))
+	check.button_pressed = bool(_setting_value(section, key, false))
 	parent.add_child(check)
 	check.toggled.connect(
 		func(on: bool) -> void:
@@ -136,7 +171,9 @@ func _binding_text(action_id: String) -> String:
 	return "Unbound"
 
 
-func _get(section: String, key: String, fallback: Variant) -> Variant:
+## NOTE: deliberately NOT named `_get` — that would override Object's native virtual
+## with an incompatible signature and break the script under Godot 4.
+func _setting_value(section: String, key: String, fallback: Variant) -> Variant:
 	if _settings != null:
 		return _settings.call("get_value", section, key, fallback)
 	return fallback

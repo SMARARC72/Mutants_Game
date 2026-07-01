@@ -34,6 +34,12 @@ const DEFAULTS := {
 		"reduce_motion": false,
 		"skip_seen_transitions": false,
 	},
+	# Wave 8: battle pacing — the Swift Rites beat speed ("x1" / "x2" / "instant"). Listed in
+	# DEFAULTS so _migrate keeps the section across restarts (unknown sections fall away).
+	"battle":
+	{
+		"swift_rites": "x1",
+	},
 }
 
 var data: Dictionary = {}

@@ -12,7 +12,9 @@ const EncounterCatalogScript := preload("res://application/overworld/encounter_c
 
 const TEST_SEED := 0x5EED_BEEF
 const REGION := "verdant_glut"
-const STEPS := 40
+## Wave 3 retuned ENCOUNTER_CHANCE 0.22 -> 0.09: the deterministic walk is lengthened so the
+## fixed canonical stream still yields hits > 0 (expected ~14 at 0.09 over 160 steps).
+const STEPS := 160
 
 
 func _sequence(seed: int) -> Array:
@@ -48,7 +50,7 @@ func test_different_seed_gives_different_sequence() -> void:
 
 
 func test_at_least_one_encounter_fires_over_a_run() -> void:
-	# With ENCOUNTER_CHANCE ~0.22 over 40 steps, the canonical stream must trigger at least once
+	# With ENCOUNTER_CHANCE ~0.09 over 160 steps, the canonical stream must trigger at least once
 	# (a smoke that the roll is actually wired, not always-false).
 	var seq := _sequence(TEST_SEED)
 	var hits := 0

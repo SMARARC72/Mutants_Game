@@ -30,6 +30,7 @@ const MOVE_RIGHT := "move_right"
 const INTERACT := "interact"
 const SIGIL_DASH := "sigil_dash"  # the ley-line dash (design §3.5)
 const OPEN_MENU := "open_menu"
+const TOGGLE_CONTROLS := "toggle_controls"  # collapse/expand the HUD controls chip (W1/C13)
 
 # --- Battle -----------------------------------------------------------------------
 const ATTACK := "attack"
@@ -48,7 +49,17 @@ static func context_actions() -> Dictionary:
 	return {
 		CTX_MENU: [CONFIRM, CANCEL, NAV_UP, NAV_DOWN, NAV_LEFT, NAV_RIGHT, PAUSE],
 		CTX_OVERWORLD:
-		[MOVE_UP, MOVE_DOWN, MOVE_LEFT, MOVE_RIGHT, INTERACT, SIGIL_DASH, OPEN_MENU, PAUSE],
+		[
+			MOVE_UP,
+			MOVE_DOWN,
+			MOVE_LEFT,
+			MOVE_RIGHT,
+			INTERACT,
+			SIGIL_DASH,
+			OPEN_MENU,
+			TOGGLE_CONTROLS,
+			PAUSE,
+		],
 		CTX_BATTLE:
 		[CONFIRM, CANCEL, ATTACK, DEFEND, OVERCLOCK, CYCLE_TARGET, NAV_UP, NAV_DOWN, PAUSE],
 		CTX_LAB: [CONFIRM, CANCEL, COMMIT_RITE, METHOD_PRECISE, METHOD_WILD, PAUSE],
@@ -72,6 +83,7 @@ static func default_keys() -> Dictionary:
 		INTERACT: KEY_E,
 		SIGIL_DASH: KEY_SHIFT,
 		OPEN_MENU: KEY_TAB,
+		TOGGLE_CONTROLS: KEY_H,
 		ATTACK: KEY_J,
 		DEFEND: KEY_K,
 		OVERCLOCK: KEY_L,
@@ -82,8 +94,9 @@ static func default_keys() -> Dictionary:
 	}
 
 
-## Default gamepad button per action (JoyButton enum) — gamepad drives menus + a battle action
-## (D4 acceptance). -1 = no default gamepad binding.
+## Default gamepad button per action (JoyButton enum) — gamepad drives the whole loop (W1 input
+## truth): bottom face = confirm/interact, right face = cancel, start = pause/camp, left face (X)
+## = the sigil-dash. -1 = no default gamepad binding.
 static func default_gamepad() -> Dictionary:
 	return {
 		CONFIRM: JOY_BUTTON_A,
@@ -98,8 +111,9 @@ static func default_gamepad() -> Dictionary:
 		MOVE_LEFT: JOY_BUTTON_DPAD_LEFT,
 		MOVE_RIGHT: JOY_BUTTON_DPAD_RIGHT,
 		INTERACT: JOY_BUTTON_A,
-		SIGIL_DASH: JOY_BUTTON_RIGHT_SHOULDER,
-		OPEN_MENU: JOY_BUTTON_Y,
+		SIGIL_DASH: JOY_BUTTON_X,
+		OPEN_MENU: JOY_BUTTON_START,
+		TOGGLE_CONTROLS: JOY_BUTTON_BACK,
 		ATTACK: JOY_BUTTON_X,
 		DEFEND: JOY_BUTTON_B,
 		OVERCLOCK: JOY_BUTTON_Y,
@@ -107,4 +121,20 @@ static func default_gamepad() -> Dictionary:
 		COMMIT_RITE: JOY_BUTTON_A,
 		METHOD_PRECISE: JOY_BUTTON_LEFT_SHOULDER,
 		METHOD_WILD: JOY_BUTTON_RIGHT_SHOULDER,
+	}
+
+
+## Default gamepad ANALOG binding per directional action: left-stick axis + the direction sign
+## that actuates it (W1 gamepad truth — the stick drives MOVE_*/NAV_* alongside the D-pad).
+## `InputService` turns each entry into an InputEventJoypadMotion with a 0.5 deadzone.
+static func default_gamepad_axes() -> Dictionary:
+	return {
+		NAV_LEFT: {"axis": JOY_AXIS_LEFT_X, "value": -1.0},
+		NAV_RIGHT: {"axis": JOY_AXIS_LEFT_X, "value": 1.0},
+		NAV_UP: {"axis": JOY_AXIS_LEFT_Y, "value": -1.0},
+		NAV_DOWN: {"axis": JOY_AXIS_LEFT_Y, "value": 1.0},
+		MOVE_LEFT: {"axis": JOY_AXIS_LEFT_X, "value": -1.0},
+		MOVE_RIGHT: {"axis": JOY_AXIS_LEFT_X, "value": 1.0},
+		MOVE_UP: {"axis": JOY_AXIS_LEFT_Y, "value": -1.0},
+		MOVE_DOWN: {"axis": JOY_AXIS_LEFT_Y, "value": 1.0},
 	}

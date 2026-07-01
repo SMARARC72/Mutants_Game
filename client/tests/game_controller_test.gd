@@ -70,6 +70,42 @@ func test_accessors_reflect_active_run() -> void:
 	gc.queue_free()
 
 
+func test_defeat_costs_a_quarter_of_essence_floor_zero() -> void:
+	# Wave 3 consequence: a DEFEAT costs ~25% of banked essence (round down), clamped at 0. A flee
+	# is an escape, not a defeat — it stays cost-free. Wins never pay the toll.
+	var gc := _make_controller()
+	var run: RunContext = gc.call("new_run", TEST_SEED)
+	run.essence = 41
+	gc.call("apply_battle_result", {"player_won": false, "winner": "enemy", "xp": 0})
+	assert_int(run.essence).is_equal(31)  # 41 - floor(41 * 0.25) = 41 - 10
+	run.essence = 0
+	gc.call("apply_battle_result", {"player_won": false, "winner": "enemy", "xp": 0})
+	assert_int(run.essence).is_equal(0)  # floor 0 — never negative
+	run.essence = 40
+	gc.call("apply_battle_result", {"player_won": true, "winner": "fled", "xp": 0})
+	assert_int(run.essence).is_equal(40)  # fleeing is free
+	gc.queue_free()
+
+
+func test_battle_result_party_hp_folds_into_the_party() -> void:
+	# Wave 3 consequence: a result carrying party_hp writes live end-of-battle HP back onto the
+	# exact run.party entries by index; out-of-range entries are ignored, others untouched.
+	var gc := _make_controller()
+	var run: RunContext = gc.call("new_run", TEST_SEED)
+	var hp_payload := [
+		{"index": 0, "hp": 7, "max_hp": 30},
+		{"index": 99, "hp": 1, "max_hp": 1},  # out of range -> ignored, never crashes
+	]
+	gc.call("apply_battle_result", {"player_won": true, "xp": 0, "party_hp": hp_payload})
+	var first: Dictionary = run.party[0]
+	assert_int(int(first["hp"])).is_equal(7)
+	assert_int(int(first["max_hp"])).is_equal(30)
+	# The untouched member gained no hp keys from someone else's entry.
+	var second: Dictionary = run.party[1]
+	assert_bool(second.has("hp")).is_false()
+	gc.queue_free()
+
+
 func test_continue_with_no_save_returns_false() -> void:
 	_clear_saves()
 	var gc := _make_controller()

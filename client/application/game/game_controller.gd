@@ -29,6 +29,16 @@ const GearCatalogScript := preload("res://infrastructure/catalog/gear_catalog.gd
 const ACTIVE_CREATURE_FLAG := "active_creature"
 const InventoryAdapterScript := preload("res://infrastructure/inventory/inventory_adapter.gd")
 
+## Fresh-run Lab reagents (Wave 5): one in-force gene-vial + two organs so the Mutate rite is
+## committable on a brand-new run. REAL keys from client/catalog/splice_rules.json — "verdant"
+## (gene_compat: Eros, the starter line's force) and "claw"/"horn" (ingredient_compat organs).
+## [item_type, item_key, qty] rows fed through the InventoryAdapter.
+const STARTER_REAGENTS := [
+	["gene", "verdant", 1],
+	["organ", "claw", 1],
+	["organ", "horn", 1],
+]
+
 ## Slice 4 — Bloomwardens faction standing. The run.flags key holding the standing integer (0 =
 ## Stranger baseline).
 const BLOOMWARDENS_STANDING_FLAG := "bloomwardens_standing"
@@ -108,6 +118,7 @@ func new_run(seed: int) -> RunContext:
 	run.world_state = {"active_region": EncounterCatalogScript.STARTING_REGION, "steps": 0}
 	run.unlocked_regions = {EncounterCatalogScript.STARTING_REGION: true}
 	run.flags = {}
+	run.inventory = _starter_inventory_rows()
 	_run = run
 	_base_save_version = 0
 	_inventory = null  # drop any prior run's live drawer; rebuild lazily from the new run's rows
@@ -181,6 +192,21 @@ func apply_battle_result(result: Dictionary) -> RunContext:
 		return null
 	var gained := int(result.get("xp", 0))
 	_run.essence += gained  # Slice 1 stand-in growth resource.
+	# Wave 3 consequence: DEFEAT costs ~25% of banked essence (round down, floor 0) — losing has a
+	# price the run actually feels. A flee is an escape, not a defeat; it stays cost-free.
+	if not bool(result.get("player_won", false)) and str(result.get("winner", "")) != "fled":
+		_run.essence = maxi(0, _run.essence - int(_run.essence / 4.0))
+	# Wave 3 consequence: fold the live end-of-battle HP back onto the party — the battle leaves
+	# marks. Entries are shaped by the battle screen ({index, hp, max_hp} per surviving mapping);
+	# results without the key (auto/boss round-trips, older callers) are untouched.
+	for entry: Variant in result.get("party_hp", []) as Array:
+		if not (entry is Dictionary):
+			continue
+		var idx := int((entry as Dictionary).get("index", -1))
+		if idx >= 0 and idx < _run.party.size() and _run.party[idx] is Dictionary:
+			var creature: Dictionary = _run.party[idx]
+			creature["hp"] = int((entry as Dictionary).get("hp", 0))
+			creature["max_hp"] = int((entry as Dictionary).get("max_hp", 0))
 	_run.flags["last_battle_won"] = bool(result.get("player_won", false))
 	_run.flags["last_battle_reason"] = str(result.get("reason", ""))
 	# Slice 2: a captured wild creature joins the party (shaped as a creature_instance by the capture
@@ -390,6 +416,16 @@ func has_save() -> bool:
 
 
 # === internals =============================================================================== #
+
+
+## The data-only inventory rows a fresh run starts with (STARTER_REAGENTS through the adapter, so
+## stacking/shape stay single-sourced). Pure data — no gameplay number is computed here.
+static func _starter_inventory_rows() -> Array:
+	var inv: InventoryAdapter = InventoryAdapterScript.new()
+	for entry in STARTER_REAGENTS:
+		var row: Array = entry
+		inv.add(str(row[0]), str(row[1]), int(row[2]))
+	return inv.to_dict()
 
 
 static func _as_string_array(value: Variant) -> Array:

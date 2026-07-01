@@ -179,7 +179,11 @@ func _build_ui() -> void:
 	inner.add_child(_rank_label)
 
 	_oc_bar = _add_axis(inner, "Order", "Chaos", "OrderChaosBar", Color(0.808, 0.722, 0.42))
-	_pc_bar = _add_axis(inner, "Pure", "Corrupt", "PurityCorruptBar", Color(0.667, 0.376, 0.69))
+	# The Purity⇄Corrupt fill leans toward the Corrupt pole — the palette's rot rule owns
+	# that colour (full bruise-purple), never a hand-picked hex.
+	_pc_bar = _add_axis(
+		inner, "Pure", "Corrupt", "PurityCorruptBar", GrimoirePalette.corruption_color(1.0)
+	)
 
 	var corruption_title := Label.new()
 	corruption_title.text = "The price of playing god"
@@ -202,6 +206,9 @@ func _build_ui() -> void:
 	back.text = "Return to the descent"
 	back.pressed.connect(return_to_overworld)
 	box.add_child(back)
+	# W1 focus pass: the sheet is read-only, so its one verb (Back) owns focus.
+	if back.is_inside_tree():
+		back.grab_focus()
 
 
 ## One morality axis row: left pole label, a track ProgressBar (-100..100), right pole label. The fill

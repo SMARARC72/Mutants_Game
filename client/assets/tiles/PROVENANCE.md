@@ -1,6 +1,15 @@
-# Tiles — Kenney (CC0) + OpenGameArt (per-asset, verify!)
+# Tiles — repo-authored AI art, processed by tools/make_tiles.py
 
-CC0 Kenney top-down tiles + ONE verified-CC0 OpenGameArt dark-fantasy tileset. **Phase 0.5 status:**
-curated tileset pending download (bulk packs in `../_asset-library/`, not committed). ⚠ OpenGameArt is
-mixed-license — each asset MUST be verified CC0 (or CC-BY → `CREDITS.md`) before committing. Curated
-binaries commit via Git LFS. Sources: https://kenney.nl/assets · https://opengameart.org
+## Wave 6.5 (overworld terrain thin slice)
+
+`topdown/*.png` (terrain, RGB 512px, seamless) and `props/*.png` (decal knockouts, RGBA,
+tight-cropped): **repo-authored AI art** — sourced from the main repo's gitignored staging area
+`/assets/tiles/topdown/TILE-031..060` (30 painterly 512px plates generated for this project) and
+processed deterministically by `tools/make_tiles.py` (frame/plate crop, offset-wrap + cross-fade
+seamless, background knockout for props). The raw plates' FILENAMES ARE UNRELIABLE; the by-eye
+audit that maps each raw plate to its true content, role, and output asset is
+`tools/tile_remap.json`. No third-party assets. Binaries commit via Git LFS.
+
+Earlier files `topdown/eros-bloom.png` + `topdown/worn-path.png` (Phase 7) share the same
+provenance (repo-authored AI art, curated crops of the same plate set); superseded by the Wave 6.5
+set but kept as fallbacks.

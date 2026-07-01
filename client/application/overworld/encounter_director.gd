@@ -26,8 +26,14 @@ const _TEAM_SALT := 0x5445_414D  # "TEAM"
 const _BATTLE_SALT := 0x4254_4C53  # "BTLS"
 const _BOSS_SALT := 0x424F_5353  # "BOSS"
 
-## Per-step probability a wild encounter fires (Slice 1 dial; gentle Verdant onboarding).
-const ENCOUNTER_CHANCE := 0.22
+## Per-step probability a wild encounter fires. Wave 3 retune (EXPLICITLY INTERIM, master-plan
+## tension 8): 0.22 made walking a battle treadmill; ~0.09 + the overworld's post-battle grace
+## window kills it today. Wave 13 REPLACES this flat dial with thin-place gating (~0.30 on veil
+## tiles / ~0.04 elsewhere) — do not hand-tune it further here.
+const ENCOUNTER_CHANCE := 0.09
+## Steps of post-battle breathing room the overworld grants before wild rolls resume (persisted in
+## run.world_state by the overworld; the dial lives here beside its sibling ENCOUNTER_CHANCE).
+const POST_BATTLE_GRACE_STEPS := 5
 ## Wild teams in the Verdant fringe are small (1-2) so early fights stay readable.
 const ENEMY_TEAM_MIN := 1
 const ENEMY_TEAM_MAX := 2
@@ -99,11 +105,15 @@ func roll_step(step_index: int) -> Dictionary:
 
 
 ## True when the region's boss fight should fire at `step_index`: the player has explored at least
-## `min_steps` steps AND the boss has not already been cleared (`already_cleared`). A pure function of
-## (step_index, the slice's boss-trigger config, already_cleared) — no RNG, fully reproducible. The
+## `min_steps` steps AND the boss has not already been cleared (`already_cleared`) AND the lair has
+## not already ambushed this run (`already_fired` — Wave 3: the climax is a ONE-SHOT lair trigger;
+## a lost/fled boss fight must never re-ambush on every subsequent step). A pure function of
+## (step_index, the slice's boss-trigger config, the two flags) — no RNG, fully reproducible. The
 ## overworld checks this BEFORE the wild roll so the climax takes precedence at the threshold step.
-func should_trigger_boss(step_index: int, already_cleared: bool) -> bool:
-	if already_cleared:
+func should_trigger_boss(
+	step_index: int, already_cleared: bool, already_fired: bool = false
+) -> bool:
+	if already_cleared or already_fired:
 		return false
 	var boss := EncounterCatalogScript.boss_for(_region_id)
 	if boss.is_empty():

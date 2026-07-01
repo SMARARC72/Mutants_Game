@@ -20,6 +20,17 @@ func test_grimoire_theme_builds_with_force_styles() -> void:
 	assert_object(theme.get_stylebox("panel", "PanelContainer")).is_not_null()
 
 
+func test_grimoire_theme_binds_fonts_and_surface_variations() -> void:
+	var theme := GrimoireTheme.build()
+	# The grimoire type pairing is bound: Alegreya as the default body font, Cinzel on titles.
+	assert_object(theme.default_font).is_not_null()
+	assert_object(theme.get_font("font", "TitleLabel")).is_not_null()
+	assert_int(theme.get_font_size("font_size", "TitleLabel")).is_equal(GrimoireTheme.FONT_TITLE)
+	# The parchment/plate surface variations resolve to styleboxes.
+	assert_object(theme.get_stylebox("panel", "ParchmentPanel")).is_not_null()
+	assert_object(theme.get_stylebox("panel", "PlatePanel")).is_not_null()
+
+
 func test_palette_force_color_resolves_all_six_forces() -> void:
 	for force in ["gaia", "ouranos", "cosmos", "chaos", "eros", "thanatos"]:
 		assert_object(GrimoirePalette.force_color(force)).is_not_null()
