@@ -459,8 +459,10 @@ func _build_ui() -> void:
 	_ingredient_picker.name = "IngredientPicker"
 	bench_box.add_child(_ingredient_picker)
 
-	# Verdict + result panels.
+	# Verdict + result panels — the oracle's ruling reads as an open grimoire page
+	# (ParchmentPanel), so both rich-text readouts flip to ink (TEXT_ON_PARCHMENT).
 	var verdict_panel := PanelContainer.new()
+	verdict_panel.theme_type_variation = "ParchmentPanel"
 	box.add_child(verdict_panel)
 	var verdict_box := VBoxContainer.new()
 	verdict_panel.add_child(verdict_box)
@@ -470,12 +472,14 @@ func _build_ui() -> void:
 	_verdict_label.fit_content = true
 	_verdict_label.scroll_active = false
 	_verdict_label.custom_minimum_size = Vector2(0, 96)
+	_verdict_label.add_theme_color_override("default_color", GrimoirePalette.TEXT_ON_PARCHMENT)
 	verdict_box.add_child(_verdict_label)
 	_result_label = RichTextLabel.new()
 	_result_label.name = "ResultLabel"
 	_result_label.bbcode_enabled = true
 	_result_label.fit_content = true
 	_result_label.scroll_active = false
+	_result_label.add_theme_color_override("default_color", GrimoirePalette.TEXT_ON_PARCHMENT)
 	verdict_box.add_child(_result_label)
 
 	# Action row: Preview, Commit, Back.
