@@ -315,32 +315,44 @@ static func paint(layer: TileMapLayer, layout: Layout) -> TileMapLayer:
 			if tile_id == VOID_TILE:
 				continue
 			var coord := _atlas_coord(tile_id, x, y)
-			if tile_id == FEATURE_TILE and is_thin_place(x, y):
-				var ritual := Vector2i(RITUAL_TILE, 0)
-				if source != null and source.has_tile(ritual):
-					coord = ritual
+			if tile_id == FEATURE_TILE:
+				if is_thin_place(x, y):
+					var ritual := Vector2i(RITUAL_TILE, 0)
+					if source != null and source.has_tile(ritual):
+						coord = ritual
+				else:
+					# Ordinary feature cells read as GROUND (props + thin places carry
+					# the accent): full-tile feature textures peppered the map as a
+					# salt-and-pepper checkerboard.
+					coord = _atlas_coord(GROUND_TILE, x, y)
 			if source == null or not source.has_tile(coord):
 				continue
-			layer.set_cell(Vector2i(x, y), 0, coord, _cell_orientation(x, y))
+			var flip_x := x / 3 if coord.x == GROUND_TILE else x
+			var flip_y := y / 3 if coord.x == GROUND_TILE else y
+			layer.set_cell(Vector2i(x, y), 0, coord, _cell_orientation(flip_x, flip_y))
 	return layer
 
 
 ## Atlas coord for a cell: ground picks one of its texture-variant rows with a hero-weighted hash
-## (60% hero / 30% common / 10% rare, stable per cell); everything else uses its row-0 tile.
+## sampled per 3x3 BLOB (72% hero / 22% common / 6% rare) so variant terrain arrives as coherent
+## patches, not per-cell salt-and-pepper; everything else uses its row-0 tile.
 static func _atlas_coord(tile_id: int, x: int, y: int) -> Vector2i:
 	if tile_id == GROUND_TILE:
-		var decile := absi((x * 2654435761) ^ (y * 40503)) % 10
+		var bx := x / 3
+		var by := y / 3
+		var pct := absi((bx * 2654435761) ^ (by * 40503)) % 100
 		var row := 0
-		if decile >= 9:
+		if pct >= 94:
 			row = 2
-		elif decile >= 6:
+		elif pct >= 72:
 			row = 1
 		return Vector2i(GROUND_TILE, row)
 	return Vector2i(tile_id, 0)
 
 
-## A stable per-cell transform (flip-h / flip-v / transpose bits) hashed from the cell coords, so
-## the same map always varies the same way (determinism) while breaking the repeated-grid look.
+## A stable transform (flip-h / flip-v / transpose bits) hashed from the given coords. Ground
+## passes BLOB coords (flips inside a seamless texture break edge continuity, so orientation
+## changes only at 3x3 patch boundaries); other tiles pass cell coords. Deterministic.
 static func _cell_orientation(x: int, y: int) -> int:
 	var hsh := absi((x * 73856093) ^ (y * 19349663))
 	var alt := 0

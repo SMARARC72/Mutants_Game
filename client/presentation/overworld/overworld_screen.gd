@@ -23,6 +23,7 @@ signal dialogue_started(timeline_id: String)
 
 const EncounterDirectorScript := preload("res://application/overworld/encounter_director.gd")
 const OverworldTileSetScript := preload("res://presentation/overworld/overworld_tileset.gd")
+const OverworldTokensScript := preload("res://presentation/overworld/overworld_tokens.gd")
 const InputActions := preload("res://infrastructure/input/input_actions.gd")
 const BATTLE_SCENE := "res://presentation/battle/battle_screen.tscn"
 const CAMP_SCENE := "res://presentation/camp/camp_menu.tscn"
@@ -437,36 +438,12 @@ func _spawn_player() -> void:
 		_player.z_index = 20  # above the tilemap and the trailing lead cameo
 		var token := Sprite2D.new()
 		token.name = "Token"
-		token.texture = _make_player_token(int(OverworldTileSetScript.TILE_SIZE * 0.92))
+		token.texture = OverworldTokensScript.player_token(
+			int(OverworldTileSetScript.TILE_SIZE * 0.92)
+		)
 		_player.add_child(token)
 		add_child(_player)
 	_position_player()
-
-
-## A brass medallion token for the tamer: dark INK disc, BRASS_BRIGHT rim + a central sigil dot, so
-## the avatar reads as an occult game-piece on the painted map (not a flat square).
-func _make_player_token(diameter: int) -> ImageTexture:
-	var img := Image.create(diameter, diameter, false, Image.FORMAT_RGBA8)
-	img.fill(Color(0, 0, 0, 0))
-	var c := (diameter - 1) * 0.5
-	var r_out := c
-	var rim := maxf(2.5, diameter * 0.11)
-	var r_in := c - rim
-	var r_dot := r_in * 0.42
-	for y in diameter:
-		for x in diameter:
-			var d := Vector2(x - c, y - c).length()
-			if d > r_out:
-				continue
-			if d > r_in:
-				img.set_pixel(x, y, BRASS_BRIGHT)
-			elif d <= r_dot:
-				img.set_pixel(x, y, BRASS_BRIGHT)
-			elif d <= r_dot + 1.6:
-				img.set_pixel(x, y, BRASS)
-			else:
-				img.set_pixel(x, y, INK)
-	return ImageTexture.create_from_image(img)
 
 
 ## Spawn the lead-creature cameo (the ACTUAL party lead's real bestiary plate, circular-cropped with
@@ -480,7 +457,9 @@ func _spawn_lead_creature() -> void:
 	_lead = Sprite2D.new()
 	_lead.name = "LeadCreature"
 	_lead.z_index = 15
-	_lead.texture = _make_cameo_token(tex.get_image(), int(OverworldTileSetScript.TILE_SIZE * 1.02))
+	_lead.texture = OverworldTokensScript.creature_cameo(
+		tex, int(OverworldTileSetScript.TILE_SIZE * 1.18)
+	)
 	add_child(_lead)
 	var s := OverworldTileSetScript.TILE_SIZE
 	var here := Vector2(_player_cell.x * s + s / 2.0, _player_cell.y * s + s / 2.0)
@@ -502,31 +481,6 @@ func _lead_species_id() -> String:
 		idx = clampi(int(_game.call("active_creature_index")), 0, party.size() - 1)
 	var lead: Variant = party[idx]
 	return str((lead as Dictionary).get("species_id", "")) if lead is Dictionary else ""
-
-
-## Build a circular cameo token from a full-body creature plate: centre-crop a square framing the
-## creature, downscale, then mask to a disc with a brass ring (the cream plate bg reads as parchment).
-func _make_cameo_token(src: Image, diameter: int) -> ImageTexture:
-	src.convert(Image.FORMAT_RGBA8)
-	var w := src.get_width()
-	var h := src.get_height()
-	var side := mini(w, h)
-	var ox := clampi(int((w - side) * 0.5), 0, maxi(0, w - side))
-	var oy := clampi(int((h - side) * 0.42), 0, maxi(0, h - side))
-	var sq := src.get_region(Rect2i(ox, oy, side, side))
-	sq.resize(diameter, diameter, Image.INTERPOLATE_LANCZOS)
-	var c := (diameter - 1) * 0.5
-	var r_out := c
-	var ring := maxf(2.0, diameter * 0.07)
-	var r_in := c - ring
-	for y in diameter:
-		for x in diameter:
-			var d := Vector2(x - c, y - c).length()
-			if d > r_out:
-				sq.set_pixel(x, y, Color(0, 0, 0, 0))
-			elif d > r_in:
-				sq.set_pixel(x, y, BRASS)
-	return ImageTexture.create_from_image(sq)
 
 
 ## A radial vignette texture (transparent centre → soft dark corners) for screen-space atmosphere.
@@ -755,7 +709,9 @@ func _spawn_npcs() -> void:
 		var s := OverworldTileSetScript.TILE_SIZE
 		node.position = Vector2(cell.x * s + s / 2.0, cell.y * s + s / 2.0)
 		var token := Sprite2D.new()
-		token.texture = _make_npc_token(int(s * 0.84), def["ring"] as Color)
+		token.texture = OverworldTokensScript.npc_token(
+			int(s * 0.84), def["ring"] as Color, str(def["name"])
+		)
 		node.add_child(token)
 		add_child(node)
 		# Carry ALL of the def's keys (name/timeline/ring + every quest step_key) so the data-driven
@@ -785,29 +741,6 @@ func _npc_cells(count: int) -> Array:
 					if found.size() >= count:
 						return found
 	return found
-
-
-## A parchment NPC token with a coloured ring + dark sigil dot — distinct from the brass tamer
-## medallion and the creature cameos, so "someone to talk to" reads at a glance.
-func _make_npc_token(diameter: int, ring: Color) -> ImageTexture:
-	var img := Image.create(diameter, diameter, false, Image.FORMAT_RGBA8)
-	img.fill(Color(0, 0, 0, 0))
-	var c := (diameter - 1) * 0.5
-	var rim := maxf(2.5, diameter * 0.12)
-	var r_in := c - rim
-	var r_dot := r_in * 0.34
-	for y in diameter:
-		for x in diameter:
-			var d := Vector2(x - c, y - c).length()
-			if d > c:
-				continue
-			if d > r_in:
-				img.set_pixel(x, y, ring)
-			elif d <= r_dot:
-				img.set_pixel(x, y, INK)
-			else:
-				img.set_pixel(x, y, Color(0.886, 0.831, 0.733))  # parchment
-	return ImageTexture.create_from_image(img)
 
 
 ## If the tamer stands on/next to an NPC, speak to it and return its timeline id; else "". Drives the
