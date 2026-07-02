@@ -39,7 +39,9 @@ const SkillBattleControllerScript := preload("res://application/battle/skill_bat
 const BattleBeatsScript := preload("res://presentation/battle/battle_beats.gd")
 const BattleCardKitScript := preload("res://presentation/battle/battle_card_kit.gd")
 const BattleImpactScript := preload("res://presentation/battle/battle_impact.gd")
+const BattleScreenBuildScript := preload("res://presentation/battle/battle_screen_build.gd")
 const BattleStageScript := preload("res://presentation/battle/battle_stage.gd")
+const CaptureMomentScript := preload("res://presentation/battle/capture_moment.gd")
 const EntropyDialScript := preload("res://presentation/battle/entropy_dial.gd")
 const VoiceBookScript := preload("res://presentation/narrative/voice_book.gd")
 const InputActions := preload("res://infrastructure/input/input_actions.gd")
@@ -109,6 +111,11 @@ var _stage: BattleStageScript = null  # Wave 10: the arena layer (plates + boss 
 ## grade pass (ONE combined grade+vignette shader, above the arena / below the HUD, tension 9).
 var _entropy_dial: EntropyDialScript = null
 var _grade: ColorRect = null
+## === Wave 11 "Capture Becomes a Moment" state ===
+## The recorded phase list of the LAST staged capture attempt (instant mode records the same
+## phases with no awaits — the headless contract) + the result-card overlay shown on a catch.
+var _capture_phases: Array = []
+var _capture_card: Control = null
 
 
 func _ready() -> void:
@@ -258,6 +265,9 @@ func _apply_step(step: Dictionary) -> void:
 		stage_beat(_pending_actor, false)
 		_refresh_turn_label(step)
 		_show_action_menu()
+		# W11 first-capture teach: the FIRST weakened wild (below ~40% HP, nothing caught yet
+		# this run) replays Maddox's "mercy and math" beat ONCE, pointing at the shown odds.
+		CaptureMomentScript.maybe_teach(self, _game, _battle, _is_wild)
 	elif kind == _STEP_ENDED:
 		_finish_battle(step)
 
@@ -312,11 +322,22 @@ func player_capture(target_index: int = -1) -> Dictionary:
 	if target == null:
 		return _last_step
 	_hide_menus()
+	stage_track(target)  # the staged attempt closes around the SHOWN plate (W11)
 	var gear: Array = BattleImpactScript.gear_ids(_game)
 	# attempt_capture internally advances on a failure, so its outcome may ALREADY be the first
 	# enemy response (RESOLVED — a beat), the next player turn (AWAIT) or the catch (ENDED).
 	var outcome := _battle.attempt_capture(target, gear)
 	_pending_skill = ""
+	_capture_phases = CaptureMomentScript.phases_for(_battle.last_capture())
+	if _instant_beats or not is_inside_tree():
+		return _route_capture_step(outcome)  # instant: outcome recorded, NO awaits (suite contract)
+	_capture_flow_async(target, outcome)
+	return _last_step
+
+
+## Route the step a CAPTURE attempt produced (shared by the instant path and the staged-attempt
+## coroutine): a RESOLVED outcome opens the enemy round's beat playback; anything else applies.
+func _route_capture_step(outcome: Dictionary) -> Dictionary:
 	var kind := str(outcome.get("kind", ""))
 	if kind == _STEP_RESOLVED:
 		_pump(_capture_beat(outcome.get("actor")))
@@ -324,6 +345,18 @@ func player_capture(target_index: int = -1) -> Dictionary:
 		_last_step = outcome
 		_play_or_drain([], outcome)
 	return _last_step
+
+
+## Fire-and-forget staged attempt (W11, animated only): latch input, play the sigil-circle
+## moment (close -> tension pulses -> dissolve/shatter; held CONFIRM compresses), then route the
+## already-resolved outcome through the normal beat pipeline.
+func _capture_flow_async(target: Variant, outcome: Dictionary) -> void:
+	_beats_playing = true
+	await CaptureMomentScript.play(self, target, _battle.last_capture())
+	_beats_playing = false
+	if not is_instance_valid(self):
+		return
+	_route_capture_step(outcome)
 
 
 ## Forfeit the pending actor's turn (the soft-lock escape for a degenerate no-action kit). Drives the
@@ -383,6 +416,9 @@ func _finish_battle(step: Dictionary) -> void:
 		_game.call("save_run")
 	if reason == "caught":
 		play_stinger("capture_sting")  # the catch lands with its own sting (W-SND)
+		# W11: the catch ends on the RESULT CARD (plate LARGE + name reveal + sigil stamp +
+		# authored line). The banner/rewards beneath are unchanged — dismissing resumes them.
+		_capture_card = CaptureMomentScript.show_result_card(self, _battle, _game, _instant_beats)
 	BattleImpactScript.toast_outcome(
 		get_node_or_null("/root/Toast"), reason, _result, _battle, _game
 	)
@@ -409,6 +445,27 @@ func battle() -> BattleSession.SkillInteractiveBattle:
 	return _battle
 
 
+## The W11 capture surface in ONE read (one public method — the screen rides the 30-method cap):
+##   chance : the LIVE oracle odds for the default target, read WITHOUT drawing (the canonical
+##            capture stream is untouched); -1.0 when nothing is capturable;
+##   phases : the recorded state machine of the LAST staged attempt (instant + animated record
+##            the same list: close -> 1-3 pulses -> dissolve|shatter); [] before any attempt;
+##   card   : the capture RESULT CARD overlay, null before a catch.
+func capture_readout() -> Dictionary:
+	return {"chance": _capture_chance(), "phases": _capture_phases, "card": _capture_card}
+
+
+## The live oracle capture chance for the default (or indexed) living target — CaptureService
+## math only, NO roll drawn. -1.0 when no battle / non-wild / no living target.
+func _capture_chance(target_index: int = -1) -> float:
+	if _battle == null or not _is_wild:
+		return -1.0
+	var target := BattleImpactScript.resolve_capture_target(_battle.enemy_team(), target_index)
+	if target == null:
+		return -1.0
+	return _battle.chance_for(target, BattleImpactScript.gear_ids(_game))
+
+
 ## Total beats routed through the queue so far (Wave 8 test bookkeeping).
 func beats_processed() -> int:
 	return _beats_processed
@@ -419,8 +476,9 @@ func last_beat_batch() -> Array:
 	return _last_beat_batch
 
 
-## Force instant/drain mode on or off (tests exercise both routes explicitly).
-func set_instant_beats(enabled: bool) -> void:
+## Force instant/drain mode on or off (a driving hook for tests that exercise both routes;
+## underscore-named — no live caller — so the screen holds the 30-public-method cap for W11).
+func _set_instant_beats(enabled: bool) -> void:
 	_instant_beats = enabled
 
 
@@ -443,6 +501,19 @@ func _process(_delta: float) -> void:
 	if _input == null or _beats_playing:
 		# While the beat queue narrates, CONFIRM is the fast-forward (held), never the exit.
 		return
+	# W11: while the result card is up it owns EVERY press — the first skips the name reveal,
+	# the next dismisses; the battle's own Confirm-to-exit only resumes after.
+	if _capture_card != null and is_instance_valid(_capture_card):
+		if bool(_capture_card.call("is_active")):
+			if (
+				_input.has_method("just_pressed")
+				and (
+					bool(_input.call("just_pressed", InputActions.CONFIRM))
+					or bool(_input.call("just_pressed", InputActions.CANCEL))
+				)
+			):
+				_capture_card.call("advance")
+			return
 	# After the battle ends, Confirm returns to the overworld (matches Slice 1).
 	if _battle != null and _battle.is_ended() and _input.has_method("just_pressed"):
 		if bool(_input.call("just_pressed", InputActions.CONFIRM)):
@@ -461,170 +532,35 @@ func _banner_text_for(reason: String) -> String:
 # === UI (minimal, code-built, themed) ========================================================= #
 
 
+## Assemble the static UI (the exact tree the pre-Wave-11 inline build produced — the node work
+## lives in BattleScreenBuild, the W11 extraction) and bind every kept member ref from it.
 func _build_ui() -> void:
 	for child in get_children():
 		child.queue_free()
 	_party_cards.clear()
 	_enemy_cards.clear()
-	set_anchors_preset(Control.PRESET_FULL_RECT)
-
-	var bg := ColorRect.new()
-	bg.color = Color(0.07, 0.06, 0.09)
-	bg.set_anchors_preset(Control.PRESET_FULL_RECT)
-	add_child(bg)
-	# Wave 10 stage: the arena layer — painterly backdrop (Wave 8 backdrop-lite pick by force
-	# climate), the two staged LivingPlates, and the boss dressing — sits between the flat void
-	# and the vignette, so HUD text keeps its contrast grade.
-	_stage = BattleStageScript.new()
-	_stage.name = "BattleStage"
-	_stage.build(
-		BattleCardKitScript.pick_backdrop(_region_force, _is_wild), _is_boss, _instant_beats
+	var refs: Dictionary = BattleScreenBuildScript.build(
+		self, _region_force, _is_wild, _is_boss, _instant_beats
 	)
-	add_child(_stage)
-	# The ONE combined grade+vignette pass (Wave 10 commit 3, tension 9): grades the arena toward
-	# its dark edges and — driven by the entropy crescendo — toward ember heat. It replaces the
-	# old 65k set_pixel vignette texture and sits BELOW the HUD margin, never over readable text.
-	_grade = BattleCardKitScript.make_grade_pass()
-	add_child(_grade)
-
-	var margin := MarginContainer.new()
-	margin.set_anchors_preset(Control.PRESET_FULL_RECT)
-	for side in ["left", "right", "top", "bottom"]:
-		margin.add_theme_constant_override("margin_" + side, 24)
-	# Boss battles: the full-width boss bar rides the very top — start the HUD below it.
-	if _is_boss:
-		margin.add_theme_constant_override("margin_top", 56)
-	add_child(margin)
-
-	var box := VBoxContainer.new()
-	box.name = "RootBox"
-	box.add_theme_constant_override("separation", 8)
-	margin.add_child(box)
-	_root_box = box
-
-	# The combatant area scrolls if it ever overflows, so the action verbs below are
-	# ALWAYS on-screen — no viewport size may ever clip Flee/Capture off the bottom.
-	var top_scroll := ScrollContainer.new()
-	top_scroll.name = "CombatantScroll"
-	top_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	top_scroll.size_flags_stretch_ratio = 3.0
-	top_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	box.add_child(top_scroll)
-	var top_box := VBoxContainer.new()
-	top_box.add_theme_constant_override("separation", 8)
-	top_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	top_box.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	top_scroll.add_child(top_box)
-
-	_banner = Label.new()
-	_banner.name = "ResultBanner"
-	_banner.theme_type_variation = "TitleLabel"
-	top_box.add_child(_banner)
-
-	# The turn strip: the radial entropy dial (parchment -> ember as the field burns) beside the
-	# whose-turn label — the crescendo's at-a-glance read (Wave 10 commit 3).
-	var turn_row := HBoxContainer.new()
-	turn_row.add_theme_constant_override("separation", 8)
-	top_box.add_child(turn_row)
-	_entropy_dial = EntropyDialScript.new()
-	_entropy_dial.name = "EntropyDial"
-	turn_row.add_child(_entropy_dial)
-	_turn_label = Label.new()
-	_turn_label.name = "TurnIndicator"
-	_turn_label.theme_type_variation = "MutedLabel"
-	turn_row.add_child(_turn_label)
-
-	# Wave 10 composition: COMPACT card columns hug the corners the stage plates do NOT use —
-	# enemy readouts top-LEFT (its plate is top-right), party readouts bottom-RIGHT (its plate is
-	# bottom-left) — so the centre stays open for the spectacle while every readout stays visible.
-	var teams := HBoxContainer.new()
-	teams.add_theme_constant_override("separation", 24)
-	teams.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	top_box.add_child(teams)
-
-	var enemy_box := VBoxContainer.new()
-	enemy_box.custom_minimum_size = Vector2(320, 0)
-	enemy_box.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
-	teams.add_child(enemy_box)
-	var enemy_title := Label.new()
-	enemy_title.text = "The Wild" if _is_wild else "Adversary"
-	enemy_title.theme_type_variation = "MutedLabel"
-	enemy_box.add_child(enemy_title)
-	_enemy_rows = VBoxContainer.new()
-	_enemy_rows.name = "EnemyRows"
-	enemy_box.add_child(_enemy_rows)
-
-	var stage_gap := Control.new()
-	stage_gap.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	stage_gap.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	teams.add_child(stage_gap)
-
-	var party_box := VBoxContainer.new()
-	party_box.custom_minimum_size = Vector2(320, 0)
-	party_box.size_flags_horizontal = Control.SIZE_SHRINK_END
-	party_box.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	party_box.alignment = BoxContainer.ALIGNMENT_END
-	teams.add_child(party_box)
-	var party_title := Label.new()
-	party_title.text = "Your Coven"
-	party_title.theme_type_variation = "MutedLabel"
-	party_box.add_child(party_title)
-	_party_rows = VBoxContainer.new()
-	_party_rows.name = "PartyRows"
-	party_box.add_child(_party_rows)
-
-	_action_menu = VBoxContainer.new()
-	_action_menu.name = "ActionMenu"
-	box.add_child(_action_menu)
-
-	_target_picker = VBoxContainer.new()
-	_target_picker.name = "TargetPicker"
-	box.add_child(_target_picker)
-
-	# Wave 8 (HAWKING veto honored: demoted, never deleted): the transcript is a COLLAPSIBLE
-	# drawer — the beat playback IS the narration now; "The Record" opens the written ledger.
-	# The utility row also carries the Swift Rites pacing toggle (persisted, x1/x2/instant).
-	var utility := HBoxContainer.new()
-	utility.name = "UtilityRow"
-	utility.add_theme_constant_override("separation", 8)
-	box.add_child(utility)
-	_record_button = Button.new()
-	_record_button.name = "RecordToggle"
-	_record_button.text = "The Record ▸"
-	_record_button.pressed.connect(toggle_record)
-	utility.add_child(_record_button)
-	_swift_button = Button.new()
-	_swift_button.name = "SwiftRitesButton"
-	_swift_button.pressed.connect(func() -> void: cycle_swift_rites())
-	utility.add_child(_swift_button)
+	_stage = refs["stage"]
+	_grade = refs["grade"]
+	_root_box = refs["root_box"]
+	_banner = refs["banner"]
+	_entropy_dial = refs["entropy_dial"]
+	_turn_label = refs["turn_label"]
+	_enemy_rows = refs["enemy_rows"]
+	_party_rows = refs["party_rows"]
+	_action_menu = refs["action_menu"]
+	_target_picker = refs["target_picker"]
+	_record_button = refs["record_button"]
+	_swift_button = refs["swift_button"]
+	_log_panel = refs["log_panel"]
+	_scroll = refs["scroll"]
+	_transcript_label = refs["transcript_label"]
+	_fx_layer = refs["fx_layer"]
 	_update_swift_button()
-
-	_log_panel = PanelContainer.new()
-	_log_panel.name = "RecordDrawer"
-	_log_panel.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	_log_panel.visible = false  # collapsed by default — beats narrate; the drawer archives
-	box.add_child(_log_panel)
-	_scroll = ScrollContainer.new()
-	_log_panel.add_child(_scroll)
-	_transcript_label = RichTextLabel.new()
-	_transcript_label.name = "TranscriptLog"
-	_transcript_label.fit_content = true
-	_transcript_label.scroll_active = false
-	# Cap the transcript's reserved height to a viewport fraction — on small windows the
-	# old fixed 220px starved the layout and pushed the action verbs off-screen.
-	var log_min_h := minf(220.0, get_viewport_rect().size.y * 0.18)
-	_transcript_label.custom_minimum_size = Vector2(0, log_min_h)
-	_scroll.add_child(_transcript_label)
 	_shown_log = 0
 	_log_watermark = 0
-
-	# Top-most overlay for floating damage numbers (mouse-transparent, full-rect).
-	_fx_layer = Control.new()
-	_fx_layer.name = "FxLayer"
-	_fx_layer.set_anchors_preset(Control.PRESET_FULL_RECT)
-	_fx_layer.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(_fx_layer)
-
 	_refresh_combatants()
 
 
@@ -776,8 +712,10 @@ func _show_action_menu() -> void:
 	for child in _action_menu.get_children():
 		child.queue_free()
 	_action_menu.visible = true
+	# W11 live odds: the Capture button carries the oracle chance for the default target, read
+	# WITHOUT rolling; the menu rebuilds on every AWAIT so the % follows each HP/target change.
 	BattleCardKitScript.build_action_menu(
-		self, _action_menu, _pending_actor, _is_wild, _rouse_has_target()
+		self, _action_menu, _pending_actor, _is_wild, _rouse_has_target(), _capture_chance()
 	)
 	# W1 focus pass: the first action owns focus EVERY time the menu shows, so each new turn is
 	# immediately keyboard/gamepad-drivable (the rebuilt buttons wiped any prior focus).
