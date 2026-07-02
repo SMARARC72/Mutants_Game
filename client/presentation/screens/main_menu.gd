@@ -25,8 +25,14 @@ func _ready() -> void:
 	if input != null:
 		input.call("switch_context", InputActions.CTX_MENU)
 	_transition = get_node_or_null("/root/Transition")
-	_game = get_node_or_null("/root/GameController")
+	if _game == null:
+		_game = get_node_or_null("/root/GameController")
 	_build()
+
+
+## Inject the GameController (tests / non-autoload contexts). Call BEFORE add_child.
+func set_game(game: Node) -> void:
+	_game = game
 
 
 func _build() -> void:
@@ -140,8 +146,13 @@ func _on_new_run() -> void:
 
 ## Continue: load the latest local save via GameController, then swap to the overworld. A failed
 ## load (illegible envelope) answers with the in-world dialog instead of silently doing nothing.
+## E2b: a CLOSED ledger (the run's ending is latched) is not reloaded — the record is finished;
+## the gate offers to begin anew instead.
 func _on_continue() -> void:
 	if _game == null or not _game.has_method("continue_run"):
+		return
+	if _continue_health() == "closed":
+		_show_closed_dialog()
 		return
 	if bool(_game.call("continue_run")):
 		_go_to_overworld()
@@ -171,6 +182,20 @@ func _show_illegible_dialog() -> void:
 		+ "Begin the descent anew; the marsh keeps no other copy."
 	)
 	dialog.ok_button_text = "So be it"
+	add_child(dialog)
+	dialog.popup_centered()
+
+
+## E2b: the closed-ledger gate — a finished run's save is a RECORD, not a resume point.
+## Confirming begins a fresh descent; declining leaves the closed ledger untouched on disk.
+func _show_closed_dialog() -> void:
+	var dialog := ConfirmationDialog.new()
+	dialog.name = "ClosedLedgerDialog"
+	dialog.title = "The Ledger"
+	dialog.dialog_text = "This ledger is closed — begin anew?"
+	dialog.ok_button_text = "Begin anew"
+	dialog.cancel_button_text = "Not yet"
+	dialog.confirmed.connect(_on_new_run)
 	add_child(dialog)
 	dialog.popup_centered()
 

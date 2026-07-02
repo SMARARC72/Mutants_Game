@@ -34,6 +34,7 @@ const OverworldSpawnScript := preload("res://presentation/overworld/overworld_sp
 const OverworldDepthScript := preload("res://presentation/overworld/overworld_depth.gd")
 const OverworldOverlaysScript := preload("res://presentation/overworld/overworld_overlays.gd")
 const ControlsChipScript := preload("res://presentation/overworld/controls_chip.gd")
+const EndingGateScript := preload("res://presentation/endings/ending_gate.gd")
 const InputActions := preload("res://infrastructure/input/input_actions.gd")
 const BATTLE_SCENE := "res://presentation/battle/battle_screen.tscn"
 ## Wave 6 spike diet: const-preload the camp scene (a load() on first ESC read as a hitch).
@@ -663,8 +664,10 @@ func _setup_hud() -> void:
 	_refresh_objective()
 
 
-## Update the HUD quest tracker to the active quest's current objective (hidden when no quest is active).
+## Update the HUD quest tracker to the active quest's current objective (hidden when no quest is
+## active). E2b: every refresh also asks the EndingGate — the finale flag pushes the EndingScreen.
 func _refresh_objective() -> void:
+	EndingGateScript.maybe_push(self, _game)
 	_refresh_markers()
 	if _objective_label == null:
 		return
