@@ -18,6 +18,7 @@ extends RefCounted
 ## stay green unmodified. No canonical RNG anywhere here (presentation only).
 
 const STEP_TIME := 0.115  # seconds per grid-step glide (the 0.11-0.12 grid-feel band)
+const STEP_SQUASH := 0.96  # Wave 12 medallion life: y-squash at step start, settling to 1.0
 const BUFFER_AT := 0.6  # a direction pressed after this fraction of the glide buffers the next step
 const TURN_HOLD := 0.08  # seconds a NEW direction must be held before the pivot becomes a step
 const THUNK_TIME := 0.06
@@ -112,8 +113,11 @@ func step_to(target: Vector2) -> void:
 	_kill(_thunk_tween)
 	_thunk_tween = null
 	_kill(_step_tween)
+	var token := _token()
 	if not can_animate():
 		_player.position = target
+		if token != null:
+			token.scale.y = 1.0  # never leave an interrupted squash behind (reduce_motion flip)
 		return
 	_step_tween = _player.create_tween()
 	(
@@ -122,6 +126,17 @@ func step_to(target: Vector2) -> void:
 		. set_trans(Tween.TRANS_SINE)
 		. set_ease(Tween.EASE_OUT)
 	)
+	# Wave 12 medallion life: the token squashes on the step's push-off and settles back over the
+	# glide — a heartbeat, not a hop. reduce_motion/headless never reach here (can_animate above).
+	if token != null:
+		token.scale.y = STEP_SQUASH
+		(
+			_step_tween
+			. parallel()
+			. tween_property(token, "scale:y", 1.0, STEP_TIME)
+			. set_trans(Tween.TRANS_SINE)
+			. set_ease(Tween.EASE_OUT)
+		)
 	_step_tween.finished.connect(_on_step_finished)
 
 
@@ -174,6 +189,9 @@ func dash_finish(target: Vector2, moved: bool) -> void:
 	if _player == null or not moved:
 		return
 	_kill(_step_tween)
+	var token := _token()
+	if token != null:
+		token.scale.y = 1.0  # a dash is one whoosh — clear any interrupted step squash
 	if not can_animate():
 		_player.position = target
 		return
@@ -214,16 +232,24 @@ func _on_step_finished() -> void:
 	_step.call(dir)  # try_move runs synchronously and glides again
 
 
+## The player's medallion sprite (the squash/ghost source), or null before setup.
+func _token() -> Sprite2D:
+	if _player == null:
+		return null
+	return _player.get_node_or_null("Token") as Sprite2D
+
+
 ## Three token afterimages along the dash path, alpha-fading and freed on finish.
 func _spawn_ghosts(target: Vector2) -> void:
 	var parent := _player.get_parent()
-	var token := _player.get_node_or_null("Token") as Sprite2D
+	var token := _token()
 	if parent == null or token == null or token.texture == null:
 		return
 	for i in GHOST_COUNT:
 		var ghost := Sprite2D.new()
 		ghost.texture = token.texture
-		ghost.z_index = 19  # under the live token (20)
+		# z stays 0: inside the y-sorted WorldYSort parent each afterimage sorts by its own
+		# trail position, so ghosts behind a prop are occluded exactly like the live token.
 		ghost.position = _dash_from.lerp(target, float(i + 1) / float(GHOST_COUNT + 1))
 		ghost.modulate = Color(1.0, 1.0, 1.0, 0.5 - 0.09 * i)
 		parent.add_child(ghost)

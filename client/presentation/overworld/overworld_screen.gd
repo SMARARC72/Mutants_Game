@@ -27,6 +27,7 @@ const OverworldLoopStateScript := preload("res://presentation/overworld/overworl
 const OverworldTokensScript := preload("res://presentation/overworld/overworld_tokens.gd")
 const OverworldMotionScript := preload("res://presentation/overworld/overworld_motion.gd")
 const OverworldSpawnScript := preload("res://presentation/overworld/overworld_spawn.gd")
+const OverworldDepthScript := preload("res://presentation/overworld/overworld_depth.gd")
 const ControlsChipScript := preload("res://presentation/overworld/controls_chip.gd")
 const InputActions := preload("res://infrastructure/input/input_actions.gd")
 const BATTLE_SCENE := "res://presentation/battle/battle_screen.tscn"
@@ -49,6 +50,11 @@ var _layout: Layout = null
 var _director: EncounterDirector = null
 var _tile_layer: TileMapLayer = null
 var _force_climate: String = "Eros"  # active region's force palette (set in build_from_game)
+## Wave 12: the single Y-SORTED world root. Props + player + NPC tokens + the lead cameo all live
+## under it at z 0 with feet-level y-origins, so a tall prop occludes an actor walking behind it
+## and is occluded by one standing in front — draw order comes from Y, never hand-set z layers.
+var _world: Node2D = null
+var _props: Node2D = null  # prop holder inside _world (rebuilt with the layout; actors persist)
 var _player: Node2D = null
 var _player_cell: Vector2i = Vector2i.ZERO
 ## The canonical spawn cell (centre of the largest open field). NPC placement anchors here — not on
@@ -166,6 +172,8 @@ func build_from_game() -> void:
 	_layout = world_gen.get_or_generate(region, run.seed, run.world_state)
 	_director = EncounterDirectorScript.for_region(run.seed, region, catalog)
 	_force_climate = OverworldTileSetScript.force_for_region(region)
+	_ensure_world_root()
+	_setup_horizon()
 	_render_layout()
 	_spawn_player()
 	_spawn_lead_creature()
@@ -454,39 +462,39 @@ func _read_step_dir() -> Vector2i:
 # === rendering / placement (guarded so the scene still BUILDS headless) ======================= #
 
 
+## Create the Y-SORTED world root once (Wave 12). It rides z 1 so it always draws above the
+## ground TileMapLayer (z 0) regardless of child order across rebuilds; INSIDE it, draw order
+## is pure Y — props and actors all sit at z 0 with feet-level origins (OverworldDepth).
+func _ensure_world_root() -> void:
+	if _world == null or not is_instance_valid(_world):
+		_world = OverworldDepthScript.make_world_root(self)
+
+
+## The painterly horizon behind the tile field (Wave 12): the force's blurred backdrop strip on
+## a Parallax2D drifting at ~0.15 scroll, over an ink backing plate (see OverworldDepth).
+func _setup_horizon() -> void:
+	OverworldDepthScript.setup_horizon(self, _force_climate, _layout)
+
+
 func _render_layout() -> void:
 	if _tile_layer != null:
 		_tile_layer.queue_free()
 	_tile_layer = TileMapLayer.new()
 	_tile_layer.name = "RegionTiles"
+	_tile_layer.z_index = 0  # ground plane: always under the y-sorted world root (z 1)
 	_tile_layer.tile_set = OverworldTileSetScript.build(_force_climate)
 	add_child(_tile_layer)
 	OverworldTileSetScript.paint(_tile_layer, _layout)
 	_scatter_props()
 
 
-## Prop decals on feature cells: a deterministic minority of feature-classified cells (chosen by
-## OverworldTileSet.prop_texture — pure function of force + cell, so the same map always dresses
-## the same way) get a painterly decal sprite (boulder ledge / moss mound / crystals / bones / ward
-## stone) drawn above the ground tiles. Walkability is untouched — these are set dressing.
+## Prop decals on feature cells (OverworldDepth.scatter_props): deterministic set dressing in a
+## y-sorted holder with feet-level origins, so tall props occlude actors walking behind them.
 func _scatter_props() -> void:
-	if _layout == null or _tile_layer == null:
+	if _layout == null:
 		return
-	var s := OverworldTileSetScript.TILE_SIZE
-	for y in _layout.height:
-		for x in _layout.width:
-			if _layout.get_cell(x, y) != OverworldTileSetScript.FEATURE_TILE:
-				continue
-			var tex: Texture2D = OverworldTileSetScript.prop_texture(_force_climate, x, y)
-			if tex == null:
-				continue
-			var prop := Sprite2D.new()
-			prop.texture = tex
-			prop.z_index = 5  # above ground tiles, below the lead cameo (15) and player (20)
-			var fit := (s * 0.94) / maxf(float(tex.get_width()), float(tex.get_height()))
-			prop.scale = Vector2(fit, fit)
-			prop.position = Vector2(x * s + s / 2.0, y * s + s / 2.0)
-			_tile_layer.add_child(prop)
+	_ensure_world_root()
+	_props = OverworldDepthScript.scatter_props(_world, _props, _layout, _force_climate)
 
 
 func _spawn_player() -> void:
@@ -499,14 +507,18 @@ func _spawn_player() -> void:
 	if _player == null:
 		_player = Node2D.new()
 		_player.name = "Player"
-		_player.z_index = 20  # above the tilemap and the trailing lead cameo
+		# Wave 12: z stays 0 — the medallion lies flat on the ground, so its cell-centre origin is
+		# its ground contact and the WorldYSort parent decides occlusion against props/actors.
 		var token := Sprite2D.new()
 		token.name = "Token"
 		token.texture = OverworldTokensScript.player_token(
 			int(OverworldTileSetScript.TILE_SIZE * 0.92)
 		)
 		_player.add_child(token)
-		add_child(_player)
+		# One warm brass PointLight2D (Wave 12) — shades the normal-mapped ground (OverworldDepth).
+		OverworldDepthScript.attach_player_glow(_player)
+		_ensure_world_root()
+		_world.add_child(_player)
 	_motion.setup(_player, try_move, _set_facing, _get_facing)
 	_position_player()
 
@@ -520,13 +532,16 @@ func _spawn_lead_creature() -> void:
 	var tex: Texture2D = SpeciesArt.plate(species)
 	if tex == null:
 		return
+	var box := int(OverworldTileSetScript.TILE_SIZE * 1.18)
 	_lead = Sprite2D.new()
 	_lead.name = "LeadCreature"
-	_lead.z_index = 15
-	_lead.texture = OverworldTokensScript.creature_cameo(
-		tex, int(OverworldTileSetScript.TILE_SIZE * 1.18), species
-	)
-	add_child(_lead)
+	_lead.texture = OverworldTokensScript.creature_cameo(tex, box, species)
+	# Wave 12: feet-level y-origin — the cameo's ground shadow sits at ~0.92 of its box, so raise
+	# the texture until that contact line lands on the node position; the WorldYSort parent then
+	# occludes the creature correctly against props and the tamer (no hand-set z).
+	_lead.offset = Vector2(0, -box * 0.42)
+	_ensure_world_root()
+	_world.add_child(_lead)
 	var s := OverworldTileSetScript.TILE_SIZE
 	var here := Vector2(_player_cell.x * s + s / 2.0, _player_cell.y * s + s / 2.0)
 	_lead.position = here - Vector2(_last_dir) * float(s)
@@ -554,7 +569,9 @@ func _lead_species_id() -> String:
 func _setup_atmosphere() -> void:
 	var tint := CanvasModulate.new()
 	tint.name = "ClimateTint"
-	tint.color = Color(0.84, 0.9, 0.82)  # cool verdant marsh grade
+	# Cool verdant marsh grade, pulled a step darker (Wave 12) so the player's brass glow pool
+	# actually reads against the ambient ground instead of washing out.
+	tint.color = Color(0.75, 0.81, 0.74)
 	add_child(tint)
 	# Faint drifting spore-motes, parented to the tamer so they always fill the framed view.
 	if _player != null:
@@ -725,7 +742,8 @@ func _spawn_npcs() -> void:
 		var cell: Vector2i = cells[i]
 		var node := Node2D.new()
 		node.name = "NPC_%s" % str(def["name"]).replace(" ", "")
-		node.z_index = 16
+		# Wave 12: z stays 0 — wax seals lie flat like the player medallion, so the cell-centre
+		# origin is the ground contact and WorldYSort owns the draw order.
 		var s := OverworldTileSetScript.TILE_SIZE
 		node.position = Vector2(cell.x * s + s / 2.0, cell.y * s + s / 2.0)
 		var token := Sprite2D.new()
@@ -733,7 +751,8 @@ func _spawn_npcs() -> void:
 			int(s * 0.84), def["ring"] as Color, str(def["name"])
 		)
 		node.add_child(token)
-		add_child(node)
+		_ensure_world_root()
+		_world.add_child(node)
 		# Carry ALL of the def's keys (name/timeline/ring + every quest step_key) so the data-driven
 		# quest dispatch sees each NPC's steps — a new quest's step_key needs no change here.
 		var entry: Dictionary = def.duplicate(true)
@@ -944,6 +963,11 @@ func quest_done(quest_id: String) -> bool:
 ## The number of NPCs placed in the region (for tests).
 func npc_count() -> int:
 	return _npcs.size()
+
+
+## The y-sorted world root holding props + player + NPCs + the lead cameo (for tests + waves).
+func world_root() -> Node2D:
+	return _world
 
 
 ## The HUD controls chip node (for tests + future waves).
