@@ -117,13 +117,17 @@ static func elite_weights_for(region_id: String, catalog: SpeciesCatalog) -> Arr
 	return out
 
 
-## The Verdant Legendary boss config (Slice 4): { species_id, name, role, brain, rank }. Read from
-## slice_verdant.json (boss). Returns {} when unavailable (the trigger then simply never fires). The
-## brain key names a strong role brain ("controller"/"aggressor"/...) the CombatBrain assigns — NOT
-## the Succession HSM (reserved for god-tier).
+## The region BOSS config: { species_id, name, brain, rank, ... }. VERDANT (Slice 4) keeps its
+## hand-wired slice_verdant.json Legendary — canonical, byte-identical to the shipped slice. Every
+## OTHER region draws its authored ACT BOSS from the pantheon data (Batch E1c: region_bosses.json
+## -> boss_kits.json via BossKitCatalog), whose config additionally carries { boss_id, kit,
+## intro_line, defeat_line } for the kit-override + presentation path. Returns {} when the region
+## has no boss (the hub / missing data — the trigger then simply never fires). The brain key names
+## a strong role brain ("controller"/"aggressor"/...) the CombatBrain assigns — NOT the Succession
+## HSM (reserved for god-tier).
 static func boss_for(region_id: String) -> Dictionary:
 	if region_id != STARTING_REGION:
-		return {}
+		return BossKitCatalog.boss_config_for_region(region_id)
 	var slice := _slice()
 	var boss: Variant = slice.get("boss", null)
 	if boss is Dictionary and str((boss as Dictionary).get("species_id", "")) != "":
@@ -131,17 +135,24 @@ static func boss_for(region_id: String) -> Dictionary:
 	return {}
 
 
-## The boss-trigger config (Slice 4): { min_steps:int, cleared_flag:String, victory_flag:String }.
-## Read from slice_verdant.json (boss_trigger), with sane defaults so the trigger is well-defined
-## even if the file omits it. min_steps is the explored-step threshold for the region climax.
+## The boss-trigger config: { min_steps:int, cleared_flag:String, victory_flag:String }. VERDANT
+## reads slice_verdant.json (boss_trigger) with the Slice-4 defaults, unchanged. Every OTHER region
+## gets REGION-SCOPED flags ("<region>_boss_cleared"/"<region>_boss_victory") at the same 30-step
+## threshold, so GameController's cleared/victory path generalizes per region (Batch E1c) — one
+## region's felled god never marks another's lair cleared. min_steps is the explored-step
+## threshold for the region climax.
 static func boss_trigger_for(region_id: String) -> Dictionary:
+	if region_id != STARTING_REGION:
+		return {
+			"min_steps": 30,
+			"cleared_flag": "%s_boss_cleared" % region_id,
+			"victory_flag": "%s_boss_victory" % region_id,
+		}
 	var defaults := {
 		"min_steps": 30,
 		"cleared_flag": "verdant_boss_cleared",
 		"victory_flag": "slice_verdant_victory",
 	}
-	if region_id != STARTING_REGION:
-		return defaults
 	var slice := _slice()
 	var trig: Variant = slice.get("boss_trigger", null)
 	if trig is Dictionary:

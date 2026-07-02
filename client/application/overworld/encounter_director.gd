@@ -190,26 +190,40 @@ func should_trigger_boss(
 	return step_index >= int(trigger.get("min_steps", 30))
 
 
-## The deterministic boss encounter at `step_index`: a single-creature legendary team + a battle seed
+## The deterministic boss encounter at `step_index`: a single-creature boss team + a battle seed
 ## drawn from a DISJOINT boss sub-stream (so it never collides with the wild streams). Returns:
 ##   { "boss": true, "enemy_party": Array[Dictionary], "battle_seed": int, "step": int,
-##     "boss_brain": String, "species_id": String }
+##     "boss_brain": String, "species_id": String,
+##     "boss_id": String, "intro_line": String, "defeat_line": String }
 ## or {} when the region has no boss configured. The brain key names the strong role brain the
 ## BattleSession/CombatBrain assigns (NOT the Succession HSM). Same (seed, region, step) => same seed.
+## Batch E1c: a PANTHEON boss config (BossKitCatalog via EncounterCatalog.boss_for) additionally
+## carries its authored library-only kit — folded into the party dict as `kit_override` so the
+## SkillMonFactory builds the enemy with the AUTHORED kit; the boss_id + VERBATIM intro/defeat
+## lines ride the roll for the presentation layer. The verdant slice boss carries none of these
+## keys, so its party dict (and battle stream) stays byte-identical.
 func boss_step(step_index: int) -> Dictionary:
 	var boss := EncounterCatalogScript.boss_for(_region_id)
 	if boss.is_empty():
 		return {}
 	var species_id := str(boss.get("species_id", ""))
-	var party: Array = [{"species_id": species_id, "nickname": str(boss.get("name", species_id))}]
+	var member := {"species_id": species_id, "nickname": str(boss.get("name", species_id))}
+	var kit: Variant = boss.get("kit", null)
+	if kit is Array and not (kit as Array).is_empty():
+		member["kit_override"] = (kit as Array).duplicate()
+	if str(boss.get("boss_id", "")) != "":
+		member["boss_id"] = str(boss["boss_id"])
 	var battle_seed := _step_rng(step_index).substream(_BOSS_SALT).next_u32()
 	return {
 		"boss": true,
-		"enemy_party": party,
+		"enemy_party": [member],
 		"battle_seed": battle_seed,
 		"step": step_index,
 		"boss_brain": str(boss.get("brain", "controller")),
 		"species_id": species_id,
+		"boss_id": str(boss.get("boss_id", "")),
+		"intro_line": str(boss.get("intro_line", "")),
+		"defeat_line": str(boss.get("defeat_line", "")),
 	}
 
 
