@@ -379,7 +379,16 @@ func _finish_battle(step: Dictionary) -> void:
 	_result["party_hp"] = BattleImpactScript.live_party_hp(_battle, _game)
 	if _game != null and _game.has_method("apply_battle_result"):
 		_game.call("apply_battle_result", _result)
-	if _game != null and _game.has_method("save_run"):
+	# W18 death with weight: a LOST battle buries its dead (GameController's mortality pass) —
+	# the dirge tolls the knell, pulses the grade toward ink, and speaks each epitaph.
+	if _game != null and _game.has_method("last_mortality"):
+		var deaths: Array = (_game.call("last_mortality") as Dictionary).get("deaths", [])
+		if not deaths.is_empty():
+			BattleImpactScript.death_dirge(self, _grade, deaths, _instant_beats)
+	# W18 save trust: the post-battle persist reports its outcome (SaveSentry surfaces it).
+	if _game != null and _game.has_method("request_save"):
+		_game.call("request_save")
+	elif _game != null and _game.has_method("save_run"):
 		_game.call("save_run")
 	if reason == "caught":
 		play_stinger("capture_sting")  # the catch lands with its own sting (W-SND)
