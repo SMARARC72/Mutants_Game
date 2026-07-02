@@ -19,6 +19,14 @@ const SaveEnvelopeScript := preload("res://application/persistence/save_envelope
 const TEST_SEED := 0xE2B
 
 
+## HERMETIC: the router is an AUTOLOAD — an overlay another suite pushed (the ending
+## screen fires on finale flags) must never leak into this suite's depth math.
+func before_test() -> void:
+	var router := get_node_or_null("/root/UiRouter")
+	if router != null and router.has_method("pop_all"):
+		router.call("pop_all")
+
+
 func after_test() -> void:
 	# Never leak overlays into the next test — the router is a shared autoload.
 	var router := get_node_or_null("/root/UiRouter")
