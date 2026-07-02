@@ -97,6 +97,12 @@ func test_every_region_has_a_resolvable_boss_slot() -> void:
 	var catalog := SpeciesCatalog.new()
 	for region_id: String in ALL_REGIONS:
 		var boss: Dictionary = EncounterCatalogScript.boss_for(region_id)
+		if region_id == "threshold":
+			# The hub holds the Standstill — no throne, no act boss, NO ambush trigger
+			# (integration adjudication with the E1c seam; the arena slot waits for the
+			# Competitions system).
+			assert_bool(boss.is_empty()).is_true()
+			continue
 		assert_bool(boss.is_empty()).is_false()
 		var species_id := str(boss.get("species_id", ""))
 		assert_object(catalog.get_by_id(species_id)).is_not_null()

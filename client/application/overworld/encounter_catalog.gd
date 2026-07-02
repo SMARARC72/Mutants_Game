@@ -21,6 +21,7 @@ extends RefCounted
 
 ## The starting region for a fresh run (the Verdant fringe — the Eros region in
 ## catalog/region_layouts.json).
+const HUB_REGION := "threshold"
 const STARTING_REGION := "verdant_glut"
 
 ## The curated slice roster data file (Slice 4). The single source for the slice's content picks.
@@ -140,6 +141,10 @@ static func elite_weights_for(region_id: String, catalog: SpeciesCatalog) -> Arr
 ## simply never fires). The brain key names a strong role brain ("controller"/"aggressor"/...)
 ## the CombatBrain assigns — NOT the Succession HSM (reserved for god-tier).
 static func boss_for(region_id: String) -> Dictionary:
+	if region_id == HUB_REGION:
+		# The hub holds the Standstill — no throne, no act boss, no ambush trigger. (The
+		# pool's arena-exhibition slot is reserved for the future Competitions system.)
+		return {}
 	if region_id != STARTING_REGION:
 		var authored := BossKitCatalog.boss_config_for_region(region_id)
 		if not authored.is_empty():
