@@ -145,7 +145,8 @@ func test_headless_visual_position_applies_instantly() -> void:
 	var gc := _make_game()
 	var ow := _make_overworld(gc)
 	var layout: Layout = ow.call("layout")
-	var player := ow.find_child("Player", false, false) as Node2D
+	# Wave 12: the player lives one level down, under the y-sorted WorldYSort root.
+	var player := ow.find_child("Player", true, false) as Node2D
 	assert_object(player).is_not_null()
 	var d := _walkable_dir(layout, ow.call("player_cell"))
 	assert_bool(d != Vector2i.ZERO).is_true()
