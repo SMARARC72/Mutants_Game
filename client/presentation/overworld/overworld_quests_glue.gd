@@ -54,7 +54,10 @@ static func persist_quests(game: Node, quests: QuestService) -> void:
 	if run == null:
 		return
 	run.flags["quest_state"] = quests.serialize()
-	if game.has_method("save_run"):
+	# W18 save trust: the witnessed save path first (SaveSentry surfaces the outcome).
+	if game.has_method("request_save"):
+		game.call("request_save")
+	elif game.has_method("save_run"):
 		game.call("save_run")
 
 

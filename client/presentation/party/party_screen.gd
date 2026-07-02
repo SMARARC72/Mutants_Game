@@ -605,7 +605,10 @@ func _selected_creature() -> Dictionary:
 
 
 func _persist() -> void:
-	if _game != null and _game.has_method("save_run"):
+	# W18 save trust: the witnessed save path first (SaveSentry surfaces the outcome).
+	if _game != null and _game.has_method("request_save"):
+		_game.call("request_save")
+	elif _game != null and _game.has_method("save_run"):
 		_game.call("save_run")
 
 

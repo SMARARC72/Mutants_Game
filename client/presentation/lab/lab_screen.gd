@@ -302,7 +302,10 @@ func commit() -> Dictionary:
 		if i != _idx_a:
 			_idx_b = i
 			break
-	if _game.has_method("save_run"):
+	# W18 save trust: the witnessed save path first (SaveSentry surfaces the outcome).
+	if _game.has_method("request_save"):
+		_game.call("request_save")
+	elif _game.has_method("save_run"):
 		_game.call("save_run")
 	_pact_armed = false
 	LabVerdictKitScript.toast_outcome(self, result, true)

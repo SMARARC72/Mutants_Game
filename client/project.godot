@@ -40,6 +40,7 @@ Toast="*res://presentation/ui/toast/toast.gd"
 Transition="*res://presentation/ui/transition/transition.gd"
 DevConsole="*res://presentation/devtools/dev_console.gd"
 GameController="*res://application/game/game_controller.gd"
+SaveSentry="*res://autoload/save_sentry.gd"
 
 [dialogic]
 

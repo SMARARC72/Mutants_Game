@@ -98,7 +98,10 @@ static func read_signpost(screen: Node, npc: Dictionary, run: RunContext, game: 
 	if line == "":
 		return ""
 	bubble(screen, npc, line)
-	if game != null and game.has_method("save_run"):
+	# W18 save trust: the witnessed save path first (SaveSentry surfaces the outcome).
+	if game != null and game.has_method("request_save"):
+		game.call("request_save")
+	elif game != null and game.has_method("save_run"):
 		game.call("save_run")
 	return "signpost"
 
