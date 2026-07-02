@@ -97,6 +97,7 @@ var _camp_menu: Node = null
 var _npcs: Array = []
 var _dialogue: DialogicFacade = null
 var _in_dialogue: bool = false
+var _scene_alias: Dictionary = {}  # replacement quest-scene id -> the NPC's own timeline
 var _quests: QuestService = null  # drives the intro quest from NPC talks (own narrative run-state)
 var _objective_label: Label = null  # HUD quest-tracker: the active quest's current objective
 var _controls_chip: Node = null  # the live-verbs HUD chip (W1/C13), collapsible via TOGGLE_CONTROLS
@@ -405,30 +406,10 @@ func _on_boss_encounter(roll: Dictionary) -> void:
 ## pre-battle position/grace stash, autosave, and swap to the battle scene. The pending dict also
 ## carries the region + force climate (Wave 8 backdrop-lite: the arena is picked by force).
 func _stash_and_hand_off(roll: Dictionary, extra: Dictionary) -> void:
-	var enemy_party: Array = roll.get("enemy_party", [])
-	var battle_seed := int(roll.get("battle_seed", 0))
-	encounter_started.emit(enemy_party, battle_seed)
-	var run := _run_ctx()
-	if run != null:
-		var pending := {
-			"enemy_party": enemy_party,
-			"battle_seed": battle_seed,
-			"region": _region_id(),
-			"force": _force_climate,
-		}
-		pending.merge(extra, true)
-		run.flags["pending_battle"] = pending
-		# Wave 3: the pre-battle autosave carries the exact cell + facing (the post-battle
-		# overworld restores them) and arms the post-battle encounter grace window.
-		OverworldLoopStateScript.stash_prebattle(
-			run, _player_cell, _last_dir, EncounterDirectorScript.POST_BATTLE_GRACE_STEPS
-		)
-	# Save on encounter-end boundary (autosave the run before the fight resolves the loop).
-	# W18 save trust: the witnessed save path first (SaveSentry surfaces the outcome).
-	if _game != null and _game.has_method("request_save"):
-		_game.call("request_save")
-	elif _game != null and _game.has_method("save_run"):
-		_game.call("save_run")
+	encounter_started.emit(roll.get("enemy_party", []), int(roll.get("battle_seed", 0)))
+	OverworldLoopStateScript.stash_and_pend(
+		_run_ctx(), roll, extra, _region_id(), _force_climate, _player_cell, _last_dir, _game
+	)
 	if _auto_hand_off:
 		_hand_off_to_battle()
 
@@ -667,7 +648,9 @@ func _setup_hud() -> void:
 ## Update the HUD quest tracker to the active quest's current objective (hidden when no quest is
 ## active). E2b: every refresh also asks the EndingGate — the finale flag pushes the EndingScreen.
 func _refresh_objective() -> void:
-	EndingGateScript.maybe_push(self, _game)
+	# Codex #60 P2: never mid-cascade/mid-scene — deferred to idle, re-checked on scene end.
+	if not _in_dialogue:
+		EndingGateScript.maybe_push.call_deferred(self, _game)
 	_refresh_markers()
 	if _objective_label == null:
 		return
@@ -840,6 +823,9 @@ func speak_to(index: int) -> String:
 	# this talk (Vael's Q2.4 plays First Light, not a Mark replay). No advance = the old path.
 	var scene := OverworldQuestsGlue.scene_for_advanced(_advance_quest_for(npc), _region_id())
 	if scene != "":
+		# Codex #60 P1: the choice router keys configs by the NPC's OWN timeline — remember
+		# the substitution so the replacement scene's choices still land their effects.
+		_scene_alias[scene] = timeline
 		timeline = scene
 	dialogue_started.emit(timeline)
 	# Headless there is no choice UI, so the NPC's canon branch resolves instantly (the
@@ -866,7 +852,7 @@ func _advance_quest_for(npc: Dictionary) -> Array:
 ## branch tag from `[signal arg="choice:<tag>"]`). The branch — never the mere talk —
 ## advances the quest step; dispatch + branch effects/toast live in OverworldChoices.
 func _on_dialogue_choice(scene_id: String, branch_tag: String) -> void:
-	OverworldChoices.handle(self, _npcs, scene_id, branch_tag)
+	OverworldChoices.handle(self, _npcs, str(_scene_alias.get(scene_id, scene_id)), branch_tag)
 
 
 ## Start `quest_id` on the first talk that names a step, advance to that step, and toast the ledger
@@ -937,7 +923,9 @@ func _restore_quests() -> void:
 
 func _on_dialogue_finished(_timeline_id: String) -> void:
 	_in_dialogue = false
+	_scene_alias.erase(_timeline_id)
 	_refresh_markers()  # the deferred marker sync (never during the scene itself)
+	EndingGateScript.maybe_push.call_deferred(self, _game)  # the gate deferred past the scene
 
 
 ## Intro-quest state accessors (for tests + a future quest-log UI).

@@ -113,3 +113,33 @@ static func _int_pair(run: RunContext, key: String) -> Array:
 	if value is Array and (value as Array).size() == 2:
 		return value
 	return []
+
+
+## The full pre-battle stash (moved from overworld_screen — line cap): pending_battle onto
+## run.flags (region/force + extra like is_boss/kit_override), the exact cell + facing for the
+## post-battle restore, the encounter grace window, and the witnessed autosave.
+static func stash_and_pend(
+	run: RunContext,
+	roll: Dictionary,
+	extra: Dictionary,
+	region_id: String,
+	force_climate: String,
+	player_cell: Vector2i,
+	last_dir: Vector2i,
+	game: Node
+) -> void:
+	if run != null:
+		var pending := {
+			"enemy_party": roll.get("enemy_party", []),
+			"battle_seed": int(roll.get("battle_seed", 0)),
+			"region": region_id,
+			"force": force_climate,
+		}
+		pending.merge(extra, true)
+		run.flags["pending_battle"] = pending
+		stash_prebattle(run, player_cell, last_dir, EncounterDirector.POST_BATTLE_GRACE_STEPS)
+	# Save on the encounter boundary — the witnessed save path first (W18 save trust).
+	if game != null and game.has_method("request_save"):
+		game.call("request_save")
+	elif game != null and game.has_method("save_run"):
+		game.call("save_run")
