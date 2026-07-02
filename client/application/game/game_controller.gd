@@ -28,6 +28,10 @@ const SaveEnvelopeScript := preload("res://application/persistence/save_envelope
 const FakeDalScript := preload("res://infrastructure/dal/fake_dal.gd")
 const WorldGeneratorScript := preload("res://infrastructure/worldgen/world_generator.gd")
 const EncounterCatalogScript := preload("res://application/overworld/encounter_catalog.gd")
+## E1b: the Threshold network's rules live in RegionTravel (statics over the run — travel/unlock/
+## explored-ledger); this controller only ticks the ledger on each step. Consumers (the travel
+## overlay, the overworld's boss gate, quest effects) call RegionTravel directly with run().
+const RegionTravelScript := preload("res://application/overworld/region_travel.gd")
 const GearCatalogScript := preload("res://infrastructure/catalog/gear_catalog.gd")
 const LootDropServiceScript := preload("res://application/game/loot_drop_service.gd")
 
@@ -421,11 +425,18 @@ func slice_cleared() -> bool:
 
 
 ## Increment the run's overworld step counter (used as the encounter roll index) and return the new
-## value. Persisted in world_state so the encounter sequence resumes correctly after load.
+## value. Persisted in world_state so the encounter sequence resumes correctly after load. E1b: the
+## per-region EXPLORED ledger (RegionTravel — world_state.region_steps) ticks alongside it, so the
+## boss-climax threshold reads exploration IN a region, never the global count as instant
+## boss-bait after a Threshold-network hop.
 func advance_step() -> int:
 	if _run == null:
 		return 0
 	var next := current_step() + 1
+	# Tick the ledger BEFORE the global write: a pre-E1b save's first tick backfills its legacy
+	# count from the pre-increment value (see RegionTravel.tick_explored), so resumed runs keep
+	# their climax progress exactly.
+	RegionTravelScript.tick_explored(_run, active_region())
 	_run.world_state["steps"] = next
 	return next
 
