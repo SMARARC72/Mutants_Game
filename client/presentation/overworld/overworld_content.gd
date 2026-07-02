@@ -92,6 +92,94 @@ const NPC_DEFS := [
 		"ring": GrimoirePalette.VERDANT_DIM,
 		"wenlow_step": "pacify_greenwatcher",
 	},
+	# --- W16b (correction C14): the Act-0 cast, wired via the proven SQ-06 data pattern. The
+	# Threshold spine rides the single shipped region until region travel lands — the quests
+	# themselves are pure data and move with their NPCs. Dialogue is VERBATIM scripts_mvp.md
+	# Scenes 1-4 / story_quests.md Act 0.
+	{
+		"name": "Old Maddox",
+		"timeline": "maddox_mercy",
+		"ring": GrimoirePalette.BRASS,  # the mentor's brass — one rule, free
+		"knack_step": "hear_maddox",
+	},
+	{
+		"name": "Mother Kestrel",
+		"timeline": "mother_kestrel",
+		"ring": GrimoirePalette.PARCHMENT_DIM,  # the municipal menagerie's worn ledger-paper
+		# Act-0 first-catch fork (scripts_mvp Scene 1B): the pens ask HOW you catch, and the
+		# ANSWER — not the visit — advances The Knack. All three branches complete the step
+		# (the quest completes either way); they differ in flags, corruption, and the authored
+		# catch toast. Canon/headless branch: the gentle path (Threshold is kind on purpose).
+		"choice":
+		{
+			"quest": "act0_the_knack",
+			"step": "meet_kestrel",
+			"headless_branch": "offer_hand",
+			"branches":
+			{
+				"offer_hand":
+				{
+					"effect": {"set_flag": "first_catch_clean"},
+					"voice_key": "capture.befriend.success",
+				},
+				"bind_fast":
+				{
+					"effect": {"set_flag": "first_catch_harsh", "add_corruption": 1},
+					"voice_key": "capture.trap.success",
+				},
+				"let_them_fight":
+				{
+					"effect": {"set_flag": "first_catch_wild"},
+					"voice_key": "capture.trap.success",
+				},
+			},
+		},
+	},
+	{
+		"name": "Surgeon-Lab-Tech Veil",
+		"timeline": "veil_bench",
+		"ring": GrimoirePalette.THANATOS,  # the bench that took prayers; now specimens
+		"altar_step": "rent_the_bench",
+	},
+	{
+		"name": "Vael Construct-Nine",
+		"timeline": "vael_mark",
+		"ring": GrimoirePalette.COSMOS,  # a clipboard with no visible soul
+		# The Act-0 defining tick is a REAL Dialogic choice (scripts_mvp Scene 3B): the brand
+		# can be borne three ways. All three advance the same step (the quest completes either
+		# way); the branches differ in flags — and feeding the mark is the one Act-0 choice
+		# that costs corruption. Canon/headless branch: seal (the cautious file).
+		"choice":
+		{
+			"quest": "act0_the_mark",
+			"step": "answer_the_mark",
+			"headless_branch": "seal",
+			"branches":
+			{
+				"seal": {"effect": {"set_flag": "mark_sealed"}, "voice_key": ""},
+				"feed":
+				{
+					"effect": {"set_flag": "mark_fed", "add_corruption": 2},
+					"voice_key": "toast.corruption",
+				},
+				"bargain": {"effect": {"set_flag": "mark_appraised"}, "voice_key": ""},
+			},
+		},
+	},
+	{
+		"name": "Madam Thessaly Vance",
+		"timeline": "thessaly_rolls",
+		"ring": GrimoirePalette.WARNING,  # velvet, ledgers, a smile like a closing door
+		"rolls_step": "enter_the_rolls",
+	},
+	# W16b fourth-wall crack #1: a readable SIGN prop on a deterministic cast cell — it uses
+	# the run's actual save name, once per run (FourthWall.seen_cracks registry; tension 11).
+	{
+		"name": "Weathered Signpost",
+		"timeline": "",
+		"ring": GrimoirePalette.TEXT_MUTED,  # hand-painted, long past repainting
+		"sign": true,
+	},
 ]
 
 ## The intro quest, driven by talking to the two marsh NPCs (start on the first, complete on the
@@ -221,6 +309,134 @@ const BOSS_QUEST := {
 	"on_complete": {"set_flag": "what_guards_the_deep_done"},
 }
 
+## W16b (correction C14) — ACT 0, quest 0.1 "The Knack": the capture-unlock gate. Old Maddox's
+## "mercy and math" beat (its timeline doubles as W11's first-capture teach) starts it; letting
+## one of Mother Kestrel's foundlings choose you completes it. Verbatim scripts_mvp Scene 1.
+const KNACK_QUEST := {
+	"id": "act0_the_knack",
+	"name": "The Knack",
+	"description": "Maddox has one rule he'll give you for free. The Foundling Pens keep the rest.",
+	"step_key": "knack_step",
+	"steps":
+	[
+		{
+			"id": "hear_maddox",
+			"description": "Hear Old Maddox out — mercy and math, wearing the same coat.",
+			"on_complete": {"set_flag": "maddox_mercy_heard"}
+		},
+		{
+			"id": "meet_kestrel",
+			"description": "Walk Mother Kestrel's rows. Let one choose you.",
+			"on_complete": {"set_flag": "foundling_chose_you"}
+		},
+	],
+	"on_complete": {"set_flag": "capture_unlocked"},
+}
+
+## ACT 0, quest 0.2 "Altar Hours": the tutorial Lab beat. Gated behind The Knack (the
+## QuestService trigger predicate — talking to Veil early starts nothing). Scene 2.
+const ALTAR_QUEST := {
+	"id": "act0_altar_hours",
+	"name": "Altar Hours",
+	"description":
+	"This bench took prayers for four hundred years. Now it takes specimens and a deposit.",
+	"step_key": "altar_step",
+	"trigger": {"flag": "capture_unlocked"},
+	"steps":
+	[
+		{
+			"id": "rent_the_bench",
+			"description": "Rent bench time from Surgeon-Lab-Tech Veil. Watch the meter.",
+			"on_complete": {"set_flag": "watched_the_meter"}
+		},
+	],
+	"on_complete": {"set_flag": "altar_hours_kept"},
+}
+
+## ACT 0, quest 0.3 "The Mark": the inciting incident. CHOICE-driven like SQ-05 — Vael's
+## timeline asks how the brand is borne (seal / feed / bargain) and the resolved branch, not
+## the talk, advances the step (branch effects live on Vael's NPC "choice" config). Scene 3.
+const MARK_QUEST := {
+	"id": "act0_the_mark",
+	"name": "The Mark",
+	"description":
+	"You were marked by a dead thing and failed to die. The Table prefers its problems contracted.",
+	"step_key": "mark_step",
+	"trigger": {"flag": "altar_hours_kept"},
+	"steps":
+	[
+		{
+			"id": "answer_the_mark",
+			"description": "Answer Vael Construct-Nine. The brand can be borne three ways.",
+			"on_complete": {"set_flag": "marked_and_lived"}
+		},
+	],
+	"on_complete": {"set_flag": "arena_opened"},
+}
+
+## ACT 0, quest 0.4 "Registered": the Act climax. Entering the rolls with Thessaly Vance ends
+## the Nobody act — everyone now knows exactly how much you're worth dead. Scene 4.
+const REGISTERED_QUEST := {
+	"id": "act0_registered",
+	"name": "Registered",
+	"description": "Win a bracket bout, enter the rolls, become somebody. The worst thing yet.",
+	"step_key": "rolls_step",
+	"trigger": {"flag": "arena_opened"},
+	"steps":
+	[
+		{
+			"id": "enter_the_rolls",
+			"description": "Enter the Arena rolls with Madam Thessaly Vance.",
+			"on_complete": {"set_flag": "on_the_rolls"}
+		},
+	],
+	"on_complete": {"set_flag": "registered_aspirant"},
+}
+
+## W16b — the PECULIAR defs: authored non-combat "encounters" the W13 seam routes here when a
+## triggered roll carries kind == "peculiar" (tension 8: Wave 16 adds peculiars). Data only;
+## OverworldPeculiars interprets the fields (befriend_species / item+interval / flag+corrupt
+## variant / crack) and applies the resolution. Timelines are registered in dtl_directory.
+const PECULIAR_DEFS := [
+	{
+		# The Conscientious Objector (husbandry_bestiary §D + voice_library §5.5): a wild
+		# creature that sits down and vents instead of fighting — befriendable, so the walk
+		# away can put it IN the coven via the existing capture/party path.
+		"id": "conscientious_objector",
+		"timeline": "peculiar_objector",
+		"befriend_species": "SB22",  # the radiant deer of region.verdant_glut.fauna
+		"nickname": "The Objector",
+		"voice_key": "capture.refuses",
+	},
+	{
+		# Pollen-Factor Dree's cursed trinket (SQ-04's merchant, regional_cast V-1): a flavor
+		# item into run.inventory, plus the rare deterministic "the bag screams, briefly"
+		# follow-up toasts every `interval` steps (OverworldPeculiars.tick_bag_scream).
+		"id": "dree_cursed_trinket",
+		"timeline": "peculiar_dree_trinket",
+		"item": {"item_type": "key", "item_key": "dree_cursed_trinket"},
+		"interval": 33,
+		"voice_key": "shop.cursed",
+	},
+	{
+		# A Greenwatcher omen (SQ-06's gentle apex): pure dialogue — and the one beat that
+		# reads the run back, swapping to a corruption-reactive variant once the rot shows.
+		"id": "greenwatcher_omen",
+		"timeline": "peculiar_omen",
+		"corrupt_timeline": "peculiar_omen_corrupt",
+		"corrupt_threshold": 2,
+		"flag": "greenwatcher_omen_seen",
+	},
+	{
+		# Fourth-wall crack #2 (rare, rationed): Madam Cessil's tent is never in quite the
+		# same spot — once per run it is HERE. Latched via FourthWall.seen_cracks; later
+		# rare picks fall back to the omen beat (OverworldPeculiars.resolve_def).
+		"id": "cessil_reading",
+		"timeline": "peculiar_cessil",
+		"crack": "cessil",
+	},
+]
+
 ## Region id -> display TITLE for the overworld HUD (Wave 3: the HUD names the region the systems
 ## actually run — verdant_glut, not a hard-coded "The Rust Marsh"). Falls back to the raw id.
 const REGION_TITLES := {
@@ -233,13 +449,55 @@ const REGION_CLIMATES := {
 	"verdant_glut": "Eros climate · a thin place",
 }
 
+## One peculiar pick in PECULIAR_RARE_DIE is the rationed fourth-wall variant (Madam Cessil);
+## OverworldPeculiars falls the rare pick back to the omen beat once her crack has latched.
+const PECULIAR_RARE_DIE := 8
+
 
 ## Every overworld quest, in one place — the screen registers + dispatches over this list, so a new
 ## quest is a const above + an entry here (plus its NPC_DEFS step entries). No screen-logic change.
 ## BOSS_QUEST rides last so an NPC-given quest's objective outranks it in the HUD tracker once one
-## is active (the boss goal is the always-on floor, not a squatter).
+## is active (the boss goal is the always-on floor, not a squatter). The Act-0 spine (W16b/C14)
+## rides between the side quests and the floor: none of it auto-starts, so a fresh run's tracker
+## still opens on the boss goal until Maddox is heard.
 static func quest_defs() -> Array:
-	return [MARSH_QUEST, MELON_QUEST, BRAMBLE_QUEST, WENLOW_QUEST, BOSS_QUEST]
+	return [
+		MARSH_QUEST,
+		MELON_QUEST,
+		BRAMBLE_QUEST,
+		WENLOW_QUEST,
+		KNACK_QUEST,
+		ALTAR_QUEST,
+		MARK_QUEST,
+		REGISTERED_QUEST,
+		BOSS_QUEST,
+	]
+
+
+## The peculiar def a triggered roll resolves to — a PURE function of the roll's canonical
+## fields (step + battle_seed), hashed LOCALLY (never the canonical PCG32 streams), so the
+## same roll always sits down with the same beat. The rare Cessil variant fires on ~1 pick in
+## PECULIAR_RARE_DIE; the caller (OverworldPeculiars.resolve_def) applies the one-shot ration.
+static func pick_peculiar(roll: Dictionary) -> Dictionary:
+	var salt := "peculiar:%d:%d" % [int(roll.get("step", 0)), int(roll.get("battle_seed", 0))]
+	var h := absi(hash(salt))
+	if h % PECULIAR_RARE_DIE == 0:
+		return peculiar_def("cessil_reading")
+	var mains: Array = []
+	for def: Dictionary in PECULIAR_DEFS:
+		if not def.has("crack"):
+			mains.append(def)
+	if mains.is_empty():
+		return {}
+	return mains[absi(hash("pick:" + salt)) % mains.size()]
+
+
+## The peculiar def with `id`, or {} when unknown (single lookup for the resolver + tests).
+static func peculiar_def(id: String) -> Dictionary:
+	for def: Dictionary in PECULIAR_DEFS:
+		if str(def.get("id", "")) == id:
+			return def
+	return {}
 
 
 ## The HUD title for a region id ("The Verdant Glut"), falling back to the id itself.

@@ -264,6 +264,7 @@ func try_move(dir: Vector2i, roll_encounter: bool = true) -> Dictionary:
 		_refresh_mood()
 	_critters.recycle_far(_player_cell)
 	var step_index := int(_game.call("advance_step"))
+	_ambient_step_tick(step_index)
 	# Slice 4: the LEGENDARY-BOSS climax takes precedence at/after the threshold step (once explored
 	# enough + not yet cleared). Deterministic — a pure function of (seed, region, step, cleared flag).
 	var boss_roll := _maybe_boss(step_index)
@@ -309,6 +310,17 @@ func _maybe_boss(step_index: int) -> Dictionary:
 		return {}
 	OverworldLoopStateScript.mark_boss_fired(run, _region_id())
 	return _director.boss_step(step_index)
+
+
+## W16b: the per-step AMBIENT content tick — proximity barks (a hard >=25-step world_state
+## cooldown between ANY two, silent during dialogue) plus the cursed trinket's deterministic
+## follow-up screams. State lives on the run; the content lives in OverworldBarks/Peculiars.
+func _ambient_step_tick(step_index: int) -> void:
+	var run := _run_ctx()
+	if run == null:
+		return
+	OverworldBarks.step_tick(self, run, step_index)
+	OverworldPeculiars.tick_bag_scream(run, step_index, get_node_or_null("/root/Toast"))
 
 
 ## The active RunContext, or null (single accessor for the many world_state read/write sites).
@@ -774,8 +786,16 @@ func speak_to(index: int) -> String:
 	if index < 0 or index >= _npcs.size():
 		return ""
 	var npc: Dictionary = _npcs[index]
+	# W16b: signs READ (the fourth-wall signpost, once per run); NPCs talked dry a 5th+ time
+	# swap to the authored out-of-lines bark instead of a scene replay (quest steps included —
+	# the dispatch below still runs; a choice-holding NPC keeps its scene until resolved).
+	if bool(npc.get("sign", false)):
+		return OverworldBarks.read_signpost(self, npc, _run_ctx(), _game)
 	var timeline := str(npc["timeline"])
 	var choice_conf: Dictionary = npc.get("choice", {})
+	if OverworldBarks.swap_out_of_lines(self, npc, _run_ctx()):
+		_advance_quest_for(npc)
+		return timeline
 	if _dialogue == null:
 		_dialogue = DialogicFacade.new()
 	# Connect idempotently BEFORE play so a first-talk signal can never be missed (review P2.3).
@@ -871,62 +891,24 @@ func _quest_defs() -> Array:
 
 
 func _quest_def_by_id(quest_id: String) -> Dictionary:
-	for d: Dictionary in _quest_defs():
-		if str(d.get("id", "")) == quest_id:
-			return d
-	return {}
+	return OverworldQuestsGlue.quest_def_by_id(quest_id)
 
 
-## The `on_complete` effect of a named step of a quest, or {} if not found.
 func _quest_step_effect(quest_id: String, step_id: String) -> Dictionary:
-	for s: Dictionary in _quest_def_by_id(quest_id).get("steps", []) as Array:
-		if str(s.get("id", "")) == step_id:
-			return s.get("on_complete", {}) as Dictionary
-	return {}
+	return OverworldQuestsGlue.quest_step_effect(quest_id, step_id)
 
 
-## Apply a quest effect to the ACTUAL run (corruption / standing / flags), not just the screen-local
-## QuestService run-state, so the rewards are real + saved. Data-only effect dict.
 func _apply_effect_to_run(effect: Dictionary) -> void:
-	if effect.is_empty() or _game == null or not _game.has_method("run"):
-		return
-	var run: RunContext = _game.call("run")
-	if run == null:
-		return
-	if effect.has("set_flag"):
-		run.flags[str(effect["set_flag"])] = true
-	if effect.has("add_corruption"):
-		run.corruption += int(effect["add_corruption"])
+	if OverworldQuestsGlue.apply_effect_to_run(_game, effect):
 		_refresh_mood()  # W13: the grade + the HUD pip react the moment the rot moves
-	if effect.has("nudge_standing"):
-		var pair: Array = effect["nudge_standing"]
-		if (
-			pair.size() == 2
-			and str(pair[0]) == "bloomwardens"
-			and _game.has_method("adjust_bloomwardens_standing")
-		):
-			_game.call("adjust_bloomwardens_standing", int(pair[1]))
 
 
-## Serialize quest progress into run.flags and persist the run, so quests survive leaving the screen.
 func _persist_quests() -> void:
-	if _quests == null or _game == null or not _game.has_method("run"):
-		return
-	var run: RunContext = _game.call("run")
-	if run == null:
-		return
-	run.flags["quest_state"] = _quests.serialize()
-	if _game.has_method("save_run"):
-		_game.call("save_run")
+	OverworldQuestsGlue.persist_quests(_game, _quests)
 
 
-## Restore quest progress from the run (so a re-entered overworld keeps completed/in-flight quests).
 func _restore_quests() -> void:
-	if _quests == null or _game == null or not _game.has_method("run"):
-		return
-	var run: RunContext = _game.call("run")
-	if run != null and run.flags.has("quest_state"):
-		_quests.deserialize(run.flags["quest_state"] as Dictionary)
+	OverworldQuestsGlue.restore_quests(_game, _quests)
 
 
 func _on_dialogue_finished(_timeline_id: String) -> void:

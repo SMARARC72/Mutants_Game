@@ -32,7 +32,9 @@ static func spawn_cell(layout: Layout) -> Vector2i:
 ## Anchoring on the CANONICAL spawn keeps the cast put across battles and reloads.
 static func npc_cells(layout: Layout, home: Vector2i, count: int) -> Array:
 	var found: Array = []
-	for radius in range(2, 8):
+	# Ring search out to the full region span (W16b: the cast grew to 16 with Act-0) —
+	# early NPCs keep their exact historical cells; only the overflow walks further out.
+	for radius in range(2, 16):
 		for dy in range(-radius, radius + 1):
 			for dx in range(-radius, radius + 1):
 				if abs(dx) + abs(dy) != radius:
