@@ -1,29 +1,42 @@
 # Audio assets — PROVENANCE
 
-## Generated in-repo (CC0 / public domain)
+## Curated real recordings (wave/w-oss-assets, 2026-07-02)
 
-Every `.wav` under `client/assets/audio/{ui,sfx,ambience}/` is **synthesized in this
-repository** by `tools/gen_audio.py` (numpy + stdlib `wave`, fixed seed `0x4D5554`,
-44.1 kHz 16-bit mono, peaks normalized to ~-12 dBFS). Re-running the script reproduces
-the files byte-for-byte. No third-party recordings, samples, or soundfonts were used.
+The placeholder set synthesized by `tools/gen_audio.py` has been replaced (except
+`sfx/veil_whisper.wav`, still generated — see below) with curated CC0 / public-domain
+recordings from the shared local library `../_asset-library/` (kenney / freepd /
+opengameart subfolders, each with `LICENSE_NOTES.md` recording URL + license + date +
+author). One-shots were converted to 44.1 kHz 16-bit mono WAV (peaks normalized to
+-4.4 dBFS) via libsndfile; music beds ship as MP3 (loaded natively by Godot, loop forced
+by `MusicService._load_bed`).
 
-These files are dedicated to the public domain under
-[CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/).
+### Music / ambience beds (`ambience/`) — filenames keep the service keys
+
+| File | Source | Author | License |
+|---|---|---|---|
+| `menu_bed_loop.mp3` | "Ancient Rite" — FreePD.com (site closed 2025; retrieved via Wayback Machine, see `_asset-library/freepd/LICENSE_NOTES.md`) | Kevin MacLeod | CC0 / PD |
+| `battle_drone_loop.mp3` | "Battle Theme A" — https://opengameart.org/content/battle-theme-a | cynicmusic (pixelsphere.org) | CC0 |
+| `ambience_marsh_loop.mp3` | "Swamp Environment Audio" — https://opengameart.org/content/swamp-environment-audio (gain-normalized to -5 dBFS peak, re-encoded from the CC0 ogg) | LokiF | CC0 |
+
+### One-shots (`ui/`, `sfx/`) — Kenney packs (all CC0, https://kenney.nl)
+
+| File | Kenney source |
+|---|---|
+| `ui/ui_click.wav` | Interface Sounds — `click_001.ogg` |
+| `ui/ui_confirm.wav` | Interface Sounds — `confirmation_002.ogg` |
+| `sfx/footstep_1..4.wav` | Impact Sounds — `footstep_grass_000..003.ogg` |
+| `sfx/hit_crunch.wav` | Impact Sounds — `impactSoft_heavy_000.ogg` |
+| `sfx/death_knell.wav` | Impact Sounds — `impactBell_heavy_001.ogg` (real bell strike) |
+| `sfx/capture_sting.wav` | Music Jingles — `jingles_PIZZI07.ogg` (pizzicato sting) |
+| `sfx/boss_swell.wav` | Music Jingles — `jingles_HIT15.ogg` (orchestral hit) |
+
+### Still generated in-repo (CC0)
 
 | File | Description |
 |---|---|
-| `ui/ui_click.wav` | 2 ms band-passed tick (global button click) |
-| `ui/ui_confirm.wav` | soft two-note brass-ish chime |
-| `sfx/footstep_1..4.wav` | low-passed noise thuds, pitch variants |
-| `sfx/hit_crunch.wav` | fast noise burst + low thump |
-| `sfx/death_knell.wav` | FM bell ~220 Hz, 2.5 s decay + detuned second strike |
-| `sfx/capture_sting.wav` | rising three-note bell motif |
-| `sfx/boss_swell.wav` | low drone crescendo, 3 s |
-| `sfx/veil_whisper.wav` | breathy band-passed noise swell |
-| `ambience/ambience_marsh_loop.wav` | ~20 s seamless loop: brown-noise bed + sparse croaks/blips |
-| `ambience/battle_drone_loop.wav` | ~16 s seamless loop: 55 Hz drone + slow amplitude LFO |
-| `ambience/menu_bed_loop.wav` | ~20 s seamless loop: detuned-sine dark pad + slow filter sweep |
+| `sfx/veil_whisper.wav` | breathy band-passed noise swell — `tools/gen_audio.py` (no suitable CC0 whisper found; deterministic seed `0x4D5554`) |
 
-Chosen over CC0 downloads (Kenney et al.) for this slice so the whole set is
-deterministic, dependency-free, and license-unambiguous; curated CC0 packs may replace
-individual files later (see `sfx/PROVENANCE.md` for the candidate sources).
+All shipped licenses are CC0 / public domain — no attribution required (courtesy credits
+optional). Every file was magic-byte- and decode-verified (libsndfile) before landing.
+The one CC-BY item fetched during foraging (Iwan Gabovitch — Dark Ambience Loop) stays
+in the library only and is NOT shipped, so `CREDITS.md` needs no new rows.

@@ -8,6 +8,12 @@ script reproduces byte-identical files. numpy + stdlib `wave` only — no new de
 All output is generated in-repo and dedicated to the public domain (CC0) — see
 client/assets/audio/PROVENANCE.md.
 
+⚠ SUPERSEDED (wave/w-oss-assets, 2026-07-02): curated CC0 recordings (Kenney /
+FreePD / OpenGameArt — see PROVENANCE.md) replaced every output except
+sfx/veil_whisper.wav. Re-running this script will CLOBBER the curated WAVs
+(the shipped ambience beds are now .mp3 and are safe). Kept for veil_whisper
+regeneration and as the documented origin of the placeholder set.
+
 Usage:  PYTHONUTF8=1 python tools/gen_audio.py
 """
 
