@@ -42,6 +42,17 @@ static func equip(
 		return _fail("not_owned")
 	var before := CreatureSheetScript.gear_effect_totals(creature, gear_catalog)
 	var displaced := str(creature.get("equipped_gear", ""))
+	# Codex #57 P2: re-equipping the worn piece is a NO-OP — consuming a duplicate copy
+	# while returning nothing silently deleted gear.
+	if displaced == gear_id:
+		return {
+			"ok": true,
+			"reason": "already_equipped",
+			"equipped": gear_id,
+			"totals_before": before,
+			"totals_after": before,
+			"delta": _delta(before, before),
+		}
 	creature["equipped_gear"] = gear_id
 	if inventory != null:
 		inventory.consume(GEAR_ITEM_TYPE, gear_id, 1)

@@ -327,7 +327,13 @@ func last_mortality() -> Dictionary:
 func rest_at_camp() -> Dictionary:
 	if _run == null:
 		return {"ok": false, "healed": 0, "fee": 0, "reason": "no active run"}
-	if _run.essence < REST_ESSENCE_FEE:
+	# Codex #57 P2: the Trader's voucher must WORK — one camp_heal_voucher waives the
+	# essence fee (consumed), else the essence fee applies as before.
+	var voucher_paid := false
+	if inventory().count("consumable", "camp_heal_voucher") > 0:
+		inventory().consume("consumable", "camp_heal_voucher", 1)
+		voucher_paid = true
+	elif _run.essence < REST_ESSENCE_FEE:
 		return {"ok": false, "healed": 0, "fee": REST_ESSENCE_FEE, "reason": "essence"}
 	var healed := 0
 	for entry: Variant in _run.party:
@@ -345,7 +351,8 @@ func rest_at_camp() -> Dictionary:
 			tended = true
 		if tended:
 			healed += 1
-	_run.essence -= REST_ESSENCE_FEE
+	if not voucher_paid:
+		_run.essence -= REST_ESSENCE_FEE
 	return {"ok": true, "healed": healed, "fee": REST_ESSENCE_FEE, "reason": ""}
 
 
@@ -627,14 +634,15 @@ func _save_ordinal_of(path: String) -> int:
 	var f := FileAccess.open(path, FileAccess.READ)
 	if f == null:
 		return -1
-	var parsed: Variant = JSON.parse_string(f.get_as_text())
+	var text := f.get_as_text()
 	f.close()
-	if not (parsed is Dictionary):
+	# Codex #57 P2: flags live under the envelope's RUN payload — go through the same
+	# SaveEnvelope helpers continue_run() uses, never a hand-rolled shape guess.
+	var envelope := SaveEnvelopeScript.parse_json(text)
+	if envelope.is_empty():
 		return -1
-	var body: Variant = (parsed as Dictionary).get("body", parsed)
-	if not (body is Dictionary):
-		return -1
-	var flags: Variant = (body as Dictionary).get("flags", {})
+	var run_payload := SaveEnvelopeScript.run_payload(envelope)
+	var flags: Variant = run_payload.get("flags", {})
 	if flags is Dictionary:
 		return int((flags as Dictionary).get("save_ordinal", -1))
 	return -1

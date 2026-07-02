@@ -304,3 +304,21 @@ func test_detail_panel_renders_stat_rows() -> void:
 		assert_object(row.find_child("StatNumber", true, false)).is_not_null()
 	screen.queue_free()
 	gc.queue_free()
+
+
+func test_reequipping_worn_gear_never_consumes_a_duplicate() -> void:
+	# Codex #57 P2: same-id equip is a no-op — it must not eat a spare copy.
+	var gc := _make_game()
+	var run: RunContext = gc.call("run")
+	var inv: InventoryAdapter = gc.call("inventory")
+	var catalog: GearCatalog = gc.call("gear_catalog")
+	var gear_id := str((catalog.all()[0] as Dictionary).get("id", ""))
+	inv.add(GearService.GEAR_ITEM_TYPE, gear_id, 2)
+	var creature: Dictionary = run.party[0]
+	var first: Dictionary = GearService.equip(creature, gear_id, catalog, inv)
+	assert_bool(bool(first.get("ok", false))).is_true()
+	assert_int(inv.count(GearService.GEAR_ITEM_TYPE, gear_id)).is_equal(1)
+	var again: Dictionary = GearService.equip(creature, gear_id, catalog, inv)
+	assert_str(str(again.get("reason", ""))).is_equal("already_equipped")
+	assert_int(inv.count(GearService.GEAR_ITEM_TYPE, gear_id)).is_equal(1)  # spare intact
+	gc.queue_free()

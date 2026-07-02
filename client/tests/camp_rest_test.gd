@@ -99,3 +99,31 @@ func test_save_and_quit_targets_the_title_scene() -> void:
 	assert_bool(bool(gc.call("has_save"))).is_true()
 	menu.queue_free()
 	gc.queue_free()
+
+
+func test_heal_voucher_waives_the_essence_fee_and_is_consumed() -> void:
+	# Codex #57 P2: the Trader's voucher must WORK — it pays for one rest instead of essence.
+	var gc := _make_game()
+	var run: RunContext = gc.call("run")
+	var inv: InventoryAdapter = gc.call("inventory")
+	inv.add("consumable", "camp_heal_voucher", 1)
+	(run.party[0] as Dictionary)["hp"] = 1
+	(run.party[0] as Dictionary)["max_hp"] = 20
+	var essence_before: int = run.essence
+	var report: Dictionary = gc.call("rest_at_camp")
+	assert_bool(bool(report.get("ok", false))).is_true()
+	assert_int(run.essence).is_equal(essence_before)  # fee waived
+	assert_int(inv.count("consumable", "camp_heal_voucher")).is_equal(0)  # consumed
+	assert_int(int((run.party[0] as Dictionary).get("hp", 0))).is_equal(20)
+	gc.queue_free()
+
+
+func test_save_ordinal_round_trips_through_the_envelope() -> void:
+	# Codex #57 P2: the ordinal must be read from the RUN payload — a fresh save's ordinal
+	# parses as a positive number (not the silent -1 mtime fallback).
+	var gc := _make_game()
+	assert_bool(bool(gc.call("save_run"))).is_true()
+	var path: String = gc.call("_latest_save_path")
+	assert_str(path).is_not_empty()
+	assert_int(int(gc.call("_save_ordinal_of", path))).is_greater(0)
+	gc.queue_free()
