@@ -13,6 +13,7 @@ extends Node
 
 const Microcopy := preload("res://presentation/ui/toast/toast_microcopy.gd")
 const Palette := preload("res://presentation/ui/theme/grimoire_palette.gd")
+const SigilGenScript := preload("res://presentation/creature/sigil_gen.gd")
 
 const MAX_VISIBLE := 4
 const TOAST_LIFETIME := 4.0
@@ -54,13 +55,17 @@ func _ready() -> void:
 	add_child(_audio)
 
 
-## Show a toast. `payload` keys: title, body, icon (res:// path or ""), sound (cue name).
+## Show a toast. `payload` keys: title, body, icon (res:// path or ""), sound (cue name), and
+## optionally `sigil` ({species, tag, force} — Wave 9: the creature's one-of-one mark drawn in
+## the icon slot, e.g. on the capture result).
 func show(payload: Dictionary) -> void:
 	var title: String = payload.get("title", "")
 	var body: String = payload.get("body", "")
 	var icon: String = payload.get("icon", "")
 	var sound: String = payload.get("sound", "chime")
-	_spawn(title, body, icon)
+	var sigil_v: Variant = payload.get("sigil", {})
+	var sigil: Dictionary = sigil_v if sigil_v is Dictionary else {}
+	_spawn(title, body, icon, sigil)
 	_play(sound)
 
 
@@ -69,7 +74,15 @@ func event(event_id: String) -> void:
 	show(Microcopy.preset(event_id))
 
 
-func _spawn(title: String, body: String, icon_path: String) -> void:
+## Show a preset core-event toast MERGED with extra payload keys (extra wins) — e.g. the Wave 9
+## capture sigil: event_with("creature_caught", {"sigil": {species, tag, force}}).
+func event_with(event_id: String, extra: Dictionary) -> void:
+	var payload := Microcopy.preset(event_id)
+	payload.merge(extra, true)
+	show(payload)
+
+
+func _spawn(title: String, body: String, icon_path: String, sigil: Dictionary = {}) -> void:
 	# Enforce the stack cap (oldest off the top).
 	while _stack.get_child_count() >= MAX_VISIBLE:
 		var oldest := _stack.get_child(0)
@@ -85,7 +98,17 @@ func _spawn(title: String, body: String, icon_path: String) -> void:
 	row.add_theme_constant_override("separation", 12)
 	panel.add_child(row)
 
-	if icon_path != "" and ResourceLoader.exists(icon_path):
+	# The creature's one-of-one sigil takes the icon slot when provided (Wave 9 capture mark);
+	# otherwise the preset's res:// icon renders as before.
+	if not sigil.is_empty():
+		var mark := SigilGenScript.make_mark(
+			str(sigil.get("species", "")),
+			str(sigil.get("tag", "")),
+			str(sigil.get("force", "")),
+			40
+		)
+		row.add_child(mark)
+	elif icon_path != "" and ResourceLoader.exists(icon_path):
 		var tex := TextureRect.new()
 		tex.texture = load(icon_path)
 		tex.custom_minimum_size = Vector2(40, 40)

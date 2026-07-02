@@ -37,7 +37,7 @@ var _detail_box: VBoxContainer = null
 var _detail_title: Label = null
 var _detail_stats: Label = null
 var _detail_desc: Label = null
-var _detail_portrait: TextureRect = null
+var _detail_portrait: LivingPlate = null
 var _detail_forces: HBoxContainer = null
 var _ledger_label: Label = null
 var _gear_box: VBoxContainer = null
@@ -256,11 +256,10 @@ func _build_detail_panel() -> void:
 	var header := HBoxContainer.new()
 	header.add_theme_constant_override("separation", 12)
 	_detail_box.add_child(header)
-	_detail_portrait = TextureRect.new()
+	# Wave 9 LivingPlate: the detail portrait breathes (texture/tint/identity land per refresh).
+	_detail_portrait = LivingPlate.new()
 	_detail_portrait.name = "DetailPortrait"
-	_detail_portrait.custom_minimum_size = Vector2(132, 132)
-	_detail_portrait.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	_detail_portrait.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	_detail_portrait.set_plate_size(Vector2(132, 132))
 	header.add_child(PortraitUtil.framed(_detail_portrait))
 	var head_col := VBoxContainer.new()
 	head_col.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -355,7 +354,29 @@ func _refresh_roster() -> void:
 		btn.custom_minimum_size = Vector2(0, 46)
 		var idx := i
 		btn.pressed.connect(func() -> void: select_creature(idx))
+		_stamp_roster_sigil(btn, creature)
 		_roster.add_child(btn)
+
+
+## The tiny 16px one-of-one sigil on a roster row's right edge (Wave 9 — the mark travels with
+## the creature everywhere it is listed). Anchored manually: Buttons are not containers, so the
+## mark keeps its corner slot without stealing the row's click.
+func _stamp_roster_sigil(btn: Button, creature: Dictionary) -> void:
+	var catalog: SpeciesCatalog = _game.call("catalog") if _game != null else null
+	var ident := CreatureSheetScript.identity_of(creature, catalog) if catalog != null else {}
+	var mark := SigilGen.make_mark(
+		str(creature.get("species_id", "")),
+		PortraitUtil.instance_tag_of(creature),
+		str(ident.get("prim", "")),
+		16
+	)
+	mark.name = "RowSigil"
+	mark.set_anchors_preset(Control.PRESET_CENTER_RIGHT)
+	mark.offset_left = -26.0
+	mark.offset_right = -10.0
+	mark.offset_top = -8.0
+	mark.offset_bottom = 8.0
+	btn.add_child(mark)
 
 
 func _roster_line(creature: Dictionary, is_active: bool) -> String:
@@ -386,9 +407,15 @@ func _refresh_detail() -> void:
 	var nick := str(creature.get("nickname", ""))
 	_detail_title.text = nick if nick != "" else (species.name if species != null else "?")
 	if _detail_portrait != null:
-		# Hybrids render their dominant parent's plate + the deterministic corruption tint.
-		_detail_portrait.texture = PortraitUtil.creature_plate(creature)
-		_detail_portrait.self_modulate = PortraitUtil.creature_tint(creature)
+		# Hybrids render their dominant parent's plate + the deterministic corruption tint; the
+		# identity hash keeps this creature's breath phase + sigil the same on every screen.
+		_detail_portrait.set_texture(PortraitUtil.creature_plate(creature))
+		_detail_portrait.set_tint(PortraitUtil.creature_tint(creature))
+		_detail_portrait.set_identity(
+			str(creature.get("species_id", "")), PortraitUtil.instance_tag_of(creature)
+		)
+		var sigil_ident := CreatureSheetScript.identity_of(creature, catalog)
+		PortraitUtil.stamp_sigil(_detail_portrait, creature, str(sigil_ident.get("prim", "")), 20)
 	_refresh_detail_forces(creature, catalog)
 	_detail_stats.text = _format_detail(creature, catalog)
 	if _detail_desc != null:

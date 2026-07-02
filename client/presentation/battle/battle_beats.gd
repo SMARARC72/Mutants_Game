@@ -57,7 +57,7 @@ static func apply_instant(screen: Control, beat: Dictionary) -> void:
 			BattleCardKitScript.style_hp_bar(bar)
 			(c["hp"] as Label).text = "%d / %d" % [maxi(0, target), int(bar.max_value)]
 			if target < last:
-				BattleCardKitScript.flash_portrait(c["portrait"] as TextureRect)
+				BattleCardKitScript.flash_portrait(c["portrait"] as CanvasItem)
 				screen.call("fx_damage", c["card"], last - target)
 				screen.call("play_stinger", "hit_crunch", 0.15)
 				if target <= 0:

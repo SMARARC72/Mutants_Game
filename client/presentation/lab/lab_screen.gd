@@ -64,6 +64,11 @@ var _ingredient_picker: VBoxContainer = null
 var _b_section: VBoxContainer = null
 var _verdict_label: RichTextLabel = null
 var _result_label: RichTextLabel = null
+## Wave 9: the committed newborn's LivingPlate + one-of-one sigil in the verdict panel (hidden
+## until a splice lands; a fresh preview hides it again).
+var _newborn_row: HBoxContainer = null
+var _newborn_plate: LivingPlate = null
+var _newborn_sigil: Control = null
 var _preview_button: Button = null
 var _commit_button: Button = null
 var _first_op_button: Button = null  # first rite button (the W1 focus anchor)
@@ -223,9 +228,11 @@ func commit() -> Dictionary:
 			break
 	if _game.has_method("save_run"):
 		_game.call("save_run")
-	_render_commit(creature)
 	_toast_outcome(result, true)
 	refresh()  # the consumed parts + parents are gone — rebuild the pickers and drawer
+	# AFTER the refresh (whose live preview clears the result panel): the newborn's numbers +
+	# LivingPlate + sigil showcase survive on the page the player is actually looking at.
+	_render_commit(creature, instance)
 	return result
 
 
@@ -587,6 +594,21 @@ func _build_ui() -> void:
 	_verdict_label.custom_minimum_size = Vector2(0, 96)
 	_verdict_label.add_theme_color_override("default_color", GrimoirePalette.TEXT_ON_PARCHMENT)
 	verdict_box.add_child(_verdict_label)
+	# Wave 9: the newborn showcase — a LivingPlate (it breathes on the page) + its sigil,
+	# revealed only when a commit lands.
+	_newborn_row = HBoxContainer.new()
+	_newborn_row.name = "NewbornRow"
+	_newborn_row.add_theme_constant_override("separation", 10)
+	_newborn_row.visible = false
+	verdict_box.add_child(_newborn_row)
+	_newborn_plate = LivingPlate.new()
+	_newborn_plate.name = "NewbornPlate"
+	_newborn_plate.set_plate_size(Vector2(96, 96))
+	_newborn_row.add_child(_newborn_plate)
+	_newborn_sigil = SigilGen.make_mark("", "", "", 28)
+	_newborn_sigil.name = "NewbornSigil"
+	_newborn_sigil.size_flags_vertical = Control.SIZE_SHRINK_END
+	_newborn_row.add_child(_newborn_sigil)
 	_result_label = RichTextLabel.new()
 	_result_label.name = "ResultLabel"
 	_result_label.bbcode_enabled = true
@@ -731,6 +753,8 @@ func _render_verdict(verdict: Dictionary) -> void:
 	if _verdict_label == null:
 		return
 	_result_label.text = ""
+	if _newborn_row != null:
+		_newborn_row.visible = false  # a fresh divination clears the last newborn's showcase
 	if verdict.is_empty():
 		_verdict_label.text = (
 			"[color=#%s]Choose your subjects.[/color]" % _parchment_hex(GrimoirePalette.TEXT_MUTED)
@@ -806,9 +830,20 @@ func _cost_summary(cost: Dictionary) -> String:
 ## Render the COMMITTED creature's oracle-reported numbers (forces, tier, BST/HP, and the entropy +
 ## corruption the oracle charged). Every number here came BACK from the oracle — the screen computed
 ## none of it (the contamination guard proves it equals the engine on the same config+seed).
-func _render_commit(creature: Dictionary) -> void:
+## `instance` is the shaped party entry (Wave 9: its plate + rng_seed_tag drive the newborn
+## showcase — the LivingPlate and the one-of-one sigil the creature will bear everywhere).
+func _render_commit(creature: Dictionary, instance: Dictionary = {}) -> void:
 	if _result_label == null:
 		return
+	if _newborn_row != null and not instance.is_empty():
+		var tag := PortraitUtil.instance_tag_of(instance)
+		_newborn_plate.set_texture(PortraitUtil.creature_plate(instance))
+		_newborn_plate.set_tint(PortraitUtil.creature_tint(instance))
+		_newborn_plate.set_identity(str(instance.get("species_id", "")), tag)
+		_newborn_sigil.call(
+			"set_identity", str(instance.get("species_id", "")), tag, str(creature.get("prim", ""))
+		)
+		_newborn_row.visible = true
 	var force := str(creature.get("prim", ""))
 	if str(creature.get("sec", "")) != "":
 		force += "/" + str(creature.get("sec", ""))
