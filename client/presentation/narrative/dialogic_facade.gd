@@ -99,33 +99,20 @@ func _has_display() -> bool:
 
 
 ## SELF-HEAL (CI/Linux): Dialogic's editor plugin rebuilds [dialogic] directories during
-## --import and is known to WIPE them headless (recorded toolchain gotcha), which nulls every
-## runtime timeline/character lookup. Rebuild the ProjectSettings maps in-memory from the
-## content folders whenever entries are missing — no file writes, deterministic scan order.
+## --import and is known to WIPE them headless (recorded toolchain gotcha). Worse, the runtime
+## reads Engine meta (get_directory caches ProjectSettings into meta on FIRST read), so writing
+## ProjectSettings after boot is invisible. Heal via Dialogic's OWN canonical rebuild —
+## DialogicResourceUtil.update_directory scans res:// and writes the Engine-meta store the
+## runtime actually consults (ProjectSettings.save() inside is editor-guarded; no file writes).
 static func ensure_directories() -> void:
-	_heal_directory("dialogic/directories/dtl_directory", "res://presentation/dialogue", ".dtl")
-	_heal_directory(
-		"dialogic/directories/dch_directory", "res://presentation/dialogue/characters", ".dch"
-	)
+	for ext in ["dch", "dtl"]:
+		var directory: Dictionary = DialogicResourceUtil.get_directory(ext)
+		if directory.is_empty() or not _directory_paths_exist(directory):
+			DialogicResourceUtil.update_directory(ext)
 
 
-static func _heal_directory(setting: String, root: String, ext: String) -> void:
-	var current: Variant = (
-		ProjectSettings.get_setting(setting) if ProjectSettings.has_setting(setting) else null
-	)
-	var map: Dictionary = current if current is Dictionary else {}
-	var dir := DirAccess.open(root)
-	if dir == null:
-		return
-	var healed := map.duplicate()
-	dir.list_dir_begin()
-	var fname := dir.get_next()
-	while fname != "":
-		if not dir.current_is_dir() and fname.ends_with(ext):
-			var stem := fname.get_basename()
-			if not healed.has(stem):
-				healed[stem] = root + "/" + fname
-		fname = dir.get_next()
-	dir.list_dir_end()
-	if healed.size() != map.size():
-		ProjectSettings.set_setting(setting, healed)
+static func _directory_paths_exist(directory: Dictionary) -> bool:
+	for key in directory:
+		if not ResourceLoader.exists(str(directory[key])):
+			return false
+	return true

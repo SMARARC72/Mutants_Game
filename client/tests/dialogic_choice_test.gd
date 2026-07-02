@@ -93,6 +93,12 @@ func test_garran_speaker_resolves_through_registered_dch_directory() -> void:
 	# The 10 wired NPCs ship .dch character files registered in [dialogic] dch_directory;
 	# the identifier used by old_garran.dtl's text events must load as a real character.
 	DialogicFacade.ensure_directories()  # CI import wipes [dialogic] maps; the game self-heals
+	# Assert the directory resolves our identifier to OUR file first — if this fails on a
+	# fresh-import runner, the message carries the wrongly-resolved path (diagnosis built in).
+	var dch_dir: Dictionary = DialogicResourceUtil.get_directory("dch")
+	assert_str(str(dch_dir.get("old_garran", "<missing>"))).is_equal(
+		"res://presentation/dialogue/characters/old_garran.dch"
+	)
 	var character: DialogicCharacter = DialogicResourceUtil.get_character_resource("old_garran")
 	assert_object(character).is_not_null()
 	assert_str(character.display_name).is_equal("Old Garran")
