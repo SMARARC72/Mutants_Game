@@ -10,12 +10,32 @@ extends GdUnitTestSuite
 ## HP / is_dead stay OUT of client/domain/ — everything here drives GameController + factories.
 
 const GameControllerScript := preload("res://application/game/game_controller.gd")
+const SaveEnvelopeScript := preload("res://application/persistence/save_envelope.gd")
 const FakeDalScript := preload("res://infrastructure/dal/fake_dal.gd")
 const MortalityServiceScript := preload("res://application/game/mortality_service.gd")
 const SkillMonFactoryScript := preload("res://application/battle/skill_mon_factory.gd")
 const MonFactoryScript := preload("res://application/battle/mon_factory.gd")
 
 const TEST_SEED := 0xD1E5
+
+
+## HERMETIC: user://saves persists across suites AND Godot processes — stale envelopes from
+## other runs can out-tie this suite's writes on same-second mtimes (the repo persistence-suite
+## convention: wipe before each test; session_trust/game_controller do the same).
+func before_test() -> void:
+	var dir_path := SaveEnvelopeScript.DEFAULT_DIR
+	if not DirAccess.dir_exists_absolute(dir_path):
+		return
+	var dir := DirAccess.open(dir_path)
+	if dir == null:
+		return
+	dir.list_dir_begin()
+	var entry := dir.get_next()
+	while entry != "":
+		if not dir.current_is_dir():
+			dir.remove(entry)
+		entry = dir.get_next()
+	dir.list_dir_end()
 
 
 func _make_controller() -> Node:
