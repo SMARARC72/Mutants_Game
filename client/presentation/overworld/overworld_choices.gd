@@ -37,11 +37,13 @@ static func handle(screen: Node, npcs: Array, scene_id: String, branch_tag: Stri
 
 ## Toast a choice branch's authored line (VoiceBook) inside the standard quest-update
 ## scaffolding (title/icon/sound from the ToastMicrocopy preset — no hand-written copy).
+## pick_plain: a toast never interpolates, so {placeholder} variants are skipped (W16b —
+## the Act-0 catch branches voice through the §5 capture keys, some of which name the beast).
 static func toast_branch_line(screen: Node, voice_key: String) -> void:
 	var toast := screen.get_node_or_null("/root/Toast")
 	if toast == null:
 		return
-	var line := VoiceBook.pick(voice_key)
+	var line := VoiceBook.pick_plain(voice_key)
 	if line == "" and toast.has_method("event"):
 		toast.call("event", "quest_update")  # missing key: fall back to the generic ledger toast
 		return

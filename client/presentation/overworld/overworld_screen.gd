@@ -235,6 +235,7 @@ func try_move(dir: Vector2i, roll_encounter: bool = true) -> Dictionary:
 	if _lead != null:
 		_lead_target = prev_px
 	var step_index := int(_game.call("advance_step"))
+	_ambient_step_tick(step_index)
 	# Slice 4: the LEGENDARY-BOSS climax takes precedence at/after the threshold step (once explored
 	# enough + not yet cleared). Deterministic — a pure function of (seed, region, step, cleared flag).
 	var boss_roll := _maybe_boss(step_index)
@@ -278,6 +279,17 @@ func _maybe_boss(step_index: int) -> Dictionary:
 		return {}
 	OverworldLoopStateScript.mark_boss_fired(run, _region_id())
 	return _director.boss_step(step_index)
+
+
+## W16b: the per-step AMBIENT content tick — proximity barks (a hard >=25-step world_state
+## cooldown between ANY two, silent during dialogue) plus the cursed trinket's deterministic
+## follow-up screams. State lives on the run; the content lives in OverworldBarks/Peculiars.
+func _ambient_step_tick(step_index: int) -> void:
+	var run := _run_ctx()
+	if run == null:
+		return
+	OverworldBarks.step_tick(self, run, step_index)
+	OverworldPeculiars.tick_bag_scream(run, step_index, get_node_or_null("/root/Toast"))
 
 
 ## The active RunContext, or null (single accessor for the many world_state read/write sites).
@@ -738,7 +750,9 @@ func _spawn_npcs() -> void:
 ## the cast stays put across battles and reloads.
 func _npc_cells(count: int) -> Array:
 	var found: Array = []
-	for radius in range(2, 8):
+	# The ring search runs out to the full region span (W16b: the cast grew to 16 with Act-0) —
+	# early NPCs keep their exact historical cells; only the overflow walks further out.
+	for radius in range(2, 16):
 		for dy in range(-radius, radius + 1):
 			for dx in range(-radius, radius + 1):
 				if abs(dx) + abs(dy) != radius:
@@ -773,8 +787,16 @@ func speak_to(index: int) -> String:
 	if index < 0 or index >= _npcs.size():
 		return ""
 	var npc: Dictionary = _npcs[index]
+	# W16b: signs READ (the fourth-wall signpost, once per run); NPCs talked dry a 5th+ time
+	# swap to the authored out-of-lines bark instead of a scene replay (quest steps included —
+	# the dispatch below still runs; a choice-holding NPC keeps its scene until resolved).
+	if bool(npc.get("sign", false)):
+		return OverworldBarks.read_signpost(self, npc, _run_ctx(), _game)
 	var timeline := str(npc["timeline"])
 	var choice_conf: Dictionary = npc.get("choice", {})
+	if OverworldBarks.swap_out_of_lines(self, npc, _run_ctx()):
+		_advance_quest_for(npc)
+		return timeline
 	if _dialogue == null:
 		_dialogue = DialogicFacade.new()
 	# Connect idempotently BEFORE play so a first-talk signal can never be missed (review P2.3).

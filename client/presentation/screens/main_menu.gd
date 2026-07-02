@@ -85,6 +85,11 @@ func _build() -> void:
 
 	var tagline := Label.new()
 	tagline.text = "Catch. Splice. Ascend. Regret."
+	# W16b fourth-wall crack #3 (rationed): on ~1 run in 8 (seeded by the run-seed hash, so the
+	# same run always reads the same menu) the subtitle flickers to the authored watched line.
+	var flicker := FourthWall.menu_tagline(_game)
+	if flicker != "":
+		tagline.text = flicker
 	tagline.theme_type_variation = "MutedLabel"
 	tagline.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	box.add_child(tagline)
