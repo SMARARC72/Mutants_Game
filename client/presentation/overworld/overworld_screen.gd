@@ -632,45 +632,14 @@ func _spawn_player() -> void:
 	_position_player()
 
 
-## Spawn the lead-creature cameo (the ACTUAL party lead's real bestiary plate, circular-cropped with
-## a brass ring) that trails the tamer HG/SS-style. No-op if no plate resolves.
+## Spawn the lead-creature cameo (glue lives in OverworldDepth — line cap). No-op without art.
 func _spawn_lead_creature() -> void:
 	if _lead != null:
 		return
-	var species := _lead_species_id()
-	var tex: Texture2D = SpeciesArt.plate(species)
-	if tex == null:
-		return
-	var box := int(OverworldTileSetScript.TILE_SIZE * 1.18)
-	_lead = Sprite2D.new()
-	_lead.name = "LeadCreature"
-	_lead.texture = OverworldTokensScript.creature_cameo(tex, box, species)
-	# Wave 12: feet-level y-origin — the cameo's ground shadow sits at ~0.92 of its box, so raise
-	# the texture until that contact line lands on the node position; the WorldYSort parent then
-	# occludes the creature correctly against props and the tamer (no hand-set z).
-	_lead.offset = Vector2(0, -box * 0.42)
 	_ensure_world_root()
-	_world.add_child(_lead)
-	var s := OverworldTileSetScript.TILE_SIZE
-	var here := Vector2(_player_cell.x * s + s / 2.0, _player_cell.y * s + s / 2.0)
-	_lead.position = here - Vector2(_last_dir) * float(s)
-	_lead_target = _lead.position
-
-
-## The species id of the run's ACTIVE lead creature (not just party[0] — the player may have set a
-## non-first member as lead), or "" — used to pick the trailing cameo plate.
-func _lead_species_id() -> String:
-	if _game == null or not _game.has_method("run"):
-		return ""
-	var run: RunContext = _game.call("run")
-	if run == null or not (run.party is Array) or (run.party as Array).is_empty():
-		return ""
-	var party: Array = run.party
-	var idx := 0
-	if _game.has_method("active_creature_index"):
-		idx = clampi(int(_game.call("active_creature_index")), 0, party.size() - 1)
-	var lead: Variant = party[idx]
-	return str((lead as Dictionary).get("species_id", "")) if lead is Dictionary else ""
+	_lead = OverworldDepthScript.spawn_lead_cameo(_game, _world, _player_cell, _last_dir)
+	if _lead != null:
+		_lead_target = _lead.position
 
 
 ## Wave 13: the AtmosphereLayer owns ALL fullscreen atmosphere — ONE grade+vignette pass + ONE
