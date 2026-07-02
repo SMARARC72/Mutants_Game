@@ -104,6 +104,8 @@ var _pip: CorruptionPip = null
 var _shimmer: Node2D = null
 var _ambience := OverworldAmbience.new()
 var _critters := OverworldCritters.new()
+## W-DRESS: the landmark-structures kit (deterministic plan + footprint blocked-set + holder).
+var _structures := OverworldStructures.new()
 
 
 func _ready() -> void:
@@ -215,6 +217,7 @@ func build_from_game() -> void:
 	_ensure_world_root()
 	_setup_horizon()
 	_render_layout()
+	_build_structures()
 	_spawn_player()
 	_spawn_lead_creature()
 	_spawn_npcs()
@@ -272,7 +275,11 @@ func try_move(dir: Vector2i, roll_encounter: bool = true) -> Dictionary:
 		_motion.thunk(dir, _cell_center(_player_cell))
 		_ambience.on_blocked(_lead)  # W13: the follower shivers at the wall with you
 		return {"encounter": false, "moved": false}
-	if not OverworldTileSetScript.is_walkable(_layout.get_cell(target.x, target.y)):
+	# W-DRESS: a structure footprint blocks like a wall — screen-local occupancy, Layout untouched.
+	if (
+		not OverworldTileSetScript.is_walkable(_layout.get_cell(target.x, target.y))
+		or _structures.blocks(target)
+	):
 		_motion.thunk(dir, _cell_center(_player_cell))
 		_ambience.on_blocked(_lead)
 		return {"encounter": false, "moved": false}
@@ -367,7 +374,7 @@ func _dispatch_roll(roll: Dictionary) -> void:
 		peculiar_encounter(roll)
 		return
 	if bool(roll.get("misbehavior", false)):
-		_toast_misbehavior()
+		OverworldBarks.toast_misbehavior(self)
 	_on_encounter(roll)
 
 
@@ -380,19 +387,6 @@ func peculiar_encounter(roll: Dictionary) -> void:
 		# Default content resolver (W16b). Tests overwrite/clear the seam explicitly.
 		peculiar_hook = OverworldPeculiars.play
 	peculiar_hook.call(self, roll)
-
-
-## The veil coughs: announce a misbehavior draw (authored copy via VoiceBook —
-## world.veil_coughs is the reserved ingest key; weather.rare is the shipped authored line
-## about the thin veil, kept as the fallback per the VoiceBook contract).
-func _toast_misbehavior() -> void:
-	var toast := get_node_or_null("/root/Toast")
-	if toast == null or not toast.has_method("show"):
-		return
-	var line := VoiceBook.pick("world.veil_coughs")
-	if line == "":
-		line = VoiceBook.pick("weather.rare")
-	toast.call("show", {"title": "The veil coughs.", "body": line, "sound": "hum"})
 
 
 ## The EncounterDirector tile class of a cell (TILE_CLASS_THIN on the visible ritual-accent
@@ -600,12 +594,24 @@ func _scatter_props() -> void:
 	_props = OverworldDepthScript.scatter_props(_world, _props, _layout, _force_climate)
 
 
+## W-DRESS: landmark STRUCTURES (temple / ruin / stall / the boss-lair altar...) on deterministic
+## feature-cell clusters, y-sorted with actors; their footprints join the screen-local blocked
+## set try_move consults. Placement anchors on the CANONICAL spawn — stable across battles.
+func _build_structures() -> void:
+	if _layout == null:
+		return
+	_ensure_world_root()
+	_structures.build(_world, _layout, _force_climate, OverworldSpawnScript.spawn_cell(_layout))
+
+
 func _spawn_player() -> void:
 	_home_cell = OverworldSpawnScript.spawn_cell(_layout)
 	# Wave 3 position persistence: prefer the pre-battle cell + facing stashed by the autosave (when
 	# present + walkable) so a post-battle/reloaded overworld puts the player exactly where the fight
 	# started — never back at spawn. Falls back to the canonical spawn.
 	_player_cell = OverworldLoopStateScript.restore_cell(_run_ctx(), _layout, _home_cell)
+	if _structures.blocks(_player_cell):
+		_player_cell = _home_cell  # a structure claimed the stashed cell: fall back to spawn
 	_last_dir = OverworldLoopStateScript.restore_facing(_run_ctx(), _last_dir)
 	if _player == null:
 		_player = Node2D.new()
@@ -703,11 +709,22 @@ func _setup_hud() -> void:
 
 ## Update the HUD quest tracker to the active quest's current objective (hidden when no quest is active).
 func _refresh_objective() -> void:
+	_refresh_markers()
 	if _objective_label == null:
 		return
 	var text := OverworldHud.active_objective(_quests)
 	_objective_label.text = text
 	_objective_label.visible = text != ""
+
+
+## W-DRESS: sync the floating NPC quest markers + the boss-lair ember to the LIVE quest state —
+## on build and every quest transition, never mid-dialogue (deferred to dialogue-finished so a
+## playing scene never has markers popping under it).
+func _refresh_markers() -> void:
+	if _in_dialogue:
+		return
+	QuestMarkers.refresh(_npcs, _quests)
+	QuestMarkers.refresh_lair(_structures.lair(), _quests)
 
 
 ## Snap the token to its cell centre (spawn/restore placement; steps GLIDE via OverworldMotion).
@@ -767,6 +784,7 @@ func _layout_pixel_rect() -> Rect2:
 ## Place the region's NPCs on walkable cells near the spawn, each as a parchment token ringed in its
 ## colour. No-op if there is no layout. Safe headless (tokens are nodes; nothing renders).
 func _spawn_npcs() -> void:
+	OverworldDepthScript.free_cast(_npcs)  # a rebuild re-spawns the cast; no stale twins
 	_npcs.clear()
 	if _layout == null:
 		return
@@ -776,30 +794,30 @@ func _spawn_npcs() -> void:
 		_restore_quests()
 	_sync_boss_goal_quest()
 	var cells := OverworldSpawnScript.npc_cells(
-		_layout, _home_cell, OverworldContent.NPC_DEFS.size()
+		_layout, _home_cell, OverworldContent.NPC_DEFS.size(), _structures.blocked()
 	)
 	for i in mini(cells.size(), OverworldContent.NPC_DEFS.size()):
 		var def: Dictionary = OverworldContent.NPC_DEFS[i]
 		var cell: Vector2i = cells[i]
 		var node := Node2D.new()
 		node.name = "NPC_%s" % str(def["name"]).replace(" ", "")
-		# Wave 12: z stays 0 — wax seals lie flat like the player medallion, so the cell-centre
-		# origin is the ground contact and WorldYSort owns the draw order.
+		# W-DRESS: NPCs are CHARACTERS now — hooded figures / creature cutouts / the signpost
+		# (NpcFigures), feet-origined at the cell centre so WorldYSort owns the draw order.
 		var s := OverworldTileSetScript.TILE_SIZE
 		node.position = Vector2(cell.x * s + s / 2.0, cell.y * s + s / 2.0)
-		var token := Sprite2D.new()
-		token.texture = OverworldTokensScript.npc_token(
-			int(s * 0.84), def["ring"] as Color, str(def["name"])
-		)
+		var token := NpcFigures.npc_sprite(def, s)
 		node.add_child(token)
 		_ensure_world_root()
 		_world.add_child(node)
+		if not bool(def.get("sign", false)):
+			NpcFigures.attach_sway(token, str(def["name"]))
 		# Carry ALL of the def's keys (name/timeline/ring + every quest step_key) so the data-driven
 		# quest dispatch sees each NPC's steps — a new quest's step_key needs no change here.
 		var entry: Dictionary = def.duplicate(true)
 		entry["cell"] = cell
 		entry["node"] = node
 		_npcs.append(entry)
+	_refresh_markers()
 
 
 ## If the tamer stands on/next to an NPC, speak to it and return its timeline id; else "". Drives the
@@ -947,6 +965,7 @@ func _restore_quests() -> void:
 
 func _on_dialogue_finished(_timeline_id: String) -> void:
 	_in_dialogue = false
+	_refresh_markers()  # the deferred marker sync (never during the scene itself)
 
 
 ## Intro-quest state accessors (for tests + a future quest-log UI).
@@ -995,6 +1014,11 @@ func corruption_pip() -> Control:
 ## The veil-shimmer marker holder (for tests — W13).
 func veil_shimmer() -> Node2D:
 	return _shimmer
+
+
+## The landmark-structures kit: plan / blocked-set / holder / lair (for tests — W-DRESS).
+func structures() -> OverworldStructures:
+	return _structures
 
 
 func player_cell() -> Vector2i:
