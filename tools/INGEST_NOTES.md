@@ -175,3 +175,70 @@ derivations, region boss assignments, cast counts) is recorded in the GENERATED 
 NPC's authored barks (VERBATIM) until a per-NPC `.dtl` with the convention id lands
 (`DialogicFacade.timeline_exists` probes the [dialogic] directory). The integrator reconciles
 when per-NPC scenes are generated.
+
+---
+
+# Endings Ingest (Batch E2b)
+
+`tools/ingest_endings.py` emits `client/catalog/endings.json` from
+`docs/content/endgame_succession.md` PART ONE (the eleven authored endings). Names,
+epithets and epigraphs are VERBATIM doc text (markdown emphasis markers stripped — the
+voice-ingest precedent). Structural decisions, so nothing is silently invented:
+
+1. **Epigraph = the ending's own-voice line.** Each of the nine ascensions authors
+   exactly one `mid-reign` quote (the god speaking as what it became); the God-Maker's
+   is its `in the Atelier` quote; the Unmaking (which never speaks as a god) uses the
+   authored coda — "the one un-ironic line in the whole graveyard". One deterministic
+   quote per ending; the ceremony/closing-beat prose stays in the doc.
+2. **Grid conditions band EXACTLY like CharacterEngine.** The doc keys the nine
+   ascensions to the 3x3 morality grid ("the door that lights is the one your
+   accumulated coordinate earned"). Encoding: `god_alignment` = the Order⇄Chaos band
+   label ("Order"/"Balanced"/"Chaos") and `corruption_min`/`corruption_max` = the
+   Purity⇄Corrupt band bounds over the CLAMPED axis (band3 thresholds: Pure ≤ -34,
+   Tainted -33..33, Corrupt ≥ 34) — the same split the character sheet renders, so the
+   sheet's god cell and EndingsService.resolve() can never disagree. NOTE: the
+   cumulative occult-corruption price meter (ADR-014, `run.corruption`) is a DIFFERENT
+   track; no authored ending conditions on it.
+3. **Refusal doors are flag-gated.** The Unmaking: `flags_all: ["unmaking"]` — the
+   doc's own run-flag (`UNMAKING` "fed across the whole run"), lowercased to the engine
+   flag convention. The God-Maker: `flags_all: ["god_maker"]` — slug of the Q4.4 door
+   title (no flag is named in the docs; the door is). wave/e2-arc wires the setters at
+   the Choice; the integrator reconciles the names. Priorities: unmaking 110 >
+   god_maker 100 > the nine grid ascensions 50 (mutually exclusive by grid) >
+   fallback 0 — resolve() takes the highest-priority match, catalog order breaking
+   (impossible) ties.
+4. **`standing_min` is emitted for NO ending.** Every faction presence in the doc is
+   ceremony attendance, not a gate ("the run picked" — the grid alone selects the
+   ascension). The condition key is implemented in EndingsService.conditions_met()
+   (shape: `["<faction>", min]` against the `<faction>_standing` run flag) for future
+   authored content, and covered by tests, but the catalog stays doc-pure.
+5. **The fallback entry is an engine safety net, not new lore.** resolve() must never
+   return null once the finale flag is set, so the tool appends ONE always-true entry
+   (`fallback: true`, priority 0) reusing the authored Act-5 climax title ("A Graveyard
+   of Winners") and the doc's closing load-screen line as its epigraph. The nine grid
+   entries partition the whole grid, so the fallback only ever fires on a malformed
+   run/catalog.
+6. **Finale trigger stays OUT of conditions.** resolve() doubles as the character
+   sheet's "path of..." preview, so no ending requires the finale flag; the trigger
+   (`succession_begins` — the e2-arc seam — or the doc-pure `act5_q4_done` act-5 climax
+   flag) lives in EndingsService.finale_reached(), checked by the overworld hook.
+
+<!-- BEGIN ingest_endings.py (generated census — do not edit) -->
+
+**Counts (actuals):** 11 authored endings (9 grid ascensions + 2 refusals) + 1 fallback. The doc promises 11.
+
+**Per-ending census (id · grid/door · epigraph source · priority):**
+- the_lawgiver · Order|Pure · mid-reign · 50
+- the_architect · Order|Tainted · mid-reign · 50
+- the_iron_throne · Order|Corrupt · mid-reign · 50
+- the_warden · Balanced|Pure · mid-reign · 50
+- the_broker · Balanced|Tainted · mid-reign · 50
+- the_plaguelord · Balanced|Corrupt · mid-reign · 50
+- the_free_wild · Chaos|Pure · mid-reign · 50
+- the_reveler · Chaos|Tainted · mid-reign · 50
+- the_devourer · Chaos|Corrupt · mid-reign · 50
+- the_god_maker · god_maker · in the Atelier · 100
+- the_unmaking · unmaking · the Unmaking coda · 110
+- a_graveyard_of_winners · (fallback, always true) · closing line · 0
+
+<!-- END ingest_endings.py -->
