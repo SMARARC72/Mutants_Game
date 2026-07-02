@@ -36,7 +36,8 @@ const VOICE_KEYS := {
 ## `salt` selects the VoiceBook variant (0 = the stable default line for that event).
 static func preset(event_id: String, salt: int = 0) -> Dictionary:
 	var entry := _base(event_id)
-	var voice := VoiceBookScript.pick(str(VOICE_KEYS.get(event_id, "")), salt)
+	# pick_plain: toasts never interpolate, so {placeholder} variants must not surface raw.
+	var voice := VoiceBookScript.pick_plain(str(VOICE_KEYS.get(event_id, "")), salt)
 	if voice != "":
 		entry["body"] = voice
 	return entry

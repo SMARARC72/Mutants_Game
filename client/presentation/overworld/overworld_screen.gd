@@ -567,40 +567,7 @@ func _lead_species_id() -> String:
 ## A gentle force-climate colour-grade + a vignette overlay, so the region reads as an atmospheric
 ## place rather than a bright tile grid. Screen-space vignette sits above the world, below the HUD.
 func _setup_atmosphere() -> void:
-	var tint := CanvasModulate.new()
-	tint.name = "ClimateTint"
-	# Cool verdant marsh grade, pulled a step darker (Wave 12) so the player's brass glow pool
-	# actually reads against the ambient ground instead of washing out.
-	tint.color = Color(0.75, 0.81, 0.74)
-	add_child(tint)
-	# Faint drifting spore-motes, parented to the tamer so they always fill the framed view.
-	if _player != null:
-		var motes := CPUParticles2D.new()
-		motes.name = "Motes"
-		motes.z_index = 12
-		motes.amount = 36
-		motes.lifetime = 7.0
-		motes.preprocess = 5.0
-		motes.emission_shape = CPUParticles2D.EMISSION_SHAPE_RECTANGLE
-		motes.emission_rect_extents = Vector2(820, 520)
-		motes.gravity = Vector2(0, -5)
-		motes.initial_velocity_min = 3.0
-		motes.initial_velocity_max = 11.0
-		motes.scale_amount_min = 1.0
-		motes.scale_amount_max = 2.4
-		motes.color = Color(0.88, 0.78, 0.42, 0.5)
-		_player.add_child(motes)
-	var layer := CanvasLayer.new()
-	layer.name = "Atmosphere"
-	layer.layer = 1
-	var vig := TextureRect.new()
-	vig.texture = OverworldTokensScript.vignette(256)
-	vig.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	vig.stretch_mode = TextureRect.STRETCH_SCALE
-	vig.set_anchors_preset(Control.PRESET_FULL_RECT)
-	vig.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	layer.add_child(vig)
-	add_child(layer)
+	OverworldDepthScript.setup_atmosphere(self, _player, OverworldTokensScript.vignette(256))
 
 
 ## A small grimoire HUD panel naming the region + its force-climate (the overworld "you are here").

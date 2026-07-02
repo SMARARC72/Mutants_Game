@@ -22,8 +22,32 @@ static func pick(key: String, salt: int = 0) -> String:
 	var variants := lines(key)
 	if variants.is_empty():
 		return ""
-	var index := absi(hash("%s#%d" % [key, salt])) % variants.size()
+	var index := _fnv1a_32("%s#%d" % [key, salt]) % variants.size()
 	return str(variants[index])
+
+
+## Like pick(), but skips variants carrying unfilled {placeholder} tokens — for call sites
+## (toasts) that never interpolate. Walks variants deterministically from the salted index;
+## "" when the key is missing or EVERY variant needs interpolation (Codex #55 P2).
+static func pick_plain(key: String, salt: int = 0) -> String:
+	var variants := lines(key)
+	if variants.is_empty():
+		return ""
+	var start := _fnv1a_32("%s#%d" % [key, salt]) % variants.size()
+	for i in variants.size():
+		var line := str(variants[(start + i) % variants.size()])
+		if not line.contains("{"):
+			return line
+	return ""
+
+
+## FNV-1a over UTF-8 bytes, 32-bit — stable across engine versions (String.hash() is not
+## guaranteed to be; Sourcery #55). Mirrors SigilGen.fnv1a_32 (kept local: layering).
+static func _fnv1a_32(text: String) -> int:
+	var h := 0x811C9DC5
+	for b in text.to_utf8_buffer():
+		h = ((h ^ int(b)) * 0x01000193) & 0xFFFFFFFF
+	return h
 
 
 ## True when the catalog carries at least one line for `key`.

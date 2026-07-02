@@ -84,7 +84,10 @@ func event(event_id: String) -> void:
 ## Show a preset core-event toast MERGED with extra payload keys (extra wins) — e.g. the Wave 9
 ## capture sigil: event_with("creature_caught", {"sigil": {species, tag, force}}).
 func event_with(event_id: String, extra: Dictionary) -> void:
-	var payload := Microcopy.preset(event_id)
+	# Same salt rotation as event() — repeats walk the VoiceBook variants (Sourcery #55).
+	var salt := int(_event_salts.get(event_id, 0))
+	_event_salts[event_id] = salt + 1
+	var payload := Microcopy.preset(event_id, salt)
 	payload.merge(extra, true)
 	show(payload)
 

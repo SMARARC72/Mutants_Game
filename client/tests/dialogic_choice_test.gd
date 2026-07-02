@@ -92,6 +92,7 @@ func test_old_garran_timeline_parses_choices_and_branch_signals() -> void:
 func test_garran_speaker_resolves_through_registered_dch_directory() -> void:
 	# The 10 wired NPCs ship .dch character files registered in [dialogic] dch_directory;
 	# the identifier used by old_garran.dtl's text events must load as a real character.
+	DialogicFacade.ensure_directories()  # CI import wipes [dialogic] maps; the game self-heals
 	var character: DialogicCharacter = DialogicResourceUtil.get_character_resource("old_garran")
 	assert_object(character).is_not_null()
 	assert_str(character.display_name).is_equal("Old Garran")

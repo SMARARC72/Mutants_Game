@@ -91,7 +91,8 @@ func texture() -> Texture2D:
 ## Hash a LOCAL per-instance phase from the creature's identity so same-species neighbours
 ## breathe/sway out of step, but the SAME creature moves identically on every screen.
 func set_identity(species_id: String, instance_tag: String) -> void:
-	var h := absi((species_id + "|" + instance_tag).hash())
+	# FNV-1a (SigilGen) — stable across engine versions, unlike String.hash() (Sourcery #55).
+	var h := SigilGen.seed_for(species_id, instance_tag)
 	_phase = TAU * float(h % 1024) / 1024.0
 	_material.set_shader_parameter("sway_phase", _phase)
 

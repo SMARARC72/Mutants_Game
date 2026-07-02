@@ -36,6 +36,7 @@ var _connected: bool = false
 ## running headless so callers can drive the flow either way. `headless_branch` names the
 ## choice branch that resolves instantly when there is no UI to ask (the canon branch).
 func play_timeline(timeline: Variant, headless_branch: String = "") -> bool:
+	ensure_directories()
 	_active_timeline = str(timeline)
 	if not _has_display():
 		# Headless / no UI: nothing to render. Resolve immediately so the vertical
@@ -95,3 +96,36 @@ func _autoload_present() -> bool:
 
 func _has_display() -> bool:
 	return DisplayServer.get_name() != "headless"
+
+
+## SELF-HEAL (CI/Linux): Dialogic's editor plugin rebuilds [dialogic] directories during
+## --import and is known to WIPE them headless (recorded toolchain gotcha), which nulls every
+## runtime timeline/character lookup. Rebuild the ProjectSettings maps in-memory from the
+## content folders whenever entries are missing — no file writes, deterministic scan order.
+static func ensure_directories() -> void:
+	_heal_directory("dialogic/directories/dtl_directory", "res://presentation/dialogue", ".dtl")
+	_heal_directory(
+		"dialogic/directories/dch_directory", "res://presentation/dialogue/characters", ".dch"
+	)
+
+
+static func _heal_directory(setting: String, root: String, ext: String) -> void:
+	var current: Variant = (
+		ProjectSettings.get_setting(setting) if ProjectSettings.has_setting(setting) else null
+	)
+	var map: Dictionary = current if current is Dictionary else {}
+	var dir := DirAccess.open(root)
+	if dir == null:
+		return
+	var healed := map.duplicate()
+	dir.list_dir_begin()
+	var fname := dir.get_next()
+	while fname != "":
+		if not dir.current_is_dir() and fname.ends_with(ext):
+			var stem := fname.get_basename()
+			if not healed.has(stem):
+				healed[stem] = root + "/" + fname
+		fname = dir.get_next()
+	dir.list_dir_end()
+	if healed.size() != map.size():
+		ProjectSettings.set_setting(setting, healed)
