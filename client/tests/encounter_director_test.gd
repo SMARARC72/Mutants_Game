@@ -214,6 +214,7 @@ func test_elite_pool_resolves_and_aligns_with_weights() -> void:
 	for w: Variant in weights:
 		assert_int(int(w)).is_greater(0)
 	# Regions without an authored elite pool return [] (misbehavior simply never fires there).
-	assert_int(EncounterCatalogScript.elite_pool_for("somewhere_unmapped", catalog).size()).is_equal(
-		0
+	(
+		assert_int(EncounterCatalogScript.elite_pool_for("somewhere_unmapped", catalog).size())
+		. is_equal(0)
 	)

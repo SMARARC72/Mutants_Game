@@ -15,11 +15,14 @@ extends Node2D
 ## DETERMINISM: the encounter sequence is a pure function of (run.seed, region, step index), drawn
 ## from a canonical sub-stream — never global randf/randi.
 
-## Emitted when a move triggers a wild encounter (enemy_party + battle_seed). The screen also
-## auto-hands-off to the battle scene; the signal lets a test/observer react without the scene swap.
+## Emitted when a move triggers a wild BATTLE encounter (enemy_party + battle_seed). The screen
+## also auto-hands-off to the battle scene; the signal lets a test/observer react without the swap.
 signal encounter_started(enemy_party: Array, battle_seed: int)
 ## Emitted when the player speaks to an NPC (the Dialogic timeline id). Lets a test/observer react.
 signal dialogue_started(timeline_id: String)
+## W13: a PECULIAR encounter fired (kind:"peculiar", ~1 in 6 of triggered rolls) — a non-battle
+## beat. NEVER stashes a pending battle / swaps to the battle scene; W16b wires the content.
+signal peculiar_encountered(roll: Dictionary)
 
 const EncounterDirectorScript := preload("res://application/overworld/encounter_director.gd")
 const OverworldTileSetScript := preload("res://presentation/overworld/overworld_tileset.gd")
@@ -33,10 +36,18 @@ const InputActions := preload("res://infrastructure/input/input_actions.gd")
 const BATTLE_SCENE := "res://presentation/battle/battle_screen.tscn"
 ## Wave 6 spike diet: const-preload the camp scene (a load() on first ESC read as a hitch).
 const CampMenuScene: PackedScene = preload("res://presentation/camp/camp_menu.tscn")
+const AtmosphereLayerScene: PackedScene = preload(
+	"res://presentation/ui/atmosphere/atmosphere_layer.tscn"
+)
 
 const CAMERA_ZOOM := 2.35  # frames ~13 tiles across the 1920px baseline — no raw void at the edges
 const DASH_TILES := 3  # max tiles the sigil-dash crosses in one ritual hop (design §3.5)
 const DASH_COOLDOWN := 0.55  # seconds before the ley-line can be ridden again
+
+## W16b seam: when set (a Callable taking (screen, roll)), every peculiar encounter calls it with
+## the roll dict — the content wave registers its handler here without editing this screen.
+## Static so a registration survives scene swaps. Peculiars stay quiet until it is wired.
+static var peculiar_hook := Callable()
 
 ## NPC + quest CONTENT data lives in OverworldContent (separated so adding content never bloats this
 ## screen logic). NPCs play authored Dialogic timelines on INTERACT; quests advance via their step_key.
@@ -86,6 +97,13 @@ var _in_dialogue: bool = false
 var _quests: QuestService = null  # drives the intro quest from NPC talks (own narrative run-state)
 var _objective_label: Label = null  # HUD quest-tracker: the active quest's current objective
 var _controls_chip: Node = null  # the live-verbs HUD chip (W1/C13), collapsible via TOGGLE_CONTROLS
+## Wave 13: the mood layer (grade+vignette+fog), the HUD corruption pip, the veil-shimmer holder,
+## the follower/NPC small-life kit, and the Beehave ambient critters.
+var _atmosphere: AtmosphereLayer = null
+var _pip: CorruptionPip = null
+var _shimmer: Node2D = null
+var _ambience := OverworldAmbience.new()
+var _critters := OverworldCritters.new()
 
 
 func _ready() -> void:
@@ -178,9 +196,14 @@ func build_from_game() -> void:
 	_spawn_player()
 	_spawn_lead_creature()
 	_spawn_npcs()
+	_critters.build(_world, _layout, _director.wild_pool(), _home_cell)
 	_setup_camera()
 	_setup_atmosphere()
 	_setup_hud()
+	# W13: mood after the HUD exists (the pip refresh rides it); the lead joy-hops once when this
+	# build is the return from a catching battle.
+	_refresh_mood()
+	_ambience.maybe_joy_hop(_lead, run, int(_game.call("current_step")))
 	_maybe_play_intro()
 
 
@@ -222,9 +245,11 @@ func try_move(dir: Vector2i, roll_encounter: bool = true) -> Dictionary:
 	var target := _player_cell + dir
 	if not _layout.in_bounds(target.x, target.y):
 		_motion.thunk(dir, _cell_center(_player_cell))
+		_ambience.on_blocked(_lead)  # W13: the follower shivers at the wall with you
 		return {"encounter": false, "moved": false}
 	if not OverworldTileSetScript.is_walkable(_layout.get_cell(target.x, target.y)):
 		_motion.thunk(dir, _cell_center(_player_cell))
+		_ambience.on_blocked(_lead)
 		return {"encounter": false, "moved": false}
 	var prev_px := _cell_center(_player_cell)
 	_player_cell = target
@@ -234,6 +259,10 @@ func try_move(dir: Vector2i, roll_encounter: bool = true) -> Dictionary:
 	# The lead cameo trails into the tile the tamer just left (smoothed in _process).
 	if _lead != null:
 		_lead_target = prev_px
+	# W13 small life: whisper/alert-hop/NPC flips + critter recycling; re-mood on veil transitions.
+	if _ambience.on_step(_layout, _lead, _npcs, _player_cell):
+		_refresh_mood()
+	_critters.recycle_far(_player_cell)
 	var step_index := int(_game.call("advance_step"))
 	# Slice 4: the LEGENDARY-BOSS climax takes precedence at/after the threshold step (once explored
 	# enough + not yet cleared). Deterministic — a pure function of (seed, region, step, cleared flag).
@@ -254,11 +283,13 @@ func try_move(dir: Vector2i, roll_encounter: bool = true) -> Dictionary:
 			"moved": true,
 			"graced": graced,
 		}
-	var roll := _director.roll_step(step_index)
+	# W13 thin-place gating: the stepped cell's class picks the encounter surface (~0.30 on the
+	# shimmering ritual cells, ~0.04 elsewhere) and salts the canonical stream.
+	var roll := _director.roll_step(step_index, tile_class_at(_player_cell))
 	roll["moved"] = true
 	roll["graced"] = false
 	if bool(roll.get("encounter", false)):
-		_on_encounter(roll)
+		_dispatch_roll(roll)
 	return roll
 
 
@@ -292,9 +323,51 @@ func _region_id() -> String:
 	return str(_game.call("active_region")) if _game != null else ""
 
 
+## Route a FIRED wild roll by kind: peculiars go to the W16b seam and never become a battle;
+## battle kinds (misbehaviors included — "the veil coughs" announces the too-big draw) hand off.
+func _dispatch_roll(roll: Dictionary) -> void:
+	if str(roll.get("kind", "")) == EncounterDirectorScript.KIND_PECULIAR:
+		peculiar_encounter(roll)
+		return
+	if bool(roll.get("misbehavior", false)):
+		_toast_misbehavior()
+	_on_encounter(roll)
+
+
+## W13 seam for W16b: a PECULIAR encounter is a non-battle beat. No pending_battle stash, no
+## autosave, no grace, NEVER the battle scene — it emits peculiar_encountered and calls the
+## static peculiar_hook (screen, roll) when the content wave has wired one.
+func peculiar_encounter(roll: Dictionary) -> void:
+	peculiar_encountered.emit(roll)
+	if peculiar_hook.is_valid():
+		peculiar_hook.call(self, roll)
+
+
+## The veil coughs: announce a misbehavior draw (authored copy via VoiceBook —
+## world.veil_coughs is the reserved ingest key; weather.rare is the shipped authored line
+## about the thin veil, kept as the fallback per the VoiceBook contract).
+func _toast_misbehavior() -> void:
+	var toast := get_node_or_null("/root/Toast")
+	if toast == null or not toast.has_method("show"):
+		return
+	var line := VoiceBook.pick("world.veil_coughs")
+	if line == "":
+		line = VoiceBook.pick("weather.rare")
+	toast.call("show", {"title": "The veil coughs.", "body": line, "sound": "hum"})
+
+
+## The EncounterDirector tile class of a cell (TILE_CLASS_THIN on the visible ritual-accent
+## cells, "" elsewhere) — public for tests + siblings; the same pure mapping the shimmer uses.
+func tile_class_at(cell: Vector2i) -> String:
+	return OverworldAmbience.tile_class_at(_layout, cell)
+
+
 func _on_encounter(roll: Dictionary) -> void:
 	# Wild fight: Capture/Flee available (Slice 2).
-	_stash_and_hand_off(roll, {"is_wild": true})
+	var extra := {"is_wild": true}
+	if bool(roll.get("misbehavior", false)):
+		extra["misbehavior"] = true
+	_stash_and_hand_off(roll, extra)
 
 
 ## Hand off the LEGENDARY-BOSS climax (Slice 4) through the SAME pending_battle path as a wild fight,
@@ -372,34 +445,15 @@ func sigil_dash(dir: Vector2i) -> int:
 			break
 	if crossed > 0:
 		_set_facing(dir)
-		_emit_dash_trail()
+		OverworldAmbience.dash_trail(_player, _last_dir)
 	_motion.dash_finish(_cell_center(_player_cell), crossed > 0)
 	if crossed > 0 and not stopped and not landing_graced and last_step >= 0:
-		var roll := _director.roll_step(last_step)
+		# The landing roll folds the LANDING cell's class in — dashing onto a thin place meets
+		# exactly what walking onto it would have met (W13).
+		var roll := _director.roll_step(last_step, tile_class_at(_player_cell))
 		if bool(roll.get("encounter", false)):
-			_on_encounter(roll)
+			_dispatch_roll(roll)
 	return crossed
-
-
-## A brief brass spark-burst trailing the tamer on a dash (ley-line residue). No-op headless.
-func _emit_dash_trail() -> void:
-	if _player == null or not is_inside_tree():
-		return
-	var spark := CPUParticles2D.new()
-	spark.one_shot = true
-	spark.emitting = true
-	spark.amount = 18
-	spark.lifetime = 0.5
-	spark.explosiveness = 0.9
-	spark.direction = Vector2(-_last_dir.x, -_last_dir.y)
-	spark.spread = 38.0
-	spark.initial_velocity_min = 40.0
-	spark.initial_velocity_max = 130.0
-	spark.scale_amount_min = 1.0
-	spark.scale_amount_max = 2.6
-	spark.color = GrimoirePalette.BRASS_BRIGHT
-	_player.add_child(spark)
-	get_tree().create_timer(0.9).timeout.connect(spark.queue_free)
 
 
 # === input -> discrete grid steps ============================================================= #
@@ -485,6 +539,9 @@ func _render_layout() -> void:
 	_tile_layer.tile_set = OverworldTileSetScript.build(_force_climate)
 	add_child(_tile_layer)
 	OverworldTileSetScript.paint(_tile_layer, _layout)
+	# W13: the veil shimmer marks every thin-place cell (added AFTER the tile layer so the ground
+	# glow draws over the tiles, still under the y-sorted world at z 1).
+	_shimmer = OverworldAmbience.build_shimmer(self, _shimmer, _layout)
 	_scatter_props()
 
 
@@ -564,52 +621,37 @@ func _lead_species_id() -> String:
 	return str((lead as Dictionary).get("species_id", "")) if lead is Dictionary else ""
 
 
-## A gentle force-climate colour-grade + a vignette overlay, so the region reads as an atmospheric
-## place rather than a bright tile grid. Screen-space vignette sits above the world, below the HUD.
+## Wave 13: the AtmosphereLayer owns ALL fullscreen atmosphere — ONE grade+vignette pass + ONE
+## fog pass (tension 9) — and drives the world CanvasModulate; the spore-motes stay. It rides
+## CanvasLayer 1: above the world, below the HUD (2), so text never grades. Idempotent.
 func _setup_atmosphere() -> void:
-	OverworldDepthScript.setup_atmosphere(self, _player, OverworldTokensScript.vignette(256))
+	OverworldDepthScript.setup_motes(_player)
+	if _atmosphere == null or not is_instance_valid(_atmosphere):
+		_atmosphere = AtmosphereLayerScene.instantiate()
+		add_child(_atmosphere)
+	_atmosphere.attach_world_tint(OverworldDepthScript.ensure_world_tint(self))
 
 
-## A small grimoire HUD panel naming the region + its force-climate (the overworld "you are here").
+## Push the run's corruption + the walk's veil-dread into the atmosphere and the HUD pip —
+## called on build (which covers every post-battle rebuild), on veil transitions while walking,
+## and when a quest effect raises corruption. Corruption visibly regrades the whole world.
+func _refresh_mood() -> void:
+	var near := OverworldAmbience.near_thin(_layout, _player_cell)
+	OverworldAmbience.refresh_mood(_atmosphere, _pip, _run_ctx(), _force_climate, near)
+
+
+## The mood layer (for tests + sibling waves).
+func atmosphere_layer() -> AtmosphereLayer:
+	return _atmosphere
+
+
+## The grimoire HUD (region title panel, quest tracker, controls chip, W13 corruption pip) —
+## built by OverworldHud (line-cap extraction); the screen keeps the stateful nodes.
 func _setup_hud() -> void:
-	var layer := CanvasLayer.new()
-	layer.name = "HUD"
-	layer.layer = 2
-	var panel := PanelContainer.new()
-	panel.position = Vector2(18, 14)
-	var box := VBoxContainer.new()
-	box.add_theme_constant_override("separation", 2)
-	# Wave 3: the HUD names the region the systems actually RUN (data-driven from the active region
-	# id via OverworldContent, falling back to the raw id) — no more hard-coded "The Rust Marsh".
-	var title := Label.new()
-	title.name = "RegionTitle"
-	title.text = OverworldContent.region_title(_region_id())
-	title.theme_type_variation = "TitleLabel"
-	var sub := Label.new()
-	# W16a: the authored region entry-sting (VoiceBook region.<id>.enter, verbatim library
-	# copy) — a full sentence now, so it wraps inside a fixed column instead of stretching
-	# the HUD panel across the screen.
-	sub.text = OverworldContent.region_climate(_region_id())
-	sub.visible = sub.text != ""
-	sub.theme_type_variation = "MutedLabel"
-	sub.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	sub.custom_minimum_size = Vector2(430, 0)
-	box.add_child(title)
-	box.add_child(sub)
-	# Quest tracker: the active quest's current objective, always visible (hidden when none). Surfaces
-	# the quest the player is on without opening the Ledger; updated live on each quest advance.
-	_objective_label = Label.new()
-	_objective_label.name = "ObjectiveTracker"
-	box.add_child(_objective_label)
-	panel.add_child(box)
-	layer.add_child(panel)
-	# Controls chip (W1/C13): the live verbs, always on, bottom-left, collapsible with H.
-	_controls_chip = ControlsChipScript.new(_input)
-	layer.add_child(_controls_chip)
-	add_child(layer)
-	var theme_svc := get_node_or_null("/root/ThemeService")
-	if theme_svc != null and theme_svc.has_method("apply_to"):
-		theme_svc.call("apply_to", panel)
+	var parts := OverworldHud.build(self, _input, _region_id())
+	_objective_label = parts["objective"]
+	_controls_chip = parts["chip"]
+	_pip = parts["pip"]
 	_refresh_objective()
 
 
@@ -617,30 +659,9 @@ func _setup_hud() -> void:
 func _refresh_objective() -> void:
 	if _objective_label == null:
 		return
-	var text := _active_objective()
+	var text := OverworldHud.active_objective(_quests)
 	_objective_label.text = text
 	_objective_label.visible = text != ""
-
-
-## "✦ <Quest>: <current step description>" for the first active quest, or "" if none is active. Reads
-## the same QuestService + authored defs the Ledger does, so the HUD and the journal never disagree.
-func _active_objective() -> String:
-	if _quests == null:
-		return ""
-	for q: Dictionary in OverworldContent.quest_defs():
-		var qid := str(q.get("id", ""))
-		if not _quests.is_active(qid):
-			continue
-		var cursor := int((_quests.state().get(qid, {}) as Dictionary).get("step_cursor", 0))
-		var steps: Array = q.get("steps", [])
-		if cursor >= 0 and cursor < steps.size():
-			return (
-				"✦ "
-				+ str(q.get("name", ""))
-				+ ": "
-				+ str((steps[cursor] as Dictionary).get("description", ""))
-			)
-	return ""
 
 
 ## Snap the token to its cell centre (spawn/restore placement; steps GLIDE via OverworldMotion).
@@ -708,7 +729,9 @@ func _spawn_npcs() -> void:
 		_quests.register(_quest_defs())  # all overworld quests (MARSH/MELON/BRAMBLE/...) in one place
 		_restore_quests()
 	_sync_boss_goal_quest()
-	var cells := _npc_cells(OverworldContent.NPC_DEFS.size())
+	var cells := OverworldSpawnScript.npc_cells(
+		_layout, _home_cell, OverworldContent.NPC_DEFS.size()
+	)
 	for i in mini(cells.size(), OverworldContent.NPC_DEFS.size()):
 		var def: Dictionary = OverworldContent.NPC_DEFS[i]
 		var cell: Vector2i = cells[i]
@@ -731,28 +754,6 @@ func _spawn_npcs() -> void:
 		entry["cell"] = cell
 		entry["node"] = node
 		_npcs.append(entry)
-
-
-## Pick `count` walkable cells near the CANONICAL spawn (manhattan distance 2..6), deterministic,
-## skipping the spawn cell itself — anchored on _home_cell (not the battle-restored player cell) so
-## the cast stays put across battles and reloads.
-func _npc_cells(count: int) -> Array:
-	var found: Array = []
-	for radius in range(2, 8):
-		for dy in range(-radius, radius + 1):
-			for dx in range(-radius, radius + 1):
-				if abs(dx) + abs(dy) != radius:
-					continue
-				var c := _home_cell + Vector2i(dx, dy)
-				if c == _home_cell or found.has(c):
-					continue
-				if not _layout.in_bounds(c.x, c.y):
-					continue
-				if OverworldTileSetScript.is_walkable(_layout.get_cell(c.x, c.y)):
-					found.append(c)
-					if found.size() >= count:
-						return found
-	return found
 
 
 ## If the tamer stands on/next to an NPC, speak to it and return its timeline id; else "". Drives the
@@ -896,6 +897,7 @@ func _apply_effect_to_run(effect: Dictionary) -> void:
 		run.flags[str(effect["set_flag"])] = true
 	if effect.has("add_corruption"):
 		run.corruption += int(effect["add_corruption"])
+		_refresh_mood()  # W13: the grade + the HUD pip react the moment the rot moves
 	if effect.has("nudge_standing"):
 		var pair: Array = effect["nudge_standing"]
 		if (
@@ -935,7 +937,7 @@ func _on_dialogue_finished(_timeline_id: String) -> void:
 ## The HUD quest-tracker text (the active quest's current objective, or "" when none). For tests +
 ## observers; computed live from QuestService so it never lags the label node.
 func objective_text() -> String:
-	return _active_objective()
+	return OverworldHud.active_objective(_quests)
 
 
 func quest_active(quest_id: String) -> bool:
@@ -962,6 +964,21 @@ func world_root() -> Node2D:
 ## The HUD controls chip node (for tests + future waves).
 func controls_chip() -> Node:
 	return _controls_chip
+
+
+## The Beehave ambient-critter holder under the world root (for tests — W13/C15).
+func critters_root() -> Node2D:
+	return _critters.holder()
+
+
+## The HUD corruption sigil pip (for tests — W13).
+func corruption_pip() -> Control:
+	return _pip
+
+
+## The veil-shimmer marker holder (for tests — W13).
+func veil_shimmer() -> Node2D:
+	return _shimmer
 
 
 func player_cell() -> Vector2i:
