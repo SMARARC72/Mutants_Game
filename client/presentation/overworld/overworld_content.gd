@@ -21,6 +21,7 @@ const NPC_DEFS := [
 		"timeline": "marsh_encounter",
 		"ring": Color(0.435, 0.722, 0.839),  # Ouranos silver-blue — the penny-coloured wretch
 		"quest_step": "meet_wretch",
+		"species": "S2-07",  # W-DRESS: a creature-NPC — the Frilltoad cutout walks the map
 	},
 	{
 		"name": "Matron Sevvy",
@@ -38,6 +39,7 @@ const NPC_DEFS := [
 		"timeline": "the_melon",
 		"ring": Color("e8d8a0"),  # Cosmos gold — the patient melon that waits
 		"melon_step": "wait_with_melon",
+		"species": "SB09",  # W-DRESS: the patient melon IS the round Sprite-blob cutout
 	},
 	{
 		"name": "Rust Warden",
@@ -91,6 +93,7 @@ const NPC_DEFS := [
 		# deep shaded green — the gentle apex that plants the living
 		"ring": GrimoirePalette.VERDANT_DIM,
 		"wenlow_step": "pacify_greenwatcher",
+		"species": "S2-38",  # W-DRESS: the gentle apex walks as the Greenmaw cutout
 	},
 	# --- W16b (correction C14): the Act-0 cast, wired via the proven SQ-06 data pattern. The
 	# Threshold spine rides the single shipped region until region travel lands — the quests

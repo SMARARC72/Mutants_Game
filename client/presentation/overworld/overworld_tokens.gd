@@ -132,9 +132,21 @@ static func vignette(size: int) -> ImageTexture:
 	return ImageTexture.create_from_image(img)
 
 
+## Public rune stamp (W-DRESS): draw `seal_name`'s one-of-one rune into `img` centred at
+## (cx, cy) with reach `r`, in `color` — the SAME stroke vocabulary the wax seals carry, so an
+## NPC's chest rune and its dialogue seal always match. Deterministic per name.
+static func stamp_rune(
+	img: Image, cx: float, cy: float, r: float, seal_name: String, color: Color
+) -> void:
+	_draw_rune(img, cx, r, seal_name, color, cy)
+
+
 ## A 3-4 stroke rune hashed from the seal name (deterministic; distinct per NPC). Strokes pick
-## from a small vocabulary of line segments across the seal face.
-static func _draw_rune(img: Image, c: float, r: float, seal_name: String) -> void:
+## from a small vocabulary of line segments across the seal face. `cy` (W-DRESS) lets a caller
+## place the rune off the square-image centre; the default keeps the historical wax-seal path.
+static func _draw_rune(
+	img: Image, c: float, r: float, seal_name: String, color: Color = INK, cy: float = -1.0
+) -> void:
 	var hsh := seal_name.hash()
 	var points := [
 		Vector2(0, -1),
@@ -145,15 +157,16 @@ static func _draw_rune(img: Image, c: float, r: float, seal_name: String) -> voi
 		Vector2(-0.87, -0.5),
 		Vector2(0, 0),
 	]
+	var centre_y := cy if cy >= 0.0 else c
 	var strokes := 3 + (hsh & 1)
 	var prev := int(absi(hsh) % points.size())
 	for i in strokes:
 		var next := int(absi(hsh >> (4 * (i + 1))) % points.size())
 		if next == prev:
 			next = (next + 2 + i) % points.size()
-		var a: Vector2 = Vector2(c, c) + (points[prev] as Vector2) * r
-		var b: Vector2 = Vector2(c, c) + (points[next] as Vector2) * r
-		_line(img, a, b, INK)
+		var a: Vector2 = Vector2(c, centre_y) + (points[prev] as Vector2) * r
+		var b: Vector2 = Vector2(c, centre_y) + (points[next] as Vector2) * r
+		_line(img, a, b, color)
 		prev = next
 
 

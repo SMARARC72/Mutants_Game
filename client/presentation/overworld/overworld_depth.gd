@@ -117,6 +117,20 @@ static func scatter_props(
 	return props
 
 
+## W-DRESS: free the previous build's NPC nodes before a re-spawn. A rebuilt screen re-spawns
+## the whole cast; without this the stale twins keep drawing AND shadow name lookups (the
+## quest markers would retune a corpse). Safe on empty lists / freed nodes.
+static func free_cast(npcs: Array) -> void:
+	for npc: Dictionary in npcs:
+		var node: Node2D = npc.get("node")
+		if node == null or not is_instance_valid(node):
+			continue
+		var parent := node.get_parent()
+		if parent != null:
+			parent.remove_child(node)  # release the name NOW (the rebuild lands this frame)
+		node.queue_free()
+
+
 ## ONE warm brass PointLight2D riding the player — with the normal-mapped ground atlas
 ## (OverworldTileSet) the tiles shade toward the tamer, and the CanvasModulate dim gives the
 ## pool of light something to read against. Radial-gradient texture, shadows OFF, energy ~0.7:
