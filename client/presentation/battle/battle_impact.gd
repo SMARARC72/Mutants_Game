@@ -10,6 +10,7 @@ extends RefCounted
 const BattleCardKitScript := preload("res://presentation/battle/battle_card_kit.gd")
 const CaptureServiceScript := preload("res://application/battle/capture_service.gd")
 const SkillBattleControllerScript := preload("res://application/battle/skill_battle_controller.gd")
+const VoiceBookScript := preload("res://presentation/narrative/voice_book.gd")
 
 ## Impact-stack thresholds (Wave 10 commit 2): an engine 1.5x matchup or a kill earns the
 ## heavy read (hitstop + clash flash); everything else keeps the light one (flash/pop/shake).
@@ -17,9 +18,9 @@ const BIG_HIT_MULT := 1.5
 const HITSTOP_BIG_MS := 60
 const HITSTOP_KILL_MS := 90
 
-## Wave 3 honesty: the distinct turn-cap-with-enemies-alive banner (the interim authored line the
-## W16 VoiceBook ingest replaces) + its toast body, VERBATIM from docs/content/voice_library.md
-## §5.5 "A creature that refuses to fight".
+## Wave 3 honesty: the distinct turn-cap-with-enemies-alive banner. The BODY lines are VoiceBook-
+## keyed now (Wave 10 commit 3 — battle.victory / battle.defeat / battle.boss.victory /
+## battle.stalemate); this verbatim §5.5 line stays only as the missing-catalog fallback.
 const STALEMATE_BANNER := "THE WILD SLINKS AWAY — STALEMATE"
 const STALEMATE_VOICE_LINE := "No battle today. It's tired, you're tired, the gods are dead — what's the point, really?"
 
@@ -38,8 +39,10 @@ static func banner_text_for(result: Dictionary, reason: String) -> String:
 			return "VICTORY" if bool(result.get("player_won", false)) else "DEFEAT"
 
 
-## Fire the end-of-battle toast: the catch carries its one-of-one sigil (Wave 9), the stalemate
-## its verbatim voice line, everything else the banner headline.
+## Fire the end-of-battle toast: the catch carries its one-of-one sigil (Wave 9); everything
+## else carries the banner headline + an AUTHORED VoiceBook body (Wave 10 commit 3 — the
+## hand-written outcome strings are gone; the salt walks the variants deterministically per
+## battle via the transcript length).
 static func toast_outcome(
 	toast: Node, reason: String, result: Dictionary, battle, game: Node
 ) -> void:
@@ -53,20 +56,48 @@ static func toast_outcome(
 	elif reason == "caught" and toast.has_method("event"):
 		toast.call("event", "creature_caught")
 	elif bool(result.get("stalemate", false)) and toast.has_method("show"):
-		# The verbatim voice line (§5.5) + the reduced-reward note — the honest stalemate copy.
+		# The authored stalemate line (§5.5 via battle.stalemate) + the reduced-reward note.
 		(
 			toast
 			. call(
 				"show",
 				{
 					"title": STALEMATE_BANNER,
-					"body": STALEMATE_VOICE_LINE + "\n(Spoils halved.)",
+					"body": outcome_voice_line(result, reason) + "\n(Spoils halved.)",
 					"sound": "chime",
 				}
 			)
 		)
 	elif toast.has_method("show"):
-		toast.call("show", {"title": banner_text_for(result, reason), "body": "", "sound": "chime"})
+		(
+			toast
+			. call(
+				"show",
+				{
+					"title": banner_text_for(result, reason),
+					"body": outcome_voice_line(result, reason),
+					"sound": "chime",
+				}
+			)
+		)
+
+
+## The authored VoiceBook body for a battle outcome ("" for a fled/unkeyed end; the verbatim
+## Wave 3 stalemate line remains the missing-catalog fallback). Deterministic per battle: the
+## transcript length salts the variant walk.
+static func outcome_voice_line(result: Dictionary, reason: String) -> String:
+	var salt: int = (result.get("transcript", []) as Array).size()
+	if bool(result.get("stalemate", false)):
+		var line: String = VoiceBookScript.pick("battle.stalemate", salt)
+		return line if line != "" else STALEMATE_VOICE_LINE
+	if reason == "fled":
+		return ""
+	if bool(result.get("player_won", false)):
+		var key := (
+			"battle.boss.victory" if bool(result.get("boss_win", false)) else "battle.victory"
+		)
+		return VoiceBookScript.pick(key, salt)
+	return VoiceBookScript.pick("battle.defeat", salt)
 
 
 ## The live end-of-battle HP of every player combatant, mapped back to its run.party INDEX through
@@ -150,6 +181,24 @@ static func death(screen: Control, target: Variant, instant: bool) -> void:
 	if not instant:
 		juice.call("hitstop", HITSTOP_KILL_MS)
 		juice.call("shake", 1.0, stage as CanvasItem)
+
+
+## Fan the session's entropy out to every crescendo surface (Wave 10 commit 3): the radial
+## dial's fill, the grade pass's warmth, the JuiceDirector heat (shake amplitude + number
+## scale) and the music bed's intensity swell. ONE normalization (EntropyDial.normalized on
+## the dial), four consumers — presentation mapping only, the number is the session's.
+static func crescendo(screen: Control, dial: Control, grade: ColorRect, entropy: float) -> void:
+	if dial == null or not dial.has_method("set_entropy"):
+		return
+	var t := float(dial.call("set_entropy", entropy))
+	if grade != null and grade.material is ShaderMaterial:
+		(grade.material as ShaderMaterial).set_shader_parameter("warmth", t)
+	var juice := screen.get_node_or_null("/root/Juice")
+	if juice != null and juice.has_method("set_heat"):
+		juice.call("set_heat", t)
+	var music := screen.get_node_or_null("/root/MusicService")
+	if music != null and music.has_method("set_intensity"):
+		music.call("set_intensity", t)
 
 
 ## The capture target: the chosen live foe at `target_index`, else the first alive foe, else null.

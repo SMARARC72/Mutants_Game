@@ -3,8 +3,9 @@ extends RefCounted
 ##
 ## PRESENTATION layer. Pure node-building/styling helpers pulled out of battle_screen.gd when the
 ## Wave 8 time axis pushed it past the 1000-line cap: combatant cards (portrait + HP bar + status
-## chips), the HP-bar colour band, damage floats, the portrait damage flash, the radial vignette,
-## and the backdrop-lite arena picker. Everything is STATIC and self-contained — tweens are created
+## chips), the HP-bar colour band, damage floats, the portrait damage flash, the action-menu /
+## target-picker builders + matchup badges (Wave 10), and the backdrop-lite arena picker (the old
+## set_pixel vignette died to grimoire_grade.gdshader). Everything is STATIC — tweens are created
 ## off the nodes they animate, so no screen back-reference is held. The screen keeps ownership of
 ## all live state (teams, card-ref dicts, transcript); this file never reads a session.
 
@@ -349,16 +350,21 @@ static func caught_sigil_payload(battle, game: Node) -> Dictionary:
 	}
 
 
-## A radial vignette texture (transparent centre -> soft dark edges) for arena atmosphere.
-static func make_vignette(size: int) -> ImageTexture:
-	var img := Image.create(size, size, false, Image.FORMAT_RGBA8)
-	var c := (size - 1) * 0.5
-	var maxd := Vector2(c, c).length()
-	for y in size:
-		for x in size:
-			var t := clampf((Vector2(x - c, y - c).length() / maxd - 0.5) / 0.5, 0.0, 1.0)
-			img.set_pixel(x, y, Color(0.02, 0.012, 0.03, t * t * 0.66))
-	return ImageTexture.create_from_image(img)
+## The ONE combined grade+vignette pass (Wave 10 commit 3, plan tension 9): a full-rect
+## ColorRect running grimoire_grade.gdshader (screen-reading grade + radial vignette in a
+## single pass — the 65k set_pixel vignette bake is gone). EMBER arrives from GrimoirePalette
+## at build time (shaders cannot read GDScript constants); `warmth` is driven per round by the
+## entropy crescendo. Mount BELOW the HUD margin, never over readable text.
+static func make_grade_pass() -> ColorRect:
+	var grade := ColorRect.new()
+	grade.name = "GradePass"
+	var grade_mat := ShaderMaterial.new()
+	grade_mat.shader = preload("res://presentation/battle/grimoire_grade.gdshader")
+	grade_mat.set_shader_parameter("ember_color", GrimoirePalette.EMBER)
+	grade.material = grade_mat
+	grade.set_anchors_preset(Control.PRESET_FULL_RECT)
+	grade.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	return grade
 
 
 ## Colour the HP bar green -> amber -> red by health fraction (an instant read-out) over a dark

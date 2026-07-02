@@ -16,6 +16,9 @@ const FakeDalScript := preload("res://infrastructure/dal/fake_dal.gd")
 const BattleScreenScript := preload("res://presentation/battle/battle_screen.gd")
 const BattleStageScript := preload("res://presentation/battle/battle_stage.gd")
 const BattleCardKitScript := preload("res://presentation/battle/battle_card_kit.gd")
+const BattleImpactScript := preload("res://presentation/battle/battle_impact.gd")
+const EntropyDialScript := preload("res://presentation/battle/entropy_dial.gd")
+const VoiceBookScript := preload("res://presentation/narrative/voice_book.gd")
 const SkillBattleControllerScript := preload("res://application/battle/skill_battle_controller.gd")
 
 const TEST_SEED := 0xBA771E5
@@ -237,6 +240,89 @@ func test_juice_director_headless_noops_are_recorded() -> void:
 	assert_int(int(juice.call("recorded", "shake"))).is_equal(0)
 	screen.queue_free()
 	gc.queue_free()
+
+
+func test_entropy_dial_and_crescendo_follow_the_session() -> void:
+	var gc := _make_game()
+	var screen := _make_screen(gc)
+	var step: Dictionary = screen.call("run_pending_battle")
+	var battle: Variant = screen.call("battle")
+	var dial := screen.find_child("EntropyDial", true, false) as EntropyDialScript
+	assert_object(dial).is_not_null()
+	# The dial normalizes the SESSION's own entropy against the Constants-derived turn-cap
+	# ceiling (display mapping only — the number is the oracle loop's).
+	var session: Variant = battle.call("session")
+	var expected: float = EntropyDialScript.normalized(float(session.call("entropy")))
+	assert_float(dial.value()).is_equal_approx(expected, 0.0001)
+	# The crescendo fans out: JuiceDirector heat + MusicService intensity carry the same t.
+	var juice := get_node_or_null("/root/Juice")
+	assert_float(float(juice.get("heat"))).is_equal_approx(expected, 0.0001)
+	var music := get_node_or_null("/root/MusicService")
+	assert_float(float(music.call("intensity"))).is_equal_approx(expected, 0.0001)
+	# ...and the grade pass (the ONE combined grade+vignette shader) warms by the same amount.
+	var grade := screen.find_child("GradePass", true, false) as ColorRect
+	assert_object(grade).is_not_null()
+	var warmth := float((grade.material as ShaderMaterial).get_shader_parameter("warmth"))
+	assert_float(warmth).is_equal_approx(expected, 0.0001)
+	# Drive rounds forward: the dial value follows the session's climbing entropy exactly.
+	var guard := 0
+	while (
+		str(step.get("kind", "")) == "await_player" and int(step.get("turn", 0)) < 3 and guard < 40
+	):
+		guard += 1
+		var skill := _first_damage_skill(step.get("actor"))
+		if skill == "":
+			break
+		step = screen.call("player_use_skill", skill, 0)
+	var ent_now := float(session.call("entropy"))
+	assert_float(dial.value()).is_equal_approx(EntropyDialScript.normalized(ent_now), 0.0001)
+	# The pure mapping is anchored: turn-1 entropy (1.0) is 0; the cap is 1.
+	assert_float(EntropyDialScript.normalized(1.0)).is_equal(0.0)
+	var sb: Dictionary = Constants.BALANCE["skill"]
+	var max_ent := 1.0 + (float(int(sb["turn_cap"])) - 1.0) * float(sb["entropy_step_per_turn"])
+	assert_float(EntropyDialScript.normalized(max_ent)).is_equal(1.0)
+	screen.queue_free()
+	gc.queue_free()
+
+
+## A duck-typed toast stub recording every show() payload (the outcome-voice assertions).
+class StubToast:
+	extends Node
+	var shown: Array = []
+
+	func show(payload: Dictionary) -> void:
+		shown.append(payload)
+
+
+func test_outcome_toasts_carry_voicebook_lines() -> void:
+	# The hand-written banner bodies are gone: victory/defeat/stalemate bodies come from the
+	# authored VoiceBook keys (VOICE_KEYS.md battle bank), deterministically salted.
+	for key: String in [
+		"battle.victory", "battle.defeat", "battle.boss.victory", "battle.stalemate"
+	]:
+		assert_bool(VoiceBookScript.has_key(key)).is_true()
+	var toast := StubToast.new()
+	add_child(toast)
+	var victory := {"player_won": true, "transcript": ["a", "b"]}
+	BattleImpactScript.toast_outcome(toast, "enemy_defeated", victory, null, null)
+	var v_body := str((toast.shown[0] as Dictionary).get("body", ""))
+	assert_str(v_body).is_equal(BattleImpactScript.outcome_voice_line(victory, "enemy_defeated"))
+	assert_bool(VoiceBookScript.lines("battle.victory").has(v_body)).is_true()
+	var defeat := {"player_won": false, "transcript": []}
+	BattleImpactScript.toast_outcome(toast, "enemy_defeated", defeat, null, null)
+	var d_body := str((toast.shown[1] as Dictionary).get("body", ""))
+	assert_bool(VoiceBookScript.lines("battle.defeat").has(d_body)).is_true()
+	# The stalemate body starts with an authored battle.stalemate variant + the spoils note.
+	var stalemate := {"player_won": true, "stalemate": true, "transcript": ["x"]}
+	BattleImpactScript.toast_outcome(toast, "enemy_defeated", stalemate, null, null)
+	var s_payload: Dictionary = toast.shown[2]
+	assert_str(str(s_payload.get("title", ""))).is_equal(BattleImpactScript.STALEMATE_BANNER)
+	var s_line := str(s_payload.get("body", "")).get_slice("\n", 0)
+	assert_bool(VoiceBookScript.lines("battle.stalemate").has(s_line)).is_true()
+	# Fled ends carry no quip (the banner headline suffices — no fake flavour on an escape).
+	BattleImpactScript.toast_outcome(toast, "fled", {"player_won": true}, null, null)
+	assert_str(str((toast.shown[3] as Dictionary).get("body", "?"))).is_equal("")
+	toast.queue_free()
 
 
 func test_acting_outline_rides_the_staged_plate() -> void:

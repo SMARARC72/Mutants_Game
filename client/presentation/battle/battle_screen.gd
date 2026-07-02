@@ -40,6 +40,8 @@ const BattleBeatsScript := preload("res://presentation/battle/battle_beats.gd")
 const BattleCardKitScript := preload("res://presentation/battle/battle_card_kit.gd")
 const BattleImpactScript := preload("res://presentation/battle/battle_impact.gd")
 const BattleStageScript := preload("res://presentation/battle/battle_stage.gd")
+const EntropyDialScript := preload("res://presentation/battle/entropy_dial.gd")
+const VoiceBookScript := preload("res://presentation/narrative/voice_book.gd")
 const InputActions := preload("res://infrastructure/input/input_actions.gd")
 const OVERWORLD_SCENE := "res://presentation/overworld/overworld_screen.tscn"
 
@@ -103,6 +105,10 @@ var _swift_button: Button = null
 var _record_button: Button = null
 var _log_panel: PanelContainer = null
 var _stage: BattleStageScript = null  # Wave 10: the arena layer (plates + boss dressing)
+## Wave 10 commit 3 — the entropy crescendo surfaces: the radial dial by the turn label and the
+## grade pass (ONE combined grade+vignette shader, above the arena / below the HUD, tension 9).
+var _entropy_dial: EntropyDialScript = null
+var _grade: ColorRect = null
 
 
 func _ready() -> void:
@@ -175,10 +181,14 @@ func run_pending_battle() -> Dictionary:
 		return _last_step
 	if _is_boss:
 		play_stinger("boss_swell")  # once, on the climax build (W-SND stinger set)
-		# Wave 10: the name splash (Cinzel, brief; held CONFIRM dismisses — _process polls).
+		# Wave 10: the name splash (Cinzel, brief; held CONFIRM dismisses — _process polls),
+		# sub-lined with an authored VoiceBook pre-fight beat (deterministic per battle seed).
 		var foes := _battle.enemy_team()
 		if not foes.is_empty():
-			_stage.show_boss_splash((foes[0] as AbilityContainer).combatant_name())
+			_stage.show_boss_splash(
+				(foes[0] as AbilityContainer).combatant_name(),
+				VoiceBookScript.pick("battle.boss.prefight", battle_seed)
+			)
 	_pump()
 	return _last_step
 
@@ -471,14 +481,11 @@ func _build_ui() -> void:
 		BattleCardKitScript.pick_backdrop(_region_force, _is_wild), _is_boss, _instant_beats
 	)
 	add_child(_stage)
-	# A radial vignette grades the arena toward its dark edges (atmosphere, not gameplay).
-	var vig := TextureRect.new()
-	vig.texture = BattleCardKitScript.make_vignette(256)
-	vig.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	vig.stretch_mode = TextureRect.STRETCH_SCALE
-	vig.set_anchors_preset(Control.PRESET_FULL_RECT)
-	vig.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(vig)
+	# The ONE combined grade+vignette pass (Wave 10 commit 3, tension 9): grades the arena toward
+	# its dark edges and — driven by the entropy crescendo — toward ember heat. It replaces the
+	# old 65k set_pixel vignette texture and sits BELOW the HUD margin, never over readable text.
+	_grade = BattleCardKitScript.make_grade_pass()
+	add_child(_grade)
 
 	var margin := MarginContainer.new()
 	margin.set_anchors_preset(Control.PRESET_FULL_RECT)
@@ -514,10 +521,18 @@ func _build_ui() -> void:
 	_banner.theme_type_variation = "TitleLabel"
 	top_box.add_child(_banner)
 
+	# The turn strip: the radial entropy dial (parchment -> ember as the field burns) beside the
+	# whose-turn label — the crescendo's at-a-glance read (Wave 10 commit 3).
+	var turn_row := HBoxContainer.new()
+	turn_row.add_theme_constant_override("separation", 8)
+	top_box.add_child(turn_row)
+	_entropy_dial = EntropyDialScript.new()
+	_entropy_dial.name = "EntropyDial"
+	turn_row.add_child(_entropy_dial)
 	_turn_label = Label.new()
 	_turn_label.name = "TurnIndicator"
 	_turn_label.theme_type_variation = "MutedLabel"
-	top_box.add_child(_turn_label)
+	turn_row.add_child(_turn_label)
 
 	# Wave 10 composition: COMPACT card columns hug the corners the stage plates do NOT use —
 	# enemy readouts top-LEFT (its plate is top-right), party readouts bottom-RIGHT (its plate is
@@ -747,6 +762,8 @@ func _refresh_turn_label(step: Dictionary) -> void:
 	if _battle != null:
 		entropy = float(_battle.session().entropy())
 	_turn_label.text = "Turn %d   ·   %s acts   ·   entropy ×%.2f" % [turn, who, entropy]
+	# The crescendo fans out (Wave 10 commit 3): dial fill, grade warmth, juice heat, music swell.
+	BattleImpactScript.crescendo(self, _entropy_dial, _grade, entropy)
 
 
 ## Show the player action menu: ONE button per skill in the acting creature's kit (verb · name),

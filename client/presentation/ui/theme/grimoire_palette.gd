@@ -28,6 +28,7 @@ const INK_PANEL := Color("221c2a")  # raised dark panel
 const INK_HOVER := Color("2e2638")  # hovered dark element
 const BRASS := Color("b9933f")  # brass/gold sigil linework — borders, accents
 const BRASS_BRIGHT := Color("e0b95a")  # lit brass — focus/active
+const EMBER := Color("cc5f24")  # live-coal heat — the entropy crescendo (dial, grade warmth)
 
 # --- Text (on each surface) -------------------------------------------------------
 const TEXT_ON_INK := Color("e3d9c6")  # parchment-tone text on dark
