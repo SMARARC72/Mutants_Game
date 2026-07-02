@@ -19,24 +19,38 @@ extends Control
 signal resumed
 
 const InputActions := preload("res://infrastructure/input/input_actions.gd")
+const GameControllerScript := preload("res://application/game/game_controller.gd")
 const PARTY_SCENE := "res://presentation/party/party_screen.tscn"
 const LAB_SCENE := "res://presentation/lab/lab_screen.tscn"
 const CHARACTER_SCENE := "res://presentation/character/character_sheet.tscn"
 const JOURNAL_SCENE := "res://presentation/journal/journal_screen.tscn"
 const OVERWORLD_SCENE := "res://presentation/overworld/overworld_screen.tscn"
+const TITLE_SCENE := "res://presentation/screens/main_menu.tscn"
 
+## The camp currency strip (W18): each run wallet with its authored icon, in ledger order.
+const CURRENCY_ICONS := {
+	"drachma": "res://assets/icons/currencies/drachma.svg",
+	"essence": "res://assets/icons/currencies/essence.svg",
+	"ichor": "res://assets/icons/currencies/ichor.svg",
+}
+
+var _game: Node = null
 var _transition: Node = null
 var _input: Node = null
 var _toast: Node = null
 ## When false, navigation buttons (Party/Lab) emit their intent + return the path but skip the actual
 ## scene swap (lets a headless test assert the target without changing the SceneTree).
 var _auto_navigate: bool = true
+## currency id -> value Label (updated in place after a Rest debits the wallet).
+var _currency_labels: Dictionary = {}
 
 
 func _ready() -> void:
 	var theme_service := get_node_or_null("/root/ThemeService")
 	if theme_service != null and theme_service.has_method("apply_to"):
 		theme_service.call("apply_to", self)
+	if _game == null:
+		_game = get_node_or_null("/root/GameController")
 	_transition = get_node_or_null("/root/Transition")
 	_input = get_node_or_null("/root/InputService")
 	_toast = get_node_or_null("/root/Toast")
@@ -44,6 +58,11 @@ func _ready() -> void:
 	if _input != null and _input.has_method("switch_context"):
 		_input.call("switch_context", InputActions.CTX_MENU)
 	_build()
+
+
+## Inject the GameController (tests / non-autoload contexts). Call BEFORE add_child.
+func set_game(game: Node) -> void:
+	_game = game
 
 
 ## Disable the automatic scene swap on Party/Lab (tests). The buttons still emit + return the path.
@@ -91,20 +110,77 @@ func _build() -> void:
 	box.add_child(subtitle)
 
 	_add_lead_portrait(box)
+	_add_currency_strip(box)
 	var party_button := _add_button(box, "PartyButton", "Party & Grimoire", open_party)
 	_add_button(box, "SelfButton", "The Self", open_self)
 	_add_button(box, "JournalButton", "The Ledger", open_journal)
 	_add_button(box, "LabButton", "Lab", open_lab)
+	# W18 camp truth: Rest heals the wounds the fights left (for a small essence fee) and
+	# Save & Quit hands the run back to the title THROUGH the witnessed save path.
+	_add_button(
+		box, "RestButton", "Rest (%d essence)" % GameControllerScript.REST_ESSENCE_FEE, rest
+	)
+	_add_button(box, "SaveQuitButton", "Save & Quit to Title", save_and_quit)
 	_add_button(box, "ResumeButton", "Resume", resume)
 	# W1 focus pass: the first camp verb owns focus (arrow keys walk the column natively).
 	if party_button.is_inside_tree():
 		party_button.grab_focus()
 
 
+## The run's three wallets (drachma / essence / ichor) with their authored icons — the camp is
+## where you count what the descent has paid. No-op without a run (headless menu tests).
+func _add_currency_strip(box: VBoxContainer) -> void:
+	_currency_labels = {}
+	var run: RunContext = _run_of()
+	if run == null:
+		return
+	var strip := HBoxContainer.new()
+	strip.name = "CurrencyStrip"
+	strip.add_theme_constant_override("separation", 18)
+	strip.alignment = BoxContainer.ALIGNMENT_CENTER
+	box.add_child(strip)
+	for currency: String in CURRENCY_ICONS:
+		var cell := HBoxContainer.new()
+		cell.add_theme_constant_override("separation", 5)
+		strip.add_child(cell)
+		var icon_path := str(CURRENCY_ICONS[currency])
+		if ResourceLoader.exists(icon_path):
+			var icon := TextureRect.new()
+			icon.texture = load(icon_path)
+			icon.custom_minimum_size = Vector2(18, 18)
+			icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+			icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+			icon.tooltip_text = currency.capitalize()
+			cell.add_child(icon)
+		var value := Label.new()
+		value.name = "%sValue" % currency.capitalize()
+		value.text = str(run.get(currency))
+		value.theme_type_variation = "MutedLabel"
+		cell.add_child(value)
+		_currency_labels[currency] = value
+
+
+## Refresh the wallet labels in place (after Rest debits essence).
+func _refresh_currencies() -> void:
+	var run: RunContext = _run_of()
+	if run == null:
+		return
+	for currency: String in _currency_labels:
+		var label: Label = _currency_labels[currency]
+		if is_instance_valid(label):
+			label.text = str(run.get(currency))
+
+
+func _run_of() -> RunContext:
+	if _game == null or not _game.has_method("run"):
+		return null
+	return _game.call("run")
+
+
 ## Show the lead creature's framed bestiary plate (when a run is live) — a face for "tend your coven".
 ## No-op headless / no-run (GameController autoload absent or party empty), so tests are unaffected.
 func _add_lead_portrait(box: VBoxContainer) -> void:
-	var gc := get_node_or_null("/root/GameController")
+	var gc := _game
 	if gc == null or not gc.has_method("run"):
 		return
 	var run: RunContext = gc.call("run")
@@ -201,6 +277,45 @@ func open_lab() -> String:
 		return ""
 	_navigate(LAB_SCENE)
 	return LAB_SCENE
+
+
+## W18 camp Rest: heal every persisted wound + clear the scars for a small essence fee (the
+## GameController owns the bookkeeping), persist through the witnessed save path, and refresh
+## the wallet strip. Returns the rest report ({ok, healed, fee, reason}) so tests can assert it.
+func rest() -> Dictionary:
+	if _game == null or not _game.has_method("rest_at_camp"):
+		return {"ok": false, "healed": 0, "fee": 0, "reason": "no game"}
+	var report: Dictionary = _game.call("rest_at_camp")
+	if bool(report.get("ok", false)):
+		_persist()
+		_refresh_currencies()
+		var healed := int(report.get("healed", 0))
+		if healed > 0:
+			_notify("The coven sleeps. %d wound(s) close." % healed)
+		else:
+			_notify("The coven sleeps. Nothing needed mending — this time.")
+	elif str(report.get("reason", "")) == "essence":
+		_notify("Not enough essence. Rest costs %d." % int(report.get("fee", 0)))
+	return report
+
+
+## W18 Save & Quit: persist through the witnessed save path, then hand the run back to the title
+## screen. Returns the target scene path (auto-navigate off lets a test assert without the swap).
+func save_and_quit() -> String:
+	_persist()
+	_navigate(TITLE_SCENE)
+	return TITLE_SCENE
+
+
+## Persist through request_save when the game offers it (SaveSentry surfaces the outcome);
+## fall back to the bare save_run for older/stub game nodes.
+func _persist() -> void:
+	if _game == null:
+		return
+	if _game.has_method("request_save"):
+		_game.call("request_save")
+	elif _game.has_method("save_run"):
+		_game.call("save_run")
 
 
 ## Resume play: emit `resumed` and close the menu (back to the overworld). As an OVERLAY the menu
