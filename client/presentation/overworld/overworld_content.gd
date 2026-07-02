@@ -526,9 +526,22 @@ static func peculiar_def(id: String) -> Dictionary:
 	return {}
 
 
-## The HUD title for a region id ("The Verdant Glut"), falling back to the id itself.
+## The HUD title for a region id ("The Verdant Glut"): the hand-tuned HUD override first, then
+## the world catalog's authored title (E1b — all eleven regions), then the raw id.
 static func region_title(region_id: String) -> String:
-	return str(REGION_TITLES.get(region_id, region_id))
+	if REGION_TITLES.has(region_id):
+		return str(REGION_TITLES[region_id])
+	return RegionCatalog.title(region_id)
+
+
+## The authored cast for a region (E1b travel seam): the shipped Verdant/Act-0 cast stays on the
+## starting region; the other ten regions travel with EMPTY casts until the regional_cast.md
+## ingest wave places their own NPCs (pure data — a sibling adds a table entry here, no screen
+## change). The signpost/quest dispatch all key off the returned defs, so an empty cast is safe.
+static func npc_defs_for(region_id: String) -> Array:
+	if region_id == EncounterCatalog.STARTING_REGION:
+		return NPC_DEFS
+	return []
 
 
 ## The HUD region blurb for a region id, or "" when unmapped (the HUD hides it). W16a: the

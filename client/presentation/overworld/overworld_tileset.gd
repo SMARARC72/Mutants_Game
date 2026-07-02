@@ -148,6 +148,49 @@ const PALETTES := {
 		3: [_T + "cliff-wall.png", Color(0.85, 0.9, 0.95)],
 		4: [_T + "ritual-circle.png", Color(0.9, 1.0, 1.1)],
 	},
+	# E1b — the three force combos the eleven-region catalog adds. Threshold (neutral): the last
+	# mortal city — flagstones, cobbled lanes, a canal, Standstill ward-slabs. The Maw Beneath
+	# (Chaos+Thanatos): ash over cooling rot, bruise-lit Rot pools. The Hollow Atelier
+	# (Cosmos+Chaos): ordered drafting floor smeared with un-rendered void patches.
+	"neutral":
+	{
+		0:
+		[
+			[_T + "stone-slabs.png", _W],
+			[_T + "order-floor.png", Color(0.95, 0.93, 0.9)],
+			[_T + "amber-grass.png", Color(0.92, 0.92, 0.88)],
+		],
+		1: [_T + "tidewater.png", Color(0.9, 0.95, 1.0)],
+		2: [_T + "mossy-cobble-path.png", _W],
+		3: [_T + "stone-brick-wall.png", _W],
+		4: [_T + "sigil-slab.png", _W],
+	},
+	"Chaos+Thanatos":
+	{
+		0:
+		[
+			[_T + "grave-ash.png", _W],
+			[_T + "basalt-lava.png", Color(0.85, 0.8, 0.85)],
+			[_T + "void-null.png", Color(1.05, 1.0, 1.1)],
+		],
+		1: [_T + "lava-flow.png", Color(0.8, 0.6, 0.78)],
+		2: [_T + "mossy-cobble-path.png", Color(0.75, 0.68, 0.78)],
+		3: [_T + "cliff-wall.png", Color(0.7, 0.66, 0.75)],
+		4: [_T + "ritual-circle.png", Color(1.05, 0.8, 1.1)],
+	},
+	"Cosmos+Chaos":
+	{
+		0:
+		[
+			[_T + "order-floor.png", _W],
+			[_T + "order-floor.png", Color(0.9, 0.9, 0.98)],
+			[_T + "void-null.png", Color(1.1, 1.05, 1.15)],
+		],
+		1: [_T + "crystal-cavern.png", _W],
+		2: [_T + "mossy-cobble-path.png", Color(1.0, 1.0, 1.08)],
+		3: [_T + "stone-brick-wall.png", Color(0.85, 0.82, 0.95)],
+		4: [_T + "sigil-slab.png", Color(1.05, 1.0, 1.1)],
+	},
 }
 const _DEFAULT_FORCE := "Eros"
 
@@ -162,6 +205,9 @@ const PROPS := {
 	"Thanatos": [_P + "bone-pile.png", _P + "ward-stone.png"],
 	"Cosmos+Gaia": [_P + "ruin-bricks.png", _P + "crystal-cluster.png"],
 	"Ouranos+Gaia": [_P + "moss-mound.png", _P + "ward-stone.png"],
+	"neutral": [_P + "ruin-bricks.png", _P + "ward-stone.png"],
+	"Chaos+Thanatos": [_P + "bone-pile.png", _P + "rock-ledge.png"],
+	"Cosmos+Chaos": [_P + "crystal-cluster.png", _P + "ruin-bricks.png"],
 }
 
 ## Wave 12 y-sort: believable prop HEIGHT in tiles, keyed by texture stem. Tall props (ward

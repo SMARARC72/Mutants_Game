@@ -11,6 +11,13 @@ extends RefCounted
 ## file is missing / fails to parse) so the spine stays playable and the old wiring is still
 ## auditable. The wild pool carries per-id WEIGHTS (a typo'd/absent id is dropped against the
 ## SpeciesCatalog before it ever reaches battle).
+##
+## E1b — ELEVEN REGIONS. Every OTHER region reads the SAME shapes from the generated data file
+## res://catalog/region_pools.json (tools/gen_region_pools.py over docs/creature_registry.csv):
+## weighted wild pools filtered by the region's force climate + tier band, a T3 elite pool, the
+## region's BOSS slot, and its deterministic boss trigger (per-region cleared/victory flags).
+## slice_verdant.json stays the verdant source; the pools file serves the rest through this same
+## API, so the EncounterDirector is data-driven for ANY region id.
 
 ## The starting region for a fresh run (the Verdant fringe — the Eros region in
 ## catalog/region_layouts.json).
@@ -18,6 +25,9 @@ const STARTING_REGION := "verdant_glut"
 
 ## The curated slice roster data file (Slice 4). The single source for the slice's content picks.
 const SLICE_PATH := "res://catalog/slice_verdant.json"
+
+## The generated per-region pools file (E1b): wild/elite/boss data for every non-verdant region.
+const POOLS_PATH := "res://catalog/region_pools.json"
 
 ## The starter party (3) FALLBACK, as creature dicts the run carries (RunContext.party shape).
 ## Eros/Gaia tilted: a striker-support, a tank, and a sturdier T2 regenerator anchor. The data file
@@ -50,6 +60,10 @@ const DEFAULT_WILD_POOL := ["SB33", "SB32", "SB14"]
 ## Lazily-loaded + cached slice roster (the parsed slice_verdant.json), or {} when unavailable.
 static var _slice_cache: Dictionary = {}
 static var _slice_loaded: bool = false
+
+## Lazily-loaded + cached region pools (the parsed region_pools.json), or {} when unavailable.
+static var _pools_cache: Dictionary = {}
+static var _pools_loaded: bool = false
 
 
 ## The starter party as a fresh, mutable Array[Dictionary] (deep copy so a caller cannot mutate the
@@ -117,33 +131,42 @@ static func elite_weights_for(region_id: String, catalog: SpeciesCatalog) -> Arr
 	return out
 
 
-## The Verdant Legendary boss config (Slice 4): { species_id, name, role, brain, rank }. Read from
-## slice_verdant.json (boss). Returns {} when unavailable (the trigger then simply never fires). The
-## brain key names a strong role brain ("controller"/"aggressor"/...) the CombatBrain assigns — NOT
-## the Succession HSM (reserved for god-tier).
+## The region's boss config: { species_id, name, role, brain, rank, ... }. Verdant reads
+## slice_verdant.json (boss); every other region reads region_pools.json (E1b — the pantheon
+## stand-in slots; E1c overlays the god kits). Returns {} when unavailable (the trigger then
+## simply never fires). The brain key names a strong role brain ("controller"/"aggressor"/...)
+## the CombatBrain assigns — NOT the Succession HSM (reserved for god-tier).
 static func boss_for(region_id: String) -> Dictionary:
-	if region_id != STARTING_REGION:
-		return {}
-	var slice := _slice()
-	var boss: Variant = slice.get("boss", null)
+	var boss: Variant = null
+	if region_id == STARTING_REGION:
+		boss = _slice().get("boss", null)
+	else:
+		boss = _pool_region(region_id).get("boss", null)
 	if boss is Dictionary and str((boss as Dictionary).get("species_id", "")) != "":
 		return (boss as Dictionary).duplicate(true)
 	return {}
 
 
-## The boss-trigger config (Slice 4): { min_steps:int, cleared_flag:String, victory_flag:String }.
-## Read from slice_verdant.json (boss_trigger), with sane defaults so the trigger is well-defined
-## even if the file omits it. min_steps is the explored-step threshold for the region climax.
+## The boss-trigger config: { min_steps:int, cleared_flag:String, victory_flag:String }. Verdant
+## reads slice_verdant.json (boss_trigger) with its historical defaults (save-compat); any other
+## region reads region_pools.json, defaulting to per-region "<id>_boss_cleared"/"<id>_boss_victory"
+## flags so no two regions ever share a climax flag. min_steps is the explored-step threshold.
 static func boss_trigger_for(region_id: String) -> Dictionary:
 	var defaults := {
 		"min_steps": 30,
 		"cleared_flag": "verdant_boss_cleared",
 		"victory_flag": "slice_verdant_victory",
 	}
-	if region_id != STARTING_REGION:
-		return defaults
-	var slice := _slice()
-	var trig: Variant = slice.get("boss_trigger", null)
+	var trig: Variant = null
+	if region_id == STARTING_REGION:
+		trig = _slice().get("boss_trigger", null)
+	else:
+		defaults = {
+			"min_steps": 30,
+			"cleared_flag": "%s_boss_cleared" % region_id,
+			"victory_flag": "%s_boss_victory" % region_id,
+		}
+		trig = _pool_region(region_id).get("boss_trigger", null)
 	if trig is Dictionary:
 		var t := trig as Dictionary
 		return {
@@ -158,40 +181,42 @@ static func boss_trigger_for(region_id: String) -> Dictionary:
 
 
 ## The raw (unfiltered) wild-pool ids for a region, in declared order: prefers slice_verdant.json's
-## wild_pool (Slice 4) for verdant_glut, else the const table / default.
+## wild_pool (Slice 4) for verdant_glut, region_pools.json (E1b) for every other region, else the
+## const table / default (the no-soft-lock floor).
 static func _raw_wild_ids(region_id: String) -> Array:
-	if region_id == STARTING_REGION:
-		var rows := _slice_wild_rows()
-		if not rows.is_empty():
-			var ids: Array = []
-			for row in rows:
-				ids.append(str((row as Dictionary).get("species_id", "")))
-			return ids
+	var rows := _wild_rows(region_id)
+	if not rows.is_empty():
+		var ids: Array = []
+		for row in rows:
+			ids.append(str((row as Dictionary).get("species_id", "")))
+		return ids
 	return REGION_WILD_POOLS.get(region_id, DEFAULT_WILD_POOL)
 
 
-## species_id -> weight map for a region (from slice_verdant.json wild_pool); {} for const-fallback
-## regions (uniform weighting applies).
+## species_id -> weight map for a region (slice_verdant.json / region_pools.json wild_pool rows);
+## {} for const-fallback regions (uniform weighting applies).
 static func _weight_by_id(region_id: String) -> Dictionary:
 	var out: Dictionary = {}
-	if region_id == STARTING_REGION:
-		for row in _slice_wild_rows():
-			var sid := str((row as Dictionary).get("species_id", ""))
-			if sid != "":
-				out[sid] = int((row as Dictionary).get("weight", 1))
+	for row in _wild_rows(region_id):
+		var sid := str((row as Dictionary).get("species_id", ""))
+		if sid != "":
+			out[sid] = int((row as Dictionary).get("weight", 1))
 	return out
 
 
-## The slice's wild_pool rows ([{species_id, weight, ...}, ...]) or [] when the data file is absent.
-static func _slice_wild_rows() -> Array:
-	return _slice_rows("wild_pool")
+## The region's wild_pool rows ([{species_id, weight, ...}, ...]): the slice file for verdant,
+## the generated pools file for anywhere else, [] when neither carries the region.
+static func _wild_rows(region_id: String) -> Array:
+	if region_id == STARTING_REGION:
+		return _slice_rows("wild_pool")
+	return _pool_rows(region_id, "wild_pool")
 
 
-## The elite_pool rows for a region (only the Verdant slice ships one today), or [].
+## The elite_pool rows for a region (the slice for verdant, the pools file elsewhere), or [].
 static func _raw_elite_rows(region_id: String) -> Array:
-	if region_id != STARTING_REGION:
-		return []
-	return _slice_rows("elite_pool")
+	if region_id == STARTING_REGION:
+		return _slice_rows("elite_pool")
+	return _pool_rows(region_id, "elite_pool")
 
 
 ## The slice data file's dictionary rows under `key`, or [] when absent/malformed.
@@ -223,3 +248,43 @@ static func _slice() -> Dictionary:
 	else:
 		push_warning("EncounterCatalog: slice roster is not a JSON object (using fallback)")
 	return _slice_cache
+
+
+## The pools entry for one region ({forces, wild_pool, elite_pool, boss, boss_trigger, ...}), or
+## {} when the pools file / region is absent (the const fallbacks then keep the region playable).
+static func _pool_region(region_id: String) -> Dictionary:
+	var regions: Variant = _pools().get("regions", null)
+	if regions is Dictionary:
+		var entry: Variant = (regions as Dictionary).get(region_id, null)
+		if entry is Dictionary:
+			return entry
+	return {}
+
+
+## A pools-file row list for a region under `key` (dictionary rows only), or [].
+static func _pool_rows(region_id: String, key: String) -> Array:
+	var rows: Variant = _pool_region(region_id).get(key, null)
+	if rows is Array:
+		var out: Array = []
+		for row in rows as Array:
+			if row is Dictionary:
+				out.append(row)
+		return out
+	return []
+
+
+## The parsed region pools (lazy, cached once; E1b). {} when missing/malformed — every consumer
+## degrades to the const fallbacks, mirroring the slice loader's no-soft-lock contract.
+static func _pools() -> Dictionary:
+	if _pools_loaded:
+		return _pools_cache
+	_pools_loaded = true
+	if not FileAccess.file_exists(POOLS_PATH):
+		push_warning("EncounterCatalog: missing region pools at %s (using fallback)" % POOLS_PATH)
+		return _pools_cache
+	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(POOLS_PATH))
+	if parsed is Dictionary:
+		_pools_cache = parsed as Dictionary
+	else:
+		push_warning("EncounterCatalog: region pools file is not a JSON object (using fallback)")
+	return _pools_cache

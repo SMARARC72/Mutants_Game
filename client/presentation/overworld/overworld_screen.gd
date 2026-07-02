@@ -25,12 +25,14 @@ signal dialogue_started(timeline_id: String)
 signal peculiar_encountered(roll: Dictionary)
 
 const EncounterDirectorScript := preload("res://application/overworld/encounter_director.gd")
+const RegionTravelScript := preload("res://application/overworld/region_travel.gd")
 const OverworldTileSetScript := preload("res://presentation/overworld/overworld_tileset.gd")
 const OverworldLoopStateScript := preload("res://presentation/overworld/overworld_loop_state.gd")
 const OverworldTokensScript := preload("res://presentation/overworld/overworld_tokens.gd")
 const OverworldMotionScript := preload("res://presentation/overworld/overworld_motion.gd")
 const OverworldSpawnScript := preload("res://presentation/overworld/overworld_spawn.gd")
 const OverworldDepthScript := preload("res://presentation/overworld/overworld_depth.gd")
+const OverworldOverlaysScript := preload("res://presentation/overworld/overworld_overlays.gd")
 const ControlsChipScript := preload("res://presentation/overworld/controls_chip.gd")
 const InputActions := preload("res://infrastructure/input/input_actions.gd")
 const BATTLE_SCENE := "res://presentation/battle/battle_screen.tscn"
@@ -106,6 +108,9 @@ var _ambience := OverworldAmbience.new()
 var _critters := OverworldCritters.new()
 ## W-DRESS: the landmark-structures kit (deterministic plan + footprint blocked-set + holder).
 var _structures := OverworldStructures.new()
+## E1b: the live Threshold travel overlay (or null) — pushed on waygate INTERACT, popped on
+## travel/close. While it is open the overworld takes no input (the camp rule).
+var _threshold_screen: Node = null
 
 
 func _ready() -> void:
@@ -142,45 +147,21 @@ func set_instant_moves(enabled: bool) -> void:
 	_motion.instant_moves = enabled
 
 
-## Open the camp/pause menu as an OVERLAY over the LIVE overworld — pushed through the UiRouter
-## (W17: the generalized camp-overlay pattern; back = pop, never a scene swap), falling back to a
-## local CanvasLayer child when the router autoload is absent. Idempotent: a second call while open
-## returns the SAME live camp menu (no duplicate). Returns the camp menu node (or null if the scene
-## is missing). Public so input + a test both drive it.
+## Open the camp/pause menu as an OVERLAY over the LIVE overworld (W17 router pattern; the
+## OverworldOverlays kit owns construction + push). Idempotent: a second call while open returns
+## the SAME live camp menu. Returns the camp menu node (or null if the scene is missing). Public
+## so input + a test both drive it.
 func open_camp() -> Node:
 	if _camp_overlay != null and is_instance_valid(_camp_overlay):
 		return _camp_menu
-	var menu := CampMenuScene.instantiate()
-	var router := get_node_or_null("/root/UiRouter")
-	if router != null and router.has_method("push_node"):
-		router.call("push_node", menu, "res://presentation/camp/camp_menu.tscn")
-		_camp_overlay = menu.get_parent()  # the router's CanvasLayer
-	else:
-		var layer := CanvasLayer.new()
-		layer.name = "CampOverlay"
-		layer.layer = 50  # above gameplay, below Transition (100) + Toast (128)
-		layer.add_child(menu)
-		add_child(layer)
-		_camp_overlay = layer
-	_camp_menu = menu
-	# Resume clears our refs; the router pop (or the legacy teardown below) frees the overlay.
-	if menu.has_signal("resumed"):
-		menu.connect("resumed", _on_camp_resumed)
-	return menu
+	var opened := OverworldOverlaysScript.open_camp(self, CampMenuScene, _on_camp_resumed)
+	_camp_overlay = opened.get("overlay") as CanvasLayer
+	_camp_menu = opened.get("menu") as Node
+	return _camp_menu
 
 
 func _on_camp_resumed() -> void:
-	# W17: a router-pushed camp pops ITSELF (resume → UiRouter.pop_from restores the input context);
-	# only the legacy local overlay still needs freeing + the manual context restore here.
-	var router := get_node_or_null("/root/UiRouter")
-	var router_owned := (
-		router != null and _camp_menu != null and bool(router.call("owns", _camp_menu))
-	)
-	if not router_owned:
-		if _camp_overlay != null and is_instance_valid(_camp_overlay):
-			_camp_overlay.queue_free()
-		if _input != null and _input.has_method("switch_context"):
-			_input.call("switch_context", InputActions.CTX_OVERWORLD)
+	OverworldOverlaysScript.resume_camp(self, _camp_overlay, _camp_menu, _input)
 	_camp_overlay = null
 	_camp_menu = null
 
@@ -197,6 +178,30 @@ func _exit_tree() -> void:
 ## The live camp overlay CanvasLayer, or null when closed (for tests).
 func camp_overlay() -> Node:
 	return _camp_overlay
+
+
+## E1b — open the Threshold-network travel overlay (the ritual circle's page) over the LIVE
+## overworld (the OverworldOverlays kit owns construction + push, the camp's W17 pattern).
+## Idempotent: a second call returns the SAME live screen. Public so the waygate INTERACT and a
+## test both drive it.
+func open_threshold() -> Node:
+	if _threshold_screen != null and is_instance_valid(_threshold_screen):
+		return _threshold_screen
+	_threshold_screen = OverworldOverlaysScript.open_threshold(
+		self, _game, _on_threshold_traveled, _on_threshold_closed
+	)
+	return _threshold_screen
+
+
+## A travel was ACCEPTED: the kit drops the stale position stash, rebuilds the overworld in
+## place through the existing build path (per-region layouts rehydrate), and saves the hop.
+func _on_threshold_traveled(_region_id_traveled: String) -> void:
+	_threshold_screen = null
+	OverworldOverlaysScript.after_travel(self, _game)
+
+
+func _on_threshold_closed() -> void:
+	_threshold_screen = null
 
 
 ## Build the overworld from the active GameController run. Public so a test can drive it after
@@ -232,28 +237,9 @@ func build_from_game() -> void:
 	_maybe_play_intro()
 
 
-## Play the authored cold-open ("The Knack" — Maddox's thesis) ONCE per run, the first time the
-## overworld builds. Flag-gated in run.flags + persisted, so it never replays on reload. No-op headless
-## without a DialogicFacade target; the `dialogue_started` signal still fires so a test can assert it.
+## The authored cold-open ("The Knack"), once per run — OverworldChoices owns the beat.
 func _maybe_play_intro() -> void:
-	if _game == null or not _game.has_method("run"):
-		return
-	var run: RunContext = _game.call("run")
-	if run == null or bool(run.flags.get("intro_played", false)):
-		return
-	run.flags["intro_played"] = true
-	# W18 save trust: the witnessed save path first (SaveSentry surfaces the outcome).
-	if _game.has_method("request_save"):
-		_game.call("request_save")
-	elif _game.has_method("save_run"):
-		_game.call("save_run")
-	if _dialogue == null:
-		_dialogue = DialogicFacade.new()
-	if not _dialogue.scene_finished.is_connected(_on_dialogue_finished):
-		_dialogue.scene_finished.connect(_on_dialogue_finished)
-	_in_dialogue = true
-	dialogue_started.emit("intro_knack")
-	_dialogue.play_timeline("intro_knack")
+	OverworldChoices.maybe_play_intro(self, _game)
 
 
 # === movement + encounters ==================================================================== #
@@ -329,7 +315,10 @@ func try_move(dir: Vector2i, roll_encounter: bool = true) -> Dictionary:
 ## Build the deterministic boss encounter for `step_index` IF the climax should fire now, else {}.
 ## Reads the cleared flag from the run so a cleared slice never re-triggers the boss, and the Wave-3
 ## ONE-SHOT lair flag so a lost/fled boss fight never re-ambushes on every later step (the flag is
-## set the moment the lair fires + persisted by the pre-battle autosave).
+## set the moment the lair fires + persisted by the pre-battle autosave). E1b: the threshold check
+## reads the steps explored IN this region (region_steps ledger) — a well-walked run arriving
+## through the Threshold network starts the new region's climax count at zero — while the boss
+## SEED stays on the global step index (its canonical stream is untouched).
 func _maybe_boss(step_index: int) -> Dictionary:
 	if _director == null or _game == null:
 		return {}
@@ -338,7 +327,8 @@ func _maybe_boss(step_index: int) -> Dictionary:
 		cleared = bool(_game.call("slice_cleared"))
 	var run := _run_ctx()
 	var fired := OverworldLoopStateScript.boss_fired(run, _region_id())
-	if not _director.should_trigger_boss(step_index, cleared, fired):
+	var explored := RegionTravelScript.explored_steps(run, _region_id())
+	if not _director.should_trigger_boss(explored, cleared, fired):
 		return {}
 	OverworldLoopStateScript.mark_boss_fired(run, _region_id())
 	return _director.boss_step(step_index)
@@ -501,9 +491,9 @@ func _process(delta: float) -> void:
 		_lead.position = _lead.position.lerp(_lead_target, clampf(delta * 9.0, 0.0, 1.0))
 	if _busy or _in_dialogue or _input == null or _layout == null:
 		return
-	# W17: while the camp (or anything pushed above it) is open, the overworld takes NO input — the
-	# arrows walk the menu focus, not the tamer under the scrim.
-	if _camp_overlay != null and is_instance_valid(_camp_overlay):
+	# W17/E1b: while the camp or the Threshold travel circle is open, the overworld takes NO
+	# input — the arrows walk the menu focus, not the tamer under the scrim.
+	if is_instance_valid(_camp_overlay) or is_instance_valid(_threshold_screen):
 		return
 	# Talk to an adjacent NPC on the INTERACT action (movement is suspended while a scene plays).
 	if (
@@ -762,11 +752,14 @@ func _spawn_npcs() -> void:
 		_quests.register(_quest_defs())  # all overworld quests (MARSH/MELON/BRAMBLE/...) in one place
 		_restore_quests()
 	_sync_boss_goal_quest()
+	# E1b: the shipped Verdant/Act-0 cast rides the starting region; other regions travel with
+	# empty casts until the regional-cast ingest wave places theirs (OverworldContent, pure data).
+	var defs: Array = OverworldContent.npc_defs_for(_region_id())
 	var cells := OverworldSpawnScript.npc_cells(
-		_layout, _home_cell, OverworldContent.NPC_DEFS.size(), _structures.blocked()
+		_layout, _home_cell, defs.size(), _structures.blocked()
 	)
-	for i in mini(cells.size(), OverworldContent.NPC_DEFS.size()):
-		var def: Dictionary = OverworldContent.NPC_DEFS[i]
+	for i in mini(cells.size(), defs.size()):
+		var def: Dictionary = defs[i]
 		var cell: Vector2i = cells[i]
 		var node := Node2D.new()
 		node.name = "NPC_%s" % str(def["name"]).replace(" ", "")
@@ -789,14 +782,18 @@ func _spawn_npcs() -> void:
 	_refresh_markers()
 
 
-## If the tamer stands on/next to an NPC, speak to it and return its timeline id; else "". Drives the
-## INTERACT action from _process.
+## If the tamer stands on/next to an NPC, speak to it and return its timeline id; else "". E1b:
+## standing beside the region's WAYGATE structure (the ritual circle) instead opens the Threshold
+## travel overlay and returns its token. Drives the INTERACT action from _process.
 func try_interact() -> String:
 	for i in _npcs.size():
 		var npc: Dictionary = _npcs[i]
 		var cell: Vector2i = npc["cell"]
 		if (cell - _player_cell).length() <= 1.5:
 			return speak_to(i)
+	if _structures.waygate_adjacent(_player_cell):
+		open_threshold()
+		return "threshold_network"
 	return ""
 
 
@@ -892,8 +889,10 @@ func _advance_quest_step(quest_id: String, step: String, toast_on_advance := tru
 ## here on every build until it sticks) and completes through the existing quest_state flags path
 ## the moment the slice reads cleared (a played boss win sets the victory flag via
 ## GameController._mark_slice_cleared). Surfaces the run's goal in the Phase-13c HUD tracker.
+## E1b: the quest is the VERDANT slice's goal — it only syncs (starts/advances) while the run
+## stands in the starting region; another region's boss clear must never complete it.
 func _sync_boss_goal_quest() -> void:
-	if _quests == null:
+	if _quests == null or _region_id() != EncounterCatalog.STARTING_REGION:
 		return
 	var qid := str(OverworldContent.BOSS_QUEST["id"])
 	if _quests.is_done(qid):
