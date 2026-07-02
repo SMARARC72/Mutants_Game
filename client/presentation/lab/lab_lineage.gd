@@ -130,7 +130,9 @@ static func to_creature_instance(
 ## The DOMINANT parent's plate identity for a newborn hybrid: the parent whose primary force equals
 ## the oracle-blended prim (the face the blend kept), the subject on ties/absence. Falls through to
 ## any parent with a resolvable plate. Pure data pick — no numbers.
-static func dominant_portrait_species(creature: Dictionary, parents: Array, tuples: Array) -> String:
+static func dominant_portrait_species(
+	creature: Dictionary, parents: Array, tuples: Array
+) -> String:
 	var hybrid_prim := str(creature.get("prim", ""))
 	var ordered: Array = []
 	# Prefer the parent whose primary force the blend kept (index-aligned with `parents`).
