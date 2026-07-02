@@ -26,6 +26,10 @@ var _layer: CanvasLayer
 var _stack: VBoxContainer
 var _audio: AudioStreamPlayer
 var _sound_cache := {}
+# Per-event repeat counters (W16a): each repeat of the same event walks to the next
+# authored VoiceBook variant, so catching never shows the same line twice in a session.
+# Session-local presentation state only — deterministic given the same event sequence.
+var _event_salts := {}
 
 
 func _ready() -> void:
@@ -70,8 +74,11 @@ func show(payload: Dictionary) -> void:
 
 
 ## Show a preset core-event toast with funny-grim copy (D7). e.g. event(ToastMicrocopy.CAUGHT).
+## Repeats of one event rotate through the authored VoiceBook variants (W16a).
 func event(event_id: String) -> void:
-	show(Microcopy.preset(event_id))
+	var salt := int(_event_salts.get(event_id, 0))
+	_event_salts[event_id] = salt + 1
+	show(Microcopy.preset(event_id, salt))
 
 
 ## Show a preset core-event toast MERGED with extra payload keys (extra wins) — e.g. the Wave 9

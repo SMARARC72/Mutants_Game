@@ -36,3 +36,5 @@
 *.import text eol=lf
 *.godot  text eol=lf
 *.uid    text eol=lf
+*.dtl    text eol=lf
+*.dch    text eol=lf

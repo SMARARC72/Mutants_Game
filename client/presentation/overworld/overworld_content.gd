@@ -54,7 +54,29 @@ const NPC_DEFS := [
 		"name": "Old Garran",
 		"timeline": "old_garran",
 		"ring": Color("b14b3a"),  # Chaos rust — the kindly-voiced shortcut, the Revel in disguise
-		"bramble_step": "refuse_garran",
+		# W16a: Garran's step is CHOICE-driven — the .dtl asks refuse/accept and the branch
+		# (via DialogicFacade.choice_made) advances SQ-05, not the mere act of talking.
+		# Both branches complete the quest; they differ in flags, corruption, and toast voice.
+		# headless_branch names the canon branch tests/CI resolve instantly (no UI headless).
+		"choice":
+		{
+			"quest": "six_petals_true_bred",
+			"step": "answer_garran",
+			"headless_branch": "refuse",
+			"branches":
+			{
+				"refuse":
+				{
+					"effect": {"set_flag": "refused_the_shortcut"},
+					"voice_key": "quest.refused_garran",
+				},
+				"accept":
+				{
+					"effect": {"set_flag": "took_the_shortcut", "add_corruption": 1},
+					"voice_key": "quest.accepted_garran",
+				},
+			},
+		},
 	},
 	{
 		"name": "Sister Wenlow",
@@ -122,9 +144,10 @@ const MELON_QUEST := {
 }
 
 ## SQ-05 "Six Petals, True-Bred" — an authored Bloomwarden HUSBANDRY beat. Hearthward Ona presses the
-## true-bred seed on you (start); Old Garran offers the kindly-voiced Revel shortcut and you turn it
-## down (complete). The soft creed's proof: love is a method, not a mood. The payoff advances
-## Bloomwarden standing (toward Associate) — patience, again, is husbandry; no corruption.
+## true-bred seed on you (start); Old Garran offers the kindly-voiced Revel shortcut and you ANSWER
+## him (complete) — a real Dialogic choice since W16a: refuse (the creed holds; Bloomwarden-voiced
+## toast) or accept (wrong-bright; +1 corruption, Revel-voiced toast). The quest completes on BOTH
+## branches — the branch effects/toasts live in Old Garran's NPC "choice" config above.
 const BRAMBLE_QUEST := {
 	"id": "six_petals_true_bred",
 	"name": "Six Petals, True-Bred",
@@ -139,9 +162,10 @@ const BRAMBLE_QUEST := {
 			"on_complete": {"set_flag": "met_bramblekind"}
 		},
 		{
-			"id": "refuse_garran",
-			"description": "Turn down Old Garran's shortcut.",
-			"on_complete": {"set_flag": "refused_the_shortcut"}
+			"id": "answer_garran",
+			"description":
+			"Answer Old Garran's offer — the long pale way, or the quick bright one.",
+			"on_complete": {"set_flag": "answered_garran"}
 		},
 	],
 	"on_complete": {"set_flag": "six_petals_true_bred", "nudge_standing": ["bloomwardens", 1]},
@@ -203,7 +227,8 @@ const REGION_TITLES := {
 	"verdant_glut": "The Verdant Glut",
 }
 
-## Region id -> force-climate SUBTITLE for the overworld HUD. Falls back to "" (subtitle hidden).
+## Region id -> force-climate SUBTITLE for the overworld HUD — the FALLBACK when the VoiceBook
+## carries no authored entry-sting for the region (W16a: region.<id>.enter, voice_library_2 §1.12).
 const REGION_CLIMATES := {
 	"verdant_glut": "Eros climate · a thin place",
 }
@@ -222,6 +247,11 @@ static func region_title(region_id: String) -> String:
 	return str(REGION_TITLES.get(region_id, region_id))
 
 
-## The HUD force-climate subtitle for a region id, or "" when unmapped (the HUD hides it).
+## The HUD region blurb for a region id, or "" when unmapped (the HUD hides it). W16a: the
+## authored region entry-sting from the VoiceBook ("region.<id>.enter" — verbatim library
+## copy, keyed per region) with the hand-written climate line as fallback.
 static func region_climate(region_id: String) -> String:
+	var sting := VoiceBook.pick("region.%s.enter" % region_id)
+	if sting != "":
+		return sting
 	return str(REGION_CLIMATES.get(region_id, ""))

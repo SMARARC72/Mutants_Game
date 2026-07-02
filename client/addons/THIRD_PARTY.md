@@ -167,8 +167,14 @@ expressobits https://github.com/expressobits/inventory-system · OctoD https://g
 
 - **Dialogic** `Modules/Variable/subsystem_variables.gd` — added `return null` to the two `_get()`
   overrides (lines ~187 and ~249). Godot 4.7's stricter compiler rejects "not all code paths return
-  a value"; `_get` returning `null` (= property not handled) is the correct, upstream-safe fix. This is
-  the only change to vendored code; without it Dialogic fails to compile on 4.7.
+  a value"; `_get` returning `null` (= property not handled) is the correct, upstream-safe fix.
+  Without it Dialogic fails to compile on 4.7.
+- **Dialogic** `Modules/Text/node_name_label.gd` — added the missing `return false` fall-through to
+  the `_set()` override (W16a). Same 4.7 strictness as above (the native `_set` contract infers a
+  `bool` return): without it the script fails to parse, which cascades into
+  `Layer_VN_Textbox/vn_textbox_layer.gd` ("Failed to compile depended scripts" — it types a var as
+  `DialogicNode_NameLabel`) and would kill the grimoire dialogue style's textbox layer at runtime.
+  `false` = property not handled, the documented `_set` semantic; upstream-safe.
 - **Maaack's Game Template** — removed the demo `media/` (~4.5 MB) and `docs/` directories; neither is
   referenced at runtime by the `base/` components we use. No GDScript was modified.
 - **sentry-godot** — only the addon's GDScript layer + descriptor template are vendored; native

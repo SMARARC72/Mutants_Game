@@ -619,9 +619,14 @@ func _setup_hud() -> void:
 	title.text = OverworldContent.region_title(_region_id())
 	title.theme_type_variation = "TitleLabel"
 	var sub := Label.new()
+	# W16a: the authored region entry-sting (VoiceBook region.<id>.enter, verbatim library
+	# copy) — a full sentence now, so it wraps inside a fixed column instead of stretching
+	# the HUD panel across the screen.
 	sub.text = OverworldContent.region_climate(_region_id())
 	sub.visible = sub.text != ""
 	sub.theme_type_variation = "MutedLabel"
+	sub.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	sub.custom_minimum_size = Vector2(430, 0)
 	box.add_child(title)
 	box.add_child(sub)
 	# Quest tracker: the active quest's current objective, always visible (hidden when none). Surfaces
@@ -802,15 +807,22 @@ func speak_to(index: int) -> String:
 		return ""
 	var npc: Dictionary = _npcs[index]
 	var timeline := str(npc["timeline"])
+	var choice_conf: Dictionary = npc.get("choice", {})
 	if _dialogue == null:
 		_dialogue = DialogicFacade.new()
 	# Connect idempotently BEFORE play so a first-talk signal can never be missed (review P2.3).
 	if not _dialogue.scene_finished.is_connected(_on_dialogue_finished):
 		_dialogue.scene_finished.connect(_on_dialogue_finished)
+	# W16a: authored `- choice` branches report back as choice_made(scene_id, branch_tag);
+	# the branch — not the talk — advances a choice-driven quest step (Old Garran / SQ-05).
+	if not _dialogue.choice_made.is_connected(_on_dialogue_choice):
+		_dialogue.choice_made.connect(_on_dialogue_choice)
 	_in_dialogue = true
 	_advance_quest_for(npc)
 	dialogue_started.emit(timeline)
-	_dialogue.play_timeline(timeline)
+	# Headless there is no choice UI, so the NPC's canon branch resolves instantly (the
+	# facade emits choice_made before scene_finished) — quests stay completable in CI.
+	_dialogue.play_timeline(timeline, str(choice_conf.get("headless_branch", "")))
 	return timeline
 
 
@@ -828,13 +840,22 @@ func _advance_quest_for(npc: Dictionary) -> void:
 			_advance_quest_step(str(q["id"]), str(npc.get(step_key, "")))
 
 
+## W16a: a Dialogic choice resolved (scene_id = the timeline id, branch_tag = the authored
+## branch tag from `[signal arg="choice:<tag>"]`). The branch — never the mere talk —
+## advances the quest step; dispatch + branch effects/toast live in OverworldChoices.
+func _on_dialogue_choice(scene_id: String, branch_tag: String) -> void:
+	OverworldChoices.handle(self, _npcs, scene_id, branch_tag)
+
+
 ## Start `quest_id` on the first talk that names a step, advance to that step, and toast the ledger
 ## on a real advance. On a real advance the step's (and, on completion, the quest's) gameplay effect
 ## is applied to the PERSISTED run, and quest progress is serialized + saved — so standing/corruption
 ## actually accrue and survive reload (review P1.1 + Codex #37). No-op when the NPC drives no step.
-func _advance_quest_step(quest_id: String, step: String) -> void:
+## Returns true only on a REAL advance (W16a: choice branches key their effects off this).
+## `toast_on_advance` = false lets a caller substitute its own richer toast for the generic one.
+func _advance_quest_step(quest_id: String, step: String, toast_on_advance := true) -> bool:
 	if step == "":
-		return
+		return false
 	# Track BOTH transitions: a fresh start() and a real advance(). An out-of-order NPC (talked to
 	# before the prerequisite step) can start the quest yet have its advance() rejected — that start
 	# is still durable state and MUST persist, else re-entering the screen loses it (Codex #39 P2).
@@ -847,14 +868,15 @@ func _advance_quest_step(quest_id: String, step: String) -> void:
 		if _quests.is_done(quest_id):
 			_apply_effect_to_run(_quest_def_by_id(quest_id).get("on_complete", {}) as Dictionary)
 	if not (started or advanced):
-		return
+		return false
 	_persist_quests()
 	_refresh_objective()  # keep the HUD tracker in step with the quest the player just moved
 	# Only a real advance is a player-facing "quest update"; a bare start with no advance is silent.
-	if advanced:
+	if advanced and toast_on_advance:
 		var toast := get_node_or_null("/root/Toast")
 		if toast != null and toast.has_method("event"):
 			toast.call("event", "quest_update")
+	return advanced
 
 
 ## Wave 3 (red-team C13): the BOSS-GOAL quest is active from RUN START (no NPC gives it — started

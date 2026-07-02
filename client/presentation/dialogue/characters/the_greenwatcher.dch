@@ -1,0 +1,15 @@
+{
+"@path": "res://addons/dialogic/Resources/character.gd",
+"@subpath": NodePath(""),
+&"_translation_id": "",
+&"color": Color(0.41960785, 0.56078434, 0.23921569, 1),
+&"custom_info": {},
+&"default_portrait": "",
+&"description": "The gentle apex that plants the living. It was only ever looking for someone to be gentle back.",
+&"display_name": "The Greenwatcher",
+&"mirror": false,
+&"nicknames": [],
+&"offset": Vector2(0, 0),
+&"portraits": {},
+&"scale": 1.0
+}
