@@ -90,6 +90,21 @@ static func mark_boss_fired(run: RunContext, region_id: String) -> void:
 	run.world_state[BOSS_FIRED_PREFIX + region_id] = true
 
 
+## E1c: the extra keys the BOSS hand-off folds into pending_battle — tagged is_boss with the
+## role brain, plus the pantheon boss_id + the VERBATIM authored intro/defeat lines
+## (boss_kits.json) the battle screen splashes/toasts. Pure data pass-through: the verdant
+## slice boss carries "" for all three and keeps its shipped presentation.
+static func boss_handoff_extra(roll: Dictionary) -> Dictionary:
+	return {
+		"is_wild": false,
+		"is_boss": true,
+		"boss_brain": str(roll.get("boss_brain", "controller")),
+		"boss_id": str(roll.get("boss_id", "")),
+		"intro_line": str(roll.get("intro_line", "")),
+		"defeat_line": str(roll.get("defeat_line", "")),
+	}
+
+
 ## A world_state value as a 2-element numeric Array, or [] when absent/malformed.
 static func _int_pair(run: RunContext, key: String) -> Array:
 	if run == null:

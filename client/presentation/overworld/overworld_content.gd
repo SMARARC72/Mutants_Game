@@ -526,6 +526,21 @@ static func peculiar_def(id: String) -> Dictionary:
 	return {}
 
 
+## The NPC defs the overworld spawns for a region (Batch E1c). VERDANT keeps the hand-wired
+## NPC_DEFS above — canonical (the Act-0 spine + SQ cast ride the shipped region until region
+## travel fully lands). Every OTHER region draws the AUTHORED cast from npc_casts.json via
+## NpcCastCatalog (leaders, Hands, roster, living-world faces — VERBATIM names/barks, stable
+## hashed rings); a region without a catalog cast falls back to NPC_DEFS so no region is ever
+## peopleless (mirrors the no-soft-lock philosophy).
+static func region_npc_defs(region_id: String) -> Array:
+	if region_id == EncounterCatalog.STARTING_REGION:
+		return NPC_DEFS
+	var cast := NpcCastCatalog.defs_for_region(region_id)
+	if cast.is_empty():
+		return NPC_DEFS
+	return cast
+
+
 ## The HUD title for a region id ("The Verdant Glut"): the hand-tuned HUD override first, then
 ## the world catalog's authored title (E1b — all eleven regions), then the raw id.
 static func region_title(region_id: String) -> String:
@@ -534,14 +549,10 @@ static func region_title(region_id: String) -> String:
 	return RegionCatalog.title(region_id)
 
 
-## The authored cast for a region (E1b travel seam): the shipped Verdant/Act-0 cast stays on the
-## starting region; the other ten regions travel with EMPTY casts until the regional_cast.md
-## ingest wave places their own NPCs (pure data — a sibling adds a table entry here, no screen
-## change). The signpost/quest dispatch all key off the returned defs, so an empty cast is safe.
+## E1b's travel-seam name, superseded by region_npc_defs (E1c filled the casts the same
+## session) — kept as a delegate for any external caller.
 static func npc_defs_for(region_id: String) -> Array:
-	if region_id == EncounterCatalog.STARTING_REGION:
-		return NPC_DEFS
-	return []
+	return region_npc_defs(region_id)
 
 
 ## The HUD region blurb for a region id, or "" when unmapped (the HUD hides it). W16a: the

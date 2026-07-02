@@ -111,6 +111,16 @@ static func ensure_directories() -> void:
 			DialogicResourceUtil.update_directory(ext)
 
 
+## True when `timeline_id` resolves in the project's [dialogic] timeline directory (self-
+## healed first). Lets content code probe for a generated scene before playing it — the E1c
+## catalog-cast NPCs fall back to their authored barks until their timeline lands.
+static func timeline_exists(timeline_id: String) -> bool:
+	if timeline_id == "":
+		return false
+	ensure_directories()
+	return DialogicResourceUtil.get_directory("dtl").has(timeline_id)
+
+
 static func _directory_paths_exist(directory: Dictionary) -> bool:
 	for key in directory:
 		if not ResourceLoader.exists(str(directory[key])):

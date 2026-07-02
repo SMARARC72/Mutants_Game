@@ -32,7 +32,7 @@ static func from_creature(creature: Dictionary, catalog: SpeciesCatalog) -> Abil
 	var display_name := str(creature.get("nickname", ""))
 	if display_name == "":
 		display_name = species.name
-	var kit := KitFactory.kit_for(species.force_primary, species.force_secondary)
+	var kit := _kit_for(creature, species.force_primary, species.force_secondary)
 	var ac := AbilityContainer.new(
 		display_name,
 		species.force_primary,
@@ -64,11 +64,33 @@ static func _from_cached_stats(creature: Dictionary) -> AbilityContainer:
 	var display_name := str(creature.get("nickname", ""))
 	if display_name == "":
 		display_name = HYBRID_FALLBACK_NAME
-	var kit := KitFactory.kit_for(prim, sec)
+	var kit := _kit_for(creature, prim, sec)
 	var ac := AbilityContainer.new(display_name, prim, sec, HYBRID_RANK, tier, kit)
 	_compose_growth(ac, creature)
 	_apply_persisted_hp(ac, creature)
 	return ac
+
+
+## The skill kit for a creature dict (Batch E1c): a `kit_override` on the dict — an Array of
+## skill names, e.g. the AUTHORED pantheon-boss kit from BossKitCatalog, folded into the boss
+## enemy dict by EncounterDirector.boss_step — replaces the force-derived KitFactory kit.
+## APPLICATION-layer policy only: every override name is validated against the SkillEngine
+## library (Constants.BALANCE.skill.library); unknown names are dropped, and an empty/absent/
+## fully-invalid override falls back to the canonical KitFactory derivation — so a malformed
+## catalog row can never hand a creature an unusable kit. Dicts without the key (every wild/
+## party creature today) build byte-identical to the pre-E1c path.
+static func _kit_for(creature: Dictionary, prim: String, sec: String) -> Array:
+	var override: Variant = creature.get("kit_override", null)
+	if override is Array:
+		var library: Dictionary = Constants.BALANCE["skill"]["library"]
+		var kit: Array = []
+		for skill_name in override as Array:
+			var skill := str(skill_name)
+			if library.has(skill) and not kit.has(skill):
+				kit.append(skill)
+		if not kit.is_empty():
+			return kit
+	return KitFactory.kit_for(prim, sec)
 
 
 ## AWAKENINGS FELT (application-layer composition; the domain stays untouched): scale the container's

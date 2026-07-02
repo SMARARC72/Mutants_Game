@@ -157,3 +157,21 @@ recorded here so nothing is silently invented.
 **Unmapped speakers (auto title-cased .dch stubs):** (none)
 
 <!-- END gen_timelines.py -->
+
+---
+
+# Boss Kits & Regional Casts Ingest (Batch E1c)
+
+`tools/ingest_bosses.py` and `tools/ingest_casts.py` emit `client/catalog/boss_kits.json`,
+`client/catalog/region_bosses.json` (the `{region_id: boss_id}` act-boss seam the integrator
+reconciles with E1b's region_pools boss slot) and `client/catalog/npc_casts.json`. Every mapping
+decision (species force-proxies, authored-move -> library-skill mappings, CombatBrain role
+derivations, region boss assignments, cast counts) is recorded in the GENERATED companion notes:
+`docs/content/_INGEST_NOTES_E1C.md` + `docs/content/_INGEST_NOTES_E1C_CASTS.md`.
+
+**Cast timeline convention:** npc_casts.json references per-NPC scenes as
+`<npc_snake_case>_<beat>` (beat `intro`) — the E1a generated timelines above are SCENE-scoped
+(`mvp_s<NN>_*` / `acts_s<NN>_*`), so no cast id collides with them; the overworld bubbles the
+NPC's authored barks (VERBATIM) until a per-NPC `.dtl` with the convention id lands
+(`DialogicFacade.timeline_exists` probes the [dialogic] directory). The integrator reconciles
+when per-NPC scenes are generated.

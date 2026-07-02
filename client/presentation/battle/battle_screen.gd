@@ -44,7 +44,6 @@ const BattleScreenBuildScript := preload("res://presentation/battle/battle_scree
 const BattleStageScript := preload("res://presentation/battle/battle_stage.gd")
 const CaptureMomentScript := preload("res://presentation/battle/capture_moment.gd")
 const EntropyDialScript := preload("res://presentation/battle/entropy_dial.gd")
-const VoiceBookScript := preload("res://presentation/narrative/voice_book.gd")
 const InputActions := preload("res://infrastructure/input/input_actions.gd")
 const OVERWORLD_SCENE := "res://presentation/overworld/overworld_screen.tscn"
 
@@ -68,6 +67,10 @@ var _battle: BattleSession.SkillInteractiveBattle = null
 var _session: BattleSession = null  # the BattleSession (for skill_result_for)
 var _is_wild: bool = true
 var _is_boss: bool = false  # Wave 3: pending.is_boss — a played boss win must clear the slice
+## E1c: authored pantheon-boss lines (pending.intro_line/defeat_line, VERBATIM from
+## boss_kits.json); "" (wild fights / verdant slice) keeps the shipped VoiceBook presentation.
+var _boss_intro_line: String = ""
+var _boss_defeat_line: String = ""
 var _last_step: Dictionary = {}
 var _continue_button: Button = null
 var _action_menu: VBoxContainer = null
@@ -163,6 +166,8 @@ func run_pending_battle() -> Dictionary:
 	var battle_seed := int(pending.get("battle_seed", 0))
 	_is_wild = bool(pending.get("is_wild", true))  # overworld encounters are wild by default
 	_is_boss = bool(pending.get("is_boss", false))  # Wave 3: the lair hand-off tags the climax
+	_boss_intro_line = str(pending.get("intro_line", ""))  # E1c: authored pantheon lines
+	_boss_defeat_line = str(pending.get("defeat_line", ""))
 	# Wave 8 backdrop-lite: the overworld hands off the region's force climate; "" falls back by
 	# battle kind (BattleCardKit.pick_backdrop). Windowed play folds in the Swift Rites speed.
 	_region_force = str(pending.get("force", ""))
@@ -190,13 +195,11 @@ func run_pending_battle() -> Dictionary:
 	if _is_boss:
 		play_stinger("boss_swell")  # once, on the climax build (W-SND stinger set)
 		# Wave 10: the name splash (Cinzel, brief; held CONFIRM dismisses — _process polls),
-		# sub-lined with an authored VoiceBook pre-fight beat (deterministic per battle seed).
+		# sub-lined E1c-style: the AUTHORED intro line, else the VoiceBook pre-fight beat.
 		var foes := _battle.enemy_team()
 		if not foes.is_empty():
-			_stage.show_boss_splash(
-				(foes[0] as AbilityContainer).combatant_name(),
-				VoiceBookScript.pick("battle.boss.prefight", battle_seed)
-			)
+			var prefight := BattleImpactScript.boss_prefight_line(_boss_intro_line, battle_seed)
+			_stage.show_boss_splash((foes[0] as AbilityContainer).combatant_name(), prefight)
 	_pump()
 	return _last_step
 
@@ -432,6 +435,11 @@ func _finish_battle(step: Dictionary) -> void:
 	BattleImpactScript.toast_outcome(
 		get_node_or_null("/root/Toast"), reason, _result, _battle, _game
 	)
+	# E1c: a felled pantheon boss toasts its authored epitaph (pending.defeat_line, VERBATIM).
+	if _is_boss:
+		BattleImpactScript.toast_boss_epitaph(
+			get_node_or_null("/root/Toast"), _boss_defeat_line, _result, _battle
+		)
 	_show_banner_text(_banner_text_for(reason))
 	_hide_menus()
 	_show_continue()
