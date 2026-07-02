@@ -1,0 +1,15 @@
+It came out of the dark between two embassies — a street-godling, a feral knot of loose force with no name and worse manners. The fight was real, and brief, and then it did the thing that should kill you: it marked you. A Primordial-tint brand, straight into the marrow.
+You are not a smear on the cobbles. You are standing there, glowing wrong, and the godling is backing away from you now, which is new, and not comforting.
+[Vael Construct-Nine materializes — a High Table envoy with a clipboard and no visible soul.]
+vael: You were marked by a dead thing and failed to die. Statistically, you are now a problem. The High Table prefers its problems contracted.
+vael: Allow me to be precise, because I am only ever precise: a Primordial-tint brand in mortal marrow is, in nine hundred ninety-nine cases of a thousand, a very brief and very loud way to stop existing. You are the thousandth case. The Table finds the thousandth case fascinating, the way a gambler finds a long-shot fascinating — which is to say, we have already opened a line on you, and the line is not generous.
+vael: The brand can be borne three ways. Choose. I will notarize whichever, with equal indifference, which is the only kind I have.
+- Seal it. Lock it down, keep it asleep.
+	[signal arg="choice:seal"]
+	vael: Sealed. Tidy. The seal will hold until ambition removes it. Ambition always removes it. We'll keep the appointment open. For the record, the file now reads cautious. I want you to know that the Table priced cautious at the longest odds on the board. We do not expect cautious to last. We are rarely wrong, and we are never sorry.
+- Feed it. Let the tint spread. The Lab will want what comes of it.
+	[signal arg="choice:feed"]
+	vael: You let it in. Bold. The brand is in your marrow now, climbing. We've started the paperwork on what you'll become. Do try to be interesting. I should note — and I note everything — that the Lab will now accept inputs it refused an hour ago. A door opened. You did not knock; you swallowed the key. The Table finds this excellent action and has shortened your odds accordingly. You are, suddenly, a favorite. Favorites die richest.
+- Bargain it. Let the Table appraise it. What's it worth?
+	[signal arg="choice:bargain"]
+	vael: A sensible animal. You neither sealed the future away nor swallowed it whole — you sold a look at it. Here is your advance. The Table now owns a small, perpetual window onto your marrow. Purely procedural. Everything we do is purely procedural, right up until the Accountant arrives, and the Accountant is never procedural. Do mind the debt. Debt is the one god that never died.

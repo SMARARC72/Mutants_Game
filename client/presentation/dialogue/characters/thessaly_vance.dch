@@ -1,0 +1,15 @@
+{
+"@path": "res://addons/dialogic/Resources/character.gd",
+"@subpath": NodePath(""),
+&"_translation_id": "",
+&"color": Color(0.8392157, 0.63529414, 0.24705882, 1),
+&"custom_info": {},
+&"default_portrait": "",
+&"description": "The High Table's Threshold steward. Velvet, ledgers, a smile like a closing door.",
+&"display_name": "Madam Thessaly Vance",
+&"mirror": false,
+&"nicknames": [],
+&"offset": Vector2(0, 0),
+&"portraits": {},
+&"scale": 1.0
+}

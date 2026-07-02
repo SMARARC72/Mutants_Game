@@ -1,0 +1,15 @@
+{
+"@path": "res://addons/dialogic/Resources/character.gd",
+"@subpath": NodePath(""),
+&"_translation_id": "",
+&"color": Color(0.83137256, 0.78039217, 0.65882355, 1),
+&"custom_info": {},
+&"default_portrait": "",
+&"description": "Warden of the Foundling Pens. She buries most of what Maddox sends her; she holds out her hand anyway.",
+&"display_name": "Mother Kestrel",
+&"mirror": false,
+&"nicknames": [],
+&"offset": Vector2(0, 0),
+&"portraits": {},
+&"scale": 1.0
+}

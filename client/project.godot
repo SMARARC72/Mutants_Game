@@ -43,28 +43,44 @@ GameController="*res://application/game/game_controller.gd"
 directories/dch_directory={
 "bog_wretch": "res://presentation/dialogue/characters/bog_wretch.dch",
 "hearthward_ona": "res://presentation/dialogue/characters/hearthward_ona.dch",
+"madam_cessil": "res://presentation/dialogue/characters/madam_cessil.dch",
 "matron_sevvy": "res://presentation/dialogue/characters/matron_sevvy.dch",
+"mother_kestrel": "res://presentation/dialogue/characters/mother_kestrel.dch",
 "old_garran": "res://presentation/dialogue/characters/old_garran.dch",
+"old_maddox": "res://presentation/dialogue/characters/old_maddox.dch",
 "old_marrow": "res://presentation/dialogue/characters/old_marrow.dch",
 "pollen_factor_dree": "res://presentation/dialogue/characters/pollen_factor_dree.dch",
 "rust_warden": "res://presentation/dialogue/characters/rust_warden.dch",
 "sister_wenlow": "res://presentation/dialogue/characters/sister_wenlow.dch",
 "the_greenwatcher": "res://presentation/dialogue/characters/the_greenwatcher.dch",
-"the_melon": "res://presentation/dialogue/characters/the_melon.dch"
+"the_melon": "res://presentation/dialogue/characters/the_melon.dch",
+"thessaly_vance": "res://presentation/dialogue/characters/thessaly_vance.dch",
+"vael": "res://presentation/dialogue/characters/vael.dch",
+"veil": "res://presentation/dialogue/characters/veil.dch"
 }
 directories/dtl_directory={
 "bloom_matron": "res://presentation/dialogue/bloom_matron.dtl",
 "hearthward_ona": "res://presentation/dialogue/hearthward_ona.dtl",
 "intro_knack": "res://presentation/dialogue/intro_knack.dtl",
+"maddox_mercy": "res://presentation/dialogue/maddox_mercy.dtl",
 "marsh_encounter": "res://presentation/dialogue/marsh_encounter.dtl",
 "marsh_oracle": "res://presentation/dialogue/marsh_oracle.dtl",
+"mother_kestrel": "res://presentation/dialogue/mother_kestrel.dtl",
 "old_garran": "res://presentation/dialogue/old_garran.dtl",
+"peculiar_cessil": "res://presentation/dialogue/peculiar_cessil.dtl",
+"peculiar_dree_trinket": "res://presentation/dialogue/peculiar_dree_trinket.dtl",
+"peculiar_objector": "res://presentation/dialogue/peculiar_objector.dtl",
+"peculiar_omen": "res://presentation/dialogue/peculiar_omen.dtl",
+"peculiar_omen_corrupt": "res://presentation/dialogue/peculiar_omen_corrupt.dtl",
 "pollen_factor": "res://presentation/dialogue/pollen_factor.dtl",
 "rust_warden": "res://presentation/dialogue/rust_warden.dtl",
 "sister_wenlow": "res://presentation/dialogue/sister_wenlow.dtl",
 "smoke": "res://presentation/dialogue/smoke.dtl",
 "the_greenwatcher": "res://presentation/dialogue/the_greenwatcher.dtl",
-"the_melon": "res://presentation/dialogue/the_melon.dtl"
+"the_melon": "res://presentation/dialogue/the_melon.dtl",
+"thessaly_rolls": "res://presentation/dialogue/thessaly_rolls.dtl",
+"vael_mark": "res://presentation/dialogue/vael_mark.dtl",
+"veil_bench": "res://presentation/dialogue/veil_bench.dtl"
 }
 layout/default_style="res://presentation/narrative/style/grimoire_style.tres"
 layout/style_directory={
