@@ -23,3 +23,7 @@ func _set(property, what):
 		else:
 			name_label_root.show()
 		return true
+	# LOCAL PATCH (see addons/THIRD_PARTY.md): Godot 4.7's stricter compiler infers the
+	# native `_set` return type (bool) and rejects the missing fall-through return.
+	# `false` = property not handled — the documented `_set` contract.
+	return false

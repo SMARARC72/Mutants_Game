@@ -40,7 +40,18 @@ GameController="*res://application/game/game_controller.gd"
 
 [dialogic]
 
-directories/dch_directory={}
+directories/dch_directory={
+"bog_wretch": "res://presentation/dialogue/characters/bog_wretch.dch",
+"hearthward_ona": "res://presentation/dialogue/characters/hearthward_ona.dch",
+"matron_sevvy": "res://presentation/dialogue/characters/matron_sevvy.dch",
+"old_garran": "res://presentation/dialogue/characters/old_garran.dch",
+"old_marrow": "res://presentation/dialogue/characters/old_marrow.dch",
+"pollen_factor_dree": "res://presentation/dialogue/characters/pollen_factor_dree.dch",
+"rust_warden": "res://presentation/dialogue/characters/rust_warden.dch",
+"sister_wenlow": "res://presentation/dialogue/characters/sister_wenlow.dch",
+"the_greenwatcher": "res://presentation/dialogue/characters/the_greenwatcher.dch",
+"the_melon": "res://presentation/dialogue/characters/the_melon.dch"
+}
 directories/dtl_directory={
 "bloom_matron": "res://presentation/dialogue/bloom_matron.dtl",
 "hearthward_ona": "res://presentation/dialogue/hearthward_ona.dtl",
@@ -55,7 +66,12 @@ directories/dtl_directory={
 "the_greenwatcher": "res://presentation/dialogue/the_greenwatcher.dtl",
 "the_melon": "res://presentation/dialogue/the_melon.dtl"
 }
-layout/style_directory={}
+layout/default_style="res://presentation/narrative/style/grimoire_style.tres"
+layout/style_directory={
+"": "res://presentation/narrative/style/grimoire_style.tres",
+"Grimoire": "res://presentation/narrative/style/grimoire_style.tres"
+}
+layout/style_list=["res://presentation/narrative/style/grimoire_style.tres"]
 
 [display]
 

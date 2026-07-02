@@ -38,6 +38,7 @@ const GROUND_VARIANTS := 3
 const _T := "res://assets/tiles/topdown/"
 const _P := "res://assets/tiles/props/"
 const _W := Color(1, 1, 1)
+const _FLAT_NORMAL := Color(0.5, 0.5, 1.0)  # tangent-space "straight up" (unshaded fallback)
 
 ## Region force-climate palettes: force -> {ground: [[texture, modulate] hero/common/rare],
 ## feature/path/wall/ritual: [texture, modulate]}. Textures are the semantic outputs of
@@ -163,6 +164,18 @@ const PROPS := {
 	"Ouranos+Gaia": [_P + "moss-mound.png", _P + "ward-stone.png"],
 }
 
+## Wave 12 y-sort: believable prop HEIGHT in tiles, keyed by texture stem. Tall props (ward
+## stones, crystal growths) reach ~1.4 tiles so an actor can visibly walk BEHIND them; mounds
+## and bone piles stay squat. Unlisted props fall back to just under one tile.
+const PROP_HEIGHTS := {
+	"ward-stone": 1.4,
+	"crystal-cluster": 1.35,
+	"ruin-bricks": 1.05,
+	"rock-ledge": 1.0,
+	"moss-mound": 0.9,
+	"bone-pile": 0.8,
+}
+
 const _REGION_CATALOG := "res://catalog/region_layouts.json"
 
 ## region id -> force cache (loaded once from the region catalog).
@@ -235,6 +248,15 @@ static func is_thin_place(x: int, y: int) -> bool:
 	return absi((x * 92821) ^ (y * 68917)) % 7 == 0
 
 
+## The believable height (in tiles) a scattered prop should stand, from PROP_HEIGHTS by the
+## texture's file stem. Pure function; unknown textures read just under a tile.
+static func prop_height_tiles(tex: Texture2D) -> float:
+	if tex == null:
+		return 0.95
+	var stem := tex.resource_path.get_file().get_basename()
+	return float(PROP_HEIGHTS.get(stem, 0.95))
+
+
 ## Build a TileSet whose source 0 is a real-terrain atlas. Column = tile id. The GROUND column
 ## stacks GROUND_VARIANTS texture rows (atlas coords (0, 0..2) = hero/common/rare ground); every
 ## other id sits at row 0. So set_cell(pos, 0, Vector2i(tile_id, 0)) Just Works for non-ground,
@@ -254,6 +276,13 @@ static func build(force_climate: String = _DEFAULT_FORCE) -> TileSet:
 		(max_id + 1) * TILE_SIZE, GROUND_VARIANTS * TILE_SIZE, false, Image.FORMAT_RGBA8
 	)
 	atlas.fill(VOID_COLOR)
+	# Wave 12: a parallel NORMAL atlas (tools/gen_normalmaps.py outputs) with the same geometry.
+	# TileSetAtlasSource has no normal slot; the pair ships as ONE CanvasTexture below.
+	var normals := Image.create(
+		(max_id + 1) * TILE_SIZE, GROUND_VARIANTS * TILE_SIZE, false, Image.FORMAT_RGBA8
+	)
+	normals.fill(_FLAT_NORMAL)
+	var normal_found := false
 	var full := Rect2i(0, 0, TILE_SIZE, TILE_SIZE)
 	for id in ids:
 		if int(id) == GROUND_TILE:
@@ -261,12 +290,24 @@ static func build(force_climate: String = _DEFAULT_FORCE) -> TileSet:
 			for v in GROUND_VARIANTS:
 				var entry: Array = variants[v % variants.size()]
 				var gimg := _tile_image(str(entry[0]), entry[1] as Color, int(id))
-				atlas.blit_rect(gimg, full, Vector2i(int(id) * TILE_SIZE, v * TILE_SIZE))
+				var gat := Vector2i(int(id) * TILE_SIZE, v * TILE_SIZE)
+				atlas.blit_rect(gimg, full, gat)
+				normal_found = _blit_normal(normals, str(entry[0]), gat) or normal_found
 		else:
 			var entry: Array = palette[id]
 			var tile_img := _tile_image(str(entry[0]), entry[1] as Color, int(id))
-			atlas.blit_rect(tile_img, full, Vector2i(int(id) * TILE_SIZE, 0))
-	var texture := ImageTexture.create_from_image(atlas)
+			var at := Vector2i(int(id) * TILE_SIZE, 0)
+			atlas.blit_rect(tile_img, full, at)
+			normal_found = _blit_normal(normals, str(entry[0]), at) or normal_found
+	var texture: Texture2D = ImageTexture.create_from_image(atlas)
+	if normal_found:
+		# The diffuse+normal pair rides a CanvasTexture (a Texture2D, so the atlas source takes
+		# it directly) — this is how TileMapLayer cells react to Light2D in Godot 4. Flipped/
+		# transposed cell orientations shade slightly off-axis; at this strength it never reads.
+		var lit := CanvasTexture.new()
+		lit.diffuse_texture = texture
+		lit.normal_texture = ImageTexture.create_from_image(normals)
+		texture = lit
 
 	var tile_set := TileSet.new()
 	tile_set.tile_size = Vector2i(TILE_SIZE, TILE_SIZE)
@@ -282,6 +323,23 @@ static func build(force_climate: String = _DEFAULT_FORCE) -> TileSet:
 	tile_set.add_source(source, 0)
 	_built_sets[force_climate] = tile_set
 	return tile_set
+
+
+## Blit `path`'s generated normal map (…/normal/<stem>_n.png, from tools/gen_normalmaps.py) into
+## the normal atlas at `at`. Returns true when a real normal map landed; on a miss the flat-normal
+## fill stays for that cell (correct, just unshaded).
+static func _blit_normal(normals: Image, path: String, at: Vector2i) -> bool:
+	var npath := path.get_base_dir() + "/normal/" + path.get_file().get_basename() + "_n.png"
+	if not ResourceLoader.exists(npath):
+		return false
+	var tex := load(npath) as Texture2D
+	if tex == null:
+		return false
+	var img := tex.get_image()
+	img.convert(Image.FORMAT_RGBA8)
+	img.resize(TILE_SIZE, TILE_SIZE, Image.INTERPOLATE_LANCZOS)
+	normals.blit_rect(img, Rect2i(0, 0, TILE_SIZE, TILE_SIZE), at)
+	return true
 
 
 ## One cell texture: load the (pre-cropped, seamless) plate, downscale to the cell, tint. Falls

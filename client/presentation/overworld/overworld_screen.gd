@@ -27,6 +27,7 @@ const OverworldLoopStateScript := preload("res://presentation/overworld/overworl
 const OverworldTokensScript := preload("res://presentation/overworld/overworld_tokens.gd")
 const OverworldMotionScript := preload("res://presentation/overworld/overworld_motion.gd")
 const OverworldSpawnScript := preload("res://presentation/overworld/overworld_spawn.gd")
+const OverworldDepthScript := preload("res://presentation/overworld/overworld_depth.gd")
 const ControlsChipScript := preload("res://presentation/overworld/controls_chip.gd")
 const InputActions := preload("res://infrastructure/input/input_actions.gd")
 const BATTLE_SCENE := "res://presentation/battle/battle_screen.tscn"
@@ -49,6 +50,11 @@ var _layout: Layout = null
 var _director: EncounterDirector = null
 var _tile_layer: TileMapLayer = null
 var _force_climate: String = "Eros"  # active region's force palette (set in build_from_game)
+## Wave 12: the single Y-SORTED world root. Props + player + NPC tokens + the lead cameo all live
+## under it at z 0 with feet-level y-origins, so a tall prop occludes an actor walking behind it
+## and is occluded by one standing in front — draw order comes from Y, never hand-set z layers.
+var _world: Node2D = null
+var _props: Node2D = null  # prop holder inside _world (rebuilt with the layout; actors persist)
 var _player: Node2D = null
 var _player_cell: Vector2i = Vector2i.ZERO
 ## The canonical spawn cell (centre of the largest open field). NPC placement anchors here — not on
@@ -166,6 +172,8 @@ func build_from_game() -> void:
 	_layout = world_gen.get_or_generate(region, run.seed, run.world_state)
 	_director = EncounterDirectorScript.for_region(run.seed, region, catalog)
 	_force_climate = OverworldTileSetScript.force_for_region(region)
+	_ensure_world_root()
+	_setup_horizon()
 	_render_layout()
 	_spawn_player()
 	_spawn_lead_creature()
@@ -454,39 +462,39 @@ func _read_step_dir() -> Vector2i:
 # === rendering / placement (guarded so the scene still BUILDS headless) ======================= #
 
 
+## Create the Y-SORTED world root once (Wave 12). It rides z 1 so it always draws above the
+## ground TileMapLayer (z 0) regardless of child order across rebuilds; INSIDE it, draw order
+## is pure Y — props and actors all sit at z 0 with feet-level origins (OverworldDepth).
+func _ensure_world_root() -> void:
+	if _world == null or not is_instance_valid(_world):
+		_world = OverworldDepthScript.make_world_root(self)
+
+
+## The painterly horizon behind the tile field (Wave 12): the force's blurred backdrop strip on
+## a Parallax2D drifting at ~0.15 scroll, over an ink backing plate (see OverworldDepth).
+func _setup_horizon() -> void:
+	OverworldDepthScript.setup_horizon(self, _force_climate, _layout)
+
+
 func _render_layout() -> void:
 	if _tile_layer != null:
 		_tile_layer.queue_free()
 	_tile_layer = TileMapLayer.new()
 	_tile_layer.name = "RegionTiles"
+	_tile_layer.z_index = 0  # ground plane: always under the y-sorted world root (z 1)
 	_tile_layer.tile_set = OverworldTileSetScript.build(_force_climate)
 	add_child(_tile_layer)
 	OverworldTileSetScript.paint(_tile_layer, _layout)
 	_scatter_props()
 
 
-## Prop decals on feature cells: a deterministic minority of feature-classified cells (chosen by
-## OverworldTileSet.prop_texture — pure function of force + cell, so the same map always dresses
-## the same way) get a painterly decal sprite (boulder ledge / moss mound / crystals / bones / ward
-## stone) drawn above the ground tiles. Walkability is untouched — these are set dressing.
+## Prop decals on feature cells (OverworldDepth.scatter_props): deterministic set dressing in a
+## y-sorted holder with feet-level origins, so tall props occlude actors walking behind them.
 func _scatter_props() -> void:
-	if _layout == null or _tile_layer == null:
+	if _layout == null:
 		return
-	var s := OverworldTileSetScript.TILE_SIZE
-	for y in _layout.height:
-		for x in _layout.width:
-			if _layout.get_cell(x, y) != OverworldTileSetScript.FEATURE_TILE:
-				continue
-			var tex: Texture2D = OverworldTileSetScript.prop_texture(_force_climate, x, y)
-			if tex == null:
-				continue
-			var prop := Sprite2D.new()
-			prop.texture = tex
-			prop.z_index = 5  # above ground tiles, below the lead cameo (15) and player (20)
-			var fit := (s * 0.94) / maxf(float(tex.get_width()), float(tex.get_height()))
-			prop.scale = Vector2(fit, fit)
-			prop.position = Vector2(x * s + s / 2.0, y * s + s / 2.0)
-			_tile_layer.add_child(prop)
+	_ensure_world_root()
+	_props = OverworldDepthScript.scatter_props(_world, _props, _layout, _force_climate)
 
 
 func _spawn_player() -> void:
@@ -499,14 +507,18 @@ func _spawn_player() -> void:
 	if _player == null:
 		_player = Node2D.new()
 		_player.name = "Player"
-		_player.z_index = 20  # above the tilemap and the trailing lead cameo
+		# Wave 12: z stays 0 — the medallion lies flat on the ground, so its cell-centre origin is
+		# its ground contact and the WorldYSort parent decides occlusion against props/actors.
 		var token := Sprite2D.new()
 		token.name = "Token"
 		token.texture = OverworldTokensScript.player_token(
 			int(OverworldTileSetScript.TILE_SIZE * 0.92)
 		)
 		_player.add_child(token)
-		add_child(_player)
+		# One warm brass PointLight2D (Wave 12) — shades the normal-mapped ground (OverworldDepth).
+		OverworldDepthScript.attach_player_glow(_player)
+		_ensure_world_root()
+		_world.add_child(_player)
 	_motion.setup(_player, try_move, _set_facing, _get_facing)
 	_position_player()
 
@@ -520,13 +532,16 @@ func _spawn_lead_creature() -> void:
 	var tex: Texture2D = SpeciesArt.plate(species)
 	if tex == null:
 		return
+	var box := int(OverworldTileSetScript.TILE_SIZE * 1.18)
 	_lead = Sprite2D.new()
 	_lead.name = "LeadCreature"
-	_lead.z_index = 15
-	_lead.texture = OverworldTokensScript.creature_cameo(
-		tex, int(OverworldTileSetScript.TILE_SIZE * 1.18), species
-	)
-	add_child(_lead)
+	_lead.texture = OverworldTokensScript.creature_cameo(tex, box, species)
+	# Wave 12: feet-level y-origin — the cameo's ground shadow sits at ~0.92 of its box, so raise
+	# the texture until that contact line lands on the node position; the WorldYSort parent then
+	# occludes the creature correctly against props and the tamer (no hand-set z).
+	_lead.offset = Vector2(0, -box * 0.42)
+	_ensure_world_root()
+	_world.add_child(_lead)
 	var s := OverworldTileSetScript.TILE_SIZE
 	var here := Vector2(_player_cell.x * s + s / 2.0, _player_cell.y * s + s / 2.0)
 	_lead.position = here - Vector2(_last_dir) * float(s)
@@ -552,38 +567,7 @@ func _lead_species_id() -> String:
 ## A gentle force-climate colour-grade + a vignette overlay, so the region reads as an atmospheric
 ## place rather than a bright tile grid. Screen-space vignette sits above the world, below the HUD.
 func _setup_atmosphere() -> void:
-	var tint := CanvasModulate.new()
-	tint.name = "ClimateTint"
-	tint.color = Color(0.84, 0.9, 0.82)  # cool verdant marsh grade
-	add_child(tint)
-	# Faint drifting spore-motes, parented to the tamer so they always fill the framed view.
-	if _player != null:
-		var motes := CPUParticles2D.new()
-		motes.name = "Motes"
-		motes.z_index = 12
-		motes.amount = 36
-		motes.lifetime = 7.0
-		motes.preprocess = 5.0
-		motes.emission_shape = CPUParticles2D.EMISSION_SHAPE_RECTANGLE
-		motes.emission_rect_extents = Vector2(820, 520)
-		motes.gravity = Vector2(0, -5)
-		motes.initial_velocity_min = 3.0
-		motes.initial_velocity_max = 11.0
-		motes.scale_amount_min = 1.0
-		motes.scale_amount_max = 2.4
-		motes.color = Color(0.88, 0.78, 0.42, 0.5)
-		_player.add_child(motes)
-	var layer := CanvasLayer.new()
-	layer.name = "Atmosphere"
-	layer.layer = 1
-	var vig := TextureRect.new()
-	vig.texture = OverworldTokensScript.vignette(256)
-	vig.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	vig.stretch_mode = TextureRect.STRETCH_SCALE
-	vig.set_anchors_preset(Control.PRESET_FULL_RECT)
-	vig.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	layer.add_child(vig)
-	add_child(layer)
+	OverworldDepthScript.setup_atmosphere(self, _player, OverworldTokensScript.vignette(256))
 
 
 ## A small grimoire HUD panel naming the region + its force-climate (the overworld "you are here").
@@ -602,9 +586,14 @@ func _setup_hud() -> void:
 	title.text = OverworldContent.region_title(_region_id())
 	title.theme_type_variation = "TitleLabel"
 	var sub := Label.new()
+	# W16a: the authored region entry-sting (VoiceBook region.<id>.enter, verbatim library
+	# copy) — a full sentence now, so it wraps inside a fixed column instead of stretching
+	# the HUD panel across the screen.
 	sub.text = OverworldContent.region_climate(_region_id())
 	sub.visible = sub.text != ""
 	sub.theme_type_variation = "MutedLabel"
+	sub.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	sub.custom_minimum_size = Vector2(430, 0)
 	box.add_child(title)
 	box.add_child(sub)
 	# Quest tracker: the active quest's current objective, always visible (hidden when none). Surfaces
@@ -725,7 +714,8 @@ func _spawn_npcs() -> void:
 		var cell: Vector2i = cells[i]
 		var node := Node2D.new()
 		node.name = "NPC_%s" % str(def["name"]).replace(" ", "")
-		node.z_index = 16
+		# Wave 12: z stays 0 — wax seals lie flat like the player medallion, so the cell-centre
+		# origin is the ground contact and WorldYSort owns the draw order.
 		var s := OverworldTileSetScript.TILE_SIZE
 		node.position = Vector2(cell.x * s + s / 2.0, cell.y * s + s / 2.0)
 		var token := Sprite2D.new()
@@ -733,7 +723,8 @@ func _spawn_npcs() -> void:
 			int(s * 0.84), def["ring"] as Color, str(def["name"])
 		)
 		node.add_child(token)
-		add_child(node)
+		_ensure_world_root()
+		_world.add_child(node)
 		# Carry ALL of the def's keys (name/timeline/ring + every quest step_key) so the data-driven
 		# quest dispatch sees each NPC's steps — a new quest's step_key needs no change here.
 		var entry: Dictionary = def.duplicate(true)
@@ -783,15 +774,22 @@ func speak_to(index: int) -> String:
 		return ""
 	var npc: Dictionary = _npcs[index]
 	var timeline := str(npc["timeline"])
+	var choice_conf: Dictionary = npc.get("choice", {})
 	if _dialogue == null:
 		_dialogue = DialogicFacade.new()
 	# Connect idempotently BEFORE play so a first-talk signal can never be missed (review P2.3).
 	if not _dialogue.scene_finished.is_connected(_on_dialogue_finished):
 		_dialogue.scene_finished.connect(_on_dialogue_finished)
+	# W16a: authored `- choice` branches report back as choice_made(scene_id, branch_tag);
+	# the branch — not the talk — advances a choice-driven quest step (Old Garran / SQ-05).
+	if not _dialogue.choice_made.is_connected(_on_dialogue_choice):
+		_dialogue.choice_made.connect(_on_dialogue_choice)
 	_in_dialogue = true
 	_advance_quest_for(npc)
 	dialogue_started.emit(timeline)
-	_dialogue.play_timeline(timeline)
+	# Headless there is no choice UI, so the NPC's canon branch resolves instantly (the
+	# facade emits choice_made before scene_finished) — quests stay completable in CI.
+	_dialogue.play_timeline(timeline, str(choice_conf.get("headless_branch", "")))
 	return timeline
 
 
@@ -809,13 +807,22 @@ func _advance_quest_for(npc: Dictionary) -> void:
 			_advance_quest_step(str(q["id"]), str(npc.get(step_key, "")))
 
 
+## W16a: a Dialogic choice resolved (scene_id = the timeline id, branch_tag = the authored
+## branch tag from `[signal arg="choice:<tag>"]`). The branch — never the mere talk —
+## advances the quest step; dispatch + branch effects/toast live in OverworldChoices.
+func _on_dialogue_choice(scene_id: String, branch_tag: String) -> void:
+	OverworldChoices.handle(self, _npcs, scene_id, branch_tag)
+
+
 ## Start `quest_id` on the first talk that names a step, advance to that step, and toast the ledger
 ## on a real advance. On a real advance the step's (and, on completion, the quest's) gameplay effect
 ## is applied to the PERSISTED run, and quest progress is serialized + saved — so standing/corruption
 ## actually accrue and survive reload (review P1.1 + Codex #37). No-op when the NPC drives no step.
-func _advance_quest_step(quest_id: String, step: String) -> void:
+## Returns true only on a REAL advance (W16a: choice branches key their effects off this).
+## `toast_on_advance` = false lets a caller substitute its own richer toast for the generic one.
+func _advance_quest_step(quest_id: String, step: String, toast_on_advance := true) -> bool:
 	if step == "":
-		return
+		return false
 	# Track BOTH transitions: a fresh start() and a real advance(). An out-of-order NPC (talked to
 	# before the prerequisite step) can start the quest yet have its advance() rejected — that start
 	# is still durable state and MUST persist, else re-entering the screen loses it (Codex #39 P2).
@@ -828,14 +835,15 @@ func _advance_quest_step(quest_id: String, step: String) -> void:
 		if _quests.is_done(quest_id):
 			_apply_effect_to_run(_quest_def_by_id(quest_id).get("on_complete", {}) as Dictionary)
 	if not (started or advanced):
-		return
+		return false
 	_persist_quests()
 	_refresh_objective()  # keep the HUD tracker in step with the quest the player just moved
 	# Only a real advance is a player-facing "quest update"; a bare start with no advance is silent.
-	if advanced:
+	if advanced and toast_on_advance:
 		var toast := get_node_or_null("/root/Toast")
 		if toast != null and toast.has_method("event"):
 			toast.call("event", "quest_update")
+	return advanced
 
 
 ## Wave 3 (red-team C13): the BOSS-GOAL quest is active from RUN START (no NPC gives it — started
@@ -944,6 +952,11 @@ func quest_done(quest_id: String) -> bool:
 ## The number of NPCs placed in the region (for tests).
 func npc_count() -> int:
 	return _npcs.size()
+
+
+## The y-sorted world root holding props + player + NPCs + the lead cameo (for tests + waves).
+func world_root() -> Node2D:
+	return _world
 
 
 ## The HUD controls chip node (for tests + future waves).

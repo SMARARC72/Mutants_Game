@@ -29,17 +29,25 @@ static func make_card(
 	row.add_theme_constant_override("separation", 10)
 	card.add_child(row)
 
-	var portrait := TextureRect.new()
+	# Wave 9 LivingPlate: the portrait breathes/sways in the same 88px slot the old TextureRect
+	# held. Hybrids render their dominant parent's plate + a deterministic corruption tint
+	# (PortraitUtil, same face as party/lab/camp); the tint lands on the plate's SPRITE
+	# self_modulate so it still composes with the damage-flash tween on the plate's modulate.
+	var portrait := LivingPlate.new()
 	portrait.name = "Portrait"
-	portrait.custom_minimum_size = Vector2(88, 88)
-	portrait.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	portrait.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	# Hybrids render their dominant parent's plate + a deterministic corruption tint (PortraitUtil,
-	# same face as party/lab/camp). self_modulate composes with the damage-flash modulate tween.
+	portrait.set_plate_size(Vector2(88, 88))
 	var portrait_source := creature if not creature.is_empty() else {"species_id": species_id}
-	portrait.texture = PortraitUtil.creature_plate(portrait_source)
-	portrait.self_modulate = PortraitUtil.creature_tint(portrait_source)
+	portrait.set_texture(PortraitUtil.creature_plate(portrait_source))
+	portrait.set_tint(PortraitUtil.creature_tint(portrait_source))
+	# Per-instance identity: hybrids/party carry their own tag; wild enemies fall back to the
+	# combatant name so two same-species wilds still breathe out of phase.
+	var identity_tag := PortraitUtil.instance_tag_of(portrait_source)
+	if identity_tag == "":
+		identity_tag = ac.combatant_name()
+	portrait.set_identity(str(portrait_source.get("species_id", "")), identity_tag)
 	row.add_child(PortraitUtil.framed(portrait))
+	# The one-of-one mark rides the portrait corner (Wave 9 sigils).
+	PortraitUtil.stamp_sigil(portrait, portrait_source, ac.primary_force(), 16, identity_tag)
 
 	var info := VBoxContainer.new()
 	info.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -108,7 +116,7 @@ static func update_team_cards(cards: Array, team: Array, status_of: Callable, fx
 		update_card_chips(ac, c["chips"] as HBoxContainer, status_of.call(ac) as StatusContainer)
 		var last := int(c.get("last_hp", ac.hp()))
 		if ac.hp() < last:
-			flash_portrait(c["portrait"] as TextureRect)
+			flash_portrait(c["portrait"] as CanvasItem)
 			fx.call("fx_damage", c["card"], last - ac.hp())
 			# Instant/drain path stingers (the animated path fires these from battle_beats).
 			fx.call("play_stinger", "hit_crunch", 0.15)
@@ -182,12 +190,35 @@ static func spawn_damage_number(fx_layer: Control, card: Control, amount: int) -
 	tw.chain().tween_callback(lbl.queue_free)
 
 
-## A quick red→normal flash on a portrait when its creature takes damage (impact juice).
-static func flash_portrait(portrait: TextureRect) -> void:
+## A quick red→normal flash on a portrait when its creature takes damage (impact juice). Takes
+## any CanvasItem — the Wave 9 LivingPlate root as readily as the old TextureRect (the modulate
+## tween composes with the plate's tint, which lives on the sprite's self_modulate).
+static func flash_portrait(portrait: CanvasItem) -> void:
 	if portrait == null or not portrait.is_inside_tree():
 		return
 	portrait.modulate = Color(1.7, 0.55, 0.5)
 	portrait.create_tween().tween_property(portrait, "modulate", Color(1, 1, 1, 1), 0.35)
+
+
+## The caught creature's sigil identity for the capture toast (Wave 9): species + instance tag
+## (PortraitUtil derivation — the same inputs every other screen hashes) + its primary force for
+## the accent stroke. `battle` is the screen's SkillInteractiveBattle (duck-typed: caught());
+## `game` the GameController (catalog()). Cheap: one lookup on the already-cached caught dict.
+static func caught_sigil_payload(battle, game: Node) -> Dictionary:
+	var caught: Dictionary = battle.caught() if battle != null else {}
+	var species_id := str(caught.get("species_id", ""))
+	var force := ""
+	if game != null and game.has_method("catalog"):
+		var catalog: SpeciesCatalog = game.call("catalog")
+		if catalog != null:
+			var species: SpeciesData = catalog.get_by_id(species_id)
+			if species != null:
+				force = species.force_primary
+	return {
+		"species": species_id,
+		"tag": PortraitUtil.instance_tag_of(caught),
+		"force": force,
+	}
 
 
 ## A radial vignette texture (transparent centre -> soft dark edges) for arena atmosphere.

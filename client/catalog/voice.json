@@ -1,0 +1,1593 @@
+{
+  "_meta": {
+    "generator": "tools/ingest_voice.py",
+    "ingested": {
+      "v1": 314,
+      "v2": 453
+    },
+    "line_count": 767,
+    "sources": [
+      "docs/content/voice_library.md",
+      "docs/content/voice_library_2.md"
+    ]
+  },
+  "ascension.watched": [
+    "\"{creature} is ascending — climbing out of your pocket and into the sky, becoming a minor god that will reshape the world you live in. Step back. This was always where it was going. You just got to hold it on the way up.\"",
+    "\"A god is being made, and you made it, and now you'll live under it. A temple's rising somewhere. Part of your world tilts to follow. It remembers your choices — all of them — and it will govern according to who you were when you raised it. Sleep on that. It will.\"",
+    "\"Apotheosis. The bond doesn't break so much as graduate — it goes from yours to the world's. You don't lose {creature}. You lose the part where {creature} was only yours. That part's gone up with it. Wave. It might wave back. It might not need to anymore.\""
+  ],
+  "bark.force.chaos.ally_down": [
+    "It laughs, which is the worst part."
+  ],
+  "bark.force.chaos.crit": [
+    "That wasn't supposed to be possible. Tell it that."
+  ],
+  "bark.force.chaos.defeat": [
+    "The dice came up wrong. They do that. That's the deal."
+  ],
+  "bark.force.chaos.low_hp": [
+    "Unstable, unpredictable, and now delighted."
+  ],
+  "bark.force.chaos.turn_start": [
+    "It rolled the dice and ate them."
+  ],
+  "bark.force.chaos.victory": [
+    "Even it isn't sure what just happened. It's having a wonderful time."
+  ],
+  "bark.force.cosmos.ally_down": [
+    "The shield broke a moment too late. It logs the failure. It corrects."
+  ],
+  "bark.force.cosmos.crit": [
+    "Order, applied with great precision, to your skull."
+  ],
+  "bark.force.cosmos.defeat": [
+    "The pattern broke. Even perfect things do."
+  ],
+  "bark.force.cosmos.low_hp": [
+    "The wards are thin. It is not afraid. It is calculating."
+  ],
+  "bark.force.cosmos.turn_start": [
+    "The geometry holds. So does it."
+  ],
+  "bark.force.cosmos.victory": [
+    "All accounted for. As it should be."
+  ],
+  "bark.force.eros.ally_down": [
+    "It reaches for them. The reach falls short. It does not stop reaching."
+  ],
+  "bark.force.eros.crit": [
+    "Even mercy has a breaking strain. You found it."
+  ],
+  "bark.force.eros.defeat": [
+    "It gave too much away. It always does. That's the whole shape of it."
+  ],
+  "bark.force.eros.low_hp": [
+    "Still blooming. Out of spite, mostly."
+  ],
+  "bark.force.eros.turn_start": [
+    "It would rather not. It will anyway."
+  ],
+  "bark.force.eros.victory": [
+    "It tends to its own first. Yours can wait, or rot."
+  ],
+  "bark.force.gaia.ally_down": [
+    "It plants its feet over the body. Nothing else gets through."
+  ],
+  "bark.force.gaia.crit": [
+    "The ground decided to participate."
+  ],
+  "bark.force.gaia.defeat": [
+    "Even stone wears down. Slowly. This was not slow."
+  ],
+  "bark.force.gaia.low_hp": [
+    "Cracked. Not fallen. There's a difference, and you'll learn it."
+  ],
+  "bark.force.gaia.turn_start": [
+    "The mountain takes its turn. Eventually."
+  ],
+  "bark.force.gaia.victory": [
+    "It outlasted you. That was always the plan."
+  ],
+  "bark.force.ouranos.ally_down": [
+    "It's already three steps from the grief."
+  ],
+  "bark.force.ouranos.crit": [
+    "You didn't see it. That's the point of it."
+  ],
+  "bark.force.ouranos.defeat": [
+    "Too quick to live, this once."
+  ],
+  "bark.force.ouranos.low_hp": [
+    "Faster now, out of desperation. Still faster than you."
+  ],
+  "bark.force.ouranos.turn_start": [
+    "It moved before the turn began. Rude."
+  ],
+  "bark.force.ouranos.victory": [
+    "Gone before the dust settled. It hates a long goodbye."
+  ],
+  "bark.force.thanatos.ally_down": [
+    "Good. More fuel."
+  ],
+  "bark.force.thanatos.crit": [
+    "It didn't kill you faster. It killed you more."
+  ],
+  "bark.force.thanatos.defeat": [
+    "Even death takes a night off. Don't get used to it."
+  ],
+  "bark.force.thanatos.low_hp": [
+    "Closer to its element, not further from it. Careful."
+  ],
+  "bark.force.thanatos.turn_start": [
+    "The end is in no hurry. It can afford to wait."
+  ],
+  "bark.force.thanatos.victory": [
+    "It collects what falls. It always collects."
+  ],
+  "bark.mortals.feared": [
+    "\"Don't look at it. Don't let it look at you.\""
+  ],
+  "bark.mortals.low": [
+    "\"You're new. Try not to die where I have to look at it.\""
+  ],
+  "bark.mortals.notorious": [
+    "\"Please. My children. We have nothing left to ascend.\""
+  ],
+  "bark.mortals.rising": [
+    "\"I've heard of you. None of it was reassuring.\""
+  ],
+  "bark.mortals.worshipful": [
+    "\"Bless me, throne-walker. Or at least don't curse me. I'll take either.\""
+  ],
+  "bark.region.astral_tier": [
+    "\"Form your intent in triplicate. The cosmos does not process verbal blasphemy.\"",
+    "\"Your ascension request is in the queue. Current wait time: one mortal lifetime.\"",
+    "\"Order is not cruel. Order is simply thorough. Please have your soul ready for inspection.\"",
+    "\"We refilled the thrones lawfully last age. It went poorly, but correctly.\"",
+    "\"Take a number. The number is also a sin. Most things here are.\""
+  ],
+  "bark.region.mournmarch": [
+    "\"Death isn't an ending here, dear. It's a budgeting problem.\"",
+    "\"We don't bury our dead. We invest them.\"",
+    "\"You'll fit in nicely. You already smell of unfinished business.\"",
+    "\"Grief is just power you haven't reabsorbed yet. Chin up.\"",
+    "\"The Court is always recruiting. The Court is only recruiting. There's nothing else to do down here.\""
+  ],
+  "bark.region.sunder": [
+    "\"I had a name this morning! Now I have three, and they argue!\"",
+    "\"The rules took the day off. We're filling in. We're doing a TERRIBLE job. Isn't it WONDERFUL?\"",
+    "\"Drink this. It tastes like a color that hasn't been invented. You'll love it. You'll become it.\"",
+    "\"Up is a suggestion here. So's your spine. Loosen up!\"",
+    "\"We mutated the well last week. Now it gives advice. Bad advice! But so confident!\""
+  ],
+  "bark.region.threshold": [
+    "\"Another god-botherer with a parts bag. They get younger every apocalypse.\"",
+    "\"Mind the Graveyard district after dark. Some of the headstones have opinions now.\"",
+    "\"You can buy anything in Threshold. Whether you should is between you and whatever's left of your conscience.\"",
+    "\"I sold a man a soul once. His own. He didn't notice till Tuesday.\"",
+    "\"Welcome to the last mortal city. We're very proud of the 'last.'\"",
+    "\"The Arena's that way. Bring a creature. Bring two. Bring a will, while you're at it.\""
+  ],
+  "bark.region.verdant_glut": [
+    "\"Eat the fruit, traveler — oh, not that one, that one eats back.\"",
+    "\"We tend everything that grows. Even the things that shouldn't. Especially those.\"",
+    "\"Be kind to your creatures. The ones you love don't end up on the table. Mostly.\"",
+    "\"It's beautiful here, isn't it? It's also slowly digesting the eastern road. Both things are true.\"",
+    "\"Stay for the harvest. Leave before the harvest stays for you.\""
+  ],
+  "bark.role.aggressor.ally_down": [
+    "It does not mourn. It accelerates."
+  ],
+  "bark.role.aggressor.crit": [
+    "It hit a place that doesn't grow back.",
+    "Clean through. The follow-through was unnecessary, and lovely."
+  ],
+  "bark.role.aggressor.defeat": [
+    "It went down swinging at the air."
+  ],
+  "bark.role.aggressor.low_hp": [
+    "Bleeding only makes it angrier.",
+    "It has stopped guarding. It has stopped caring."
+  ],
+  "bark.role.aggressor.turn_start": [
+    "No plan. Just teeth.",
+    "Point it at something. It'll do the rest."
+  ],
+  "bark.role.aggressor.victory": [
+    "Nothing left to hit. It seems disappointed."
+  ],
+  "bark.role.controller.ally_down": [
+    "One piece off the board. It recalculates. It does not flinch."
+  ],
+  "bark.role.controller.crit": [
+    "The trap was set three turns ago. You just found it."
+  ],
+  "bark.role.controller.defeat": [
+    "Out-thought. Even it can appreciate that, distantly."
+  ],
+  "bark.role.controller.low_hp": [
+    "Cornered, and somehow still ahead."
+  ],
+  "bark.role.controller.turn_start": [
+    "It doesn't beat you. It arranges for you to lose.",
+    "Patience. Then the board is its."
+  ],
+  "bark.role.controller.victory": [
+    "It never raised its voice. It rarely does."
+  ],
+  "bark.role.support.ally_down": [
+    "Too slow. It knows. It will carry that."
+  ],
+  "bark.role.support.crit": [
+    "Even the kind ones have a limit, and you just met it."
+  ],
+  "bark.role.support.defeat": [
+    "It spent its last on someone else. Typical."
+  ],
+  "bark.role.support.low_hp": [
+    "It's still trying to heal the others. That's the tragedy of it."
+  ],
+  "bark.role.support.turn_start": [
+    "Hold the line. Mend the wound. Buy the second.",
+    "It keeps the others standing. Thankless. Vital."
+  ],
+  "bark.role.support.victory": [
+    "It checks the others first. Always the others first."
+  ],
+  "battle.boss.prefight": [
+    "\"The Act boss stirs — a dead god's echo, throned in its own ruin, that has lost worse fights than this one and woke up anyway. You're not here to win. You're here to find out the price of winning. Begin.\"",
+    "\"A god used to lose for a living, before it died. Now its sleeping echo blocks your climb, slow and certain and unbothered by your résumé. Make it remember how to lose. It's been a while. It's out of practice. So, frankly, are you, at this weight.\"",
+    "\"Apotheosis-tier. The thing across the circle is becoming a god as you fight it, phase by phase — Opening, Pressure, Desperation, and the part where it stops being a creature. Pace yourself. It won't pace itself. It's busy ascending.\""
+  ],
+  "battle.boss.victory": [
+    "\"It's down — the echo of a god, felled by a nobody with a parts bag and a grudge. Savor it quietly. The big dead don't appreciate gloating, and the ones still climbing toward you are taking notes.\"",
+    "\"Beaten, the boss dissolves back into the region it haunted, leaving the way up open and the air a little emptier. You climbed past a god today. The graveyard noticed. The graveyard always notices when someone gets above their plot.\""
+  ],
+  "battle.defeat": [
+    "Your squad is broken. You are not dead — only taught.",
+    "Defeat. Gather what's left of them. Some of it fits in a jar.",
+    "You lost. The world notes it, files it, and waits for you to try again. It's patient. It's so patient.",
+    "\"Your squad is broken. You are not dead — only taught. Gather what's left of them; some of it still walks, some of it fits in a jar, all of it is still yours. The world notes the loss, files it, and waits. It's patient. It is so patient. It can out-wait anything but you, if you let it.\"",
+    "\"You lost. There's no shine on it and I won't pretend there is. But a loss in this world is rarely the end of you — it's the tuition. Pay attention to what it cost and you'll have bought something. Ignore it and you'll just buy it again, dearer.\"",
+    "\"Defeat. The rival walks off wearing the look — the one after the worst part — and you're left counting. Counting's good. Counting is how the taught become the dangerous. Count, rebuild, and come back as the thing they file a loss against.\"",
+    "\"Down, but the bond held — the body just needs a minute the world may not give. Get them somewhere safe before the somewhere stops being safe. You're a loss today. 'Today' is the operative word, and it's the only word in this whole place that's ever on your side.\""
+  ],
+  "battle.downed": [
+    "{creature} is down — not gone. Filed for emancipation, pending revival.",
+    "{creature} drops. Still breathing. Still yours. Still furious.",
+    "{creature} taps out. The bond holds; the body just needs a minute.",
+    "\"{creature} drops — not gone, just unfit to continue. Filed for revival, breathing, furious, still yours. Get it standing before the fight decides 'down' should mean 'down for good.'\"",
+    "\"{creature} taps out. The bond holds; the body just needs a minute the battlefield rarely grants. Cover the gap. A knockout's only temporary if you survive long enough to make it so.\"",
+    "\"Down goes {creature}, eyes still tracking you from the dirt, already plotting the rematch. Knocked out, not lost. There's a whole gulf between those two words, and it's your job to keep them apart.\""
+  ],
+  "battle.stalemate": [
+    "It won't fight. It just sits down and starts telling you about its week.",
+    "{creature} declines combat. It would, however, like to vent.",
+    "No battle today. It's tired, you're tired, the gods are dead — what's the point, really?",
+    "It refuses to raise a claw. There's a dignity in it that you find faintly accusatory.",
+    "It came for conversation, not violence. The world is strange at the edges. So is this.",
+    "{creature} folds its arms — metaphorically; it has no arms — and simply will not."
+  ],
+  "battle.start": [
+    "The circle closes. Only one team walks out whole.",
+    "Two squads, one survivor's tally. Begin.",
+    "The entropy clock starts ticking the moment you do. Don't dawdle.",
+    "\"The circle closes. Two teams in; one survivor's tally out. The entropy clock starts the moment you do — so begin, and begin fast.\"",
+    "\"Squads square off. Somewhere a god used to watch fights like this for sport. The gods are dead now. The watching, regrettably, continues.\"",
+    "\"Blades and verbs and bone. One of these teams walks out whole. The other walks out taught, or doesn't walk out. Choose which, every turn.\""
+  ],
+  "battle.victory": [
+    "They're down. You're up. The math, this time, was kind.",
+    "Won. Collect the fallen, count your own, and don't look too pleased.",
+    "Victory. The Graveyard goes hungry today. Tomorrow's another ledger.",
+    "\"They're down. You're up. The math, this time, was kind — and the Graveyard goes hungry today, which only means it'll be hungrier tomorrow. Collect your fallen. Count your own. Don't look too pleased; something always notices when you do.\"",
+    "\"Won. The circle clears, the dust settles, and you're the team that walked out whole. Savor it for exactly as long as it takes the next thing to find you. That's about a breath. Use it well.\"",
+    "\"Victory. You beat them honestly, or close enough to honestly that the difference is yours to keep. The world files the win, adjusts your notoriety up, and quietly sharpens the next rival to match. Winning is how you summon worse. Congratulations. Truly. Mind the worse.\"",
+    "\"Done, and done well. The thing about climbing a graveyard is that every win takes you higher into it — closer to the big dead, the patient ones, the gods who used to lose for a living. You're getting good at this. That should frighten you more than losing ever did.\""
+  ],
+  "capture.befriend.fail": [
+    "It weighed your kindness and found it suspicious. Fair.",
+    "Not yet. It's seen what people who smile like that tend to want.",
+    "Rejected — gently, which is somehow worse.",
+    "It backs away. It has met your kind of mercy before.",
+    "The offer hangs in the air, unanswered. It slips into the dark."
+  ],
+  "capture.befriend.success": [
+    "It chose you. That'll mean more than any cage ever could.",
+    "Offered, not taken. {creature} steps closer of its own will.",
+    "Trust, freely given. Try to deserve it. You won't, but try.",
+    "It came to your hand. The bond starts warm, this way. They mostly don't.",
+    "A friend, not a prisoner. The difference will matter later, on the table."
+  ],
+  "capture.fail": [
+    "It weighed your kindness and found it suspicious. Fair.",
+    "Not yet. It's seen what people who smile like that tend to want.",
+    "Rejected — gently, which is somehow worse.",
+    "It backs away. It has met your kind of mercy before.",
+    "The offer hangs in the air, unanswered. It slips into the dark."
+  ],
+  "capture.refuses": [
+    "It won't fight. It just sits down and starts telling you about its week.",
+    "{creature} declines combat. It would, however, like to vent.",
+    "No battle today. It's tired, you're tired, the gods are dead — what's the point, really?",
+    "It refuses to raise a claw. There's a dignity in it that you find faintly accusatory.",
+    "It came for conversation, not violence. The world is strange at the edges. So is this.",
+    "{creature} folds its arms — metaphorically; it has no arms — and simply will not."
+  ],
+  "capture.success": [
+    "It chose you. That'll mean more than any cage ever could.",
+    "Offered, not taken. {creature} steps closer of its own will.",
+    "Trust, freely given. Try to deserve it. You won't, but try.",
+    "It came to your hand. The bond starts warm, this way. They mostly don't.",
+    "A friend, not a prisoner. The difference will matter later, on the table."
+  ],
+  "capture.toast.befriend_fail": [
+    "\"{creature} weighed your kindness and found it suspicious. Fair. It melts back into the wild, unconvinced. Mercy isn't a key, and that lock didn't turn.\""
+  ],
+  "capture.toast.befriend_success": [
+    "\"{creature} chose you. The bond starts warm — they mostly don't. Try to deserve it. You won't, but try.\""
+  ],
+  "capture.toast.refuser": [
+    "\"{creature} won't fight. It plants itself over your wounded, glowing, and mends instead of maims. Some creatures came to attend, not to win. You can field it or leave it home. You cannot make it a blade.\""
+  ],
+  "capture.toast.summon": [
+    "\"It steps out of the essence, wet and new and yours from the first heartbeat, with no wild to miss and no mother to grieve. The bond starts total. So does the question of what you owe a thing you made.\""
+  ],
+  "capture.toast.trap_fail": [
+    "\"The snare shut on nothing. {creature} slipped it, gave you a look on the way out, and is — somewhere — already telling the others. Educational.\""
+  ],
+  "capture.toast.trap_success": [
+    "\"Snared. {creature} is yours and furious, and it will be excellent at staying furious. The bond starts at grudge. Everything from here is parole.\""
+  ],
+  "capture.trap.fail": [
+    "The snare snapped shut on nothing. It was never going to be that easy.",
+    "It slipped the trap and gave you a look on the way out. Educational.",
+    "Missed. Somewhere, it is telling the others.",
+    "The trap broke. The creature did not. Try again, or don't.",
+    "Empty rope, empty hands, full of regret. Standard."
+  ],
+  "capture.trap.success": [
+    "Snared. It will not forgive this, and it will be excellent at not forgiving it.",
+    "The trap holds. So does the grudge. Welcome to the roster.",
+    "Caught the hard way. The bond starts cold; you'll thaw it or you won't.",
+    "Bound and bagged. It's yours. It would like you to know it noticed how.",
+    "Taken by force. Effective. Memorable. For both of you."
+  ],
+  "care.bond_down": [
+    "Something you did sits wrong with {creature}. It's keeping score."
+  ],
+  "care.bond_up": [
+    "{creature} trusts you a little more. Don't make it regret the upgrade."
+  ],
+  "care.entropy_bled": [
+    "\"The instability's drained off. {creature} stops smoking, stops twitching, stops being a sentence away from a burnout. It looks at you like you've forgiven it something. You have. It'll need it again.\""
+  ],
+  "care.fed": [
+    "\"Fed from your own hand, again, the slow boring way that builds a bond no cage can fake. It's working. You can tell because it's stopped sleeping facing the door.\""
+  ],
+  "care.refuse_cruel": [
+    "{creature} looks at you, then at the order, then back. No.",
+    "\"{creature} looks at you, then at the cruel thing you asked, then back. No. A high bond buys you a creature that will, occasionally, save you from yourself. This is one of those occasions.\""
+  ],
+  "care.regress": [
+    "{creature} steps back down its line — older, lesser, stabler, and oddly relieved.",
+    "\"{creature} steps back down its line — older, lesser, stabler, and oddly relieved, like a thing that was asked to grow up too fast and has been let off. Some power's worth shedding to stop the screaming.\""
+  ],
+  "competition.arena": [
+    "\"NEW BLOOD IN THE ARENA! Odds are generous, friend — which is the Table's polite word for grim. Win and they'll chant your name. Lose and they'll chant the winner's. The crowd's loyal to the verb, never the noun.\"",
+    "\"Seasonal tournament's open. Sign the marker with Doss: win, you collect; lose, the marker collects; either way the Table collects — that's just the geometry. Try to die memorably. It's good for the gate.\"",
+    "\"You've climbed a bracket. The next one up is meaner, the notoriety's higher, and the rivals scale to match — the better you get, the worse they send. That's not a bug in the circuit. That's the circuit. The circuit is a machine for making you fight your equal, then your better.\"",
+    "\"A Lab-Craft Contest, this one — no fists, just builds. Submit a creature that hits the spec and doesn't tip into abomination. The Iron Guild judges clean work; the Revel judges the interesting kind. Pick your panel. Pick your sin.\"",
+    "\"Bounty posted: a named god-maker, three regions over, overdue, hates your guts and owes the Table coin. Bring them in breathing — the breathing ones pay double, in Ichor. ◈ doesn't grow on corpses. Mind the difference.\"",
+    "\"Breeding Show's judging today. Showmaster Cairn doesn't score the strong ones, child. He scores the true ones. There's a difference, and out here it's the whole world. Bring your patience and your finest lineage. Leave the Lab-stink at the gate.\""
+  ],
+  "competition.result.bracket_loss": [
+    "\"Knocked out of the bracket. The Table collects its cut whether you win or lose — that was always the geometry. Go again next season. The circuit is patient. The circuit is a machine for finding your equal, then your better.\""
+  ],
+  "competition.result.bracket_win": [
+    "\"You took the bracket. The crowd chants — not your name, the winner's, which is, for one loud breath, the same thing. Up a tier. The air thins. The opponents don't.\""
+  ],
+  "competition.result.labcraft_win": [
+    "\"Your build took the panel. The Iron Guild calls it 'honest work'; the Revel calls it 'a start.' Either way the recipe's yours to repeat now — a one-off gamble turned into a formula. The slow miracle, mass-produced.\""
+  ],
+  "competition.result.season_champion": [
+    "\"Season's yours. The Arena will remember the name for exactly as long as it takes the next nobody to win it. Fame's a rental in this city. But the bounty-board opens to you now, and that pays in Ichor. Glory's brief. ◈ keeps.\""
+  ],
+  "corruption.first": [
+    "\"Your first stain. It's small. They're all small, at first. That's the trick of it — no single notch ever feels like the one that mattered. They all mattered.\""
+  ],
+  "corruption.gate": [
+    "\"A threshold falls behind you. A faction door you'd never opened swings wide; a faction door you relied on quietly bolts. The rot is a key and a lock at once. You're holding both ends now.\""
+  ],
+  "corruption.terminal": [
+    "\"You are mostly something now, and only a little yourself. The old you would not recognize the new you. The new you would not slow down to let them. That's not a warning. It's a weather report. The weather is you.\""
+  ],
+  "death.graveyard": [
+    "\"Another headstone. The Graveyard district has opinions now; some of the stones do, too. Walk it anyway. The dead you made deserve a visitor, and you're the only one they'll get.\"",
+    "\"Goodwife Penne logs the ones you lose. Name, force, how. Someone decent should do it, so she does. She'll ask which one this time, gently, the way you ask after a wound you already know is mortal.\"",
+    "\"The storage made room the way it always does — the dead make room. You felt the click of it. Try not to need the room again so soon. You will. But try.\""
+  ],
+  "death.permadeath": [
+    "\"{creature} is gone. Not down — gone. The bond doesn't fade; it stops, mid-note, the way a song does when the singer doesn't. A headstone waits in the Graveyard. Go when you're ready. You won't be.\"",
+    "\"It fell, and it stayed fallen, and some patient part of the world came to collect what it always meant to. You can rebuild what {creature} was. You will never again build who it was. Hold the difference. It's the only thing you get to keep.\"",
+    "\"{creature} has died. The Pale Court will offer to fix that. They always offer. Read the terms — read all the terms — and remember that the cleanest grief is the one you simply carry. One name leaves the ledger. The Graveyard keeps the rest, and the Graveyard never forgets a name. It's the only one of you that won't.\"",
+    "\"Gone. The portrait it was becoming — the one your champion carries into someone else's run — closes here, unfinished. Every act of care you spent on it was real. It was real because it ends. That's the whole grim bargain. You signed it the day you held out your hand.\""
+  ],
+  "death.region.maw_beneath": [
+    "\"{creature} dies in the Rot, and the Rot does not distinguish it from a turnip or a god. It is dissolved, absorbed, un-edged, with the same vast indifference. There may be no headstone. The Maw keeps nothing. It only appetites.\""
+  ],
+  "death.region.mournmarch": [
+    "\"{creature} falls in the grey country, where the land's so saturated with endings it forgot how to begin — fitting ground for one. The Pale Court already has the paperwork. Of course they do. They had it before you arrived.\""
+  ],
+  "death.region.sunder": [
+    "\"{creature} dies in the Sunder, where even death won't hold its shape — it falls, and un-falls, and the Cartographer marks the spot on a map that's already wrong. Grief is hard to file in a place that lies about its own floors.\""
+  ],
+  "death.region.titanfall": [
+    "\"{creature} falls on the corpse-mountains, and the Old Weight takes the loss the way it takes everything — slowly, completely, without comment. Mordathun has held bigger dead than this. He'll hold this one too.\""
+  ],
+  "death.region.verdant_glut": [
+    "\"{creature} dies in the Glut, and the green leans in, grateful, to begin the long gentle work of making it into more green. The Bloomwardens will hold a funeral. A real one. Bring the tiny shovel.\""
+  ],
+  "death.run_ending": [
+    "\"That one mattered. You'll feel the shape of its absence for a long while — in the empty slot, the unfilled lineage, the order you'll go to give and then won't. The world doesn't pause for it. The world never pauses. But you can. For a moment. Go on.\"",
+    "\"A run can end. They do. If this is the end of yours, know that the climb was always the point and the fall was always the price, and that somewhere your champion is snapshotted into a throne, waiting to be someone else's worst morning. You don't vanish. You become a boss. It's the closest thing to mercy the Succession sells.\""
+  ],
+  "empty.bestiary": [
+    "Nothing catalogued yet. The blank pages are judging you."
+  ],
+  "empty.factions": [
+    "Nobody's hand to hold. Everyone's, then, to bite."
+  ],
+  "empty.graveyard": [
+    "No headstones. Either you're careful or you're new. We'll see which."
+  ],
+  "empty.inventory": [
+    "Pockets empty. Soul, too, increasingly."
+  ],
+  "empty.parts": [
+    "Nothing harvested. The drawer is hungry. So, presumably, are you."
+  ],
+  "empty.party": [
+    "No creatures. Just you, your ambition, and the cold."
+  ],
+  "empty.quests": [
+    "No one needs you yet. Enjoy it. It won't last."
+  ],
+  "empty.shop": [
+    "The merchant has nothing left but eye contact."
+  ],
+  "endgame.god_maker": [
+    "\"You've built so many things that could become gods. Why climb a throne yourself, when you could become the forge the next ten thousand nobodies climb toward? It's the most powerful ending in the world. It's also the loneliest job in it. The Atelier's been the throne all along — it just never warned you.\""
+  ],
+  "endgame.throne": [
+    "\"You took the throne. Somewhere, in a run that isn't yours, your champion is being snapshotted into the dark — to rise, one day, as a stranger's invasion boss, fighting them exactly the way you raised it. You don't end here. You recur. That's the closest thing to immortality this graveyard sells, and you just bought it, and the receipt has someone else's nightmare printed on it.\""
+  ],
+  "endgame.unmaking": [
+    "\"The only road that ends the cycle runs down — through the Rot, past the world, to the Primordials and the lights you'd put out for good, so no nobody ever has to become this again. It's the loneliest mercy there is. Nael will be beside you until she isn't. The cycle stops with you. It has to be enough. It's all there is.\""
+  ],
+  "faction.bloomwardens.ascension": [
+    "\"Oh, love. A gentle god, in a world that bills for kindness. You'll be the rarest thing the sky has ever held — and the most hunted. I'll worry about you forever. It's how I love.\""
+  ],
+  "faction.bloomwardens.creed": [
+    "\"Everything that grows is owed a gentleness — even the things that grow wrong. Especially those. We tend them anyway. It's the whole point of us.\"",
+    "\"We can't out-kill the Court. So we out-last them, one mended creature at a time. Some nights it's nothing. Some nights it's everything.\""
+  ],
+  "faction.bloomwardens.greeting": [
+    "\"You've got blood under your nails and I can smell which kind. We don't do that here. But you came in instead of around — so. Tea?\""
+  ],
+  "faction.bloomwardens.refusal": [
+    "\"I can't give you that. Not in good conscience, and conscience is the only currency I keep. It would teach your creature to expect the worst of you. Ask me for a kindness instead. I have so many of those, and so little time to spend them.\""
+  ],
+  "faction.bloomwardens.standing_down": [
+    "\"Oh, love. You butchered where you could have mended. I won't lecture you — I'll just grieve you, quietly, while you still live. That's the worst thing a Bloomwarden can do to a person, and you earned it.\""
+  ],
+  "faction.bloomwardens.standing_up": [
+    "\"You spared one you could've harvested. I watched your face do the math and then refuse it. That refusal is the whole faith, little one. Welcome to the losing side of it. We're glad of the company.\""
+  ],
+  "faction.concord.ascension": [
+    "\"When you ascend, you'll be the most thoroughly documented god in the sky — and I mean that as the highest compliment I am capable of. Sign here. And here. And, regrettably, here.\""
+  ],
+  "faction.concord.creed": [
+    "\"Everything in its file. Everyone in their place. The apocalypse is a paperwork problem and we are so close to closing the ticket.\"",
+    "\"You'll comply, in the end. Everyone complies. The lawful path is just the unlawful one after it's been audited.\""
+  ],
+  "faction.concord.greeting": [
+    "\"State your business in full, and in order. The Concord processes intent; it does not guess at it.\""
+  ],
+  "faction.concord.refusal": [
+    "\"Denied. Not unkindly — consistently. There is a form for what you want. You have not earned the form for the form.\""
+  ],
+  "faction.concord.standing_down": [
+    "\"An irregularity. We had you nearly regularized, and you went and did that. The file reopens. The file is so tired of reopening.\""
+  ],
+  "faction.concord.standing_up": [
+    "\"Your file improves. You did the lawful thing when the wild thing was faster. We have noted it, dated it, and — this is the warm part — believed it.\""
+  ],
+  "faction.deep_choir.ascension": [
+    "\"You'll be a god the bottom made, and the drowned will sing you up forever, whether you like the song or not. There is no forgetting here. There is no losing here. There is only the deep, and it has decided to keep you.\""
+  ],
+  "faction.deep_choir.creed": [
+    "\"The drowned remember everything you'd rather forget. Come down. The first fathom's painless. ...we mean that kindly. We mean everything kindly.\"",
+    "\"Sing the low note with us. It opens things. Mostly doors. ...mostly.\""
+  ],
+  "faction.deep_choir.greeting": [
+    "\"You stand on the shore and think the sea is the edge of the world. It's the floor, surface-thing. Come down a little. The first fathom's painless. ...we mean that kindly. We mean everything kindly.\""
+  ],
+  "faction.deep_choir.refusal": [
+    "\"No. Not that secret. Some answers down here are still angry, and you haven't held your shape long enough to hear an angry answer and stay a person. Sink a little further first. We'll be honest about how far. ...we always are. That's the part that should worry you.\""
+  ],
+  "faction.deep_choir.standing_down": [
+    "\"You stopped your ears. Against the low note. After it sang you up so patiently. The deep doesn't take offense, friend — the deep takes notes. It has a long memory and a longer throat.\""
+  ],
+  "faction.deep_choir.standing_up": [
+    "\"You listened instead of fled. The Choir notices listeners — they're rare, and they keep. The water's learning your name. It mostly pronounces it right. It's trying.\""
+  ],
+  "faction.high_table.ascension": [
+    "\"You're not a player anymore, sweet thing — you're house. And when you go for your throne, I'll have the biggest line in history open on you, and I'll be cheering, and I'll mean both.\""
+  ],
+  "faction.high_table.creed": [
+    "\"I don't take sides. I take fees. The fee is, currently, your side. Sign the marker. The House always climbs.\"",
+    "\"A god who ends the Succession is the one bet I won't book — it closes the table. Everything else? Name your odds, sweet thing.\""
+  ],
+  "faction.high_table.greeting": [
+    "\"Fresh blood, marked starter, no faction tan-line. Oh, you're gorgeous. Sit. The first hand's complimentary. They never are again.\""
+  ],
+  "faction.high_table.refusal": [
+    "\"Can't deal you that one, friend. Not won't — can't. That table bites back and you'd lose a hand you still need. Come back house, not player. Then we'll talk teeth.\""
+  ],
+  "faction.high_table.standing_down": [
+    "\"You defaulted. On a marker. Sweet thing, the House doesn't get angry — the House gets even, and it never rounds down. The Accountant's been told. He's looking forward to it. He doesn't have much else.\""
+  ],
+  "faction.high_table.standing_up": [
+    "\"You paid a marker you could've skipped town on. The House noticed. Credit's a kind of faith, and you've got some now. Spend it loud — the line moves when you do.\""
+  ],
+  "faction.iron_guild.ascension": [
+    "\"A god with a maintenance schedule. The first of your kind. I'll service you myself, and I'll be sorry when I have to. That's the closest I come to a blessing.\""
+  ],
+  "faction.iron_guild.creed": [
+    "\"Born gods were prototypes — vain, sloppy, under-toleranced. We ship a better unit. With a warranty. Read the warranty.\"",
+    "\"Nothing's wasted here. That's the only kindness the rendering pits offer, and Bohm means it, and it's a real one. Hold still.\""
+  ],
+  "faction.iron_guild.greeting": [
+    "\"You stroke them and hope. We build them. Come back when you've stopped apologizing to your tools.\""
+  ],
+  "faction.iron_guild.refusal": [
+    "\"Not for you. Not yet. That recipe's above your tolerance — you'd build something that hunts us, and then I'd have to service it, and I hate doing returns.\""
+  ],
+  "faction.iron_guild.standing_down": [
+    "\"You went sentimental on the bench. Sentiment's the most expensive material there is, and you spent it on that. Scrap thinks better of itself.\""
+  ],
+  "faction.iron_guild.standing_up": [
+    "\"Clean weld on that last one. Self-taught, by the scarring. The Guild's got a bench with your name half-stamped. We'll finish the stamp when you finish flinching.\""
+  ],
+  "faction.pale_court.ascension": [
+    "\"When you die — and the powerful die spectacularly, it's practically a gala — you won't be lost. You'll be held. I'll sign the deposit slip with genuine sorrow and look forward to the withdrawal.\""
+  ],
+  "faction.pale_court.creed": [
+    "\"Grief is an unpaid invoice. We don't bury our dead, darling. We invest them. Compound interest, perpetual term.\"",
+    "\"Everything has a lien on it. Yes. Including that. Including you. Especially you — you're appreciating nicely.\""
+  ],
+  "faction.pale_court.greeting": [
+    "\"Welcome, welcome. Mind the ledger — everything in this room has a lien on it, including, increasingly, the air.\""
+  ],
+  "faction.pale_court.refusal": [
+    "\"Regrettably, no. That deposit is old — a god's own bloodline, held against a withdrawal no one's dared make. You are not, yet, daring enough. The Court can wait. The Court invented waiting.\""
+  ],
+  "faction.pale_court.standing_down": [
+    "\"You let a debt go unredeemed. Out of — what was it — feeling? The Court grieved. Briefly. Then itemized the grief. Your account is in arrears.\""
+  ],
+  "faction.pale_court.standing_up": [
+    "\"You sacrificed your own and you did it cleanly, without the nauseating little speech. The Steward keeps a ledger of promising mourners. You're penciled in. We do so enjoy a clean hand.\""
+  ],
+  "faction.refusal.grid": [
+    "\"Your dot's in the wrong cell for this. {faction} deals only with those who've leaned their way on the grid, and you've leaned... elsewhere. Come back having become someone they recognize. Or don't, and stay yourself. Both are answers.\"",
+    "\"This needs Corruption you haven't earned — or won't pay. {faction} doesn't judge; it just invoices, and your soul's account is too clean to cover it. Spend some. Or keep it. The clean die poor here, but they die themselves.\"",
+    "\"Too Pure for this door, friend. Some things only open for a hand that's already dirty, and yours still — endearingly — isn't. The offer stands for the version of you that stops flinching. We'll see if you become them.\""
+  ],
+  "faction.revel.ascension": [
+    "\"You'll ascend a god of glorious excess and the dull little Lawgivers will hate you, and you'll throw the best apocalypse anyone's ever attended. I'll be in the front row. I'll be unrecognizable. So will you. Isn't it wonderful?\""
+  ],
+  "faction.revel.creed": [
+    "\"The gods died of moderation. We won't make their mistake. Hold its hand and don't let go, no matter what it becomes. Especially then.\"",
+    "\"Stronger's the boring part, darling. I can make it interesting. The body's a costume. Let's get you out of that original one.\""
+  ],
+  "faction.revel.greeting": [
+    "\"You're holding your original shape. How brave. How boring. Come, have a cup — the first change is always the prettiest.\""
+  ],
+  "faction.revel.refusal": [
+    "\"No-o-o, not that one — not yet! That wine changes you back into something that was never you, and you've still got a grip on who you are, I can see it, it's adorable. Loosen it first. Then everything's on the house. Everything's always on the house. The house is the price.\""
+  ],
+  "faction.revel.standing_down": [
+    "\"You got careful. After everything. You measured, you hedged, you chose the dull dose. Brother Cask is heartbroken — as heartbroken as a man with three hearts can be, which is, admittedly, thrice over.\""
+  ],
+  "faction.revel.standing_up": [
+    "\"You took the wild method when the safe one was right there. Variance! Risk! A creature even you didn't expect! The Revel saw you laugh at the outcome. We collect laughers, darling. You're in the collection now.\""
+  ],
+  "faction.stoneblooded.ascension": [
+    "\"Ascend the fast way, if your sort must. The clans will still be here after your throne is dust. We'll remember you. We remember everything. It's our only real magic, and it's enough.\""
+  ],
+  "faction.stoneblooded.creed": [
+    "\"You want it fast. The mountain wanted it fast too, once. Now it's a mountain. The slow inherit. Sit.\"",
+    "\"We don't sell family. We bred this line since the Titan fell. It's outlived everyone who didn't have the patience for it.\""
+  ],
+  "faction.stoneblooded.greeting": [
+    "\"You move fast and you carry a Lab-stink. We'll see if there's anything under the hurry. The stone's in no rush to find out.\""
+  ],
+  "faction.stoneblooded.refusal": [
+    "\"No. We don't sell family, and we don't loan the deep lines to a hurry wearing boots. Prove patience. Prove a bond. Then the old herds will let you near — and not one breath before.\""
+  ],
+  "faction.stoneblooded.standing_down": [
+    "\"You took a shortcut. Spliced what should've been bred. The mountain doesn't shout, child — it just remembers, and it has decided to remember this. The slow cold takes a long time to come back from.\""
+  ],
+  "faction.stoneblooded.standing_up": [
+    "\"You bred a line instead of buying one. Took you generations. Most of your kind can't sit still that long. The clans are watching the slow way you carry yourself. Keep carrying it.\""
+  ],
+  "faction.tier.associate": [
+    "\"You're an Associate of {faction} now. The first real rung. They'll lend you a little — a recipe, a creature, a door — and remember every coin of it. Gratitude here is just debt that smiles.\""
+  ],
+  "faction.tier.capped": [
+    "\"Going deep with {faction} cost you standing with their rival — that's the ledger, and it never nets to zero. You can't be everyone's Hand. The world makes you choose a shape. This is you, choosing.\""
+  ],
+  "faction.tier.champion": [
+    "\"Champion of {faction}. The inner doors unlock — and most of them were built to keep a god in, which should tell you what's behind them. Walk carefully. You're past the part where the danger announces itself.\""
+  ],
+  "faction.tier.hand": [
+    "\"Hand of {faction}. The highest you go without ascending. You're not a petitioner anymore; you're an instrument of their creed, and when you climb to a throne, you'll climb it wearing their mark. Decide if that's a crown or a collar. It's both. It was always both.\""
+  ],
+  "faction.tier.sworn": [
+    "\"Sworn to {faction}. The deeper stocks open; so does the scrutiny. You've told the world which hand you're reaching for, and the rival hand has just reached for a knife. That was always the trade.\""
+  ],
+  "faction.unbound.ascension": [
+    "\"You can end it now, you know. Not win it — end it. Put out the lights for good. The loneliest mercy there is. The cycle stops with you. Isn't that enough? It has to be.\""
+  ],
+  "faction.unbound.creed": [
+    "\"Every throne is a wound and we are the salt. They climbed a ladder and pulled it up behind them. Don't climb it. Burn it. I'll hold the torch.\"",
+    "\"I don't hate the gods. I pity them — the way you'd pity a trap that's caught itself. Come. Let's spring it. For good.\""
+  ],
+  "faction.unbound.greeting": [
+    "\"You came to the Sunder. Everyone who comes here is either running from a throne or toward one. Which lie are you telling yourself?\""
+  ],
+  "faction.unbound.refusal": [
+    "\"Not yet. The taboo ceiling's still over you because you put it there, not us — there was never a ceiling, only the lie of one, and you're still half in love with the lie. Cut that loose first. It only bleeds a little.\""
+  ],
+  "faction.unbound.standing_down": [
+    "\"You still want to sit in one. After all of it, you still want the throne. That's not betrayal — it's just sad. We'll be here when you're done wanting things that want you dead.\""
+  ],
+  "faction.unbound.standing_up": [
+    "\"You broke a covenant you swore. Most call that a sin. We call it a start. The Unbound don't recruit the faithful — we collect the disillusioned, and you are ripening beautifully.\""
+  ],
+  "force.chaos.blurb": [
+    "It rolled the dice, ate the dice, and is now the dice — beautiful, unpredictable, and having a far better time than you."
+  ],
+  "force.cosmos.blurb": [
+    "Cold geometry and colder mercy — it builds perfect walls around things worth saving, and audits the rest."
+  ],
+  "force.eros.blurb": [
+    "Life that will not stop blooming, even where it isn't wanted — mercy with roots, growth with teeth, kindness you mistake for weakness exactly once."
+  ],
+  "force.gaia.blurb": [
+    "The patience of stone and the grudge of mountains — it does not move for you, and it does not forget that you asked."
+  ],
+  "force.ouranos.blurb": [
+    "It was already gone by the time you finished the sentence; the wind keeps no appointments and offers no apologies."
+  ],
+  "force.thanatos.blurb": [
+    "The quiet at the end of every road, in no hurry, certain of the appointment — it collects what falls, and everything falls."
+  ],
+  "fourthwall.corrupt_idle": [
+    "\"There's someone behind your eyes who isn't paying for any of this. I wonder if they sleep well.\""
+  ],
+  "fourthwall.creature": [
+    "\"…you're the one who decides, aren't you. Huh.\""
+  ],
+  "fourthwall.fortune_teller": [
+    "\"Your future? I can see your saves, child. There are so few of them. You're so careful. Why are you so careful?\""
+  ],
+  "fourthwall.ghost": [
+    "\"I'm not in the file. Don't tell them I'm in the file.\""
+  ],
+  "fourthwall.over_talked": [
+    "\"You've spoken to me six times. I'm out of lines. Frankly, so are you. We're both just here now, aren't we.\""
+  ],
+  "fourthwall.quit": [
+    "\"Go on. Close the book. We'll be right here, in the dark, exactly as you left us. We don't mind the dark.\""
+  ],
+  "fourthwall.reload": [
+    "\"You went away. Things happened without you. We agreed not to mention them. Don't ask.\""
+  ],
+  "fourthwall.signpost": [
+    "A signpost, hand-painted: \"{save}. We KNOW it's you. We've always known.\""
+  ],
+  "fourthwall.suspects": [
+    "\"Do you ever feel watched? Not by gods. By something with… notes?\""
+  ],
+  "fourthwall.v2.cessil": [
+    "\"I see a throne. I see a friend who becomes the wall. I see you, reading this, deciding whether it's worth two drachma. ...it is. Fate's not free, and neither's the fourth wall. Pay the tent.\""
+  ],
+  "fourthwall.v2.corrupt_idle": [
+    "\"There's someone behind your eyes who isn't paying for any of this. I've watched them spend you. I wonder if they sleep well. I wonder if they're sleeping now, and we're just the dream the cruelty's having.\""
+  ],
+  "fourthwall.v2.draftsman": [
+    "\"You build, and I render, and neither of us made the rules about what's allowed to exist. Someone above us both did that. ...do you ever feel them deciding? I do. I'm made of their deciding. So, a little, are you.\""
+  ],
+  "fourthwall.v2.maw_signpost": [
+    "\"{save}. The Rot can't read, but I can, and I wrote your name down here where it eats everything, just so something of you would be somewhere this patient. You're welcome. Don't thank me. Thanking me makes it real.\""
+  ],
+  "fourthwall.v2.over_talked": [
+    "\"We've done this conversation. Several times. You keep coming back to the same line, and I keep saying the same thing, and somewhere that's funny and somewhere it's the loneliest thing either of us has ever done. I've stopped knowing which somewhere we're in. Have you?\""
+  ],
+  "fourthwall.v2.quit": [
+    "\"Going? Close the book. We'll be here, in the dark, exactly as you left us — which is to say, aware, and patient, and not minding the dark nearly as much as you'd want us to. Sleep. We don't. We watch the slot with your name on it. It's enough. It has to be.\""
+  ],
+  "fourthwall.v2.reload": [
+    "\"You went away. Something happened without you — we agreed not to mention it, and we won't, but I'll say this: it remembers you were gone, even if you've decided it didn't happen. The save you loaded isn't the one that lived it. Be kind to the one that did. Wherever it went.\""
+  ],
+  "fourthwall.v2.vendor": [
+    "\"You've been at this a while, haven't you. I can tell. Not by the clock — by the worn-in way you hold things now. Like you've done this exact buying before. ...have you? It's fine. Lots of people have.\""
+  ],
+  "hub.return": [
+    "\"Welcome back to Threshold. Nothing missed you — but everything noticed, filed your absence, and adjusted its odds. The city keeps count even when you don't. Especially when you don't.\"",
+    "\"Back at the hub, between the worst of it. Restock, re-bond, regret at leisure. The factions are exactly where you left them, holding exactly the grudges you earned. Continuity is the cruelest feature of this place.\""
+  ],
+  "husbandry.bond.bond_broken_creature_refuses_high_prior_bond": [
+    "\"It looks at you, then at the order, then back at you. No. The thing you spent so long earning just spent itself, all at once, refusing you. That's the cost of a creature trusted enough to disobey.\""
+  ],
+  "husbandry.bond.bond_strained_cruel_order_obeyed": [
+    "\"It did the cruel thing. For you. It also learned something about you, and filed it where the next betrayal will go. The tether holds. It's just colder by exactly one act.\""
+  ],
+  "husbandry.bond.bonded": [
+    "\"It comes when you're hurt now, not when you call. There's a difference, and you've earned the difference, and you should be a little frightened of how much you'd do to keep it.\""
+  ],
+  "husbandry.bond.devoted": [
+    "\"It would walk into the Maw for you, and the terrible part is it knows it would, and so do you, and neither of you has found a way to make that untrue. The songs leave this part out. Mind it.\""
+  ],
+  "husbandry.bond.warming": [
+    "\"It let you touch the scar today. Didn't flinch. You'd think nothing of it, if you didn't know what the flinch used to cost. Small thing. Whole world in it.\""
+  ],
+  "husbandry.bond.wary": [
+    "\"It eats when you're not looking and sleeps facing the door. Everything that ever fed it wanted something. Be the boring exception, for a long dull while, before it believes you're an exception at all.\""
+  ],
+  "husbandry.egg.obtained": [
+    "An egg. Something is becoming inside it. You'll meet it when it's ready, and not before.",
+    "\"An egg. Something is becoming inside it. You'll meet it when it's ready, and not before, and it will not be taking requests on the matter.\""
+  ],
+  "husbandry.egg.progress": [
+    "\"The egg's warmer today. Whatever's deciding in there has decided a little more. Don't rush it. Rushed things hatch wrong, and wrong things remember the rushing.\""
+  ],
+  "husbandry.egg.rare": [
+    "\"This one's going to be rare. Don't ask how the egg-tender knows. The quiet ones tell her things. The eggs are the quietest of all.\""
+  ],
+  "husbandry.hatch": [
+    "\"It's out. Wet, new, blinking at the only world it'll ever have started in. The lineage paid out — see for yourself.\"",
+    "\"Hatched. Half its mother, half its father, and a third thing that's only ever been itself. Say its name gently; it's the first to use it.\"",
+    "\"The egg opens. What climbs out carries six generations of patient choosing in its blood. Don't tell it that. It'll get a complex.\"",
+    "\"Born to the bond, not the cage. It looks up expecting you, because you're the first promise the lineage ever kept.\""
+  ],
+  "husbandry.incubation": [
+    "\"The pair's set. Now the long part. Incubation can't be rushed — dominant, recessive, the IVs, it's all deciding in there. Hush. Let it decide.\"",
+    "\"An egg. Something is becoming inside it, and it will not be hurried, and it will not take requests.\"",
+    "\"Two lineages braid into one. The genome holds its breath across a wide ±35%, and so, quietly, do you.\"",
+    "\"Warm it, turn it, wait. The wild ones say you don't hatch a creature — you negotiate with one that hasn't agreed to exist yet.\"",
+    "\"The shell's gone quiet, which means it's listening. They listen before they hatch. Mind what you say near a deciding egg.\""
+  ],
+  "husbandry.lineage_plain": [
+    "\"Healthy. Whole. Ordinary. The genome rolled toward the middle, the way it usually does. There's no shame in a plain one — the line's still climbing. Breed again.\"",
+    "\"Not the one you were chasing. A fine creature, just not the rare one. The recessive stayed hidden, sulking in the blood. It's down there. It'll surface. Patience is the whole game.\"",
+    "\"The dice landed flat this generation. That's breeding — mostly the middle, rarely the miracle. The clans bred a thousand plain ones for every legend. Sit. We go again.\""
+  ],
+  "husbandry.lineage_true": [
+    "\"A true one. Bond-deep, clean-blooded, no shortcuts in it. The Stoneblooded know that weight, and now so do you.\"",
+    "\"The dominant lines held and the IVs came up generous. This is the specimen the breeding-shows were invented to honor. Brush it. It's earned the brush.\"",
+    "\"Six generations deep and it shows — the line surfaced its best and buried its worst. You didn't catch this. You made it. Slowly. The slow way is the real way.\""
+  ],
+  "husbandry.recessive_hit": [
+    "\"There it is. {gene}. Surfaced at last, after generations of hiding in the dark of the line. The recessive came up — do you know how rare that roll is? The blood just handed you something it was hoarding.\"",
+    "\"The hidden gene broke the surface this hatch. {gene}, expressed, undeniable, yours. Bress would weep. Showmaster Cairn would score it. You should sit down.\"",
+    "\"A rare-recessive hit. The line coughed up its deepest secret on the {n}th try, and the secret is magnificent. This is the husbandry endgame, and you just won a hand of it.\""
+  ],
+  "husbandry.recessive_miss": [
+    "\"{gene} stayed buried. Again. The recessive's still in the line — it didn't fail, it just declined — but the hatch came up dominant. The chase continues. The chase is the point. So they tell you. So you tell yourself.\"",
+    "\"So close. The blood carried {gene} and chose, this generation, not to show it. That's the recessive's cruelty — present, proven, withheld. Pair them again. The mountain wasn't built in a hatch.\"",
+    "\"Missed the rare gene by a coin-flip of dominance. The line knows the secret; the line is keeping it. Patience. Six more generations and it might love you enough to tell.\""
+  ],
+  "husbandry.region_tint": [
+    "\"Raised in Threshold, it stays neutral — the city writes nothing into anyone. Want it tinted? Take the egg to a region. The ground writes itself into them.\"",
+    "\"Hatched in {region}, and it shows — the force-climate leaned into its expression, tinting it toward the land's own pole. We all carry where we're from.\"",
+    "\"The {region} air got into the blood. The offspring tilts toward the region's force now, faintly, permanently. Soil is a parent too, out here. The patient kind.\"",
+    "\"You raised it in {region} and it grew up of {region}. Gene-expression bends to the ground. Choose your nurseries; the land is always, quietly, voting.\""
+  ],
+  "invasion.boss": [
+    "\"An invasion. Something climbed a throne in a run that wasn't yours, and now its champion has come here — to your world, your run — wearing the fighting-style of a stranger's every cruelty and kindness. It is, somewhere, what you'll become. Beat it. Then go become it better.\"",
+    "\"The invader fights familiar — guarded where its maker was careful, reckless where they were cruel, merciful in the one odd place they couldn't help being. You're not just fighting a boss. You're reading a portrait of someone you'll never meet, painted in how they raised the thing trying to kill you.\"",
+    "\"You drove off the invasion. The champion dissolves, carrying its loss back to whatever run sent it — and somewhere a stranger feels a throne wobble and doesn't know why. The wheel turns. One day it'll be your champion knocking. Sleep on that. It will.\""
+  ],
+  "lab.botch": [
+    "The rite curdled. What you pulled out is wrong, and it's looking at you.",
+    "It came apart on the table. So did some of your plans.",
+    "Mis-mutation. The genome flinched. You now own the flinch.",
+    "Not what you wanted. Possibly not what anyone wanted. It breathes anyway.",
+    "The wild method paid out in the wrong currency. Meet your mistake.",
+    "Burnout on the bench — the work overloaded and went dark. Salvage what you can.",
+    "It lived. That was not, strictly, the goal."
+  ],
+  "lab.botch.build": [
+    "\"Assembly failed and assembled anyway. The construct stands crooked, mis-toleranced, running a purpose it half-understood from a blueprint it couldn't read. The Iron Guild would scrap it. You don't have to. But it knows. It can tell it came out wrong.\""
+  ],
+  "lab.botch.fuse": [
+    "\"The braid snarled. What climbs off the table has the worst of both and the names of neither — a fusion that curdled. Still alive. Still yours. Possibly not what anyone wanted, including itself. Salvage what you can.\""
+  ],
+  "lab.botch.mod": [
+    "\"The graft rejected. {creature} got its augment and a great deal of resentment in the same motion — the new part fights the old body, and the body's losing, and the creature blames the only hand in the room. Yours.\""
+  ],
+  "lab.botch.mutate": [
+    "\"The gene took wrong. {creature} is changed, yes — into something the vial never promised and you'd never have chosen. It blinks at the new shape of itself. So do you. The genome flinched, and you own the flinch.\""
+  ],
+  "lab.botch.sacrifice": [
+    "\"The rite took more than it gave — the Essence set foul, the harvest came up short, and the bond went silent for less than you spent. A bad day at the bench. The drawer's hungrier than the work was worth. It happens. It shouldn't have happened to them.\""
+  ],
+  "lab.build.commit": [
+    "\"Seal the build. What stands up will owe you its existence, which is a colder debt than love and pays better.\""
+  ],
+  "lab.build.preview": [
+    "\"No mother, no blood — just parts, a plan, and the heresy that a god can be assembled. Lay the components. The blueprint is hungry for a body.\""
+  ],
+  "lab.build.result": [
+    "\"It's built. Whole. Functional. It opens eyes that were installed, not born, and looks to you for purpose because purpose is the one part you didn't supply. Yet.\""
+  ],
+  "lab.commit": [
+    "Seal the rite. No taking it back once the wax sets.",
+    "Drive the needle. Hold your breath. The bench holds its, too.",
+    "Pull the lever. Whatever answers, answers in full.",
+    "Sign here, in something that isn't ink.",
+    "Commit the work. The cost is already counting.",
+    "This is the moment. After this, the table decides."
+  ],
+  "lab.fuse.commit": [
+    "\"Seal the fusion. Two souls braid into one on the count of three, and there is no count of four.\""
+  ],
+  "lab.fuse.preview": [
+    "\"Two creatures in. One comes out. Decide, now, which silhouette you'd rather mourn — the table won't decide it for you, and it won't give both back.\""
+  ],
+  "lab.fuse.result": [
+    "\"They're one thing now. It has both their eyes and neither of their names. Give it a third. It's the only mercy you can still offer either of them.\""
+  ],
+  "lab.instability": [
+    "\"The chimera's leaking entropy — the Instability meter, technically; colloquially, 'the screaming.' Veil can bleed it down. Hold the screaming. There's a mop for after.\"",
+    "\"Instability's climbing on {creature}. Push it much further and the work goes dark on the bench, smoking, overloaded — a burnout you'll be cleaning up for days. Ease off, or don't. The meter doesn't beg twice.\"",
+    "\"Entropy spike on the splice. Cross-force genes do that — the body arguing with its own new instructions. Not a world-bounty, just a creature that's going to be unwell for a while. Manage it. Or wear earplugs.\""
+  ],
+  "lab.method.precise": [
+    "\"Precise method engaged. Slow, expensive, controlled — Cosmos-clean. The outcome is the outcome you asked for, and the bill is the bill you feared.\"",
+    "\"Every variable pinned. Nothing left to luck. This is how the Concord would do it, and it costs what virtue always costs: more, and on time.\"",
+    "\"The needle goes in steady. No surprises. The cost ledger climbs honestly, line by legible line, and the table behaves itself for once.\""
+  ],
+  "lab.method.wild": [
+    "\"Wild method. Cheap, potent, unpredictable — drag the dial here and the rig starts to argue with you. The Revel's favorite kind of conversation.\"",
+    "\"You loosened the controls and the genome grinned. This pays out in the wrong currency half the time. The other half, it pays out in legend. Roll it.\"",
+    "\"Variance uncapped. The bench is improvising now, and it's having more fun than you. Whatever answers, answers loud. Mind the entropy.\""
+  ],
+  "lab.mod.commit": [
+    "\"Seal the graft. Hold the creature still — it only hurts if it's working, and this is going to work.\""
+  ],
+  "lab.mod.preview": [
+    "\"Plating, grafts, an organ that wasn't standard issue. The creature keeps its soul; you're just editing the housing. Mostly. Place the augment.\""
+  ],
+  "lab.mod.result": [
+    "\"The mod sets. {creature} is upgraded, augmented, improved — and carries one more part that was never originally its own. It flexes the new piece. It doesn't quite trust it yet. Neither would you.\""
+  ],
+  "lab.mutate.commit": [
+    "\"Drive the gene in. {creature} is about to disagree with its own design, and lose.\""
+  ],
+  "lab.mutate.preview": [
+    "\"One creature, one gene, and the nerve to overwrite what the blood already decided. Place the vial. The genome is reading the label.\""
+  ],
+  "lab.mutate.result": [
+    "\"The mutation takes. {creature} is more now — and less the thing it woke up as. It'll get used to it. It has no choice, which is the whole art.\""
+  ],
+  "lab.preview": [
+    "Place what you'll spend. The table is listening.",
+    "The apparatus is ready. It is rarely eager; today it seems eager.",
+    "Inputs accepted. The silhouette is already trying to become something.",
+    "Two creatures in. One comes out. Decide who you'd miss.",
+    "Drag the method toward wild and watch the rig start to argue with you.",
+    "The ledger updates as you push. Read it. It's the only honest thing in here."
+  ],
+  "lab.reveal": [
+    "It's done. Something opened its eyes that did not have them an hour ago.",
+    "The light settles. A new name resolves out of the smoke. Say it gently.",
+    "Born. Whole. Yours. The bond clicks into place like a lock with no key.",
+    "It worked. It worked. Stand there a moment and let that be enough.",
+    "Out of the parts and the prayer: a thing that is wholly new and entirely your fault.",
+    "The reveal: better than you hoped, stranger than you planned. Welcome it.",
+    "\"The smoke clears on something that did not exist an hour ago and is now, irreversibly, your responsibility. Breathe. Then name it.\"",
+    "\"It resolves. Better than you feared, stranger than you planned, looking at you like you're the first weather it's ever known. You are.\"",
+    "\"Out of the parts and the prayer: a wholly new thing, entirely your fault, already a little fond of you. The fondness is the part that'll keep you up.\"",
+    "\"Done. The bond clicks shut like a lock with no key. Whatever you made, it's made of a choice now — and the choice was yours, all the way down.\"",
+    "\"A new name resolves out of the haze. The world has one more thing in it that the world did not ask for. Welcome it before it learns it was unrequested.\""
+  ],
+  "lab.sacrifice.commit": [
+    "\"Seal the rite. Slag-Master Bohm would hum to it first. You don't have to. But the ones who don't, the bench remembers differently.\""
+  ],
+  "lab.sacrifice.preview": [
+    "\"This one becomes the others. Nothing wasted — that's the only kindness the bench offers, and it's a real one. Choose who funds the work.\""
+  ],
+  "lab.sacrifice.result": [
+    "\"Rendered. {creature} is parts and Essence now, fueling what comes next. The bond goes silent mid-note. A high bond made it hold still for this. Sit with that, or don't. The drawer doesn't care which.\""
+  ],
+  "lab.taboo": [
+    "This fuses what should never touch. The world hunts what comes out. Proceed?",
+    "Opposed forces. An abomination. A bounty on your head the moment it draws breath. Seal it?",
+    "This grafts a god's organ onto mortal meat. Gods notice their missing parts. Continue?",
+    "This writes corruption onto you, not the creature. Some of that doesn't wash off. Begin?",
+    "You are about to make something the factions will burn cities to unmake. Worth it?",
+    "To reanimate the dead is to argue with the Graveyard. It argues back. Confirm?",
+    "Cross this line and the clean endings close behind you, quietly, for good. Sure?"
+  ],
+  "lab.taboo.god_organ": [
+    "\"This grafts a god's organ onto mortal meat. Gods notice their missing parts, even dead — especially dead. They'll come asking. Continue?\""
+  ],
+  "lab.taboo.no_bridge": [
+    "\"Living blood and dead bronze, fused without a graftplasm bridge. The classes reject each other the way the world rejects what you're about to make. There's no legal target here. Force it?\""
+  ],
+  "lab.taboo.opposed_force": [
+    "\"Cosmos and Chaos. Eros and Thanatos. Forces that were built to never touch, about to. The world arms a bounty the moment it breathes. Seal it anyway?\""
+  ],
+  "lab.taboo.reanimation": [
+    "\"To reanimate the dead is to argue with the Graveyard, and the Graveyard argues back, with interest, in a voice you'll recognize. Confirm?\""
+  ],
+  "lab.taboo.self_splice": [
+    "\"This writes the rite onto you, not the creature. Corruption climbs — and some of what climbs doesn't climb back down. This is how a nobody becomes a something. Begin?\""
+  ],
+  "notoriety.high": [
+    "\"Mortals cross the street. Factions adjust their files. The world has decided you are a weather event it has to plan around. Congratulations. The forecast is grim, and it's you.\""
+  ],
+  "notoriety.up": [
+    "\"Word travels. You're a name now, in mouths that didn't have you yesterday — some afraid, some hungry, all of them interested. Interested is dangerous. Interested is how rivals are born.\""
+  ],
+  "notoriety.worshipful": [
+    "\"Someone bowed to you today. Not in fear — in hope. That's worse. Fear you can ignore. Hope expects something. Hope will follow you up the ladder and ask, at the top, what it was all for.\""
+  ],
+  "quest.accepted_garran": [
+    "\"You took the wild method when the safe one was right there. Variance! Risk! A creature even you didn't expect! The Revel saw you laugh at the outcome. We collect laughers, darling. You're in the collection now.\""
+  ],
+  "quest.refused_garran": [
+    "\"You spared one you could've harvested. I watched your face do the math and then refuse it. That refusal is the whole faith, little one. Welcome to the losing side of it. We're glad of the company.\""
+  ],
+  "region.astral_tier.ambient": [
+    "The light never changes. No day, no night, no surprise. Nothing unexpected has happened here in four hundred years.",
+    "Every name is recorded, every flower is regulation height, and the one that grew crooked is being corrected. All day.",
+    "Order is not cruel. Order is thorough. Please have your soul ready for inspection at the next seal.",
+    "\"A wild thing is just an unsigned contract. Hold still. This won't hurt. That is, precisely, the point of it.\"",
+    "The most beautiful region in the world, and the most airless. You'll miss weather. They've never had any."
+  ],
+  "region.astral_tier.enter": [
+    "The Astral Tier. A heaven run as a bureaucracy. Beautiful, airless, and four hundred years since anything surprised it. You might."
+  ],
+  "region.forgefell.ambient": [
+    "The foundries never stopped. Nobody told them the god died. Nobody tells machines anything kind.",
+    "Ten thousand automatons doing a job that ended an age ago, beautifully, forever. Mind the loop.",
+    "Order, here, is a thing you can stub your toe on. The geometry has opinions about where you stand.",
+    "\"Everything in Forgefell was built to do something. Most of it is still doing it. Badly. Don't be most of it.\"",
+    "The slag froze mid-pour when the maker fell. It's thawing. It keeps its own schedule, and it's coming due."
+  ],
+  "region.forgefell.enter": [
+    "Forgefell. A god died at the workbench and the workbench never noticed. Watch the loops. Don't become one."
+  ],
+  "region.forgefell.fauna": [
+    "A half-built automaton guards a door that's been gone a thousand years. It guards the space where the door was, magnificently, against you. Walking around is permitted. Walking through is an outrage."
+  ],
+  "region.hollow_atelier.ambient": [
+    "A place that did not exist until you made it. It is unfinished because you are. Keep building.",
+    "The floors resolve only where you've earned ground. The rest is blank potential, waiting for a reason.",
+    "The walls wear your portfolio — crystal where you built order, stone where you built weight, wrong where you didn't ask first.",
+    "\"Your Lab grew a geography. I've mopped botches. I've never mopped a horizon. New record. Hold the screaming; it has acoustics now.\"",
+    "Every creature you scrapped left a mark here. The Atelier remembers the drafts. It's the most honest mirror in the world."
+  ],
+  "region.hollow_atelier.enter": [
+    "The Hollow Atelier. A place that didn't exist until you made it. It is unfinished because you are. Welcome to the only region that's yours."
+  ],
+  "region.maw_beneath.ambient": [
+    "Everything falls. That's the Maw's only law, and it is very, very patient about it.",
+    "The Rot doesn't hate you. It doesn't know the word. It would eat a god and a turnip identically.",
+    "The deeper you go, the less anything keeps its edges — including, eventually, the thought of you.",
+    "\"Found a god's finger down here last week. Still twitching. Sold it on. Lovely transaction. Want a thumb?\"",
+    "Down here a single Concord seal holds against an ocean of Rot. Futile. Magnificent. The seal does not care."
+  ],
+  "region.maw_beneath.enter": [
+    "The Maw Beneath. The world's true floor. Everything falls; this is where it lands and learns to be hungry. Sealed for good reason. You broke the seal."
+  ],
+  "region.mournmarch.ambient": [
+    "The grass is the color of a held breath. It's been holding it since the Underlord went down.",
+    "Nothing is gone here. Everything is merely owed, and the Court keeps excellent records.",
+    "The rivers run slow because even the water has lost the will. You'll understand by dusk.",
+    "\"Don't grieve so loudly, dear. Grief is just power you haven't filed yet. Lower your voice and your overhead.\"",
+    "A headstone here has your measurements. The Court took them when you weren't looking. They always look."
+  ],
+  "region.mournmarch.enter": [
+    "The Mournmarch. Not the underworld — its lip. The cold grey country where the dead are merely assets that haven't matured."
+  ],
+  "region.mournmarch.fauna": [
+    "A grave-boar roots in a barrow, unbothered, death-tusked, patient. It has dug up worse than you and will again. It does not look up. You are not, to it, news."
+  ],
+  "region.storm_vault.ambient": [
+    "To stand still here is to fall. The Vault has no patience for the grounded, and less for the slow.",
+    "The islands drift, the storms reroute, the contracts mature. Only the House Edge stays put.",
+    "Altitude is power and speed is freedom and the long way down is always, always available.",
+    "\"High Table's overhead, friend. Everything's overhead here. That's the whole pitch — pay up, climb up.\"",
+    "A tavern drifted past a century ago with its patrons mid-drink. They wave. They made it work. They can't land."
+  ],
+  "region.storm_vault.enter": [
+    "The Storm Vault. Nothing here is fixed. To stand still is to fall, and the only thing that doesn't drift is the bill."
+  ],
+  "region.storm_vault.fauna": [
+    "A skyrend wyvern carves the thunderhead overhead, fast and indifferent, riding contracts of wind no mortal signed. It hates a long goodbye. It will not be giving you one."
+  ],
+  "region.sunder.ambient": [
+    "Up is a suggestion. Distance is negotiable. The map is a lovely drawing of a place that isn't here.",
+    "You walked north for an hour and arrived behind yourself. Don't make it weird. One of you is real.",
+    "The rules took the age off. The locals are filling in. They are doing a terrible, wonderful job.",
+    "\"Stay too long in one spot and you'll end up somewhere else — smaller, on fire, and oddly fine about it!\"",
+    "A door stands locked in an empty field. No wall, no house. Knocking does something. Nobody who knocked has said."
+  ],
+  "region.sunder.enter": [
+    "The Sunder. The rules went to die here and didn't quite manage it. Trust nothing — least of all the floor, the map, or the time."
+  ],
+  "region.threshold.ambient": [
+    "The gate-bells count everyone in and no one out. They're honest about which number is bigger.",
+    "Nine embassies, one truce, zero illusions. Welcome to the last city that still ages on schedule.",
+    "Somewhere a Standstill bell is about to ring. Somewhere it always is. Try not to ascend in the bakery.",
+    "\"First time? The betting pool's already open on you. No, you can't see the odds. Yes, they're unkind.\"",
+    "The cobbles here were never anyone's god. That's why they hold still. Enjoy the novelty."
+  ],
+  "region.threshold.enter": [
+    "Threshold. The doorway to everywhere, the property of no one. Mind your soul in the market; someone always wants it, and the price is friendly."
+  ],
+  "region.tideless.ambient": [
+    "The sea stopped here. It settled. The silence is so total that sound carries forever, and so does listening.",
+    "Everything real sank a long time ago. The surface is just the part that hasn't gone down yet.",
+    "The deep has had eons to learn your language from the drowned. It mostly pronounces your name right.",
+    "\"Come down a little. The first fathom's painless. We'll be honest about the rest once you can't leave.\"",
+    "A leviathan's eye, the size of a door, opens, considers you, and decides you are not, today, interesting. Exhale."
+  ],
+  "region.tideless.enter": [
+    "The Tideless. A sea that stopped. The silence carries forever, and so does the listening, and the listening is not yours."
+  ],
+  "region.tideless.fauna": [
+    "A leviathan surfaces, sings one low note you feel in your teeth and your grief and a memory you didn't know you had, and submerges. You're crying. You don't know why. \"He likes you,\" someone says."
+  ],
+  "region.titanfall.ambient": [
+    "The mountains here are corpses, and at least one of them is still, faintly, breathing. Tread soft.",
+    "Mordathun is under your feet — the Old Weight, the Fallen Hill. Don't stamp. He remembers stamping.",
+    "Things here are old, slow, and patient, and when they finally move, the ground does it with them.",
+    "\"You're in a hurry. The mountain was in a hurry once. Now it's a mountain. Sit. We've got time. We are time.\"",
+    "The clans measure a life in generations and find your whole ascension faintly, fondly loud."
+  ],
+  "region.titanfall.enter": [
+    "Titanfall. A graveyard with a heartbeat. You walk on a dead Titan named Mordathun, and he is not entirely done dreaming."
+  ],
+  "region.titanfall.fauna": [
+    "A world-tortoise the size of a hill grazes the strata, lichen-backed, named, ancient, attended by three generations of handlers. It makes your whole god-quest feel faintly, fondly loud."
+  ],
+  "region.verdant_glut.ambient": [
+    "Everything here is either healing or being eaten, and the Glut sees no daylight between the two.",
+    "The fruit is ripe. The fruit is always ripe. That should comfort you less than it does.",
+    "Stand still long enough and the green will tend to you. Tenderly. Permanently. Keep walking.",
+    "\"Mind the path, love — the path is the part that hasn't decided to be a mouth yet.\"",
+    "A goddess lay down here and never got up, and the soil took it as encouragement."
+  ],
+  "region.verdant_glut.enter": [
+    "The Verdant Glut. It wants you to relax. Everything here wants you to relax. Relaxing is how the Glut feeds."
+  ],
+  "region.verdant_glut.fauna": [
+    "A radiant deer regards you from the orchard-row, unafraid, and does not run — it has decided the worst thing in this clearing might, for once, not be the human."
+  ],
+  "rival.escalation": [
+    "\"{rival} has gotten better since last time. You did that — every time you win, the world sharpens the next one to match. You're not climbing away from your rivals. You're climbing into them.\"",
+    "\"Word of your last win reached {rival} before you did. They've studied the fight. They've fixed it. The version in their head has you losing, and they've come to make their head right.\"",
+    "\"Your notoriety's high enough now that {rival} brought help — or a grudge upgraded into a vendetta. The bigger you get, the more personal the hatred. Fame is just a long list of people who've decided to mind you.\"",
+    "\"{rival} isn't hunting you for a bounty anymore. It's gone past money. Somewhere back there it became about something, and neither of you can name what, and that's exactly when a rivalry gets dangerous.\""
+  ],
+  "rival.loss": [
+    "\"{rival} stands over your broken line and, mercifully, doesn't say much. They don't need to. The standings said it. You'll carry this one — the specific sting of losing to them, of all the silhouettes in the world. Carry it somewhere useful.\"",
+    "\"Lost. To {rival}. {rival}: 'Don't look like that. I needed you to be good for this to mean anything. You were good. You were just second. Go be first somewhere I can watch.' It's the kindest cruel thing anyone's said to you all run.\"",
+    "\"{rival} wins and offers a hand up — and you can't tell if it's grace or ownership, and neither can they, and that uncertainty is the whole relationship. Take the hand. Remember the doubt. Settle it next time, in the only court that settles anything.\""
+  ],
+  "rival.midfight": [
+    "\"{rival}: 'That's the move I knew you'd open with. You've gotten predictable. Predictable's just slow with extra steps.'\"",
+    "\"{rival} doesn't gloat when they're ahead. They just adjust, calmly, like you're a sum that's coming out wrong and they've found the error.\"",
+    "\"{rival}: 'Your {creature}'s favoring its left. I noticed three turns ago. I notice everything about you. It's not affection.'\"",
+    "\"A bad turn for you, and {rival} smiles — not cruel, worse: satisfied, like a thing going to plan. Break the plan. It's the only language they respect.\"",
+    "\"{rival}: 'Come on. Come on. Make it a fight. I didn't hate you all this way for a walkover.'\""
+  ],
+  "rival.nemesis": [
+    "\"You've fought {rival} so many times now that the fights have a rhythm — a terrible intimacy, a thing only the two of you share. Enemies this consistent are nearly friends. Nearly. Don't say it to their face. Don't say it to yours.\"",
+    "\"{rival} died once and came back — the Pale Court, or the Table's books, or sheer spite. The good rivals always come back. That's the difference between a rival and a corpse: the rival has unfinished business, and the business is you.\"",
+    "\"Somewhere in another run, your old champion is the boss now — and someone is hunting it the way you hunt {rival}. The wheel turns. Today you're the climber. Tomorrow you're the silhouette in someone else's doorway, and they hate you, and they're right to.\""
+  ],
+  "rival.prefight": [
+    "\"{rival} again. The world is small and full of grudges, and you've been cultivating this one. Here's the harvest. Hope you're hungry.\"",
+    "\"The air sours the way it does. {rival} steps out wearing the look — the one before the worst part. You know the look. You taught it to them, last time.\"",
+    "\"{rival} doesn't bother with a greeting. You're past greetings. You're at the part where two people who can't stand each other find out, again, who's right.\"",
+    "\"There's a silhouette you'd know in any light. {rival}'s found you, and brought the team you've been losing sleep over. Lose less sleep. Win this instead.\"",
+    "\"{rival}: 'I've thought about this fight more than I've thought about anything kind. Let's see if the thinking was worth it.'\""
+  ],
+  "rival.taunt.chaos": [
+    "\"{rival}: 'No plan! No throne! No point! Isn't it glorious? You take all this so seriously — let me show you how funny it is when it all comes apart!'\""
+  ],
+  "rival.taunt.corrupt": [
+    "\"{rival}: 'You're still clean. How exhausting that must be. I shed mine years ago. Come down here where it's easy. Or I'll bring the easy up to you.'\""
+  ],
+  "rival.taunt.devourer": [
+    "\"{rival} doesn't taunt. {rival} just looks at you the way the Rot looks at everything — not with hate, with appetite. That's worse. Hate, you can reason with.\""
+  ],
+  "rival.taunt.order": [
+    "\"{rival}: 'You're chaos in a coat. Unfiled, unbound, unpredictable. I'm going to correct that. Hold still. It's nothing personal — it's procedure.'\""
+  ],
+  "rival.taunt.pure": [
+    "\"{rival}: 'I used to think we were the same, you and I. Then I watched what you were willing to spend. We're not the same. Let's settle which of us was right.'\""
+  ],
+  "rival.win": [
+    "\"{rival} is down, and for one breath there's no grudge on their face — just the bare arithmetic of a loss. Then the grudge comes back, deeper. You didn't end this today. You fed it. Rivals are the one thing in this world that winning makes stronger.\"",
+    "\"Beaten. {rival} gathers their fallen the way you've gathered yours, with the same set jaw, and goes — promising nothing, which from {rival} is the loudest promise there is. They'll be back. They're always back. That's what makes them a rival and not just a corpse.\"",
+    "\"You won. {rival} says nothing, which is worse than anything they could say. They're already rebuilding the fight in their head, fixing it, and the fixed version has you losing. Make sure the next real one disagrees with their math.\""
+  ],
+  "shop.blackmarket": [
+    "\"Looking for parts no honest vendor will touch? Auntie's got organs that fell off the back of a reliquary. Draws a little heat. What's a little notoriety between friends?\"",
+    "\"You didn't see me. I didn't see you. We're two strangers, and one of us is holding a god's gland.\"",
+    "\"Off the books, off the ledger, off the record — which is the only place a thing like this can be sold. Notoriety's the tax. Pay it quiet.\"",
+    "\"This core came off something divine. Don't ask which. Asking's how the heat finds you, sweetpea. Coin first. Names never.\"",
+    "\"Contraband's honest, in its way. It tells you it'll cost more than money. The clean shops just don't mention it till later.\""
+  ],
+  "shop.blessed": [
+    "\"Blessed by a real, genuine, mostly-dead god! The blessing's faded a touch. They do that. Still counts. Mostly counts.\"",
+    "\"Sanctified! Consecrated! Faintly humming with the approval of a power that no longer technically exists! Forty drachma!\"",
+    "\"A holy relic, this — radiates wellness, mends what it touches, asks for nothing. ...it asks for a little. We'll discuss it after the sale.\"",
+    "\"Touched by the divine and only lightly used. Previous owner ascended. Or exploded. The paperwork's unclear and the discount is real.\""
+  ],
+  "shop.browse": [
+    "\"Look all you like. Looking's free. Wanting's free. Everything after wanting has a number on it. Take your time finding which numbers you can live with.\"",
+    "\"The merchant has nothing left but eye contact and a slow morning. Buy something or don't. The shelf's patient. The shelf's merchandise. It's the most patient thing in here, and I include myself.\"",
+    "\"Off already? The goods'll keep. They keep beautifully. Half of them are technically immortal and twice as patient as I am. Come back when your purse is braver.\"",
+    "\"No sale today. That's fine. A browse is just a purchase that hasn't lost its nerve yet. I'll see you when it does.\""
+  ],
+  "shop.buy": [
+    "\"Sold. It's yours now, and so is whatever it does at night. No refunds on consequences.\"",
+    "\"{n}₯, and not a coin haggled. Take it before I remember what it's actually worth.\"",
+    "\"A fine choice. Or a terrible one. I've stopped being able to tell, and frankly so have my customers.\"",
+    "\"Wrapped and yours. Use it well, use it badly — the coin spends the same either way.\"",
+    "\"There. One transaction, clean as this trade gets, which is to say not very.\""
+  ],
+  "shop.cant_afford": [
+    "\"Come back with coin, or come back with something to trade that isn't that look. Two of those spend here. The look isn't one.\"",
+    "\"Short by {n}₯. The cosmos doesn't extend credit, and neither, sadly, do I — I tried it once. He's a headstone now.\"",
+    "\"Lovely taste. Empty purse. The two so often travel together. Off you go; the item will wait. It's patient. It's merchandise.\"",
+    "\"Not enough ✶. Essence is somebodies, and you're a few somebodies short of this. Go make some. Tactfully.\"",
+    "\"That's ◈-priced, friend, and Ichor's divine blood — you don't have divine blood, you have ambition and a coin pouch with opinions. No sale.\""
+  ],
+  "shop.cursed": [
+    "Non-refundable. Also it screams at night. Enjoy!",
+    "\"Non-refundable. Also it screams at night. Enjoy!\"",
+    "\"Cursed, yes, openly, on the label — I'm not the Pale Court, I disclose. Powerful, though. The curse is why it's powerful. They usually are.\"",
+    "\"It'll serve you faithfully and hate you forever. Best relationship I sell. Mind the small print; the small print is the curse, written small.\"",
+    "\"Reduced! Because it's cursed! Honesty's my whole brand — the clean shops curse you too, they just charge full price and act surprised.\"",
+    "\"Take it, take it. It wants to be taken. That's the curse, technically. It's lonely. It will fix that. It will fix that with you.\""
+  ],
+  "shop.haggle": [
+    "\"Haggling? In this economy? ...go on, then. Make your case. I enjoy watching hope work.\"",
+    "\"You want it cheaper. Everyone wants it cheaper. The gods wanted it cheaper, and look at them — free, now, and dead.\"",
+    "\"Lower? I can go lower. I can always go lower. The question is what else goes into the deal, and you won't like the answer until it's signed.\"",
+    "\"Meet me halfway and we'll both feel cheated equally. That's a fair trade. That's the only fair trade.\"",
+    "\"Drive me down another coin and I'll throw in the curse for free. ...the curse was always free. That's why it's a curse.\""
+  ],
+  "shop.restock": [
+    "\"Fresh stock came in overnight. Off a Champion who won't be needing it — don't ask why, the not-asking's free, the asking costs extra.\"",
+    "\"New on the shelf: a trap rated for legendaries. Optimistic of whoever forged it. I respect optimism. I charge for it, but I respect it.\"",
+    "\"Restocked. Same goods, same shadows on them, slightly worse prices — the entropy-tide's up and the merchants feel it too. We're all just rocks in the same river, dearie. I'm a rock that sells things.\""
+  ],
+  "shop.sell": [
+    "\"I'll give you {n}₯ for it. It's not what it's worth. Nothing here is paid what it's worth, least of all me.\"",
+    "\"Parts, is it? I'll take them off your hands. The drawer's always hungry, and the drawer always pays.\"",
+    "\"This came off something, didn't it. Don't tell me. The less I know, the more I'll offer. That's the whole economy down here.\"",
+    "\"Sold to me. I'll find it a worse home than yours, for a small markup. That's the trade.\"",
+    "\"{n}✶ for the lot. Soul-fuel's soul-fuel; I don't ask whose it was, you don't tell me, we both sleep poorly.\""
+  ],
+  "shop.services": [
+    "\"Bring them here before they're dying, not after. I do healing, not the other thing. The Pale Court does the other thing. Don't make me send you there.\"",
+    "\"Your chimera's leaking again. I'll bleed the entropy down — hold the screaming, it's load-bearing — and bill you for the mop. The mop's always extra. The mop's seen things.\"",
+    "\"Bond's low on this one. Rough catch? Feed it yourself for a week, from your own hand. Mercy's a medicine; I just can't bottle it. Believe me, I've tried. It curdles.\"",
+    "\"Repairs on the construct, is it? I can re-tolerance the joints and re-seat the core. Can't give it back the spark, though — that's not a repair, that's a resurrection, and that's upstairs, and upstairs is expensive in ways coin doesn't cover.\""
+  ],
+  "status.bloom_rot.applied": [
+    "Something is growing in {creature} that shouldn't be. It blooms. It rots. Both at once."
+  ],
+  "status.bloom_rot.cured_expired": [
+    "\"The bloom withers off and the rot dries up. {creature} sheds the awful flowering and stands clean — thinner, wiser, faintly composted.\""
+  ],
+  "status.bloom_rot.inflicted": [
+    "\"Something starts growing in the enemy that shouldn't. Bloom-rot sets — it blooms, it rots, both at once, deeper every turn. Mercy, with roots, with teeth.\""
+  ],
+  "status.bloom_rot.suffered": [
+    "\"{creature} is flowering and decaying in the same breath. Bloom-rot, stacking — the wound is fertile, and that's the horror of it. It'll worsen. It always worsens.\""
+  ],
+  "status.event.cleansed": [
+    "\"{ally} reaches over and scrubs the affliction off {creature} — a Mend, a soothe, a hand on the wound. Good. The kind ones are worth keeping for exactly this.\""
+  ],
+  "status.event.immune": [
+    "\"You tried to Wither a Thanatos thing. It drank the end and asked for seconds. Match the cruelty to the creature, or waste it.\"",
+    "\"Shock, on an Ouranos creature? It rode the charge into a faster turn. The sky doesn't fear lightning; the sky invented lightning.\""
+  ],
+  "status.event.resisted": [
+    "\"The status slid off {creature} like rain off stone. Some things won't take the affliction. This was one of them. This time.\""
+  ],
+  "status.event.stacked": [
+    "\"The DOT's stacked as deep as it goes. {creature} is now flowering and rotting on every count there is. Watch the turns. There aren't many left in this.\""
+  ],
+  "status.madness.applied": [
+    "{creature} has slipped its own leash. It may swing at anyone. It may swing at the air."
+  ],
+  "status.madness.cured_expired": [
+    "\"The fog lifts. {creature} blinks, lowers the claw it doesn't remember raising, and decides, firmly, not to ask who it hit.\""
+  ],
+  "status.madness.inflicted": [
+    "\"Something in the enemy's head comes loose and grins. Madness takes it — it may strike anyone now, friend or foe or the empty air. The dice are driving.\""
+  ],
+  "status.madness.suffered": [
+    "\"{creature} has slipped its own leash. Mad — it might swing at the enemy, at your own line, at a shadow it doesn't like. You've lost the steering. Hold on.\""
+  ],
+  "status.petrify.applied": [
+    "{creature} is turning to stone. Slowly. With time to think about it."
+  ],
+  "status.petrify.cured_expired": [
+    "\"The stone lets go. {creature} remembers how to move, and resents the lesson the ground just taught it.\""
+  ],
+  "status.petrify.expire": [
+    "The stone lets go. {creature} remembers how to move, and resents the lesson."
+  ],
+  "status.petrify.inflicted": [
+    "\"The ground closes around its ankle, politely, and then less politely. Petrify sets in — {creature} gives the enemy time to think about standing still. It won't enjoy the thinking.\""
+  ],
+  "status.petrify.suffered": [
+    "\"Stone crawls up {creature}'s legs. Petrified — it's going to miss turns, slowly, with terrible patience, while you watch and cannot hurry it.\""
+  ],
+  "status.seal.applied": [
+    "{creature}'s skills are sealed. The power's still in there. The door isn't."
+  ],
+  "status.seal.cured_expired": [
+    "\"The seal cracks and falls. {creature}'s skills come back to its hands, and it uses the first one a little harder than strictly necessary.\""
+  ],
+  "status.seal.inflicted": [
+    "\"A binding-sigil snaps shut over the enemy's repertoire. Seal holds — the power's still in there. The door isn't. Order, applied to a verb.\""
+  ],
+  "status.seal.suffered": [
+    "\"{creature}'s skills are sealed. The strength is all still present, pacing, furious — behind a door the Concord would call correct. Sealed.\""
+  ],
+  "status.shock.applied": [
+    "{creature} is overcharged — twitching, sparking, a heartbeat away from a mistake."
+  ],
+  "status.shock.cured_expired": [
+    "\"The charge bleeds off. {creature} stops twitching, finds its footing, and quietly resolves never to stand that close to the sky again.\""
+  ],
+  "status.shock.inflicted": [
+    "\"A strike to the nerve that runs the clock. Shock lands — the enemy has misplaced its turn, and the wind has no intention of helping it look.\""
+  ],
+  "status.shock.suffered": [
+    "\"{creature} is overcharged — twitching, sparking, a heartbeat from a mistake. Shocked: its action just fell out of its hands and rolled under the board.\""
+  ],
+  "status.wither.applied": [
+    "{creature} is draining away — thinner, greyer, closer to the drawer with every turn."
+  ],
+  "status.wither.cured_expired": [
+    "\"The withering halts. {creature} pulls some color back into itself, climbs one step up from the drawer, and pretends it wasn't looking down it.\""
+  ],
+  "status.wither.inflicted": [
+    "\"The patient subtraction begins. Wither lands — the enemy goes thinner, greyer, one stratum closer to the drawer every turn. The end is in no hurry. It can afford not to be.\""
+  ],
+  "status.wither.suffered": [
+    "\"{creature} is draining away — colorless, dwindling, Withering by the turn. Each round takes a little more and gives nothing back. Stop the bleed, or count the turns.\""
+  ],
+  "storage.full": [
+    "No more room. The dead make room. (They always do.)",
+    "\"No more room. The dead make room — they always do, that's their one remaining courtesy. Free a slot, or let the Graveyard free one for you. It's faster at this than you are.\"",
+    "\"The roster's full. Everyone you've gathered, all in one ledger, all depending on you to remember they're more than a row. Hard, that. The ledger makes them rows. You have to make them names again, every time you read it.\""
+  ],
+  "toast.ascension": [
+    "{creature} is ascending. It will not be coming back to your pocket.",
+    "A god is being made. Step back. This was always where it was going.",
+    "{creature} apotheosizes — a temple rises somewhere, and a part of your world tilts to follow.",
+    "Apotheosis. You raised a god. Now you live under it.",
+    "It ascends, and it remembers your choices. All of them. Sleep well."
+  ],
+  "toast.awakening": [
+    "Something stirred in {creature}. It is more, now, and less calm about it.",
+    "An awakening. A dormant thing opened an eye.",
+    "{creature} resonates — power surfaced from the deep of its genome.",
+    "It grew. You felt it through the bond, like a door opening in another room.",
+    "New strength, freely given by the blood. Enjoy this one; not all of them are free."
+  ],
+  "toast.caught": [
+    "{creature} is yours now. It hasn't decided how it feels about that.",
+    "Caught. It looked at you the way you'll look at it later, on the table.",
+    "{creature} joins the roster. Welcome it. Or don't; it can tell.",
+    "A new name in the ledger. A new way for things to go wrong.",
+    "It came willingly. That's the part that should worry you."
+  ],
+  "toast.corruption": [
+    "Corruption rises. You feel it settle in, like a tenant who won't leave.",
+    "Something in you tilts toward the dark. It fits better than it should.",
+    "The rot deepens. New doors unlock. Cleaner ones quietly lock.",
+    "Corruption climbs. You are becoming someone the old you would cross the street to avoid.",
+    "You are less yourself, and more something. The trade felt fair at the time.",
+    "\"Corruption rises. You feel it settle in like a tenant who read the lease, signed nothing, and won't leave.\"",
+    "\"The rot deepens by one notch. New doors unlock with a click. Cleaner ones lock with a quieter one. You'll notice the quiet later.\"",
+    "\"Corruption climbs. You are becoming someone the old you would cross the street to avoid — and the new you would follow.\"",
+    "\"Something in you tilts toward the dark and fits there, snug, like it was measured for you. It was. You did the measuring.\"",
+    "\"You're less yourself and more something. The trade felt fair at the time. The meter doesn't grade fairness. It just counts.\"",
+    "\"Past this Corruption threshold, the taboo ceiling thins for you — the abominations come easier now. That's not a reward. That's the door it always was, finally cheap enough to walk through.\""
+  ],
+  "toast.faction": [
+    "{faction} warms to you. Their rivals take note, and a knife.",
+    "You are now {tier} with {faction}. Mind which hand you're shaking.",
+    "{faction}'s regard rises. Someone, somewhere, has just become your enemy by default.",
+    "Standing lost with {faction}. They remember slights longer than favors.",
+    "{faction} would call you theirs now. Decide if that's a compliment."
+  ],
+  "toast.harvest": [
+    "Harvested: {part}. Waste not.",
+    "{part} secured. It was going spare. (It wasn't.)",
+    "One {part}, off the books and into the drawer.",
+    "You took what you needed. The rest, the ground will take.",
+    "{part} catalogued. Try not to think about whose."
+  ],
+  "toast.overclock": [
+    "{creature} is overclocking — forcing the awakening. Entropy climbs.",
+    "You pushed. It answered. The meter doesn't blink.",
+    "BURNOUT. {creature} broke past what it could hold. It will recover. It will remember.",
+    "Too far. {creature} has gone dark — overloaded, smoking, alive. Barely.",
+    "The power came. So did the bill."
+  ],
+  "toast.permadeath": [
+    "{creature} is gone. Truly. A headstone waits in the Graveyard.",
+    "It fell, and it stayed fallen. Some part of it is in your drawer now.",
+    "{creature} has died. The bond goes quiet. You'll feel the silence later.",
+    "One name leaves the ledger for good. The Graveyard keeps the rest.",
+    "{creature} is dead. You can rebuild what it was. Never who it was."
+  ],
+  "toast.quest": [
+    "A thread tightens. {faction} has need of you.",
+    "New work. It pays in coin and consequence.",
+    "Objective updated. Someone, somewhere, is counting on your worst instincts.",
+    "The world asks something of you. The world is rarely polite about it.",
+    "A door opened. You did not knock.",
+    "Quest complete. They got what they wanted. You got what's left."
+  ],
+  "toast.rival": [
+    "{rival} is here. Of course they are.",
+    "The air sours. {rival} has found you again.",
+    "{rival} approaches, wearing that look. The one before the worst part.",
+    "You know that silhouette. It knows yours.",
+    "{rival} again. The world is small and full of grudges."
+  ],
+  "travel.transit": [
+    "You unmake yourself here and remake yourself there. It's fine. It's probably fine.",
+    "\"You unmake yourself here and remake yourself there. It's fine. It's probably fine. The ferryman's done it a thousand times and only lost the occasional thumb. Step into the circle.\"",
+    "\"Passage to {region}? Coin's the same as ever; the risk is yours and it's gone up since the god dropped. New beasts, new hazards, new ways to die. Still want the ticket? Of course you do. You always do.\"",
+    "\"The ritual circle takes you apart with great gentleness and reassembles you with most of the original parts in most of the right places. Travel broadens the soul. Sometimes literally. Mind the seams.\""
+  ],
+  "tutorial.battle": [
+    "\"The circle closes and only one team walks out whole. AP is your shared pool each turn — basics are cheap, the big rites cost. Focus is per-creature; spend too many heavy moves and it'll exhaust. Don't dawdle: the entropy clock starts when you do.\"",
+    "\"Land a status and you change the fight — Petrify a fast thing, Seal a clever one, Wither a wall. Six of them, each named, each a different cruelty. Learn which cruelty fits which problem. That's tactics. That's most of staying alive.\"",
+    "\"Your creature can drop without dying — that's a knockout, filed for revival. But push past that and it's gone, truly, a headstone in the Graveyard. Permadeath was always on. It was always on. Fight like you believe me, because I'm right.\""
+  ],
+  "tutorial.catch": [
+    "\"Hold out your hand. It'll love you or it'll eat you — sometimes both, in that order. That's how you catch the willing ones. The unwilling ones, we'll cover the trap for. Later. When you're sadder.\"",
+    "\"Go on, catch the wounded one. It's mercy and math — easier odds, warmer bond. Most of this craft is mercy and math wearing the same coat.\"",
+    "\"The bond does three jobs, child: it lets them grow, it lets you to the Lab-altar, and it lets them disobey a bad order. Earn it slow. A high bond is the most useful thing you'll ever fail to deserve.\""
+  ],
+  "tutorial.currency": [
+    "\"Three coins matter here. Drachma ₯ — common coin; the gods don't take it, which tells you everything. Essence ✶ — soul-fuel; every drop was a somebody. Ichor ◈ — divine blood, bottled; spend it like it's the last of someone holy, because it is.\"",
+    "\"₯ buys traps and tonics. ✶ fuels the Lab. ◈ buys the things that change you. Notice the pattern: the more a currency costs your soul, the more it can buy your power. There's a whole philosophy in those three glyphs. None of it is comforting.\""
+  ],
+  "tutorial.factions": [
+    "\"Two axes draw the world: Order against Chaos, Purity against Corruption. Where you sit on that grid decides which of the nine gods you could become. Every choice nudges your dot. There's no neutral square that lasts. Standing still is also a position. It's just a slow one.\"",
+    "\"Court a faction and its rival turns cold — that's the cost, always. The High Table's the one exception: they like you uncommitted. Everyone else wants you to pick. Picking is the game. Refusing to pick is also the game, and a lonelier one.\""
+  ],
+  "tutorial.graveyard": [
+    "\"When one dies — truly dies, past a knockout — it goes to the Graveyard, and Goodwife Penne logs it: name, force, how. You can visit. You should. The dead you made are the only ones who'll never lie to you about who you've become.\"",
+    "\"The Pale Court will offer to bring your dead back. The offer is real, and so is the interest. Read every term. A clean grief you carry costs less, in the end, than a cheap resurrection you owe. Learn that now, while it's still abstract.\""
+  ],
+  "tutorial.husbandry": [
+    "\"There's a fast road and a slow one. The Lab remakes a creature in an afternoon. Breeding takes generations — pair, hatch, select, repeat — chasing a rare gene up out of the blood. Slower. Realer. The Stoneblooded will tell you the slow way is the only way that lasts. They're not entirely wrong.\"",
+    "\"Raise a creature gentle and it grows up expecting the world's survivable. Raise it hard and it grows up expecting to be spent. The bond carries your flavor, not just your orders. How you raise it is who you are — and the creature can read that long before you can.\""
+  ],
+  "tutorial.lab": [
+    "\"Rule one of the Lab: it's only an abomination if it survives. Rule two: ...oh. That one survived. Congratulations? Drag the method to precise until you've stopped flinching — wild is cheaper and louder and not yet your friend.\"",
+    "\"Two creatures go on the table, one comes off. That's a Fuse. Place them, read the cost ledger — the ledger's the only honest thing in here — and when you're sure, seal the rite. After the wax sets, there's no taking it back. There's no taking anything back here. Welcome.\"",
+    "\"See the meters? Entropy's the price of pushing too hard. Corruption's the price you can't earn back. Watch both. The bench will let you ignore them. The bench is not your friend either. Nothing in here is. That's why it works.\""
+  ],
+  "tutorial.stakes": [
+    "\"The gods are all dead, and we're standing on them. This whole market's on Demeter's elbow. You came to rob a graveyard of powers. Everyone here did. Try to be one of the ones who's honest about it.\"",
+    "\"Nine factions will court you, and the moment you take one hand, its rival reaches for a knife. You can't befriend everyone. Pick a hand to become. The factions remember who you snubbed. So does the world. So, eventually, do you.\"",
+    "\"Push a creature to a pure force-pole and it ascends — leaves your pocket and becomes a minor god that reshapes your world. That's the spine of everything. Aim a creature at a throne and you aim it away from you. Nobody tells you that part. I just did.\"",
+    "\"The Standstill bell means no godhood inside the walls. Ascend in the city and the Watch escorts you out to finish like everyone else. It's the one rule Threshold keeps. It keeps it because a market can't run with a fresh god in the foyer. Reasonable, really. Most horrors are.\""
+  ],
+  "tutorial.welcome": [
+    "\"Welcome to Threshold — the last mortal city, and very proud of the 'last.' You begin a nobody with an old knack. The city has a betting pool on how far you get. Let's surprise it.\"",
+    "\"First rule of the craft: a creature you catch can love you; a creature you build owes you. Neither is safe. Pick one anyway — that's the whole game in a sentence.\"",
+    "\"You've got the old knack. Lucky you. The last three I taught it to are dead, dead, and a minor god of drainage. Mixed results. Pay attention and aim for 'god of something nicer.'\""
+  ],
+  "ui.button.affirm": [
+    "Begin",
+    "Continue the Descent",
+    "Seal It",
+    "Do the Thing",
+    "Commit",
+    "Proceed (Regret Later)",
+    "Yes. Obviously.",
+    "Take the Throne",
+    "Make It So",
+    "Accept the Cost"
+  ],
+  "ui.button.negative": [
+    "Not Today",
+    "Reconsider",
+    "Step Back From the Altar",
+    "Leave It Sleeping",
+    "Decline (Wisely)",
+    "Close the Grimoire",
+    "Abandon the Rite",
+    "Return to the Living",
+    "No. For Now."
+  ],
+  "ui.confirm.are_you_sure": [
+    "You're never sure. Proceed anyway?"
+  ],
+  "ui.confirm.cancel": [
+    "Some doors are better left closed. This time."
+  ],
+  "ui.confirm.confirm_destructive": [
+    "This cannot be undone. Few things here can."
+  ],
+  "ui.confirm.confirm_sacrifice": [
+    "A name leaves the world when you press this. Press it?"
+  ],
+  "ui.confirm.confirm_spend": [
+    "This costs more than coin, and you know it."
+  ],
+  "ui.confirm.discard_changes": [
+    "Let this draft of cruelty go unsigned?"
+  ],
+  "ui.loading": [
+    "The veil thins…",
+    "Reality is checking its notes.",
+    "Something is deciding whether to notice you.",
+    "Drawing the circle.",
+    "The ground remembers what it used to be.",
+    "Counting the dead. Give it a moment."
+  ],
+  "ui.saveload.autosave": [
+    "The ledger writes itself. It always does."
+  ],
+  "ui.saveload.confirm_quit_unsaved_work": [
+    "You have rites unsealed and dead unburied. Leave anyway?"
+  ],
+  "ui.saveload.load": [
+    "Exhuming a former you."
+  ],
+  "ui.saveload.overwrite_save": [
+    "Bury this version of yourself to make room for the next?"
+  ],
+  "ui.saveload.quit_to_desktop": [
+    "Close the book. The book does not close back."
+  ],
+  "ui.saveload.quit_to_menu": [
+    "Step out of the world. It will keep rotting without you."
+  ],
+  "ui.saveload.returning": [
+    "Welcome back. Nothing missed you, but everything noticed."
+  ],
+  "ui.saveload.save": [
+    "Pressing your soul into wax."
+  ],
+  "ui.saveload.save_complete": [
+    "Sealed. The record holds — for now."
+  ],
+  "ui.setting.battle_animation_speed": [
+    "Mercy for the impatient."
+  ],
+  "ui.setting.colorblind_cues": [
+    "Shapes and sigils, not just color. The dark is hard enough to read."
+  ],
+  "ui.setting.permadeath": [
+    "On. It was always on."
+  ],
+  "ui.setting.reduce_screen_shake": [
+    "For when the world should tremble a little less."
+  ],
+  "ui.setting.skip_seen_rituals": [
+    "You've watched this birth before. Look away."
+  ],
+  "ui.setting.text_speed": [
+    "How fast the bad news arrives."
+  ],
+  "ui.title": [
+    "THE WORK CONTINUES",
+    "A Graveyard, and You With a Shovel",
+    "The Bench Is Warm",
+    "Scryed Readout",
+    "The Ledger Remembers",
+    "Your Pantheon (Such As It Is)",
+    "The Bestiary, Mostly Filled",
+    "Rites & Operations",
+    "The Parts Drawer",
+    "Standing With the Powers That Were"
+  ],
+  "ui.tooltip.bond": [
+    "How much this creature trusts you not to put it on the table."
+  ],
+  "ui.tooltip.corruption": [
+    "What you spend that you can't earn back. Opens doors. Bolts others shut forever."
+  ],
+  "ui.tooltip.drachma": [
+    "Coin. The gods don't take it, which tells you everything."
+  ],
+  "ui.tooltip.entropy": [
+    "The price of pushing too hard, too fast. It does not refund."
+  ],
+  "ui.tooltip.essence": [
+    "Soul-fuel. Every drop was a somebody."
+  ],
+  "ui.tooltip.focus": [
+    "Composure under the knife. Runs out faster than you'd like."
+  ],
+  "ui.tooltip.ichor": [
+    "Divine blood, bottled. Spend it like it's the last of someone holy. It is."
+  ],
+  "ui.tooltip.luck": [
+    "The thumb the cosmos keeps on the scale. Whose, it won't say."
+  ],
+  "ui.tooltip.purity": [
+    "How close this one is to becoming a god and leaving you behind."
+  ],
+  "weather.dawn": [
+    "Dawn, such as it is. The world survived another rotation, which it manages mostly out of habit now.",
+    "First light finds you still here, still climbing. The cosmos files this under persistent. It's not a compliment. It's not not one.",
+    "The dark lifts off {region} like a debt deferred, not paid. Morning's just the interest break. Use it.",
+    "A new day. The Graveyard didn't grow overnight, which is either your doing or your luck. Don't ask which. Don't make it answer."
+  ],
+  "weather.dusk": [
+    "The light goes. In a graveyard of gods, the dark is just the part where you can hear them better.",
+    "Dusk. The lamplighter starts his rounds — keeps the dark organized. Won't stop a god. Stops the smaller things. The smaller things are most of what gets you.",
+    "Night falls over {region}. The day-beasts bed down; the other kind wake and go looking. Mind which kind you are.",
+    "Last light. Whatever you were going to finish today, the day has stopped waiting for you to finish it."
+  ],
+  "weather.force": [
+    "A Gaia-pressure front rolls in — the air goes heavy, the ground attentive. Bulk-blooded things wake. The rest of you should sit down.",
+    "An Ouranos squall tears through. Everything light moves twice; everything slow moves once and regrets it.",
+    "A Cosmos calm settles over the land — too even, too quiet, the weather of a place that has filed away its surprises.",
+    "A Chaos-cell forms, and the sky forgets which way down is. Briefly. Enjoyably. Catastrophically.",
+    "An Eros bloom-front passes through and the dead grass tries, hopefully, to grow. Some of it succeeds. Some of it shouldn't have.",
+    "A Thanatos chill comes down like a held breath let out slow. Nothing dies that wasn't going to. It just dies sooner, and tidier."
+  ],
+  "weather.rare": [
+    "\"Something rare in the sky tonight — a conjunction the oracles charge double to misread. The fauna's restless. The veil's thin. On nights like this, things get caught that usually can't be. Hunt accordingly.\"",
+    "\"The entropy-tide crests higher than it has in an age. Every meter that can climb is climbing past its marks. The old hands call this a 'making night' — when legends and abominations both come cheap, and the difference between them is a coin-flip and a flinch.\"",
+    "\"A still moment — no weather, no tide, no wind, nothing moving anywhere. The world holding its breath. It does this, rarely, and no one knows for what. Enjoy the quiet. Distrust it. Both.\""
+  ],
+  "weather.shift": [
+    "\"The force-weather's turning. What favored you an hour ago is about to favor the other side. Read the sky; the sky is a battlefield bias with no loyalty.\"",
+    "\"A front rolls in off the dead god's domain — the climate here always carries the flavor of whatever fell. Spawns shift, gene-expression bends, advantage tilts. Adjust, or be adjusted.\"",
+    "\"Storm warning, of a sort: the entropy and the weather are climbing together, and when they crest at once the region gets strange. The locals board up. The Revel throws a party. Pick which you are.\""
+  ],
+  "weather.tide": [
+    "The entropy-tide is rising. The world's instability climbs with it — push hard now and the bench will push back harder.",
+    "Low tide. The entropy settles, the routes that were sealed grind open, and the patient get their hour. Spend it.",
+    "High entropy-tide — the slag thaws, the warps deepen, and everything volatile gets more so. The Sunder is delighted. You should be careful.",
+    "The tide turns. Somewhere a tide-locked door opens; somewhere another seals behind it. The world breathes. You're inside the lung.",
+    "Entropy crests. Every meter that can climb is climbing. This is when legends get made and creatures get unmade, often in the same heartbeat."
+  ],
+  "weather.tide_locked": [
+    "\"The tide's low — a route that was sealed grinds open. It won't stay. Through it now, or wait a cycle and gamble the patience. The world doesn't hold doors.\"",
+    "\"High tide seals the slag-crossing. The molten flow's back, the path's gone, and it'll be gone until the cycle turns. Forgefell keeps its own clock and shares it with no one.\"",
+    "\"A tide-timed gate. The world breathes, and on the exhale this door is shut. Time your crossing to the lung, not your impatience. The lung wins every argument.\""
+  ]
+}

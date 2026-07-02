@@ -2,11 +2,15 @@ class_name ToastMicrocopy
 extends RefCounted
 ## Funny-grim toast microcopy for the core events (D7 / design §1 tonal contract).
 ##
-## PRESENTATION layer. The dry, in-world voice the design demands — gallows humour that makes
-## the dark land harder (design §1: "if a moment makes you laugh and then slightly regret
-## laughing, it's on-tone"). One place owns the copy so the voice stays consistent. Each event
-## carries a default icon (from `client/assets/icons/**`, colorblind-safe colour+shape) and a
-## sound bus cue name the `Toast` facade resolves.
+## PRESENTATION layer. Wave 16a: the BODY copy now routes through VoiceBook — the authored
+## voice_library banks, ingested verbatim (binding tension 11) — so call sites keep firing
+## `event(id)` while the words come from the writers' room. Each event keeps its Wave-1
+## authored body as the FALLBACK for a missing key (the book never 404s a toast), plus a
+## default icon (colorblind-safe colour+shape) and a sound cue the `Toast` facade resolves.
+## `salt` walks the authored variants deterministically (LOCAL hash in VoiceBook.pick —
+## never the canonical PCG32 streams): same salt, same line; new salt, fresh line.
+
+const VoiceBookScript := preload("res://presentation/narrative/voice_book.gd")
 
 # Event ids the game fires.
 const CAUGHT := "creature_caught"
@@ -16,10 +20,32 @@ const QUEST := "quest_update"
 const RIVAL := "rival_approaches"
 const CORRUPTION := "corruption_rising"
 
+# event id -> the VoiceBook key its body draws from (see client/catalog/VOICE_KEYS.md).
+const VOICE_KEYS := {
+	CAUGHT: "toast.caught",
+	HARVEST: "toast.harvest",
+	AWAKEN: "toast.awakening",
+	QUEST: "toast.quest",
+	RIVAL: "toast.rival",
+	CORRUPTION: "toast.corruption",
+}
+
 
 ## event id -> {title, body, icon, sound}. `icon` is a res:// path or "" (facade falls back to
 ## a force/status glyph); `sound` is a logical cue the facade maps to an audio stream.
-static func preset(event_id: String) -> Dictionary:
+## `salt` selects the VoiceBook variant (0 = the stable default line for that event).
+static func preset(event_id: String, salt: int = 0) -> Dictionary:
+	var entry := _base(event_id)
+	# pick_plain: toasts never interpolate, so {placeholder} variants must not surface raw.
+	var voice := VoiceBookScript.pick_plain(str(VOICE_KEYS.get(event_id, "")), salt)
+	if voice != "":
+		entry["body"] = voice
+	return entry
+
+
+## The authored per-event scaffolding: title/icon/sound + the FALLBACK body used when the
+## VoiceBook key is missing (never shown while client/catalog/voice.json is intact).
+static func _base(event_id: String) -> Dictionary:
 	match event_id:
 		CAUGHT:
 			return {

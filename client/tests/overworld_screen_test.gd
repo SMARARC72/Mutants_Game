@@ -274,7 +274,9 @@ func test_side_quest_starts_and_completes_via_its_npcs() -> void:
 func test_six_petals_quest_is_data_driven_via_step_key() -> void:
 	# SQ-05 "Six Petals, True-Bred" — the THIRD overworld quest, wired purely as data (a quest def with
 	# a step_key + two NPC entries). Hearthward Ona (index 6) starts it; Old Garran (index 7) completes
-	# it (the shortcut refused), nudging Bloomwarden standing. Proves the data-driven dispatch scales.
+	# it via his W16a refuse/accept CHOICE (headless resolves the canon "refuse" branch instantly),
+	# nudging Bloomwarden standing. Proves the data-driven dispatch scales. Branch coverage lives in
+	# dialogic_choice_test.gd.
 	var gc := _make_game()
 	gc.call("new_run", TEST_SEED)
 	var ow := _make_overworld(gc)

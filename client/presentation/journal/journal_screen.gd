@@ -196,7 +196,10 @@ func _build_ui() -> void:
 	if _entries.is_empty():
 		var empty := Label.new()
 		empty.name = "EmptyNote"
-		empty.text = "No errands yet. Go let the marsh have its opinions."
+		# W16a: the authored empty-state (VoiceBook empty.quests) with the old line as fallback.
+		empty.text = VoiceBook.pick("empty.quests")
+		if empty.text == "":
+			empty.text = "No errands yet. Go let the marsh have its opinions."
 		empty.theme_type_variation = "MutedLabel"
 		empty.add_theme_color_override("font_color", GrimoirePalette.TEXT_ON_PARCHMENT)
 		_list.add_child(empty)

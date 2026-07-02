@@ -1,0 +1,15 @@
+{
+"@path": "res://addons/dialogic/Resources/character.gd",
+"@subpath": NodePath(""),
+&"_translation_id": "",
+&"color": Color(0.69411767, 0.29411766, 0.22745098, 1),
+&"custom_info": {},
+&"default_portrait": "",
+&"description": "The kindly-voiced shortcut. Under the warmth, the Revel's hunger in a grandfather's face.",
+&"display_name": "Old Garran",
+&"mirror": false,
+&"nicknames": [],
+&"offset": Vector2(0, 0),
+&"portraits": {},
+&"scale": 1.0
+}

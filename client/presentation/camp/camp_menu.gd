@@ -119,20 +119,34 @@ func _add_lead_portrait(box: VBoxContainer) -> void:
 	if not (lead is Dictionary):
 		return
 	# Hybrids render their dominant parent's plate + the deterministic corruption tint (PortraitUtil),
-	# so camp shows the same face party/lab/battle do.
-	var plate := PortraitUtil.creature_plate(lead as Dictionary)
+	# so camp shows the same face party/lab/battle do. Wave 9: the lead is a LivingPlate (it
+	# breathes while you tend the coven) and its one-of-one sigil rides the frame corner.
+	var lead_dict := lead as Dictionary
+	var plate := PortraitUtil.creature_plate(lead_dict)
 	if plate == null:
 		return
-	var portrait := TextureRect.new()
+	var portrait := LivingPlate.new()
 	portrait.name = "LeadPortrait"
-	portrait.custom_minimum_size = Vector2(118, 118)
-	portrait.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	portrait.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	portrait.texture = plate
-	portrait.self_modulate = PortraitUtil.creature_tint(lead as Dictionary)
-	var frame := PortraitUtil.framed(portrait)
+	portrait.set_plate_size(Vector2(118, 118))
+	portrait.set_texture(plate)
+	portrait.set_tint(PortraitUtil.creature_tint(lead_dict))
+	portrait.set_identity(
+		str(lead_dict.get("species_id", "")), PortraitUtil.instance_tag_of(lead_dict)
+	)
+	var frame := PortraitUtil.framed(portrait, lead_dict, _lead_force(gc, lead_dict))
 	frame.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	box.add_child(frame)
+
+
+## The lead's primary force (its sigil accent), read through the catalog when available.
+func _lead_force(gc: Node, lead: Dictionary) -> String:
+	if gc == null or not gc.has_method("catalog"):
+		return ""
+	var catalog: SpeciesCatalog = gc.call("catalog")
+	if catalog == null:
+		return ""
+	var species: SpeciesData = catalog.get_by_id(str(lead.get("species_id", "")))
+	return species.force_primary if species != null else ""
 
 
 func _add_button(

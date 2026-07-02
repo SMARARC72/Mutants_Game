@@ -13,3 +13,10 @@ residual black frame bands are trimmed. Native panel resolution kept.
   chaos/eros/thanatos) plus ten biome keys. List order: primary, `_battle` variant, `_b` variants.
 
 Regenerate: `python tools/slice_backdrops.py` (PIL + numpy only). Binaries commit via Git LFS.
+
+## Wave 12 — horizon strips (`horizon/<force>.png`)
+
+DERIVED from each force's primary panel above by `tools/gen_horizon.py` (heavy gaussian blur,
+darken x0.52, vertical ink fade into GrimoirePalette INK at both edges) — no new sources. Kept at
+1024x320 (the asset-contract 1024px cap) and upscaled in-scene on the overworld's Parallax2D
+horizon layer. Regenerate: `python tools/gen_horizon.py` (PIL + numpy only). Git LFS.

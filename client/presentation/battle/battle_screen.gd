@@ -472,7 +472,12 @@ func _toast_outcome(reason: String) -> void:
 	var toast := get_node_or_null("/root/Toast")
 	if toast == null:
 		return
-	if reason == "caught" and toast.has_method("event"):
+	if reason == "caught" and toast.has_method("event_with"):
+		# Wave 9: the catch toast bears the creature's one-of-one sigil (its mark stamps in the
+		# icon slot — the same geometry party/lab render for this creature forever after).
+		var sigil := BattleCardKitScript.caught_sigil_payload(_battle, _game)
+		toast.call("event_with", "creature_caught", {"sigil": sigil})
+	elif reason == "caught" and toast.has_method("event"):
 		toast.call("event", "creature_caught")
 	elif bool(_result.get("stalemate", false)) and toast.has_method("show"):
 		# The verbatim voice line (§5.5) + the reduced-reward note — the honest stalemate copy.

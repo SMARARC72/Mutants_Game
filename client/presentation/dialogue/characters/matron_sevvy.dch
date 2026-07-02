@@ -1,0 +1,15 @@
+{
+"@path": "res://addons/dialogic/Resources/character.gd",
+"@subpath": NodePath(""),
+&"_translation_id": "",
+&"color": Color(0.8784314, 0.39607844, 0.54901963, 1),
+&"custom_info": {},
+&"default_portrait": "",
+&"description": "The Bloomwarden Greenmother. Bark for knuckles; mercy is husbandry with the gloves off.",
+&"display_name": "Matron Sevvy",
+&"mirror": false,
+&"nicknames": [],
+&"offset": Vector2(0, 0),
+&"portraits": {},
+&"scale": 1.0
+}

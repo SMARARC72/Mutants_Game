@@ -1,0 +1,15 @@
+{
+"@path": "res://addons/dialogic/Resources/character.gd",
+"@subpath": NodePath(""),
+&"_translation_id": "",
+&"color": Color(0.5568628, 0.7529412, 0.4862745, 1),
+&"custom_info": {},
+&"default_portrait": "",
+&"description": "Ona Bramblekind, the husbandry tutor. Love is a method, not a mood.",
+&"display_name": "Hearthward Ona",
+&"mirror": false,
+&"nicknames": [],
+&"offset": Vector2(0, 0),
+&"portraits": {},
+&"scale": 1.0
+}
