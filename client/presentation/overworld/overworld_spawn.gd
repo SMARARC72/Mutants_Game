@@ -27,6 +27,28 @@ static func spawn_cell(layout: Layout) -> Vector2i:
 	return best if best.x >= 0 else first_walkable_cell(layout)
 
 
+## Pick `count` walkable cells near `home` (manhattan radius 2..7), deterministic, skipping the
+## home cell itself — the NPC placement ring (moved from overworld_screen for the line cap).
+## Anchoring on the CANONICAL spawn keeps the cast put across battles and reloads.
+static func npc_cells(layout: Layout, home: Vector2i, count: int) -> Array:
+	var found: Array = []
+	for radius in range(2, 8):
+		for dy in range(-radius, radius + 1):
+			for dx in range(-radius, radius + 1):
+				if abs(dx) + abs(dy) != radius:
+					continue
+				var c := home + Vector2i(dx, dy)
+				if c == home or found.has(c):
+					continue
+				if not layout.in_bounds(c.x, c.y):
+					continue
+				if OverworldTileSet.is_walkable(layout.get_cell(c.x, c.y)):
+					found.append(c)
+					if found.size() >= count:
+						return found
+	return found
+
+
 ## The first walkable cell scanning row-major; falls back to (0,0) if the layout is somehow all
 ## walls (the authored fallback guarantees an interior floor, so this is defensive).
 static func first_walkable_cell(layout: Layout) -> Vector2i:
