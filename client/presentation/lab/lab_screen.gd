@@ -1,35 +1,34 @@
 extends Control
-## LabScreen (Phase 5 · Slice 3a) — the playable LAB BENCH for the MVP's two Creator ops: FUSE and
-## MUTATE. PRESENTATION layer, CODE-BUILT (a thin .tscn just loads this script) so it is unit-testable
-## headless. It is a STANDALONE scene reachable at the fixed path res://presentation/lab/lab_screen.tscn
-## (the sibling camp menu navigates here); with an injected GameController (party + inventory) it
-## previews + commits with no rendering.
+## LabScreen — THE LIVING CREATION TABLE (Wave 15, over the Phase 5 · Slice 3a bench). The lab's
+## two MVP ops (FUSE / MUTATE) staged as apparatus: subject/donor LivingPlates flanking a bubbling
+## vessel (LabBenchView), a method HSlider whose CONTINUUM is pure presentation (the recipe stays
+## BINARY: "wild" iff value >= 0.5 — Geneticist veto, parity/goldens untouched), a hold-to-seal
+## commit ring (LabRitual, player-driven, exempt from fast-forward), a taboo arm-then-seal pact,
+## and a <3s newborn reveal (dim -> surge -> dissolve-in -> name types on -> ledger count-up).
 ##
 ## THE BOUNDARY HOLDS (ADR-015): this screen computes NO stat / blend / cost. It only:
-##   * resolves the chosen party creature_instance(s) -> the LabBench [name, prim, sec, tier] tuples,
-##   * resolves the chosen inventory ingredient(s) -> ingredient-id Strings,
-##   * authors a LabRecipe and routes it through LabRecipeBench -> LabBench -> client/domain/lab_engine,
-##   * RENDERS the verdict (LEGAL / ILLEGAL(reason) / TABOO(unlock cost)) and the oracle's reported
-##     forces / tier / entropy / corruption — every number comes BACK from the oracle, never from here.
-## On a LEGAL + affordable/gated COMMIT it debits the consumed parts (the recipe bench does this),
-## ADDS the resulting creature to run.party as a creature_instance carrying its splice_config in
-## lineage, and saves. A Toast announces the outcome.
-##
-## creature_instance -> LabBench inputs: a party entry is { species_id, nickname, ... }. We read the
-## species row via SpeciesCatalog.get_by_id and build [nickname|name, force_primary, force_secondary,
-## tier] — exactly what battle/capture do to go creature_instance -> engine inputs (MonFactory mirror).
-## Committed result -> party: the oracle's creature dict { name, prim, sec, tier, stats, hp, bst,
-## entropy, corruption, ... } is shaped into a creature_instance with lineage.splice = { op,
-## splice_config, parents, rng_seed_tag } so the splice is replayable + auditable.
+##   * resolves party creature_instance(s) -> LabBench [name, prim, sec, tier] tuples (LabLineage),
+##   * resolves chosen inventory ingredient(s) -> ingredient-id Strings,
+##   * authors a LabRecipe and routes it through LabRecipeBench -> LabBench -> domain/lab_engine,
+##   * RENDERS the verdict + the oracle's numbers — count-up tweens interpolate the DISPLAY toward
+##     the oracle's reported values, never a computed one. At the wild end the preview flickers
+##     through the LegalitySolver's FULL configs array (~8Hz) — real alternates, no UI math.
+## HEADLESS: `_juice_enabled` stays false (battle_beats pattern) — every animated path has a
+## synchronous twin, and the ritual state machine is tick()-driven so suites stay green.
 
 const SpliceRulesScript := preload("res://infrastructure/lab/splice_rules.gd")
 const LabRecipeBenchScript := preload("res://application/lab/lab_recipe_bench.gd")
 const LabRecipeScript := preload("res://infrastructure/inventory/lab_recipe.gd")
 const LegalitySolverScript := preload("res://infrastructure/lab/legality_solver.gd")
 const InputActions := preload("res://infrastructure/input/input_actions.gd")
+const LabLineageScript := preload("res://presentation/lab/lab_lineage.gd")
+const LabBenchViewScript := preload("res://presentation/lab/lab_bench_view.gd")
+const LabTableBuildScript := preload("res://presentation/lab/lab_table_build.gd")
+const LabVerdictKitScript := preload("res://presentation/lab/lab_verdict_kit.gd")
 const OVERWORLD_SCENE := "res://presentation/overworld/overworld_screen.tscn"
 
-## The two MVP ops this bench exposes. (graft/self_splice/reanimate are out of this slice's scope.)
+## The two MVP ops this bench exposes. (graft/self_splice/reanimate live on the Forbidden Ladder
+## rail as read-only flavor — out of this slice's scope.)
 const OPS: Array = ["fuse", "mutate"]
 
 ## Essence a sealed splice drinks (Wave 5 — costs bite). Application-side economy bookkeeping
@@ -48,29 +47,52 @@ var _op: String = "fuse"
 var _idx_a: int = -1  # party index of creature A (fuse host / mutate host)
 var _idx_b: int = -1  # party index of creature B (fuse partner; unused for mutate)
 var _ingredients: Array = []  # chosen ingredient item_keys (fuse: optional organs; mutate: one gene)
+var _method_value := 0.0  # the slider's continuum; the RECIPE only ever sees precise|wild
 var _last_verdict: Dictionary = {}
 var _last_commit: Dictionary = {}
 var _commit_count: int = 0  # distinguishes successive op_ids within one run (reproducible per index)
+var _alt_index: int = 0  # which solver config the wild preview currently shows
+var _pact_armed := false  # taboo two-step: first press arms, second press starts the hold
 
 ## When false, _ready does NOT auto-build (a headless test injects a GameController + drives build()).
 var _auto_build: bool = true
+## Juice = tweens/particles/reveal choreography. -1 auto (windowed && !reduce_motion), 0/1 forced.
+var _juice_override: int = -1
+var _juice_enabled := false
+
+# --- reveal state (juice mode only) ------------------------------------------------------------ #
+var _reveal_playing := false
+var _reveal_tweens: Array = []
+var _reveal_dim: ColorRect = null
+var _reveal_creature: Dictionary = {}
+var _reveal_instance: Dictionary = {}
 
 # --- UI node handles (code-built; styled via ThemeService) ------------------------------------- #
 var _root_box: VBoxContainer = null
+var _bench_view: Control = null  # LabBenchView — the staged table
+var _ladder_rail: VBoxContainer = null
 var _op_row: HBoxContainer = null
 var _a_picker: VBoxContainer = null
 var _b_picker: VBoxContainer = null
 var _ingredient_picker: VBoxContainer = null
 var _b_section: VBoxContainer = null
+var _method_slider: HSlider = null
+var _method_readout: Label = null
+var _verdict_panel: PanelContainer = null
 var _verdict_label: RichTextLabel = null
 var _result_label: RichTextLabel = null
+var _pact_tween: Tween = null
+var _cycle_timer: Timer = null
 ## Wave 9: the committed newborn's LivingPlate + one-of-one sigil in the verdict panel (hidden
 ## until a splice lands; a fresh preview hides it again).
 var _newborn_row: HBoxContainer = null
 var _newborn_plate: LivingPlate = null
 var _newborn_sigil: Control = null
+var _again_row: HBoxContainer = null
+var _gallows_label: Label = null
 var _preview_button: Button = null
 var _commit_button: Button = null
+var _ritual: Control = null  # LabRitual — the seal ring on the commit verb
 var _first_op_button: Button = null  # first rite button (the W1 focus anchor)
 
 
@@ -90,6 +112,18 @@ func _ready() -> void:
 		build()
 
 
+## Reveal skip (tension 10): any press skips once the first-ever reveal has been seen; a held
+## CONFIRM always fast-forwards. (Named _unhandled_input — `_input` is the InputService handle.)
+func _unhandled_input(event: InputEvent) -> void:
+	if not _reveal_playing:
+		return
+	var pressy := (
+		event is InputEventKey or event is InputEventMouseButton or event is InputEventJoypadButton
+	)
+	if pressy and event.is_pressed():
+		_try_skip_reveal()
+
+
 # === injection seams (tests / non-autoload contexts) ========================================== #
 
 
@@ -101,6 +135,13 @@ func set_game(game: Node) -> void:
 ## Disable the automatic build on _ready (tests drive build() explicitly after configuring a game).
 func set_auto_build(enabled: bool) -> void:
 	_auto_build = enabled
+
+
+## Force the juice layer on/off (tests exercise both routes; devcap forces on). Default: on only
+## windowed with reduce_motion off — headless suites never animate.
+func set_juice_enabled(enabled: bool) -> void:
+	_juice_override = 1 if enabled else 0
+	_apply_juice()
 
 
 # === build ==================================================================================== #
@@ -121,6 +162,7 @@ func build() -> void:
 	_idx_a = 0 if party.size() >= 1 else -1
 	_idx_b = 1 if party.size() >= 2 else -1
 	_build_ui()
+	_apply_juice()
 	refresh()
 	# W1 focus pass: the op row owns first focus so the bench is keyboard/gamepad-drivable.
 	_focus_op_row()
@@ -135,6 +177,7 @@ func select_op(op: String) -> void:
 		return
 	_op = op
 	_ingredients.clear()
+	_pact_armed = false
 	if _b_section != null:
 		_b_section.visible = _op == "fuse"
 	refresh()
@@ -143,12 +186,14 @@ func select_op(op: String) -> void:
 ## Select creature A (fuse host / mutate host) by party index. Refreshes the preview affordances.
 func set_creature_a(party_index: int) -> void:
 	_idx_a = party_index
+	_pact_armed = false
 	refresh()
 
 
 ## Select the fuse partner B by party index (ignored for mutate). Refreshes the preview affordances.
 func set_creature_b(party_index: int) -> void:
 	_idx_b = party_index
+	_pact_armed = false
 	refresh()
 
 
@@ -162,7 +207,23 @@ func toggle_ingredient(item_key: String) -> void:
 		_ingredients.erase(item_key)
 	else:
 		_ingredients.append(item_key)
+	_pact_armed = false
 	refresh()
+
+
+## The method slider's continuum position (0 precise .. 1 wild). PRESENTATION drives bench jitter/
+## sparks/tint continuously; the RECIPE stays binary via current_method() (engine untouched).
+func set_method_value(v: float) -> void:
+	_method_value = clampf(v, 0.0, 1.0)
+	_pact_armed = false
+	if _method_slider != null and not is_equal_approx(_method_slider.value, _method_value):
+		_method_slider.set_value_no_signal(_method_value)
+	refresh()
+
+
+## The BINARY method the recipe carries: "wild" iff the slider sits at/past the midpoint.
+func current_method() -> String:
+	return "wild" if _method_value >= 0.5 else "precise"
 
 
 # === preview / commit (route through the boundary; compute NOTHING here) ======================= #
@@ -174,6 +235,7 @@ func toggle_ingredient(item_key: String) -> void:
 func preview() -> Dictionary:
 	if _bench == null:
 		return {}
+	_alt_index = 0
 	var recipe := _build_recipe()
 	if recipe == null:
 		_last_verdict = {}
@@ -189,6 +251,7 @@ func preview() -> Dictionary:
 ## success: the recipe bench debits the consumed parts, the oracle's creature is shaped into a party
 ## creature_instance (lineage carries the splice_config), added to the run, and the run is saved.
 ## Returns the LabRecipeBench result ({ verdict, creature, splice_config, consumed } on LEGAL).
+## This is the DIRECT path (tests / the sealed ritual both land here).
 func commit() -> Dictionary:
 	if _bench == null or _game == null:
 		return {}
@@ -204,22 +267,35 @@ func commit() -> Dictionary:
 	if int(result.get("verdict", -1)) != LegalitySolverScript.Verdict.LEGAL:
 		# ILLEGAL / TABOO / unaffordable: surface the verdict, add NOTHING, eat NO parts.
 		_render_verdict(result)
-		_toast_outcome(result, false)
+		LabVerdictKitScript.toast_outcome(self, result, false)
 		return result
 
 	# LEGAL: the oracle already produced the creature; shape it into a party creature_instance
 	# (BEFORE the parents leave the roster — the lineage tags read them by index).
 	var creature: Dictionary = result.get("creature", {})
-	var instance := _to_creature_instance(creature, result.get("splice_config", {}), op_id)
+	var party: Array = _party()
+	var catalog := _catalog()
+	var parents: Array = [LabLineageScript.parent_tag(party, _idx_a)]
+	var tuples: Array = [LabLineageScript.creature_tuple(party, _idx_a, catalog)]
+	if _op == "fuse":
+		parents.append(LabLineageScript.parent_tag(party, _idx_b))
+		tuples.append(LabLineageScript.creature_tuple(party, _idx_b, catalog))
+	var instance := LabLineageScript.to_creature_instance(
+		creature, result.get("splice_config", {}), _op, op_id, parents, tuples
+	)
 	# COSTS BITE (Wave 5): the oracle's corruption ledger lands on the RUN track, the rite drinks
 	# essence (floored at 0), and the PARENTS ARE CONSUMED — the hybrid replaces them.
 	run.corruption += int(creature.get("corruption", 0))
 	run.essence = maxi(0, run.essence - SPLICE_ESSENCE_COST)
-	_consume_parents(run)
+	var parent_indices: Array = [_idx_a]
+	if _op == "fuse" and _idx_b != _idx_a:
+		parent_indices.append(_idx_b)
+	LabLineageScript.consume_parents(run, parent_indices)
 	if _game.has_method("add_party_member"):
 		_game.call("add_party_member", instance)
-	# Re-aim the bench at the newborn (recursion: the committed hybrid is itself pickable again).
-	var party: Array = _party()
+	# Re-aim the bench at the newborn (recursion: the committed hybrid is itself pickable again —
+	# this is what "Again?" pre-arms).
+	party = _party()
 	_idx_a = party.size() - 1
 	_idx_b = -1
 	for i in party.size():
@@ -228,12 +304,99 @@ func commit() -> Dictionary:
 			break
 	if _game.has_method("save_run"):
 		_game.call("save_run")
-	_toast_outcome(result, true)
+	_pact_armed = false
+	LabVerdictKitScript.toast_outcome(self, result, true)
 	refresh()  # the consumed parts + parents are gone — rebuild the pickers and drawer
-	# AFTER the refresh (whose live preview clears the result panel): the newborn's numbers +
-	# LivingPlate + sigil showcase survive on the page the player is actually looking at.
-	_render_commit(creature, instance)
+	# AFTER the refresh (whose live preview clears the result panel): the newborn showcase. Juice
+	# mode plays the staged reveal; headless/instant renders the identical end-state synchronously.
+	if _juice_enabled and is_inside_tree():
+		_play_reveal(creature, instance)
+	else:
+		_render_commit(creature, instance)
+		_show_again_row()
 	return result
+
+
+# === ritual seal (hold-to-commit; player-driven, exempt from fast-forward) ===================== #
+
+
+## The commit VERB's press path. Taboo pact: the first press only ARMS (a VoiceBook warning lands
+## in the verdict panel); the second press begins the hold. Clean rites hold immediately.
+func press_commit() -> void:
+	if _commit_button != null and _commit_button.disabled:
+		return
+	if int(_last_verdict.get("verdict", -1)) != LegalitySolverScript.Verdict.LEGAL:
+		return
+	if pact_required() and not _pact_armed:
+		_pact_armed = true
+		_append_pact_warning()
+		_update_commit_enabled()
+		return
+	if _ritual != null:
+		_ritual.call("begin_hold")
+
+
+## Release the seal hold (button_up). Early release SNUFFS the ring — nothing commits.
+func release_seal_hold() -> void:
+	if _ritual != null:
+		_ritual.call("release_hold")
+
+
+## Advance the seal hold by `delta` seconds — the instant/headless drive (juice mode self-ticks).
+func ritual_tick(delta: float) -> void:
+	if _ritual != null:
+		_ritual.call("tick", delta)
+
+
+## Current seal fill 0..1 (0 after a snuff).
+func seal_progress() -> float:
+	return float(_ritual.call("progress")) if _ritual != null else 0.0
+
+
+## True while the seal hold is filling.
+func is_sealing() -> bool:
+	return bool(_ritual.call("is_holding")) if _ritual != null else false
+
+
+## True when the previewed rite is LEGAL but taboo-flagged (gate met): sealing it is a PACT —
+## two-step arm-then-seal, and the verb names the corruption price (a displayed constant).
+func pact_required() -> bool:
+	if int(_last_verdict.get("verdict", -1)) != LegalitySolverScript.Verdict.LEGAL:
+		return false
+	var configs: Array = _last_verdict.get("configs", [])
+	if configs.is_empty():
+		return false
+	var flags: Dictionary = (configs[0] as Dictionary).get("flags", {})
+	return bool(flags.get("taboo", false))
+
+
+## True after the pact's first press (the second press seals).
+func pact_armed() -> bool:
+	return _pact_armed
+
+
+# === wild preview alternates (REAL solver configs — no UI math) ================================ #
+
+
+## The DISTINCT config summaries the solver returned for the current preview (>=2 means the wild
+## flicker has real alternates to walk).
+func alternate_summaries() -> Array:
+	var out: Array = []
+	for cfg in _last_verdict.get("configs", []):
+		var s := LabVerdictKitScript.config_summary(cfg as Dictionary)
+		if not out.has(s):
+			out.append(s)
+	return out
+
+
+## Step the previewed config to the next solver alternate and re-render the verdict line. The
+## juice-mode timer calls this at ~8Hz at the wild end; tests call it directly.
+func cycle_alternate() -> void:
+	var configs: Array = _last_verdict.get("configs", [])
+	if configs.size() <= 1:
+		return
+	_alt_index = (_alt_index + 1) % configs.size()
+	_render_verdict_text(_last_verdict)
 
 
 # === accessors (for headless test assertions) ================================================= #
@@ -254,6 +417,11 @@ func current_op() -> String:
 	return _op
 
 
+## True while the newborn reveal choreography is on stage (always false headless — instant twin).
+func reveal_playing() -> bool:
+	return _reveal_playing
+
+
 ## Return to the previous scene. The camp menu will set where "back" goes; for a standalone run we
 ## fall back to the overworld (keep it simple per the DoD).
 func return_to_overworld() -> void:
@@ -270,164 +438,18 @@ func return_to_overworld() -> void:
 ## (no host, fuse missing its partner, or an unresolvable creature index). The solver still decides
 ## LEGALITY at preview/commit; this only checks we have the inputs to ask the question.
 func _build_recipe() -> LabRecipe:
-	var a := _creature_tuple(_idx_a)
+	var party: Array = _party()
+	var catalog := _catalog()
+	var a: Array = LabLineageScript.creature_tuple(party, _idx_a, catalog)
 	if a.is_empty():
 		return null
 	if _op == "fuse":
-		var b := _creature_tuple(_idx_b)
+		var b: Array = LabLineageScript.creature_tuple(party, _idx_b, catalog)
 		if b.is_empty():
 			return null
-		return LabRecipeScript.new("fuse", a, b, _ingredients.duplicate(), "precise")
+		return LabRecipeScript.new("fuse", a, b, _ingredients.duplicate(), current_method())
 	# mutate: one host + the chosen ingredients (a gene-vial). b is unused ([] placeholder).
-	return LabRecipeScript.new("mutate", a, [], _ingredients.duplicate(), "precise")
-
-
-## Map a party creature_instance (by index) into the LabBench tuple [name, prim, sec, tier] by reading
-## its species row through the catalog (mirrors MonFactory.from_creature). A spliced hybrid
-## (species_id == "") resolves from the oracle identity cached at commit (stats_cached), so a
-## committed hybrid is itself pickable/spliceable again. Returns [] if unresolvable.
-func _creature_tuple(party_index: int) -> Array:
-	var party: Array = _party()
-	if party_index < 0 or party_index >= party.size():
-		return []
-	var entry: Variant = party[party_index]
-	if not (entry is Dictionary):
-		return []
-	var creature: Dictionary = entry
-	var species_id := str(creature.get("species_id", ""))
-	if species_id == "":
-		return _cached_tuple(creature)
-	var catalog: SpeciesCatalog = _game.call("catalog")
-	var species: SpeciesData = catalog.get_by_id(species_id) if catalog != null else null
-	if species == null:
-		return []
-	var display_name := str(creature.get("nickname", ""))
-	if display_name == "":
-		display_name = species.name
-	return [display_name, species.force_primary, species.force_secondary, species.tier]
-
-
-## A spliced hybrid's LabBench tuple, from the prim/sec/tier the oracle reported at commit
-## (stats_cached — cached verbatim, never recomputed). [] when the cache is absent/incomplete.
-func _cached_tuple(creature: Dictionary) -> Array:
-	var cached_raw: Variant = creature.get("stats_cached", {})
-	if not (cached_raw is Dictionary):
-		return []
-	var cached: Dictionary = cached_raw
-	var prim := str(cached.get("prim", ""))
-	var tier := str(cached.get("tier", ""))
-	if prim == "" or tier == "":
-		return []
-	var display_name := str(creature.get("nickname", ""))
-	if display_name == "":
-		display_name = "Splice"
-	return [display_name, prim, str(cached.get("sec", "")), tier]
-
-
-## Remove the sealed splice's PARENT creature_instances from the run's party (fuse: subject + donor;
-## mutate: the host). Descending index order so the second erase is not shifted by the first. The
-## caller then appends the hybrid — the newborn replaces its parents in the roster.
-func _consume_parents(run: RunContext) -> void:
-	if run == null:
-		return
-	var indices: Array = [_idx_a]
-	if _op == "fuse" and _idx_b != _idx_a:
-		indices.append(_idx_b)
-	indices.sort()
-	indices.reverse()
-	for idx in indices:
-		var i := int(idx)
-		if i >= 0 and i < run.party.size():
-			run.party.remove_at(i)
-
-
-## Shape the oracle's creature dict into a creature_instance (RunContext.party shape / the
-## creature_instances column contract). The oracle's numbers are cached VERBATIM (stats_cached,
-## entropy) — this never recomputes them. lineage.splice records provenance so the op is replayable.
-func _to_creature_instance(
-	creature: Dictionary, splice_config: Dictionary, op_id: String
-) -> Dictionary:
-	var parents := [_parent_tag(_idx_a)]
-	if _op == "fuse":
-		parents.append(_parent_tag(_idx_b))
-	return {
-		"species_id": "",  # a spliced hybrid is not a catalog species — its forces live in lineage
-		"nickname": str(creature.get("name", "Splice")),
-		"genome": {},
-		"expression": 1.0,
-		"bond": 0,
-		# The oracle's entropy ledger (a number it computed — cached, not recomputed here).
-		"entropy": int(creature.get("entropy", 0)),
-		"awakenings": 0,
-		# The oracle's stat block, cached verbatim (the contamination guard proves equality vs the
-		# engine on the same config+seed). prim/sec/tier/hp/bst are carried so the party entry is usable
-		# without re-deriving a species row this hybrid does not have.
-		"stats_cached":
-		{
-			"prim": str(creature.get("prim", "")),
-			"sec": str(creature.get("sec", "")),
-			"tier": str(creature.get("tier", "")),
-			"hp": int(creature.get("hp", 0)),
-			"bst": int(creature.get("bst", 0)),
-			"stats": (creature.get("stats", {}) as Dictionary).duplicate(true),
-		},
-		"skills": [],
-		"status_effects": {},
-		"lineage":
-		{
-			"spliced": true,
-			"op": _op,
-			"parents": parents,
-			# Presentation provenance: which parent's plate represents this hybrid (dominant parent —
-			# the one whose primary force carried into the blend; subject wins ties). Propagated
-			# through hybrid-of-hybrid lineages so a deep splice still renders its founding line.
-			"portrait_species": _dominant_portrait_species(creature, parents),
-			"splice_config": splice_config.duplicate(true),
-			"rng_seed_tag": op_id,
-			"taboo": bool(creature.get("taboo", false)),
-		},
-		"is_dead": false,
-	}
-
-
-## A compact, non-numeric provenance tag for a parent party creature (for lineage.parents).
-## portrait_species carries the parent's OWN plate identity (its species, or — for a hybrid parent —
-## its recorded dominant ancestor), so hybrid portraits survive recursive splices.
-func _parent_tag(party_index: int) -> Dictionary:
-	var party: Array = _party()
-	if party_index < 0 or party_index >= party.size() or not (party[party_index] is Dictionary):
-		return {}
-	var entry: Dictionary = party[party_index]
-	return {
-		"species_id": str(entry.get("species_id", "")),
-		"nickname": str(entry.get("nickname", "")),
-		"portrait_species": PortraitUtil.portrait_species_of(entry),
-	}
-
-
-## The DOMINANT parent's plate identity for a newborn hybrid: the parent whose primary force equals
-## the oracle-blended prim (the face the blend kept), the subject on ties/absence. Falls through to
-## any parent with a resolvable plate. Pure data pick — no numbers.
-func _dominant_portrait_species(creature: Dictionary, parents: Array) -> String:
-	var hybrid_prim := str(creature.get("prim", ""))
-	var ordered: Array = []
-	var tuples: Array = [_creature_tuple(_idx_a)]
-	if _op == "fuse":
-		tuples.append(_creature_tuple(_idx_b))
-	# Prefer the parent whose primary force the blend kept (index-aligned with `parents`).
-	for i in parents.size():
-		var tuple: Array = tuples[i] if i < tuples.size() else []
-		if tuple.size() >= 4 and str(tuple[1]) == hybrid_prim:
-			ordered.append(parents[i])
-	for parent in parents:
-		if not ordered.has(parent):
-			ordered.append(parent)
-	for parent in ordered:
-		if parent is Dictionary:
-			var pid := str((parent as Dictionary).get("portrait_species", ""))
-			if pid != "":
-				return pid
-	return ""
+	return LabRecipeScript.new("mutate", a, [], _ingredients.duplicate(), current_method())
 
 
 ## A reproducible-but-distinct op id for a commit: the op + the chosen party indices + a per-run
@@ -449,6 +471,12 @@ func _party() -> Array:
 	return []
 
 
+func _catalog() -> SpeciesCatalog:
+	if _game != null and _game.has_method("catalog"):
+		return _game.call("catalog")
+	return null
+
+
 func _inventory() -> InventoryAdapter:
 	if _game != null and _game.has_method("inventory"):
 		return _game.call("inventory")
@@ -461,11 +489,11 @@ func _player_state() -> Dictionary:
 	return {"corruption": 0, "unlocks": [], "has_parts": []}
 
 
-# === UI (minimal, code-built, themed) ========================================================= #
+# === UI (code-built, themed) =================================================================== #
 
 
-## Re-render the dynamic parts of the bench (op highlight, pickers, live preview) without rebuilding
-## the whole tree. Cheap to call after any selection change.
+## Re-render the dynamic parts of the bench (op highlight, stage plates, pickers, ladder, live
+## preview) without rebuilding the whole tree. Cheap to call after any selection change.
 func refresh() -> void:
 	if _root_box == null:
 		return
@@ -474,7 +502,11 @@ func refresh() -> void:
 	_render_ingredient_picker()
 	# A live preview keeps the verdict panel honest with the current selection.
 	preview()
+	_update_stage()
 	_update_commit_enabled()
+	_update_cycle_timer()
+	if _ladder_rail != null:
+		LabBenchViewScript.fill_ladder(_ladder_rail, _rules, _player_state())
 	_ensure_focus()
 
 
@@ -502,241 +534,64 @@ func _build_ui() -> void:
 	for child in get_children():
 		child.queue_free()
 	set_anchors_preset(Control.PRESET_FULL_RECT)
-
-	var bg := ColorRect.new()
-	bg.color = Color(0.06, 0.05, 0.08)
-	bg.set_anchors_preset(Control.PRESET_FULL_RECT)
-	add_child(bg)
-
-	var margin := MarginContainer.new()
-	margin.set_anchors_preset(Control.PRESET_FULL_RECT)
-	for side in ["left", "right", "top", "bottom"]:
-		margin.add_theme_constant_override("margin_" + side, 24)
-	add_child(margin)
-
-	var box := VBoxContainer.new()
-	box.name = "RootBox"
-	box.add_theme_constant_override("separation", 10)
-	margin.add_child(box)
-	_root_box = box
-
-	var title := Label.new()
-	title.name = "LabTitle"
-	title.text = "The Splicing Bench"
-	title.theme_type_variation = "TitleLabel"
-	box.add_child(title)
-
-	# The bench stack (rite / subject / donor / reagents) scrolls if it overflows so the
-	# verdict panel and the Divine/Splice/Back verbs below stay on-screen at any size.
-	var bench_scroll := ScrollContainer.new()
-	bench_scroll.name = "BenchScroll"
-	bench_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	bench_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	box.add_child(bench_scroll)
-	var bench_box := VBoxContainer.new()
-	bench_box.add_theme_constant_override("separation", 10)
-	bench_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	bench_scroll.add_child(bench_box)
-
-	# Op selector row (Fuse / Mutate).
-	var op_title := Label.new()
-	op_title.text = "Rite"
-	op_title.theme_type_variation = "MutedLabel"
-	bench_box.add_child(op_title)
-	_op_row = HBoxContainer.new()
-	_op_row.name = "OpRow"
-	_op_row.add_theme_constant_override("separation", 8)
-	bench_box.add_child(_op_row)
-
-	# Creature A picker (host / first parent).
-	var a_title := Label.new()
-	a_title.text = "Subject"
-	a_title.theme_type_variation = "MutedLabel"
-	bench_box.add_child(a_title)
-	_a_picker = VBoxContainer.new()
-	_a_picker.name = "CreatureAPicker"
-	bench_box.add_child(_a_picker)
-
-	# Creature B section (fuse only).
-	_b_section = VBoxContainer.new()
-	_b_section.name = "CreatureBSection"
-	bench_box.add_child(_b_section)
-	var b_title := Label.new()
-	b_title.text = "Donor"
-	b_title.theme_type_variation = "MutedLabel"
-	_b_section.add_child(b_title)
-	_b_picker = VBoxContainer.new()
-	_b_picker.name = "CreatureBPicker"
-	_b_section.add_child(_b_picker)
+	# The table is ASSEMBLED by LabTableBuild (static, duck-typed — the battle_card_kit pattern);
+	# this screen only keeps the refs and owns the wiring/state.
+	var shell := LabTableBuildScript.build_shell(self)
+	_root_box = shell["root_box"]
+	_bench_view = shell["bench_view"]
+	_op_row = shell["op_row"]
+	_a_picker = shell["a_picker"]
+	_b_section = shell["b_section"]
+	_b_picker = shell["b_picker"]
+	_ingredient_picker = shell["ingredient_picker"]
+	_ladder_rail = shell["ladder_rail"]
 	_b_section.visible = _op == "fuse"
-
-	# Ingredient picker (fuse: optional organs; mutate: a gene-vial).
-	var ing_title := Label.new()
-	ing_title.text = "Reagents"
-	ing_title.theme_type_variation = "MutedLabel"
-	bench_box.add_child(ing_title)
-	_ingredient_picker = VBoxContainer.new()
-	_ingredient_picker.name = "IngredientPicker"
-	bench_box.add_child(_ingredient_picker)
-
-	# Verdict + result panels — the oracle's ruling reads as an open grimoire page
-	# (ParchmentPanel), so both rich-text readouts flip to ink (TEXT_ON_PARCHMENT).
-	var verdict_panel := PanelContainer.new()
-	verdict_panel.theme_type_variation = "ParchmentPanel"
-	box.add_child(verdict_panel)
-	var verdict_box := VBoxContainer.new()
-	verdict_panel.add_child(verdict_box)
-	_verdict_label = RichTextLabel.new()
-	_verdict_label.name = "VerdictLabel"
-	_verdict_label.bbcode_enabled = true
-	_verdict_label.fit_content = true
-	_verdict_label.scroll_active = false
-	_verdict_label.custom_minimum_size = Vector2(0, 96)
-	_verdict_label.add_theme_color_override("default_color", GrimoirePalette.TEXT_ON_PARCHMENT)
-	verdict_box.add_child(_verdict_label)
-	# Wave 9: the newborn showcase — a LivingPlate (it breathes on the page) + its sigil,
-	# revealed only when a commit lands.
-	_newborn_row = HBoxContainer.new()
-	_newborn_row.name = "NewbornRow"
-	_newborn_row.add_theme_constant_override("separation", 10)
-	_newborn_row.visible = false
-	verdict_box.add_child(_newborn_row)
-	_newborn_plate = LivingPlate.new()
-	_newborn_plate.name = "NewbornPlate"
-	_newborn_plate.set_plate_size(Vector2(96, 96))
-	_newborn_row.add_child(_newborn_plate)
-	_newborn_sigil = SigilGen.make_mark("", "", "", 28)
-	_newborn_sigil.name = "NewbornSigil"
-	_newborn_sigil.size_flags_vertical = Control.SIZE_SHRINK_END
-	_newborn_row.add_child(_newborn_sigil)
-	_result_label = RichTextLabel.new()
-	_result_label.name = "ResultLabel"
-	_result_label.bbcode_enabled = true
-	_result_label.fit_content = true
-	_result_label.scroll_active = false
-	_result_label.add_theme_color_override("default_color", GrimoirePalette.TEXT_ON_PARCHMENT)
-	verdict_box.add_child(_result_label)
-
-	# Action row: Preview, Commit, Back.
-	var actions := HBoxContainer.new()
-	actions.add_theme_constant_override("separation", 8)
-	box.add_child(actions)
-	_preview_button = Button.new()
-	_preview_button.name = "PreviewButton"
-	_preview_button.text = "Divine"
-	_preview_button.pressed.connect(func() -> void: preview())
-	actions.add_child(_preview_button)
-	_commit_button = Button.new()
-	_commit_button.name = "CommitButton"
-	_commit_button.text = "Splice"
-	_commit_button.pressed.connect(func() -> void: commit())
-	actions.add_child(_commit_button)
-	var back_button := Button.new()
-	back_button.name = "BackButton"
-	back_button.text = "Leave the Bench"
-	back_button.pressed.connect(return_to_overworld)
-	actions.add_child(back_button)
+	var method := LabTableBuildScript.build_method_row(self, _root_box)
+	_method_slider = method["slider"]
+	_method_slider.set_value_no_signal(_method_value)
+	_method_readout = method["readout"]
+	var verdict := LabTableBuildScript.build_verdict_panel(self, _root_box)
+	_verdict_panel = verdict["panel"]
+	_verdict_label = verdict["verdict_label"]
+	_newborn_row = verdict["newborn_row"]
+	_newborn_plate = verdict["newborn_plate"]
+	_newborn_sigil = verdict["newborn_sigil"]
+	_result_label = verdict["result_label"]
+	_again_row = verdict["again_row"]
+	_gallows_label = verdict["gallows_label"]
+	var actions := LabTableBuildScript.build_actions(self, _root_box)
+	_preview_button = actions["preview_button"]
+	_commit_button = actions["commit_button"]
+	_ritual = actions["ritual"]
+	_cycle_timer = actions["cycle_timer"]
 
 
 func _render_op_row() -> void:
 	if _op_row == null:
 		return
-	for child in _op_row.get_children():
-		child.queue_free()
-	_first_op_button = null
-	for op in OPS:
-		var btn := Button.new()
-		btn.name = "Op_" + op
-		btn.toggle_mode = true
-		btn.button_pressed = op == _op
-		btn.text = op.capitalize()
-		var chosen: String = op
-		btn.pressed.connect(func() -> void: select_op(chosen))
-		_op_row.add_child(btn)
-		if _first_op_button == null:
-			_first_op_button = btn
+	_first_op_button = LabTableBuildScript.fill_op_row(self, _op_row, OPS, _op)
 
 
 func _render_creature_pickers() -> void:
-	_rebuild_creature_picker(_a_picker, _idx_a, set_creature_a, "A")
+	var party: Array = _party()
+	var catalog := _catalog()
+	LabTableBuildScript.fill_creature_picker(
+		self, _a_picker, party, catalog, _idx_a, "set_creature_a", "A"
+	)
 	if _b_section != null:
 		_b_section.visible = _op == "fuse"
 	if _op == "fuse":
-		_rebuild_creature_picker(_b_picker, _idx_b, set_creature_b, "B")
-
-
-func _rebuild_creature_picker(
-	container: VBoxContainer, selected_index: int, on_pick: Callable, tag: String
-) -> void:
-	if container == null:
-		return
-	for child in container.get_children():
-		child.queue_free()
-	var party: Array = _party()
-	for i in party.size():
-		var entry: Variant = party[i]
-		if not (entry is Dictionary):
-			continue
-		var tuple := _creature_tuple(i)
-		var label := _tuple_label(entry, tuple)
-		var btn := Button.new()
-		btn.name = "Pick%s_%d" % [tag, i]
-		btn.toggle_mode = true
-		btn.button_pressed = i == selected_index
-		btn.text = ("• " if i == selected_index else "  ") + label
-		# Hybrids render their dominant parent's plate with the deterministic corruption tint
-		# (PortraitUtil), so the lab shows the same face party/battle/camp do.
-		var plate := PortraitUtil.creature_plate(entry as Dictionary)
-		if plate != null:
-			btn.icon = plate
-			btn.expand_icon = true
-			btn.add_theme_constant_override("icon_max_width", 36)
-			PortraitUtil.tint_button_icon(btn, entry as Dictionary)
-		btn.custom_minimum_size = Vector2(0, 44)
-		var idx := i
-		btn.pressed.connect(func() -> void: on_pick.call(idx))
-		container.add_child(btn)
-
-
-func _tuple_label(entry: Dictionary, tuple: Array) -> String:
-	if tuple.size() >= 4:
-		var force: String = str(tuple[1])
-		if str(tuple[2]) != "":
-			force += "/" + str(tuple[2])
-		return "%s — %s %s" % [str(tuple[0]), force, str(tuple[3])]
-	# A spliced/unresolvable entry (no catalog row): show its nickname so it is still selectable info.
-	return str(entry.get("nickname", "Unknown"))
+		LabTableBuildScript.fill_creature_picker(
+			self, _b_picker, party, catalog, _idx_b, "set_creature_b", "B"
+		)
 
 
 func _render_ingredient_picker() -> void:
 	if _ingredient_picker == null:
 		return
-	for child in _ingredient_picker.get_children():
-		child.queue_free()
-	var stacks := _eligible_ingredient_stacks()
-	if stacks.is_empty():
-		var empty := Label.new()
-		empty.name = "NoReagents"
-		# W16a: the authored parts-drawer empty-state (VoiceBook empty.parts), falling back
-		# to the op-specific hint when the book is missing.
-		var what := "gene-vials" if _op == "mutate" else "organs"
-		empty.text = VoiceBook.pick("empty.parts")
-		if empty.text == "":
-			empty.text = "(the drawer holds no %s)" % what
-		empty.theme_type_variation = "MutedLabel"
-		_ingredient_picker.add_child(empty)
-		return
-	for stack in stacks:
-		var item: InventoryItem = stack
-		var btn := Button.new()
-		btn.name = "Reagent_" + item.item_key
-		btn.toggle_mode = true
-		btn.button_pressed = _ingredients.has(item.item_key)
-		var mark := "• " if _ingredients.has(item.item_key) else "  "
-		btn.text = "%s%s ×%d  (%s)" % [mark, item.item_key, item.qty, item.item_type]
-		var key: String = item.item_key
-		btn.pressed.connect(func() -> void: toggle_ingredient(key))
-		_ingredient_picker.add_child(btn)
+	LabTableBuildScript.fill_reagent_chips(
+		self, _ingredient_picker, _eligible_ingredient_stacks(), _rules, _ingredients, _op
+	)
 
 
 ## The inventory stacks that may be fed to THIS op: mutate accepts only gene-vials; fuse accepts the
@@ -753,170 +608,380 @@ func _eligible_ingredient_stacks() -> Array:
 	return out
 
 
+# === stage + verdict rendering ================================================================= #
+
+
+## Aim the staged table at the current selection: plates, donor visibility, conduit legality,
+## and the method continuum's jitter/spark/tint scale.
+func _update_stage() -> void:
+	if _bench_view == null:
+		return
+	var party: Array = _party()
+	var catalog := _catalog()
+	var tuple_a: Array = LabLineageScript.creature_tuple(party, _idx_a, catalog)
+	var entry_a: Dictionary = {}
+	if _idx_a >= 0 and _idx_a < party.size() and party[_idx_a] is Dictionary:
+		entry_a = party[_idx_a]
+	_bench_view.call("set_subject", entry_a, str(tuple_a[0]) if tuple_a.size() > 0 else "")
+	_bench_view.call("set_donor_visible", _op == "fuse")
+	if _op == "fuse":
+		var tuple_b: Array = LabLineageScript.creature_tuple(party, _idx_b, catalog)
+		var entry_b: Dictionary = {}
+		if _idx_b >= 0 and _idx_b < party.size() and party[_idx_b] is Dictionary:
+			entry_b = party[_idx_b]
+		_bench_view.call("set_donor", entry_b, str(tuple_b[0]) if tuple_b.size() > 0 else "")
+	_bench_view.call("set_wildness", _method_value)
+	_bench_view.call(
+		"set_legal", int(_last_verdict.get("verdict", -1)) == LegalitySolverScript.Verdict.LEGAL
+	)
+	if _method_readout != null:
+		_method_readout.text = current_method().capitalize()
+
+
+## Full verdict repaint: clears the result/newborn/again showcase, then renders the ruling text
+## and the taboo pact tint. (The wild flicker re-renders TEXT ONLY via _render_verdict_text.)
 func _render_verdict(verdict: Dictionary) -> void:
 	if _verdict_label == null:
 		return
 	_result_label.text = ""
 	if _newborn_row != null:
 		_newborn_row.visible = false  # a fresh divination clears the last newborn's showcase
+	if _again_row != null:
+		_again_row.visible = false
+	_render_verdict_text(verdict)
+	_update_pact_tint(verdict)
+
+
+## The ruling line + the previewed config summary. At the wild end the summary walks the solver's
+## FULL configs array (index _alt_index) — real alternates, cycled at ~8Hz in juice mode.
+func _render_verdict_text(verdict: Dictionary) -> void:
+	if _verdict_label == null:
+		return
 	if verdict.is_empty():
 		_verdict_label.text = (
-			"[color=#%s]Choose your subjects.[/color]" % _parchment_hex(GrimoirePalette.TEXT_MUTED)
+			"[color=#%s]Choose your subjects.[/color]"
+			% LabVerdictKitScript.parchment_hex(GrimoirePalette.TEXT_MUTED)
 		)
 		return
 	var code := int(verdict.get("verdict", -1))
 	var configs: Array = verdict.get("configs", [])
-	var cfg: Dictionary = configs[0] if configs.size() > 0 else {}
+	var idx := 0
+	var flicker := current_method() == "wild" and configs.size() > 1
+	if flicker:
+		idx = _alt_index % configs.size()
+	var cfg: Dictionary = configs[idx] if configs.size() > 0 else {}
+	var suffix := ""
+	if flicker:
+		suffix = (
+			"\n[color=#%s]the wild way — possibility %d of %d[/color]"
+			% [
+				LabVerdictKitScript.parchment_hex(GrimoirePalette.TEXT_MUTED),
+				idx + 1,
+				configs.size()
+			]
+		)
 	match code:
 		LegalitySolverScript.Verdict.LEGAL:
 			_verdict_label.text = (
-				"[color=#%s]LEGAL[/color]\n" % _parchment_hex(GrimoirePalette.SUCCESS)
-				+ _config_summary(cfg)
+				(
+					"[color=#%s]LEGAL[/color]\n"
+					% LabVerdictKitScript.parchment_hex(GrimoirePalette.SUCCESS)
+				)
+				+ LabVerdictKitScript.config_summary(cfg)
+				+ suffix
 			)
 		LegalitySolverScript.Verdict.TABOO:
 			var reason := str(verdict.get("reason", "this rite is forbidden"))
-			var cost := _cost_summary(verdict.get("unlock_cost", {}))
+			var cost := LabVerdictKitScript.cost_summary(verdict.get("unlock_cost", {}))
 			_verdict_label.text = (
 				"[color=#%s]TABOO[/color]  %s\n%s\n%s"
-				% [_parchment_hex(GrimoirePalette.WARNING), reason, cost, _config_summary(cfg)]
+				% [
+					LabVerdictKitScript.parchment_hex(GrimoirePalette.WARNING),
+					reason,
+					cost,
+					LabVerdictKitScript.config_summary(cfg)
+				]
 			)
 		_:
 			var why := str(verdict.get("reason", "the flesh refuses"))
 			_verdict_label.text = (
-				"[color=#%s]ILLEGAL[/color]  " % _parchment_hex(GrimoirePalette.DANGER) + why
+				(
+					"[color=#%s]ILLEGAL[/color]  "
+					% LabVerdictKitScript.parchment_hex(GrimoirePalette.DANGER)
+				)
+				+ why
 			)
 
 
-## BBCode hex for an accent deepened for the parchment verdict page (Wave 8 contrast pass — the
-## bright on-ink colours washed out on ParchmentPanel; GrimoirePalette owns the adjustment).
-static func _parchment_hex(color: Color) -> String:
-	return GrimoirePalette.on_parchment(color).to_html(false)
+## TABOO PACT skin: while the previewed rite is taboo-flagged (or hard-TABOO), the parchment
+## bruises — self_modulate shifts through corruption_color (a slow pulse in juice mode).
+func _update_pact_tint(verdict: Dictionary) -> void:
+	if _verdict_panel == null:
+		return
+	if _pact_tween != null and _pact_tween.is_valid():
+		_pact_tween.kill()
+	_pact_tween = null
+	var taboo := int(verdict.get("verdict", -1)) == LegalitySolverScript.Verdict.TABOO
+	var configs: Array = verdict.get("configs", [])
+	if not taboo and configs.size() > 0:
+		taboo = bool(
+			((configs[0] as Dictionary).get("flags", {}) as Dictionary).get("taboo", false)
+		)
+	if not taboo:
+		_verdict_panel.self_modulate = Color.WHITE
+		return
+	var low := Color.WHITE.lerp(GrimoirePalette.corruption_color(0.25), 0.3)
+	var high := Color.WHITE.lerp(GrimoirePalette.corruption_color(0.9), 0.42)
+	_verdict_panel.self_modulate = high
+	if _juice_enabled and is_inside_tree():
+		_pact_tween = create_tween().set_loops()
+		_pact_tween.tween_property(_verdict_panel, "self_modulate", low, 0.9)
+		_pact_tween.tween_property(_verdict_panel, "self_modulate", high, 0.9)
 
 
-## A non-numeric-source summary of the candidate config's forces/tier (the oracle reports the final
-## numbers on commit; the config carries force_intent + tier_target the CSP resolved). The entropy /
-## corruption COST is shown from the oracle on commit (preview has no roll); here we surface the
-## resolved force/tier the splice would carry so the player sees the shape of the outcome.
-func _config_summary(cfg: Dictionary) -> String:
-	if cfg.is_empty():
-		return ""
-	var fi: Array = cfg.get("force_intent", [])
-	var force := ""
-	if fi.size() >= 1:
-		force = str(fi[0])
-		if fi.size() >= 2 and str(fi[1]) != "":
-			force += "/" + str(fi[1])
-	var tier := str(cfg.get("tier_target", ""))
-	var cls := str(cfg.get("class_target", ""))
-	var label_hex := _parchment_hex(GrimoirePalette.THANATOS)
-	return (
-		"[color=#%s]forces[/color] %s   [color=#%s]tier[/color] %s   [color=#%s]class[/color] %s"
-		% [label_hex, force, label_hex, tier, label_hex, cls]
-	)
-
-
-func _cost_summary(cost: Dictionary) -> String:
-	if cost.is_empty():
-		return ""
-	var parts: Array = []
-	if cost.has("corruption_min"):
-		parts.append("corruption ≥ %d" % int(cost["corruption_min"]))
-	if cost.has("unlock"):
-		parts.append("the %s rite" % str(cost["unlock"]))
-	if cost.has("part"):
-		parts.append("a %s" % str(cost["part"]))
-	return (
-		"[color=#%s]unlock cost:[/color] " % _parchment_hex(GrimoirePalette.WARNING)
-		+ ", ".join(PackedStringArray(parts.map(func(s: Variant) -> String: return str(s))))
-	)
+# === commit showcase + ledger =================================================================== #
 
 
 ## Render the COMMITTED creature's oracle-reported numbers (forces, tier, BST/HP, and the entropy +
-## corruption the oracle charged). Every number here came BACK from the oracle — the screen computed
-## none of it (the contamination guard proves it equals the engine on the same config+seed).
-## `instance` is the shaped party entry (Wave 9: its plate + rng_seed_tag drive the newborn
-## showcase — the LivingPlate and the one-of-one sigil the creature will bear everywhere).
+## corruption the oracle charged) plus the newborn LivingPlate + sigil. Every number came BACK from
+## the oracle — the screen computed none of it.
 func _render_commit(creature: Dictionary, instance: Dictionary = {}) -> void:
 	if _result_label == null:
 		return
-	if _newborn_row != null and not instance.is_empty():
-		var tag := PortraitUtil.instance_tag_of(instance)
-		_newborn_plate.set_texture(PortraitUtil.creature_plate(instance))
-		_newborn_plate.set_tint(PortraitUtil.creature_tint(instance))
-		_newborn_plate.set_identity(str(instance.get("species_id", "")), tag)
-		_newborn_sigil.call(
-			"set_identity", str(instance.get("species_id", "")), tag, str(creature.get("prim", ""))
+	_render_commit_showcase(creature, instance)
+	_result_label.text = (
+		LabVerdictKitScript.commit_head(creature)
+		+ "\n"
+		+ LabVerdictKitScript.ledger_text(creature, 1.0)
+	)
+
+
+## The newborn's plate + one-of-one sigil (Wave 9), shown when a commit lands.
+func _render_commit_showcase(creature: Dictionary, instance: Dictionary) -> void:
+	if _newborn_row == null or instance.is_empty():
+		return
+	var tag := PortraitUtil.instance_tag_of(instance)
+	_newborn_plate.set_texture(PortraitUtil.creature_plate(instance))
+	_newborn_plate.set_tint(PortraitUtil.creature_tint(instance))
+	_newborn_plate.set_identity(str(instance.get("species_id", "")), tag)
+	_newborn_sigil.call(
+		"set_identity", str(instance.get("species_id", "")), tag, str(creature.get("prim", ""))
+	)
+	_newborn_row.visible = true
+
+
+# === the reveal (juice mode; <3s; seen-once/held-CONFIRM skippable — tension 10) =============== #
+
+
+## The newborn reveal: dim -> conduit/vessel surge -> the plate materializes through the dissolve
+## hook (1 -> 0) -> the name types on -> the ledger counts up to the oracle's numbers -> Again?/
+## Done. Fire-and-forget coroutine; _finish_reveal() is the single (skippable) exit.
+func _play_reveal(creature: Dictionary, instance: Dictionary) -> void:
+	_reveal_playing = true
+	_reveal_creature = creature
+	_reveal_instance = instance
+	_reveal_tweens.clear()
+	_reveal_dim = ColorRect.new()
+	_reveal_dim.name = "RevealDim"
+	_reveal_dim.color = Color(GrimoirePalette.INK, 0.0)
+	_reveal_dim.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_reveal_dim.gui_input.connect(_on_reveal_dim_input)
+	add_child(_reveal_dim)
+	var tw := create_tween()
+	tw.tween_property(_reveal_dim, "color:a", 0.55, 0.25)
+	_reveal_tweens.append(tw)
+	if _bench_view != null:
+		_bench_view.call("surge", 1.0)
+	await get_tree().create_timer(0.35).timeout
+	if not _reveal_playing:
+		return
+	# Materialize: the plate burns IN through the dissolve hook while the dim lifts.
+	_render_commit_showcase(creature, instance)
+	_result_label.text = LabVerdictKitScript.commit_head(creature)
+	_result_label.visible_ratio = 0.0
+	_newborn_plate.set_dissolve(1.0)
+	var tw2 := create_tween()
+	tw2.tween_method(_newborn_plate.set_dissolve, 1.0, 0.0, 0.7)
+	tw2.parallel().tween_property(_reveal_dim, "color:a", 0.0, 0.7)
+	_reveal_tweens.append(tw2)
+	await get_tree().create_timer(0.75).timeout
+	if not _reveal_playing:
+		return
+	# The name types on…
+	var tw3 := create_tween()
+	tw3.tween_property(_result_label, "visible_ratio", 1.0, 0.4)
+	_reveal_tweens.append(tw3)
+	await get_tree().create_timer(0.45).timeout
+	if not _reveal_playing:
+		return
+	# …and the ledger counts up to the oracle's numbers.
+	_result_label.visible_ratio = 1.0
+	var tw4 := create_tween()
+	tw4.tween_method(_ledger_countup.bind(creature), 0.0, 1.0, 0.5)
+	_reveal_tweens.append(tw4)
+	await get_tree().create_timer(0.55).timeout
+	if not _reveal_playing:
+		return
+	_finish_reveal()
+
+
+func _ledger_countup(f: float, creature: Dictionary) -> void:
+	if _result_label != null:
+		_result_label.text = (
+			LabVerdictKitScript.commit_head(creature)
+			+ "\n"
+			+ LabVerdictKitScript.ledger_text(creature, f)
 		)
-		_newborn_row.visible = true
-	var force := str(creature.get("prim", ""))
-	if str(creature.get("sec", "")) != "":
-		force += "/" + str(creature.get("sec", ""))
-	var head := (
-		"[color=#%s]Spliced:[/color] %s  —  %s %s"
-		% [
-			_parchment_hex(GrimoirePalette.SUCCESS),
-			str(creature.get("name", "")),
-			force,
-			str(creature.get("tier", "")),
-		]
+
+
+func _on_reveal_dim_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton and event.is_pressed():
+		_try_skip_reveal()
+
+
+## Skip rules (tension 10): any input skips once the first-ever reveal has been seen (persisted
+## Settings flag); a held CONFIRM fast-forwards even the first one.
+func _try_skip_reveal() -> void:
+	if not _reveal_playing:
+		return
+	if _reveal_seen() or _is_confirm_pressed():
+		_finish_reveal()
+
+
+## The single reveal exit: kill the choreography, land the exact end-state (full ledger, whole
+## plate, Again?/Done), and latch the seen-once flag.
+func _finish_reveal() -> void:
+	if not _reveal_playing:
+		return
+	_reveal_playing = false
+	for tw in _reveal_tweens:
+		if tw is Tween and (tw as Tween).is_valid():
+			(tw as Tween).kill()
+	_reveal_tweens.clear()
+	if _reveal_dim != null and is_instance_valid(_reveal_dim):
+		_reveal_dim.queue_free()
+	_reveal_dim = null
+	if not _reveal_creature.is_empty():
+		_render_commit(_reveal_creature, _reveal_instance)
+		_newborn_plate.set_dissolve(0.0)
+		_result_label.visible_ratio = 1.0
+	_show_again_row()
+	_mark_reveal_seen()
+
+
+func _on_seal_complete() -> void:
+	_pact_armed = false
+	commit()
+
+
+func _on_again_pressed() -> void:
+	# The newborn is already pre-armed as Subject (commit re-aims the bench) — just fold the
+	# showcase away and put the table back in the player's hands.
+	if _again_row != null:
+		_again_row.visible = false
+	refresh()
+	_focus_op_row()
+
+
+func _show_again_row() -> void:
+	if _again_row == null:
+		return
+	_again_row.visible = true
+	if _gallows_label != null:
+		# Rotating gallows microcopy — the authored lab voice, salted by commit count.
+		var line := VoiceBook.pick("lab.reveal", _commit_count)
+		if line == "":
+			line = VoiceBook.pick("lab.commit", _commit_count)
+		_gallows_label.text = line
+
+
+## Append the pact's arming warning (authored VoiceBook lab.taboo line) to the verdict page.
+func _append_pact_warning() -> void:
+	if _verdict_label == null:
+		return
+	var line := VoiceBook.pick("lab.taboo", _commit_count)
+	if line == "":
+		return
+	_verdict_label.text += (
+		"\n[color=#%s]%s[/color]"
+		% [LabVerdictKitScript.parchment_hex(GrimoirePalette.WARNING), line]
 	)
-	var label_hex := _parchment_hex(GrimoirePalette.THANATOS)
-	var ledger := (
-		"[color=#%s]HP[/color] %d   [color=#%s]BST[/color] %d   "
-		+ "[color=#%s]entropy[/color] %d   [color=#%s]corruption[/color] %d"
-	)
-	ledger = (
-		ledger
-		% [
-			label_hex,
-			int(creature.get("hp", 0)),
-			label_hex,
-			int(creature.get("bst", 0)),
-			label_hex,
-			int(creature.get("entropy", 0)),
-			label_hex,
-			int(creature.get("corruption", 0)),
-		]
-	)
-	_result_label.text = head + "\n" + ledger
+
+
+# === juice plumbing ============================================================================ #
+
+
+func _apply_juice() -> void:
+	var on := _juice_override == 1
+	if _juice_override == -1:
+		on = DisplayServer.get_name() != "headless" and not _reduce_motion()
+	_juice_enabled = on
+	if _bench_view != null:
+		_bench_view.call("set_juice", on)
+	if _ritual != null:
+		_ritual.call("set_juice", on)
+	_update_cycle_timer()
+
+
+## The wild flicker clock only runs juiced, at the wild end, with real alternates to walk.
+func _update_cycle_timer() -> void:
+	if _cycle_timer == null or not _cycle_timer.is_inside_tree():
+		return
+	var configs: Array = _last_verdict.get("configs", [])
+	var want := _juice_enabled and current_method() == "wild" and configs.size() > 1
+	if want and _cycle_timer.is_stopped():
+		_cycle_timer.start()
+	elif not want and not _cycle_timer.is_stopped():
+		_cycle_timer.stop()
+
+
+func _reduce_motion() -> bool:
+	var settings := get_node_or_null("/root/Settings")
+	if settings == null:
+		return false
+	return bool(settings.call("get_value", "accessibility", "reduce_motion", false))
+
+
+func _reveal_seen() -> bool:
+	var settings := get_node_or_null("/root/Settings")
+	if settings == null:
+		return false
+	return bool(settings.call("get_value", "lab", "reveal_seen", false))
+
+
+func _mark_reveal_seen() -> void:
+	var settings := get_node_or_null("/root/Settings")
+	if settings == null:
+		return
+	if bool(settings.call("get_value", "lab", "reveal_seen", false)):
+		return
+	settings.call("set_value", "lab", "reveal_seen", true)
+	if settings.has_method("save_settings"):
+		settings.call("save_settings")
+
+
+func _is_confirm_pressed() -> bool:
+	if _input == null or not _input.has_method("is_pressed"):
+		return false
+	return bool(_input.call("is_pressed", InputActions.CONFIRM))
 
 
 ## Commit is enabled only when the current preview is LEGAL (and, for a recipe needing parts, the
-## drawer has them — the recipe bench re-checks affordability, but the button reflects it up front).
+## drawer has them). A LEGAL-but-taboo rite is a PACT: the verb names its corruption price (the
+## oracle's authored constant, DISPLAYED not computed) and arms before it seals.
 func _update_commit_enabled() -> void:
 	if _commit_button == null:
 		return
 	var legal := int(_last_verdict.get("verdict", -1)) == LegalitySolverScript.Verdict.LEGAL
 	var affordable := bool(_last_verdict.get("ingredients_available", true))
 	_commit_button.disabled = not (legal and affordable)
-
-
-func _toast_outcome(result: Dictionary, success: bool) -> void:
-	var toast := get_node_or_null("/root/Toast")
-	if toast == null or not toast.has_method("show"):
-		return
-	if success:
-		var creature: Dictionary = result.get("creature", {})
-		(
-			toast
-			. call(
-				"show",
-				{
-					"title": "A new horror draws breath",
-					"body": str(creature.get("name", "")),
-					"sound": "wet",
-				}
+	if legal and pact_required():
+		if _pact_armed:
+			_commit_button.text = "Seal the Pact"
+		else:
+			var lab_constants: Dictionary = Constants.BALANCE.get("lab", {})
+			_commit_button.text = (
+				"Break the Taboo (+%d corruption)" % int(lab_constants.get("taboo_corruption", 0))
 			)
-		)
 	else:
-		(
-			toast
-			. call(
-				"show",
-				{
-					"title": "The rite recoils",
-					"body": str(result.get("reason", "the flesh refuses")),
-					"sound": "toll",
-				}
-			)
-		)
+		_commit_button.text = "Splice"

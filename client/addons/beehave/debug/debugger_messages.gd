@@ -1,8 +1,11 @@
 class_name BeehaveDebuggerMessages
 
 
+# LOCAL PATCH (Mutants W13, see addons/THIRD_PARTY.md): also require an ACTIVE debugger session.
+# Upstream v2.9.2 only checks the editor feature, so every headless/CLI run (GdUnit, CI) spams
+# "Can't send message. No active debugger" per tree registration and per tick.
 static func can_send_message() -> bool:
-	return not Engine.is_editor_hint() and OS.has_feature("editor")
+	return not Engine.is_editor_hint() and OS.has_feature("editor") and EngineDebugger.is_active()
 
 
 static func register_tree(beehave_tree: Dictionary) -> void:

@@ -351,3 +351,152 @@ func test_selecting_mutate_hides_the_donor_section() -> void:
 	assert_bool(b_section.visible).is_false()
 	screen.queue_free()
 	gc.queue_free()
+
+
+# --- Wave 15: the living creation table --------------------------------------------------------- #
+
+
+func _select_legal_fuse(screen: Control) -> void:
+	screen.call("select_op", "fuse")
+	screen.call("set_creature_a", 0)
+	screen.call("set_creature_b", 1)
+
+
+func test_method_slider_below_midpoint_commits_precise() -> void:
+	# The slider is a CONTINUUM but the ENGINE stays binary (Geneticist veto): < 0.5 => "precise",
+	# proven on the committed splice_config the solver persisted (never a UI-side echo).
+	var gc := _make_game(PARTY_LEGAL)
+	var screen := _make_screen(gc)
+	_select_legal_fuse(screen)
+	screen.call("set_method_value", 0.49)
+	assert_str(str(screen.call("current_method"))).is_equal("precise")
+	var res: Dictionary = screen.call("commit")
+	assert_int(int(res["verdict"])).is_equal(LegalitySolverScript.Verdict.LEGAL)
+	assert_str(str((res["splice_config"] as Dictionary)["method"])).is_equal("precise")
+	screen.queue_free()
+	gc.queue_free()
+
+
+func test_method_slider_at_or_past_midpoint_commits_wild() -> void:
+	# The exact midpoint already reads wild (value >= 0.5) — the recipe.method contract.
+	var gc := _make_game(PARTY_LEGAL)
+	var screen := _make_screen(gc)
+	_select_legal_fuse(screen)
+	screen.call("set_method_value", 0.5)
+	assert_str(str(screen.call("current_method"))).is_equal("wild")
+	var res: Dictionary = screen.call("commit")
+	assert_int(int(res["verdict"])).is_equal(LegalitySolverScript.Verdict.LEGAL)
+	assert_str(str((res["splice_config"] as Dictionary)["method"])).is_equal("wild")
+	screen.queue_free()
+	gc.queue_free()
+
+
+func test_taboo_pact_two_step_arms_then_seals() -> void:
+	# A gate-met opposed fuse (corruption 50 >= T_abom 40) is LEGAL but taboo-flagged: sealing it
+	# is a PACT. The verb names the corruption price (the +18 constant, DISPLAYED not computed),
+	# the FIRST press only arms, the SECOND starts the hold, and the full hold commits for real.
+	var gc := _make_game(PARTY_OPPOSED)
+	var run: RunContext = gc.call("run")
+	run.corruption = 50
+	var screen := _make_screen(gc)
+	_select_legal_fuse(screen)
+	assert_bool(bool(screen.call("pact_required"))).is_true()
+	var commit_button := screen.find_child("CommitButton", true, false) as Button
+	assert_object(commit_button).is_not_null()
+	assert_bool(commit_button.text.begins_with("Break the Taboo")).is_true()
+	assert_bool(commit_button.text.contains("+18")).is_true()
+	screen.call("press_commit")
+	assert_bool(bool(screen.call("pact_armed"))).is_true()
+	assert_bool(bool(screen.call("is_sealing"))).is_false()  # armed, NOT holding yet
+	assert_str(commit_button.text).is_equal("Seal the Pact")
+	screen.call("press_commit")
+	assert_bool(bool(screen.call("is_sealing"))).is_true()
+	screen.call("ritual_tick", 1.0)  # drive the 0.9s hold to completion (instant mode)
+	var res: Dictionary = screen.call("last_commit")
+	assert_int(int(res["verdict"])).is_equal(LegalitySolverScript.Verdict.LEGAL)
+	assert_bool(bool((res["creature"] as Dictionary)["taboo"])).is_true()
+	assert_int(run.party.size()).is_equal(1)  # the abomination replaced its parents
+	screen.queue_free()
+	gc.queue_free()
+
+
+func test_seal_hold_early_release_snuffs() -> void:
+	# Releasing before the ring closes SNUFFS the seal: nothing commits, nothing is consumed,
+	# and a fresh full hold still seals afterwards (the snuff never wedges the ritual).
+	var gc := _make_game(PARTY_LEGAL)
+	var run: RunContext = gc.call("run")
+	var before := run.party.size()
+	var screen := _make_screen(gc)
+	_select_legal_fuse(screen)
+	screen.call("press_commit")  # a clean rite needs no pact — the hold starts immediately
+	assert_bool(bool(screen.call("is_sealing"))).is_true()
+	screen.call("ritual_tick", 0.5)  # ~55% of the 0.9s hold
+	assert_float(float(screen.call("seal_progress"))).is_between(0.4, 0.8)
+	screen.call("release_seal_hold")
+	assert_bool(bool(screen.call("is_sealing"))).is_false()
+	assert_float(float(screen.call("seal_progress"))).is_equal(0.0)
+	assert_bool((screen.call("last_commit") as Dictionary).is_empty()).is_true()
+	assert_int(run.party.size()).is_equal(before)
+	screen.call("press_commit")
+	screen.call("ritual_tick", 1.0)
+	var res: Dictionary = screen.call("last_commit")
+	assert_int(int(res["verdict"])).is_equal(LegalitySolverScript.Verdict.LEGAL)
+	screen.queue_free()
+	gc.queue_free()
+
+
+func test_wild_preview_cycles_real_solver_alternates() -> void:
+	# At the wild end the preview walks the LegalitySolver's FULL configs array — the same-pole
+	# fuse fixture genuinely yields two structurally distinct configs (Gaia- vs Eros-carried), so
+	# the flicker shows REAL alternates, never UI-invented ones.
+	var gc := _make_game(PARTY_LEGAL)
+	var screen := _make_screen(gc)
+	_select_legal_fuse(screen)
+	screen.call("set_method_value", 1.0)
+	var v: Dictionary = screen.call("preview")
+	assert_int((v["configs"] as Array).size()).is_greater(1)
+	var alts: Array = screen.call("alternate_summaries")
+	assert_int(alts.size()).is_greater(1)  # distinct outcomes, not echoes
+	var label := screen.find_child("VerdictLabel", true, false) as RichTextLabel
+	var first_text := label.text
+	screen.call("cycle_alternate")
+	assert_str(label.text).is_not_equal(first_text)
+	screen.queue_free()
+	gc.queue_free()
+
+
+func test_commit_reveal_is_instant_headless() -> void:
+	# Headless juice stays OFF (`_juice_enabled` battle_beats pattern): the reveal's end-state —
+	# newborn showcase + the Again?/Done row — lands SYNCHRONOUSLY, no coroutine to wait out.
+	var gc := _make_game(PARTY_LEGAL)
+	var screen := _make_screen(gc)
+	_select_legal_fuse(screen)
+	var res: Dictionary = screen.call("commit")
+	assert_int(int(res["verdict"])).is_equal(LegalitySolverScript.Verdict.LEGAL)
+	assert_bool(bool(screen.call("reveal_playing"))).is_false()
+	var newborn_row := screen.find_child("NewbornRow", true, false) as Control
+	assert_bool(newborn_row.visible).is_true()
+	var again_row := screen.find_child("AgainRow", true, false) as Control
+	assert_bool(again_row.visible).is_true()
+	# "Again?" folds the showcase away — the bench is already pre-armed on the newborn Subject.
+	var again_button := screen.find_child("AgainButton", true, false) as Button
+	again_button.pressed.emit()
+	assert_bool(again_row.visible).is_false()
+	screen.queue_free()
+	gc.queue_free()
+
+
+func test_wave15_table_builds_stage_slider_ladder_and_seal() -> void:
+	var gc := _make_game(PARTY_LEGAL)
+	var screen := _make_screen(gc)
+	assert_object(screen.find_child("BenchStage", true, false)).is_not_null()
+	assert_object(screen.find_child("Vessel", true, false)).is_not_null()
+	assert_object(screen.find_child("ConduitSubject", true, false)).is_not_null()
+	assert_object(screen.find_child("MethodSlider", true, false)).is_not_null()
+	assert_object(screen.find_child("SealRing", true, false)).is_not_null()
+	# The Forbidden Ladder lists the three gated rites (read-only flavor from splice_rules.json).
+	assert_object(screen.find_child("Ladder_graft", true, false)).is_not_null()
+	assert_object(screen.find_child("Ladder_self_splice", true, false)).is_not_null()
+	assert_object(screen.find_child("Ladder_reanimate", true, false)).is_not_null()
+	screen.queue_free()
+	gc.queue_free()

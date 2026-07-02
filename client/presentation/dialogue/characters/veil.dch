@@ -1,0 +1,15 @@
+{
+"@path": "res://addons/dialogic/Resources/character.gd",
+"@subpath": NodePath(""),
+&"_translation_id": "",
+&"color": Color(0.5411765, 0.37254903, 0.6901961, 1),
+&"custom_info": {},
+&"default_portrait": "",
+&"description": "Rents bench time on an altar that took prayers for four hundred years. Keeps a mop for the surprise.",
+&"display_name": "Surgeon-Lab-Tech Veil",
+&"mirror": false,
+&"nicknames": [],
+&"offset": Vector2(0, 0),
+&"portraits": {},
+&"scale": 1.0
+}

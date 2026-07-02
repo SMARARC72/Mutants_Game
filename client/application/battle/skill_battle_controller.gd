@@ -45,6 +45,15 @@ func interactive(
 	return InteractiveSession.new(self, team_a, team_b, player_side, with_statuses)
 
 
+## Wave 10 (HAWKING force legibility): the ENGINE's force-matchup multiplier between two live
+## combatants — a THIN read of SkillEngine.force_mult (the exact table use_damage/act resolve
+## with: 1.5 opposed / 0.7 same / 1.0 neutral), so the UI never re-computes matchup math.
+static func matchup_mult(attacker: AbilityContainer, target: AbilityContainer) -> float:
+	if attacker == null or target == null:
+		return 1.0
+	return SkillEngine.force_mult(attacker.primary_force(), target.primary_force())
+
+
 ## The verb of a skill id, from the single-sourced library (presentation/routing only).
 static func verb_of(skill: String) -> String:
 	var lib: Dictionary = Constants.BALANCE["skill"]["library"]

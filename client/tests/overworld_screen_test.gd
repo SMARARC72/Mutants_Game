@@ -169,28 +169,32 @@ func test_spawn_is_in_the_largest_reachable_area_not_a_sealed_room() -> void:
 
 
 func test_driving_a_move_into_an_encounter_step_hands_off() -> void:
-	# Determinism lets us PRE-COMPUTE the first step index that triggers an encounter for this
-	# (seed, region), align the run's step counter just before it, then make ONE walkable move so
-	# the very next advance_step lands on the encounter step. This proves the overworld -> battle
-	# hand-off contract deterministically, without relying on a long random walk.
+	# Determinism lets us PRE-COMPUTE the first step index that triggers a BATTLE encounter for
+	# this (seed, region, landing-cell class — W13 folds the stepped cell's class into the roll),
+	# align the run's step counter just before it, then make ONE walkable move so the very next
+	# advance_step lands on the encounter step. This proves the overworld -> battle hand-off
+	# contract deterministically, without relying on a long random walk.
 	var gc := _make_game()
 	var run: RunContext = gc.call("new_run", TEST_SEED)
 	var ow := _make_overworld(gc)
 	var layout: Layout = ow.call("layout")
 	var region := str(gc.call("active_region"))
 
-	var director: EncounterDirector = EncounterDirectorScript.for_region(TEST_SEED, region)
-	var encounter_step := -1
-	for i in range(1, 500):
-		if bool((director.roll_step(i) as Dictionary)["encounter"]):
-			encounter_step = i
-			break
-	assert_int(encounter_step).is_greater(0)  # the stream must fire within the window.
-
-	# Find a walkable neighbour of the spawn so the move is guaranteed to succeed.
+	# Find a walkable neighbour of the spawn so the move is guaranteed to succeed, and the class
+	# the overworld will fold into that landing cell's roll.
 	var spawn: Vector2i = ow.call("player_cell")
 	var step_dir := _walkable_dir(layout, spawn)
 	assert_bool(step_dir != Vector2i.ZERO).is_true()
+	var landing_class := str(ow.call("tile_class_at", spawn + step_dir))
+
+	var director: EncounterDirector = EncounterDirectorScript.for_region(TEST_SEED, region)
+	var encounter_step := -1
+	for i in range(1, 500):
+		var probe: Dictionary = director.roll_step(i, landing_class)
+		if bool(probe["encounter"]) and str(probe["kind"]) == EncounterDirectorScript.KIND_BATTLE:
+			encounter_step = i
+			break
+	assert_int(encounter_step).is_greater(0)  # the stream must fire within the window.
 
 	# Align the counter so the next advance_step == encounter_step.
 	run.world_state["steps"] = encounter_step - 1

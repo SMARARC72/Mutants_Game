@@ -40,6 +40,12 @@ const DEFAULTS := {
 	{
 		"swift_rites": "x1",
 	},
+	# Wave 15: seen-once ceremony latches (tension 10 — any input skips a reveal after its
+	# first-ever full viewing). Declared here so _migrate persists the latch across restarts.
+	"lab":
+	{
+		"reveal_seen": false,
+	},
 }
 
 var data: Dictionary = {}

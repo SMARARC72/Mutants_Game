@@ -19,11 +19,19 @@ const BED_PATHS := {
 const DEFAULT_FADE := 1.5
 const FADE_OUT_DB := -60.0
 
+## Wave 10 (the W14 adaptive-audio hook): the battle bed's INTENSITY layer — a second, detuned
+## copy of the battle drone whose gain swells with the entropy crescendo (cheap thickening; no
+## extra asset). The cap keeps it a bed layer, never a lead.
+const INTENSITY_MAX_DB := -8.0
+const INTENSITY_PITCH := 1.06
+
 var _players: Array[AudioStreamPlayer] = []
 var _active := 0
 var _current_bed := ""
 var _fade_tween: Tween
 var _last_scene: Node = null
+var _intensity := 0.0
+var _intensity_player: AudioStreamPlayer = null
 
 
 func _ready() -> void:
@@ -45,11 +53,39 @@ func current_bed() -> String:
 	return _current_bed
 
 
+## Normalized battle intensity (0..1) — the battle screen feeds the entropy crescendo here
+## each round. A curved gain ramp (x^1.5, perceptual) swells the detuned second drone layer
+## under the active battle bed; 0 silences it; a non-battle bed shelves it entirely.
+## Headless: the value is tracked for tests, no device is touched.
+func set_intensity(t: float) -> void:
+	_intensity = clampf(t, 0.0, 1.0)
+	if Sfx.is_headless() or _players.is_empty():
+		return
+	if _current_bed != "battle_drone" or _intensity <= 0.0:
+		if _intensity_player != null and _intensity_player.playing:
+			_intensity_player.stop()
+		return
+	_ensure_intensity_layer()
+	if _intensity_player.stream == null:
+		return
+	if not _intensity_player.playing:
+		_intensity_player.play()
+	_intensity_player.volume_db = lerpf(FADE_OUT_DB, INTENSITY_MAX_DB, pow(_intensity, 1.5))
+
+
+## The last normalized intensity fed in (tracked headless — the test surface).
+func intensity() -> float:
+	return _intensity
+
+
 ## Crossfade to a named bed. Re-requesting the current bed is a no-op (never restarts).
 func play_bed(bed_id: String, fade := DEFAULT_FADE) -> void:
 	if bed_id == _current_bed:
 		return
 	_current_bed = bed_id
+	# Leaving the battle bed shelves the intensity layer (the swell belongs to combat only).
+	if bed_id != "battle_drone" and _intensity_player != null and _intensity_player.playing:
+		_intensity_player.stop()
 	if Sfx.is_headless() or _players.is_empty():
 		return
 	var stream := _load_bed(bed_id)
@@ -81,6 +117,18 @@ static func bed_for_scene_path(path: String) -> String:
 	if p.contains("main_menu") or p.contains("options"):
 		return "menu_bed"
 	return ""
+
+
+## Build the detuned intensity layer lazily (windowed play only, first swell).
+func _ensure_intensity_layer() -> void:
+	if _intensity_player != null:
+		return
+	_intensity_player = AudioStreamPlayer.new()
+	_intensity_player.bus = "Music"
+	_intensity_player.pitch_scale = INTENSITY_PITCH
+	_intensity_player.volume_db = FADE_OUT_DB
+	add_child(_intensity_player)
+	_intensity_player.stream = _load_bed("battle_drone")
 
 
 func _load_bed(bed_id: String) -> AudioStream:

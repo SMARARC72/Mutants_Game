@@ -1,0 +1,15 @@
+{
+"@path": "res://addons/dialogic/Resources/character.gd",
+"@subpath": NodePath(""),
+&"_translation_id": "",
+&"color": Color(0.9098039, 0.84705883, 0.627451, 1),
+&"custom_info": {},
+&"default_portrait": "",
+&"description": "A High Table envoy with a clipboard and no visible soul. Only ever precise; never sorry.",
+&"display_name": "Vael Construct-Nine",
+&"mirror": false,
+&"nicknames": [],
+&"offset": Vector2(0, 0),
+&"portraits": {},
+&"scale": 1.0
+}

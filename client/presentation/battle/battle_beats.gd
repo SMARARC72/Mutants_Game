@@ -9,7 +9,8 @@ extends RefCounted
 ## to ~0.12s (never-wait-twice, plan tension 10).
 ##
 ## All entry points are STATIC and duck-typed against the battle screen (append_transcript_to /
-## card_refs_for / side_cards / restyle_bar / fx_damage / play_stinger / confirm_held), so this
+## card_refs_for / side_cards / side_team / stage_beat / fx_damage / fx_death / play_stinger /
+## confirm_held), so this
 ## file never preloads battle_screen.gd (no import cycle). HEADLESS SAFETY: the screen only calls
 ## play() in animated mode — instant/drain mode applies beats synchronously without touching this
 ## coroutine, so every synchronous test path stays await-free.
@@ -40,10 +41,13 @@ static func capture(battle, actor: Variant, log_from: int) -> Dictionary:
 ## transcript delta + per-action HP snap + damage floats + stingers, equivalent to the old
 ## synchronous per-step refresh. The screen's drain loop calls this once per beat, in order.
 static func apply_instant(screen: Control, beat: Dictionary) -> void:
+	# The stage follows + outlines the beat's actor even instant (W10; the lunge is animated-only).
+	screen.call("stage_beat", beat.get("actor"), false)
 	screen.call("append_transcript_to", int(beat.get("log_to", 0)))
 	for side in 2:
 		var is_enemy := side == 1
 		var cards: Array = screen.call("side_cards", is_enemy)
+		var team: Array = screen.call("side_team", is_enemy)
 		var snap_v: Variant = beat.get("enemy_hp" if is_enemy else "party_hp", [])
 		var snap: Array = snap_v if snap_v is Array else []
 		for i in mini(cards.size(), snap.size()):
@@ -57,10 +61,12 @@ static func apply_instant(screen: Control, beat: Dictionary) -> void:
 			BattleCardKitScript.style_hp_bar(bar)
 			(c["hp"] as Label).text = "%d / %d" % [maxi(0, target), int(bar.max_value)]
 			if target < last:
+				var victim: Variant = team[i] if i < team.size() else null
 				BattleCardKitScript.flash_portrait(c["portrait"] as CanvasItem)
-				screen.call("fx_damage", c["card"], last - target)
+				screen.call("fx_damage", c["card"], last - target, victim, beat.get("actor"))
 				screen.call("play_stinger", "hit_crunch", 0.15)
 				if target <= 0:
+					screen.call("fx_death", victim)
 					screen.call("play_stinger", "death_knell", 0.0)
 			c["last_hp"] = target
 
@@ -84,6 +90,8 @@ static func _play_one(screen: Control, beat: Dictionary, time_scale: float) -> v
 	var fast := bool(screen.call("confirm_held"))
 	var t_hp := FAST_TOTAL * 0.6 if fast else HP_TWEEN_TIME * time_scale
 	var t_settle := FAST_TOTAL * 0.4 if fast else SETTLE_TIME * time_scale
+	# The stage plate swaps to whoever acts, brass-outlined, lunging toward its victim (W10).
+	screen.call("stage_beat", beat.get("actor"), true)
 	_highlight_actor(screen, beat)
 	screen.call("append_transcript_to", int(beat.get("log_to", 0)))
 	var impact := _animate_hp(screen, beat, t_hp)
@@ -121,6 +129,7 @@ static func _animate_hp(screen: Control, beat: Dictionary, duration: float) -> D
 	for side in 2:
 		var is_enemy := side == 1
 		var cards: Array = screen.call("side_cards", is_enemy)
+		var team: Array = screen.call("side_team", is_enemy)
 		var snap_v: Variant = beat.get("enemy_hp" if is_enemy else "party_hp", [])
 		var snap: Array = snap_v if snap_v is Array else []
 		for i in mini(cards.size(), snap.size()):
@@ -131,10 +140,12 @@ static func _animate_hp(screen: Control, beat: Dictionary, duration: float) -> D
 				continue
 			_glide_card_hp(screen, c, target, duration)
 			if target < last:
+				var victim: Variant = team[i] if i < team.size() else null
 				out["any_damage"] = true
-				screen.call("fx_damage", c.get("card"), last - target)
+				screen.call("fx_damage", c.get("card"), last - target, victim, beat.get("actor"))
 				if target <= 0:
 					out["any_death"] = true
+					screen.call("fx_death", victim)
 			c["last_hp"] = target
 	return out
 
@@ -154,8 +165,8 @@ static func _glide_card_hp(screen: Control, c: Dictionary, target: int, duration
 	)
 	tw.chain().tween_callback(
 		func() -> void:
-			if is_instance_valid(screen) and is_instance_valid(bar):
-				screen.call("restyle_bar", bar)
+			if is_instance_valid(bar):
+				BattleCardKitScript.style_hp_bar(bar)
 	)
 	var hp_label := c.get("hp") as Label
 	if hp_label != null and is_instance_valid(hp_label):

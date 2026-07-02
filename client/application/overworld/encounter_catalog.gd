@@ -95,6 +95,28 @@ static func wild_weights_for(region_id: String, catalog: SpeciesCatalog) -> Arra
 	return out
 
 
+## The T3 ELITE pool ids for a region (Wave 13 misbehavior — the thin-cell "veil coughs" draw),
+## FILTERED against the catalog like the wild pool. Verdant reads slice_verdant.json's elite_pool
+## (previously dead data); regions without one return [] and simply never misbehave.
+static func elite_pool_for(region_id: String, catalog: SpeciesCatalog) -> Array:
+	var out: Array = []
+	for row in _raw_elite_rows(region_id):
+		var species_id := str((row as Dictionary).get("species_id", ""))
+		if species_id != "" and catalog.get_by_id(species_id) != null:
+			out.append(species_id)
+	return out
+
+
+## The elite-pool WEIGHTS, ALIGNED 1:1 with elite_pool_for (dropped ids skipped in both lists).
+static func elite_weights_for(region_id: String, catalog: SpeciesCatalog) -> Array:
+	var out: Array = []
+	for row in _raw_elite_rows(region_id):
+		var species_id := str((row as Dictionary).get("species_id", ""))
+		if species_id != "" and catalog.get_by_id(species_id) != null:
+			out.append(int((row as Dictionary).get("weight", 1)))
+	return out
+
+
 ## The Verdant Legendary boss config (Slice 4): { species_id, name, role, brain, rank }. Read from
 ## slice_verdant.json (boss). Returns {} when unavailable (the trigger then simply never fires). The
 ## brain key names a strong role brain ("controller"/"aggressor"/...) the CombatBrain assigns — NOT
@@ -162,7 +184,19 @@ static func _weight_by_id(region_id: String) -> Dictionary:
 
 ## The slice's wild_pool rows ([{species_id, weight, ...}, ...]) or [] when the data file is absent.
 static func _slice_wild_rows() -> Array:
-	var rows: Variant = _slice().get("wild_pool", null)
+	return _slice_rows("wild_pool")
+
+
+## The elite_pool rows for a region (only the Verdant slice ships one today), or [].
+static func _raw_elite_rows(region_id: String) -> Array:
+	if region_id != STARTING_REGION:
+		return []
+	return _slice_rows("elite_pool")
+
+
+## The slice data file's dictionary rows under `key`, or [] when absent/malformed.
+static func _slice_rows(key: String) -> Array:
+	var rows: Variant = _slice().get(key, null)
 	if rows is Array:
 		var out: Array = []
 		for row in rows as Array:
