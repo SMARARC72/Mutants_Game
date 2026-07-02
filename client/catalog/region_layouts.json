@@ -2,7 +2,7 @@
 	"schema_version": 2,
 	"_doc": "Region generation rules (ADR-014, D2/D5) + the E1b world data (docs/content/regions.md — the ELEVEN regions). Each region declares a WFC tile palette + adjacency (organic biome fill), an optional SimpleDungeons set-piece spec (authored rooms stitched on top), and a hand-authored fallback grid used when the solver fails (no soft-lock). Tile ids are small ints into a per-region palette; -1 is void. Forces/biomes mirror docs/Mutants_Game_World.md + docs/content/regions.md (8 force-regions + the Threshold hub + the Maw Beneath + the Hollow Atelier).",
 	"_tiles": "0=ground/floor, 1=feature-a (water/lava/crystal/etc per region), 2=feature-b/path, 3=wall/edge. Renderer maps ids to a region tileset; meaning is the renderer's concern.",
-	"_travel": "E1b Threshold network fields, read by RegionCatalog: title (display name), blurb_key (VoiceBook entry sting), tier_band (the wild-pool tier span, mirrored by tools/gen_region_pools.py), gate_flag (run.flags story gate — empty = always open; verdant + threshold are always open), gate_hint (the locked-row copy on the travel overlay). Gate flags are the E1a quest-catalog act gates (tools/INGEST_NOTES.md): registered_aspirant is the hand-wired Act-0 climax flag (the act1_open alias), act<N>_open is set by quest (N-1).4's completion. Wild/elite/boss pools live in catalog/region_pools.json (generated) except verdant_glut (catalog/slice_verdant.json stays the verdant source).",
+	"_travel": "E1b Threshold network fields, read by RegionCatalog: title (display name), blurb_key (VoiceBook entry sting), tier_band (the wild-pool tier span, mirrored by tools/gen_region_pools.py), gate_flag (run.flags story gate — empty = always open; verdant + threshold are always open), gate_hint (the locked-row copy on the travel overlay). Gate flags are the E1a quest-catalog act gates (tools/INGEST_NOTES.md): registered_aspirant is the hand-wired Act-0 climax flag (the act1_open alias), act<N>_open is set by quest (N-1).4's completion. E2a gate corrections: astral_tier opens on act1_q3_done (Q1.4's giver stands there — an act3_open gate dead-locked Act 1's climax) and sunder on act2_q1_done (Q2.2's giver works out of the Sunder), so every main-quest giver is reachable the moment their quest unlocks. Wild/elite/boss pools live in catalog/region_pools.json (generated) except verdant_glut (catalog/slice_verdant.json stays the verdant source).",
 	"defaults": {
 		"width": 16,
 		"height": 16,
@@ -125,8 +125,8 @@
 			"title": "The Sunder",
 			"blurb_key": "region.sunder.enter",
 			"tier_band": ["T2", "T3"],
-			"gate_flag": "act3_open",
-			"gate_hint": "Close Act II — the warp only opens for those who crossed a line.",
+			"gate_flag": "act2_q1_done",
+			"gate_hint": "Swear a faction's rite first — the warp opens only for those ready to cross a line.",
 			"tiles": [0, 1, 2],
 			"weights": {"0": 3.0, "1": 4.0, "2": 3.0},
 			"setpiece": {
@@ -142,8 +142,8 @@
 			"title": "The Astral Tier",
 			"blurb_key": "region.astral_tier.enter",
 			"tier_band": ["T2", "T3"],
-			"gate_flag": "act3_open",
-			"gate_hint": "Close Act II — the Concord's forms for your admission are still in review.",
+			"gate_flag": "act1_q3_done",
+			"gate_hint": "Fell the Node's guardian first — the Concord files only proven contenders.",
 			"tiles": [0, 1, 2],
 			"weights": {"0": 6.0, "1": 1.0, "2": 3.0},
 			"setpiece": {
