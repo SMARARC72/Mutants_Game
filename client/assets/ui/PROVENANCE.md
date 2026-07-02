@@ -1,8 +1,14 @@
 # UI assets — Kenney (CC0)
 
-CC0 (public domain), no attribution required. **Phase 0.5 status:** curated starter subset pending —
-the full Kenney UI pack is large and lives in the local library `../_asset-library/kenney/` (NOT
-committed); a curated subset (frames/buttons/cursors) lands here via Git LFS. Source: https://kenney.nl/assets
+CC0 (public domain), no attribution required. The full Kenney UI Pack + UI Pack RPG
+Expansion now live in the local library `../_asset-library/kenney/` (NOT committed;
+`LICENSE_NOTES.md` there). Source: https://kenney.nl/assets
+
+**Curation verdict (2026-07-02, wave/w-oss-assets):** Kenney's `panel_beige` /
+`panelInset_beige` were recolored to the GrimoirePalette via PIL and QA-sheeted against
+the first-party `parchment_frame.png`. The Kenney panels read flat/cartoony (rounded
+vector, no texture, weak border) — NOT visibly superior to the painterly first-party
+frame, so nothing shipped. They remain library-only wireframing material.
 
 ## Procedural grimoire surfaces (Wave 4 — first-party, no license concerns)
 
