@@ -169,7 +169,7 @@ func test_legacy_saves_seed_the_ledger_on_the_origin_not_the_destination() -> vo
 	# must land on the ORIGIN region's ledger, never the destination's (which would
 	# inherit instant boss-climax progress).
 	var gc := _make_game()
-	var run: RunContext = gc.call("run")
+	var run: RunContext = gc.call("new_run", TEST_SEED)
 	run.world_state["steps"] = 40
 	run.world_state.erase("region_steps")
 	RegionTravelScript.unlock(run, "mournmarch")
