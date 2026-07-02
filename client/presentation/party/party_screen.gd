@@ -377,7 +377,10 @@ func _refresh_detail() -> void:
 	var creature := _selected_creature()
 	if creature.is_empty():
 		_detail_title.text = "—"
-		_detail_stats.text = "No creature selected."
+		# W16a: an actually-empty roster gets the authored empty-state (VoiceBook
+		# empty.party); a mere non-selection keeps the plain instruction.
+		var empty_line := VoiceBook.pick("empty.party") if _party().is_empty() else ""
+		_detail_stats.text = empty_line if empty_line != "" else "No creature selected."
 		if _detail_desc != null:
 			_detail_desc.text = ""
 		return

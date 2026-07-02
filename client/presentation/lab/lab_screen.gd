@@ -695,8 +695,12 @@ func _render_ingredient_picker() -> void:
 	if stacks.is_empty():
 		var empty := Label.new()
 		empty.name = "NoReagents"
+		# W16a: the authored parts-drawer empty-state (VoiceBook empty.parts), falling back
+		# to the op-specific hint when the book is missing.
 		var what := "gene-vials" if _op == "mutate" else "organs"
-		empty.text = "(the drawer holds no %s)" % what
+		empty.text = VoiceBook.pick("empty.parts")
+		if empty.text == "":
+			empty.text = "(the drawer holds no %s)" % what
 		empty.theme_type_variation = "MutedLabel"
 		_ingredient_picker.add_child(empty)
 		return
