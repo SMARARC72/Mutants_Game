@@ -234,8 +234,9 @@ func request_save() -> bool:
 
 
 ## Wave 18 CONTINUE GATE: the health of the newest local save — "none" (no file), "ok" (the
-## envelope parses to a run payload) or "illegible" (a file exists but cannot be trusted: bad
-## JSON, checksum mismatch, empty run). The menu turns "illegible" into an in-world dialog
+## envelope parses to a run payload), "illegible" (a file exists but cannot be trusted: bad
+## JSON, checksum mismatch, empty run) or "closed" (E2b: the run's ending id is latched in its
+## flags — a finished ledger). The menu turns "illegible" and "closed" into in-world dialogs
 ## instead of a dead Continue button.
 func continue_health() -> String:
 	var path := _latest_save_path()
@@ -245,8 +246,12 @@ func continue_health() -> String:
 	if text == "":
 		return "illegible"
 	var envelope := SaveEnvelopeScript.parse_json(text)
-	if envelope.is_empty() or SaveEnvelopeScript.run_payload(envelope).is_empty():
+	var run_payload := SaveEnvelopeScript.run_payload(envelope)
+	if envelope.is_empty() or run_payload.is_empty():
 		return "illegible"
+	var flags: Variant = run_payload.get("flags", {})
+	if flags is Dictionary and str((flags as Dictionary).get(EndingsService.ENDING_FLAG, "")) != "":
+		return "closed"
 	return "ok"
 
 

@@ -20,6 +20,7 @@ var _input: Node = null
 var _auto_build: bool = true
 
 var _god_label: Label = null
+var _path_label: Label = null
 var _rank_label: Label = null
 var _oc_bar: ProgressBar = null
 var _pc_bar: ProgressBar = null
@@ -63,6 +64,12 @@ func build_from_game() -> void:
 ## The current god archetype text (e.g. "The Warden  (Steward)").
 func god_text() -> String:
 	return _god_label.text if _god_label != null else ""
+
+
+## The ENDING BAND the run currently trends toward (E2b — the EndingsService.resolve preview;
+## no finale flag needed: the same grid banding, so this can never disagree with god_text).
+func ending_path_text() -> String:
+	return _path_label.text if _path_label != null else ""
 
 
 ## The current rank text.
@@ -114,6 +121,15 @@ func _refresh() -> void:
 	var pc_band := CharacterEngine.band3(pc, PC_LABELS)
 	if _god_label != null:
 		_god_label.text = CharacterEngine.gods([oc_band, pc_band])
+	if _path_label != null:
+		# E2b: the ending the run is trending toward — resolve() previews without a finale flag
+		# (a latched refusal door like `unmaking` legitimately outranks the grid god here).
+		var ending := EndingsService.resolve(run)
+		var epithet := str(ending.get("epithet", ""))
+		_path_label.text = (
+			"The path of %s%s"
+			% [str(ending.get("name", "")), "  ·  " + epithet if epithet != "" else ""]
+		)
 	if _rank_label != null:
 		var rank := run.rank if run.rank != "" else CharacterEngine.rank_for(run.deeds)
 		_rank_label.text = (
@@ -180,6 +196,11 @@ func _build_ui() -> void:
 	god_sub.text = "the god you are becoming (the grid you sit in)"
 	god_sub.theme_type_variation = "MutedLabel"
 	inner.add_child(god_sub)
+
+	_path_label = Label.new()
+	_path_label.name = "EndingPathLabel"
+	_path_label.theme_type_variation = "MutedLabel"
+	inner.add_child(_path_label)
 
 	_rank_label = Label.new()
 	_rank_label.name = "RankLabel"

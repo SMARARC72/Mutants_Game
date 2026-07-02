@@ -34,6 +34,7 @@ const OverworldSpawnScript := preload("res://presentation/overworld/overworld_sp
 const OverworldDepthScript := preload("res://presentation/overworld/overworld_depth.gd")
 const OverworldOverlaysScript := preload("res://presentation/overworld/overworld_overlays.gd")
 const ControlsChipScript := preload("res://presentation/overworld/controls_chip.gd")
+const EndingGateScript := preload("res://presentation/endings/ending_gate.gd")
 const InputActions := preload("res://infrastructure/input/input_actions.gd")
 const BATTLE_SCENE := "res://presentation/battle/battle_screen.tscn"
 ## Wave 6 spike diet: const-preload the camp scene (a load() on first ESC read as a hitch).
@@ -96,6 +97,7 @@ var _camp_menu: Node = null
 var _npcs: Array = []
 var _dialogue: DialogicFacade = null
 var _in_dialogue: bool = false
+var _scene_alias: Dictionary = {}  # replacement quest-scene id -> the NPC's own timeline
 var _quests: QuestService = null  # drives the intro quest from NPC talks (own narrative run-state)
 var _objective_label: Label = null  # HUD quest-tracker: the active quest's current objective
 var _controls_chip: Node = null  # the live-verbs HUD chip (W1/C13), collapsible via TOGGLE_CONTROLS
@@ -404,30 +406,10 @@ func _on_boss_encounter(roll: Dictionary) -> void:
 ## pre-battle position/grace stash, autosave, and swap to the battle scene. The pending dict also
 ## carries the region + force climate (Wave 8 backdrop-lite: the arena is picked by force).
 func _stash_and_hand_off(roll: Dictionary, extra: Dictionary) -> void:
-	var enemy_party: Array = roll.get("enemy_party", [])
-	var battle_seed := int(roll.get("battle_seed", 0))
-	encounter_started.emit(enemy_party, battle_seed)
-	var run := _run_ctx()
-	if run != null:
-		var pending := {
-			"enemy_party": enemy_party,
-			"battle_seed": battle_seed,
-			"region": _region_id(),
-			"force": _force_climate,
-		}
-		pending.merge(extra, true)
-		run.flags["pending_battle"] = pending
-		# Wave 3: the pre-battle autosave carries the exact cell + facing (the post-battle
-		# overworld restores them) and arms the post-battle encounter grace window.
-		OverworldLoopStateScript.stash_prebattle(
-			run, _player_cell, _last_dir, EncounterDirectorScript.POST_BATTLE_GRACE_STEPS
-		)
-	# Save on encounter-end boundary (autosave the run before the fight resolves the loop).
-	# W18 save trust: the witnessed save path first (SaveSentry surfaces the outcome).
-	if _game != null and _game.has_method("request_save"):
-		_game.call("request_save")
-	elif _game != null and _game.has_method("save_run"):
-		_game.call("save_run")
+	encounter_started.emit(roll.get("enemy_party", []), int(roll.get("battle_seed", 0)))
+	OverworldLoopStateScript.stash_and_pend(
+		_run_ctx(), roll, extra, _region_id(), _force_climate, _player_cell, _last_dir, _game
+	)
 	if _auto_hand_off:
 		_hand_off_to_battle()
 
@@ -663,8 +645,12 @@ func _setup_hud() -> void:
 	_refresh_objective()
 
 
-## Update the HUD quest tracker to the active quest's current objective (hidden when no quest is active).
+## Update the HUD quest tracker to the active quest's current objective (hidden when no quest is
+## active). E2b: every refresh also asks the EndingGate — the finale flag pushes the EndingScreen.
 func _refresh_objective() -> void:
+	# Codex #60 P2: never mid-cascade/mid-scene — deferred to idle, re-checked on scene end.
+	if not _in_dialogue:
+		EndingGateScript.maybe_push.call_deferred(self, _game)
 	_refresh_markers()
 	if _objective_label == null:
 		return
@@ -745,11 +731,18 @@ func _spawn_npcs() -> void:
 	_npcs.clear()
 	if _layout == null:
 		return
-	if _quests == null:
+	var fresh_quests := _quests == null
+	if fresh_quests:
 		_quests = QuestService.new()
-		_quests.register(_quest_defs())  # all overworld quests (MARSH/MELON/BRAMBLE/...) in one place
+	# E2a: register on EVERY build — a Threshold hop re-registers so the NEW region's catalog
+	# quests ride (register is idempotent; in-memory progress survives the travel rebuild).
+	_quests.register(_quest_defs())
+	if fresh_quests:
 		_restore_quests()
 	_sync_boss_goal_quest()
+	# E2a: deed-resolved main quests (boss victories + the act-5 witness coda) sync here; an
+	# advance that carries an authored scene plays it (the post-battle build is the beat).
+	OverworldQuestsGlue.play_scene_for(self, OverworldQuestsGlue.sync_catalog_quests(self, _quests))
 	var defs: Array = OverworldContent.region_npc_defs(_region_id())
 	var cells := OverworldSpawnScript.npc_cells(
 		_layout, _home_cell, defs.size(), _structures.blocked()
@@ -807,11 +800,14 @@ func speak_to(index: int) -> String:
 		return OverworldBarks.read_signpost(self, npc, _run_ctx(), _game)
 	var timeline := str(npc["timeline"])
 	# E1c: a catalog-cast NPC without its generated timeline bubbles its AUTHORED bark instead.
+	# E2a: the bark still DRIVES the steps this cast NPC carries — an advanced quest with an
+	# authored scene (generated .dtl) plays it over the bubble.
 	if OverworldBarks.play_cast_bark(self, npc, _run_ctx()):
+		OverworldQuestsGlue.play_scene_for(self, _advance_quest_for(npc))
 		return timeline
 	var choice_conf: Dictionary = npc.get("choice", {})
 	if OverworldBarks.swap_out_of_lines(self, npc, _run_ctx()):
-		_advance_quest_for(npc)
+		OverworldQuestsGlue.play_scene_for(self, _advance_quest_for(npc))
 		return timeline
 	if _dialogue == null:
 		_dialogue = DialogicFacade.new()
@@ -823,7 +819,14 @@ func speak_to(index: int) -> String:
 	if not _dialogue.choice_made.is_connected(_on_dialogue_choice):
 		_dialogue.choice_made.connect(_on_dialogue_choice)
 	_in_dialogue = true
-	_advance_quest_for(npc)
+	# E2a: an advanced catalog quest with an authored scene outranks the NPC's own intro beat
+	# this talk (Vael's Q2.4 plays First Light, not a Mark replay). No advance = the old path.
+	var scene := OverworldQuestsGlue.scene_for_advanced(_advance_quest_for(npc), _region_id())
+	if scene != "":
+		# Codex #60 P1: the choice router keys configs by the NPC's OWN timeline — remember
+		# the substitution so the replacement scene's choices still land their effects.
+		_scene_alias[scene] = timeline
+		timeline = scene
 	dialogue_started.emit(timeline)
 	# Headless there is no choice UI, so the NPC's canon branch resolves instantly (the
 	# facade emits choice_made before scene_finished) — quests stay completable in CI.
@@ -831,25 +834,25 @@ func speak_to(index: int) -> String:
 	return timeline
 
 
-## Drive every quest this NPC participates in: the intro quest (quest_step → MARSH_QUEST) and the
-## SQ-04 side quest (melon_step → MELON_QUEST). Both quests live in this screen's QuestService (its
-## own narrative run-state) for now and share the same start-on-first-talk / toast-on-advance shape.
-func _advance_quest_for(npc: Dictionary) -> void:
+## Drive every quest this NPC participates in (intro/side/main-spine alike — each quest names
+## the def key (step_key) whose value is the step this NPC drives, so adding a quest is pure
+## data). E2a: returns the ids that REALLY advanced, so a caller can play an authored scene.
+func _advance_quest_for(npc: Dictionary) -> Array:
+	var advanced: Array = []
 	if _quests == null:
-		return
-	# Data-driven: each quest names the NPC_DEFS key (step_key) whose value is the step this NPC drives,
-	# so adding a quest is pure data (a quest def + NPC entries) — no new dispatch code here.
+		return advanced
 	for q: Dictionary in _quest_defs():
 		var step_key := str(q.get("step_key", ""))
-		if step_key != "":
-			_advance_quest_step(str(q["id"]), str(npc.get(step_key, "")))
+		if step_key != "" and _advance_quest_step(str(q["id"]), str(npc.get(step_key, ""))):
+			advanced.append(str(q["id"]))
+	return advanced
 
 
 ## W16a: a Dialogic choice resolved (scene_id = the timeline id, branch_tag = the authored
 ## branch tag from `[signal arg="choice:<tag>"]`). The branch — never the mere talk —
 ## advances the quest step; dispatch + branch effects/toast live in OverworldChoices.
 func _on_dialogue_choice(scene_id: String, branch_tag: String) -> void:
-	OverworldChoices.handle(self, _npcs, scene_id, branch_tag)
+	OverworldChoices.handle(self, _npcs, str(_scene_alias.get(scene_id, scene_id)), branch_tag)
 
 
 ## Start `quest_id` on the first talk that names a step, advance to that step, and toast the ledger
@@ -884,37 +887,25 @@ func _advance_quest_step(quest_id: String, step: String, toast_on_advance := tru
 	return advanced
 
 
-## Wave 3 (red-team C13): the BOSS-GOAL quest is active from RUN START (no NPC gives it — started
-## here on every build until it sticks) and completes through the existing quest_state flags path
-## the moment the slice reads cleared (a played boss win sets the victory flag via
-## GameController._mark_slice_cleared). Surfaces the run's goal in the Phase-13c HUD tracker.
-## E1b: the quest is the VERDANT slice's goal — it only syncs (starts/advances) while the run
-## stands in the starting region; another region's boss clear must never complete it.
+## Wave 3 (red-team C13): the verdant BOSS-GOAL quest sync — active from run start, completed
+## by the slice-cleared flag. Glue-owned since E2a (the line cap); rules unchanged.
 func _sync_boss_goal_quest() -> void:
-	if _quests == null or _region_id() != EncounterCatalog.STARTING_REGION:
-		return
-	var qid := str(OverworldContent.BOSS_QUEST["id"])
-	if _quests.is_done(qid):
-		return
-	if not _quests.is_active(qid) and _quests.start(qid):
-		_persist_quests()
-		_refresh_objective()
-	if _game != null and _game.has_method("slice_cleared") and bool(_game.call("slice_cleared")):
-		_advance_quest_step(qid, "walk_the_deep_path")
+	OverworldQuestsGlue.sync_boss_goal(self, _quests, _game)
 
 
 ## All quest definitions this screen drives (for lookup + restore) — single-sourced from the content
 ## data module, so adding a quest there flows through registration, dispatch, restore, and effects.
+## E2a: parameterized by the ACTIVE region, so a Threshold hop swaps in that region's catalog.
 func _quest_defs() -> Array:
-	return OverworldContent.quest_defs()
+	return OverworldContent.quest_defs(_region_id())
 
 
 func _quest_def_by_id(quest_id: String) -> Dictionary:
-	return OverworldQuestsGlue.quest_def_by_id(quest_id)
+	return OverworldQuestsGlue.quest_def_by_id(quest_id, _region_id())
 
 
 func _quest_step_effect(quest_id: String, step_id: String) -> Dictionary:
-	return OverworldQuestsGlue.quest_step_effect(quest_id, step_id)
+	return OverworldQuestsGlue.quest_step_effect(quest_id, step_id, _region_id())
 
 
 func _apply_effect_to_run(effect: Dictionary) -> void:
@@ -932,7 +923,9 @@ func _restore_quests() -> void:
 
 func _on_dialogue_finished(_timeline_id: String) -> void:
 	_in_dialogue = false
+	_scene_alias.erase(_timeline_id)
 	_refresh_markers()  # the deferred marker sync (never during the scene itself)
+	EndingGateScript.maybe_push.call_deferred(self, _game)  # the gate deferred past the scene
 
 
 ## Intro-quest state accessors (for tests + a future quest-log UI).
