@@ -72,6 +72,21 @@ static func set_lookahead(rig: Object, dir: Vector2i) -> void:
 		rig.set("follow_offset", offset)
 
 
+## E1b travel: free the active rig (both the PhantomCamera2D path and the fallback Camera2D)
+## so a region-hop rebuild can raise a fresh one clamped to the new region's rect. `holders`
+## are the nodes a fallback "OverworldCamera" may hang under (the screen and the player).
+static func teardown(rig: Object, holders: Array) -> void:
+	if rig is Node and is_instance_valid(rig as Node):
+		(rig as Node).queue_free()
+	for holder: Variant in holders:
+		if not (holder is Node) or not is_instance_valid(holder as Node):
+			continue
+		var cam := (holder as Node).get_node_or_null("OverworldCamera")
+		if cam != null:
+			(holder as Node).remove_child(cam)
+			cam.queue_free()
+
+
 static func _apply_camera_limits(cam: Camera2D, rect: Rect2) -> void:
 	if rect.size == Vector2.ZERO:
 		return

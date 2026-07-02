@@ -119,6 +119,27 @@ static func toast_misbehavior(screen: Node) -> void:
 	toast.call("show", {"title": "The veil coughs.", "body": line, "sound": "hum"})
 
 
+## E1c: a catalog-cast NPC whose generated timeline has not landed yet (E1a builds them in
+## parallel under the shared '<npc_snake_case>_<beat>' convention) speaks an AUTHORED bark
+## (regional_cast.md / factions_npcs.md, VERBATIM) instead — once the .dtl exists the same
+## def plays the scene. The talk still counts (the tally is durable state) and the bark walks
+## the authored variants deterministically per visit — a LOCAL index, never the canonical
+## PCG32 streams; a def without barks falls to the out-of-lines beat. False = not a pending
+## cast def (the caller plays the real scene).
+static func play_cast_bark(screen: Node, npc: Dictionary, run: RunContext) -> bool:
+	if not bool(npc.get("cast", false)):
+		return false
+	if DialogicFacade.timeline_exists(str(npc.get("timeline", ""))):
+		return false
+	var talks := count_talk(run, str(npc.get("name", "")))
+	var barks: Array = npc.get("barks", [])
+	if barks.is_empty():
+		play_out_of_lines(screen, npc)
+		return true
+	bubble(screen, npc, str(barks[(talks - 1) % barks.size()]))
+	return true
+
+
 ## The authored out-of-lines beat, bubbled over the exhausted NPC in place of a replayed
 ## scene. Returns the line (always authored; the key ships in voice.json).
 static func play_out_of_lines(screen: Node, npc: Dictionary) -> String:

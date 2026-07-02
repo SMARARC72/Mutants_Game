@@ -30,19 +30,28 @@ const POOLS := {
 	"Thanatos": ["portal", "ruin", "temple"],
 	"Cosmos+Gaia": ["ruin", "portal", "bridge"],
 	"Ouranos+Gaia": ["bridge", "temple", "grove"],
+	# E1b — the eleven-region force combos: the city hub, the rot-sump, the half-drafted atelier.
+	"neutral": ["temple", "bridge", "ruin"],
+	"Chaos+Thanatos": ["ruin", "forge", "temple"],
+	"Cosmos+Chaos": ["temple", "ruin", "bridge"],
 }
 const DEFAULT_FORCE := "Eros"
 const LAIR_ID := "altar"
 const HOME_ID := "market_stall"
+## E1b — the Threshold-network ritual circle (design §3.5): every region raises ONE waygate
+## portal near the spawn field; interacting beside it opens the travel overlay.
+const WAYGATE_ID := "portal"
 
 const MIN_LANDMARKS := 2
 const MAX_LANDMARKS := 4
 const LANDMARK_MIN_HOME_DIST := 6  # landmarks stay off the spawn field
 const LANDMARK_SPACING := 5  # min manhattan distance between structure anchors
 const HOME_STALL_DIST := [3, 8]  # the cast-anchor stall sits just off spawn
+const WAYGATE_DIST := [3, 10]  # the ritual circle stands just past the spawn field
 const ROLE_LANDMARK := "landmark"
 const ROLE_LAIR := "lair"
 const ROLE_HOME := "home"
+const ROLE_WAYGATE := "waygate"
 
 ## Manifest cache (semantic id -> {texture, height_tiles, footprint}) — loaded once per session.
 static var _manifest: Dictionary = {}
@@ -111,13 +120,15 @@ static func footprint(id: String) -> Vector2i:
 
 ## Build the deterministic placement plan for a region: 2-4 force-pool landmarks on hashed
 ## feature-cell clusters, the LAIR altar on the deepest candidate (the boss goal's visible
-## destination), and the HOME stall near spawn. Pure function — same inputs => same plan.
+## destination), the WAYGATE ritual circle just off the spawn field (E1b — the Threshold
+## network's door), and the HOME stall near spawn. Pure function — same inputs => same plan.
 static func plan_for(layout: Layout, force_climate: String, home: Vector2i) -> Array:
 	if layout == null or manifest().is_empty():
 		return []
 	var out: Array = []
 	var taken := {}
 	_place_lair(layout, home, out, taken)
+	_place_waygate(layout, force_climate, home, out, taken)
 	_place_home_stall(layout, force_climate, home, out, taken)
 	_place_landmarks(layout, force_climate, home, out, taken)
 	_enforce_reachability(layout, home, out)
@@ -139,6 +150,35 @@ static func lair_entry(plan: Array) -> Dictionary:
 		if str(entry.get("role", "")) == ROLE_LAIR:
 			return entry
 	return {}
+
+
+## The plan's waygate (ritual circle) entry, or {}.
+static func waygate_entry(plan: Array) -> Dictionary:
+	for entry: Dictionary in plan:
+		if str(entry.get("role", "")) == ROLE_WAYGATE:
+			return entry
+	return {}
+
+
+## E1b — the Threshold-network ritual circle: ONE portal in a near-spawn band, picked like the
+## home stall (lowest FNV key over any-ground candidates) so every region raises a reachable
+## waygate a short, visible walk from where the tamer arrives.
+static func _place_waygate(
+	layout: Layout, force_climate: String, home: Vector2i, out: Array, taken: Dictionary
+) -> void:
+	var near := _anchor_candidates(layout, WAYGATE_ID, home, 0, taken, true)
+	var best := Vector2i(-1, -1)
+	var best_key := -1
+	for c: Vector2i in near:
+		var d := _manhattan(c, home)
+		if d < int(WAYGATE_DIST[0]) or d > int(WAYGATE_DIST[1]):
+			continue
+		var key := SigilGen.fnv1a_32("gate|%s|%d|%d" % [force_climate, c.x, c.y])
+		if best_key < 0 or key < best_key:
+			best_key = key
+			best = c
+	if best.x >= 0:
+		_commit(out, taken, WAYGATE_ID, ROLE_WAYGATE, best)
 
 
 static func _place_lair(layout: Layout, home: Vector2i, out: Array, taken: Dictionary) -> void:
@@ -268,7 +308,8 @@ static func _commit(
 	out.append({"id": id, "role": role, "cell": anchor, "w": fp.x, "h": fp.y, "cells": cells})
 
 
-## Drop landmarks (never the lair) whose footprints would strand the spawn field: flood the
+## Drop landmarks (never the lair, never the waygate — losing the ritual circle would seal the
+## Threshold network in that region) whose footprints would strand the spawn field: flood the
 ## walkable-minus-blocked component containing `home` and require it to keep all but the
 ## footprint cells (+ a small allowance for pocketed corners).
 static func _enforce_reachability(layout: Layout, home: Vector2i, out: Array) -> void:
@@ -282,7 +323,8 @@ static func _enforce_reachability(layout: Layout, home: Vector2i, out: Array) ->
 			return
 		var dropped := false
 		for i in range(out.size() - 1, -1, -1):
-			if str((out[i] as Dictionary).get("role", "")) != ROLE_LAIR:
+			var role := str((out[i] as Dictionary).get("role", ""))
+			if role != ROLE_LAIR and role != ROLE_WAYGATE:
 				out.remove_at(i)
 				dropped = true
 				break
@@ -388,6 +430,20 @@ func blocked() -> Dictionary:
 ## The lair entry of the live plan, or {}.
 func lair() -> Dictionary:
 	return lair_entry(_plan)
+
+
+## The waygate (ritual circle) entry of the live plan, or {} (E1b — the travel interactable).
+func waygate() -> Dictionary:
+	return waygate_entry(_plan)
+
+
+## True when `cell` stands on/next to any footprint cell of the waygate (the INTERACT reach —
+## the same 1.5-cell ring NPC talks use).
+func waygate_adjacent(cell: Vector2i) -> bool:
+	for c: Vector2i in waygate().get("cells", []) as Array:
+		if (c - cell).length() <= 1.5:
+			return true
+	return false
 
 
 ## The structures holder node (or null before build).

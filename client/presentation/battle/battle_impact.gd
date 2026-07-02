@@ -82,6 +82,33 @@ static func toast_outcome(
 		)
 
 
+## E1c: the boss-splash sub-line — the boss's AUTHORED intro line when the pantheon data
+## carries one (VERBATIM from boss_kits.json), else the seed-deterministic VoiceBook
+## pre-fight beat (the verdant slice boss ships with "" and keeps that presentation).
+static func boss_prefight_line(intro_line: String, battle_seed: int) -> String:
+	if intro_line != "":
+		return intro_line
+	return VoiceBookScript.pick("battle.boss.prefight", battle_seed)
+
+
+## E1c: a FELLED pantheon boss gets its authored EPITAPH — the VERBATIM defeat line from
+## boss_kits.json (the lair hand-off's pending.defeat_line) — toasted over the victory beat.
+## Data-driven and additive: an empty line (wild fights, the verdant slice boss) or an
+## unfinished boss (no boss_win) toasts nothing new.
+static func toast_boss_epitaph(
+	toast: Node, defeat_line: String, result: Dictionary, battle
+) -> void:
+	if defeat_line == "" or not bool(result.get("boss_win", false)):
+		return
+	if toast == null or not toast.has_method("show"):
+		return
+	var title := "The god is felled."
+	if battle != null and not (battle.enemy_team() as Array).is_empty():
+		var boss := battle.enemy_team()[0] as AbilityContainer
+		title = "%s is felled." % boss.combatant_name()
+	toast.call("show", {"title": title, "body": defeat_line, "sound": "hum"})
+
+
 ## The authored VoiceBook body for a battle outcome ("" for a fled/unkeyed end; the verbatim
 ## Wave 3 stalemate line remains the missing-catalog fallback). Deterministic per battle: the
 ## transcript length salts the variant walk.

@@ -35,6 +35,33 @@ static func handle(screen: Node, npcs: Array, scene_id: String, branch_tag: Stri
 		return
 
 
+## Play the authored cold-open ("The Knack" — Maddox's thesis) ONCE per run, the first time the
+## overworld builds. Flag-gated in run.flags + persisted (W18: the witnessed save path first), so
+## it never replays on reload. No-op headless without a DialogicFacade target; the screen's
+## `dialogue_started` signal still fires so a test can assert it. (Screen-private state via
+## get()/set() — the OverworldBarks convention.)
+static func maybe_play_intro(screen: Node, game: Node) -> void:
+	if game == null or not game.has_method("run"):
+		return
+	var run: RunContext = game.call("run")
+	if run == null or bool(run.flags.get("intro_played", false)):
+		return
+	run.flags["intro_played"] = true
+	if game.has_method("request_save"):
+		game.call("request_save")
+	elif game.has_method("save_run"):
+		game.call("save_run")
+	if screen.get("_dialogue") == null:
+		screen.set("_dialogue", DialogicFacade.new())
+	var dialogue: DialogicFacade = screen.get("_dialogue")
+	var finished := Callable(screen, "_on_dialogue_finished")
+	if not dialogue.scene_finished.is_connected(finished):
+		dialogue.scene_finished.connect(finished)
+	screen.set("_in_dialogue", true)
+	screen.emit_signal("dialogue_started", "intro_knack")
+	dialogue.play_timeline("intro_knack")
+
+
 ## Toast a choice branch's authored line (VoiceBook) inside the standard quest-update
 ## scaffolding (title/icon/sound from the ToastMicrocopy preset — no hand-written copy).
 ## pick_plain: a toast never interpolates, so {placeholder} variants are skipped (W16b —

@@ -53,6 +53,17 @@ static func restore_facing(run: RunContext, fallback: Vector2i) -> Vector2i:
 	return facing if facing != Vector2i.ZERO else fallback
 
 
+## E1b travel: drop the stashed pre-battle cell/facing + the grace window. A Threshold-network
+## hop lands at the NEW region's canonical spawn — a stale cross-region cell (often walkable in
+## the next layout too) must never place the tamer there.
+static func clear_position_stash(run: RunContext) -> void:
+	if run == null:
+		return
+	run.world_state.erase(PLAYER_CELL_KEY)
+	run.world_state.erase(PLAYER_FACING_KEY)
+	run.world_state.erase(GRACE_KEY)
+
+
 ## Consume one step of the post-battle grace window. Returns true while the step is graced (the
 ## caller skips the wild roll); the counter decrements toward 0 and persists in world_state.
 static func consume_grace(run: RunContext) -> bool:
@@ -77,6 +88,21 @@ static func mark_boss_fired(run: RunContext, region_id: String) -> void:
 	if run == null:
 		return
 	run.world_state[BOSS_FIRED_PREFIX + region_id] = true
+
+
+## E1c: the extra keys the BOSS hand-off folds into pending_battle — tagged is_boss with the
+## role brain, plus the pantheon boss_id + the VERBATIM authored intro/defeat lines
+## (boss_kits.json) the battle screen splashes/toasts. Pure data pass-through: the verdant
+## slice boss carries "" for all three and keeps its shipped presentation.
+static func boss_handoff_extra(roll: Dictionary) -> Dictionary:
+	return {
+		"is_wild": false,
+		"is_boss": true,
+		"boss_brain": str(roll.get("boss_brain", "controller")),
+		"boss_id": str(roll.get("boss_id", "")),
+		"intro_line": str(roll.get("intro_line", "")),
+		"defeat_line": str(roll.get("defeat_line", "")),
+	}
 
 
 ## A world_state value as a 2-element numeric Array, or [] when absent/malformed.

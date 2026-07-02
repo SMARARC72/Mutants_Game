@@ -69,6 +69,7 @@ func test_placement_is_deterministic_and_scoped() -> void:
 	assert_int(plan_a.size()).is_equal(plan_b.size())
 	var lairs := 0
 	var homes := 0
+	var waygates := 0
 	var landmarks := 0
 	for i in plan_a.size():
 		var a: Dictionary = plan_a[i]
@@ -80,6 +81,8 @@ func test_placement_is_deterministic_and_scoped() -> void:
 				lairs += 1
 			OverworldStructuresScript.ROLE_HOME:
 				homes += 1
+			OverworldStructuresScript.ROLE_WAYGATE:
+				waygates += 1
 			_:
 				landmarks += 1
 		for c: Vector2i in a["cells"] as Array:
@@ -89,6 +92,7 @@ func test_placement_is_deterministic_and_scoped() -> void:
 			assert_int(absi(c.x - home.x) + absi(c.y - home.y)).is_greater_equal(2)
 	assert_int(lairs).is_equal(1)  # the boss goal has its visible destination
 	assert_int(homes).is_less_equal(1)
+	assert_int(waygates).is_equal(1)  # E1b: every region raises its Threshold-network circle
 	assert_int(landmarks).is_between(
 		OverworldStructuresScript.MIN_LANDMARKS - 1, OverworldStructuresScript.MAX_LANDMARKS
 	)

@@ -526,9 +526,33 @@ static func peculiar_def(id: String) -> Dictionary:
 	return {}
 
 
-## The HUD title for a region id ("The Verdant Glut"), falling back to the id itself.
+## The NPC defs the overworld spawns for a region (Batch E1c). VERDANT keeps the hand-wired
+## NPC_DEFS above — canonical (the Act-0 spine + SQ cast ride the shipped region until region
+## travel fully lands). Every OTHER region draws the AUTHORED cast from npc_casts.json via
+## NpcCastCatalog (leaders, Hands, roster, living-world faces — VERBATIM names/barks, stable
+## hashed rings); a region without a catalog cast falls back to NPC_DEFS so no region is ever
+## peopleless (mirrors the no-soft-lock philosophy).
+static func region_npc_defs(region_id: String) -> Array:
+	if region_id == EncounterCatalog.STARTING_REGION:
+		return NPC_DEFS
+	var cast := NpcCastCatalog.defs_for_region(region_id)
+	if cast.is_empty():
+		return NPC_DEFS
+	return cast
+
+
+## The HUD title for a region id ("The Verdant Glut"): the hand-tuned HUD override first, then
+## the world catalog's authored title (E1b — all eleven regions), then the raw id.
 static func region_title(region_id: String) -> String:
-	return str(REGION_TITLES.get(region_id, region_id))
+	if REGION_TITLES.has(region_id):
+		return str(REGION_TITLES[region_id])
+	return RegionCatalog.title(region_id)
+
+
+## E1b's travel-seam name, superseded by region_npc_defs (E1c filled the casts the same
+## session) — kept as a delegate for any external caller.
+static func npc_defs_for(region_id: String) -> Array:
+	return region_npc_defs(region_id)
 
 
 ## The HUD region blurb for a region id, or "" when unmapped (the HUD hides it). W16a: the
