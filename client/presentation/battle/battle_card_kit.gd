@@ -10,57 +10,85 @@ extends RefCounted
 
 const BACKDROP_DIR := "res://assets/backdrops/"
 
+## Wave 10 compact rows: the stage plates are the spectacle now, so the card lists shrink to
+## dense readouts (portrait 88 -> 56, tighter bars/typography) without losing a single readout.
+const CARD_PORTRAIT := Vector2(56, 56)
+const CARD_NAME_FONT := 14
+const CARD_HP_FONT := 12
 
-## One combatant card: framed bestiary-plate portrait + name + force icon(s) + HP bar (with a
-## SHIELD overlay) + HP text + a status-chip row. Reads the AbilityContainer's engine-owned state;
-## computes nothing. `creature` (the run.party dict) wins over `species_id` for hybrid plates.
+
+## Build one team's cards into `container`, appending each card's node-refs dict to `cards`.
+## `source_of.call(is_enemy, index, ac)` resolves the portrait source (the screen owns run-party
+## identity); `status_of.call(ac)` the StatusContainer. (Wave 10 extraction — was on the screen.)
+static func build_team_cards(
+	container: VBoxContainer,
+	team: Array,
+	is_enemy: bool,
+	cards: Array,
+	source_of: Callable,
+	status_of: Callable
+) -> void:
+	if container == null:
+		return
+	for child in container.get_children():
+		child.queue_free()
+	cards.clear()
+	for i in team.size():
+		var ac := team[i] as AbilityContainer
+		var source: Dictionary = source_of.call(is_enemy, i, ac)
+		cards.append(make_card(container, ac, source, is_enemy, status_of.call(ac)))
+
+
+## One combatant card (COMPACT row, Wave 10): framed bestiary-plate portrait + name + force
+## icon(s) + HP bar + HP text + a status-chip row. Reads the AbilityContainer's engine-owned
+## state; computes nothing. `source` is the portrait source dict (a run.party creature — hybrids
+## win their dominant-parent plate + corruption tint — or {"species_id": id} for wilds).
 ## Returns the node-refs dict the screen keeps for in-place updates + beat glides.
 static func make_card(
 	container: VBoxContainer,
 	ac: AbilityContainer,
-	species_id: String,
+	source: Dictionary,
 	is_enemy: bool,
-	sc: StatusContainer,
-	creature: Dictionary = {}
+	sc: StatusContainer
 ) -> Dictionary:
 	var card := PanelContainer.new()
 	card.name = ("Enemy" if is_enemy else "Party") + "Card"
 	var row := HBoxContainer.new()
-	row.add_theme_constant_override("separation", 10)
+	row.add_theme_constant_override("separation", 8)
 	card.add_child(row)
 
-	# Wave 9 LivingPlate: the portrait breathes/sways in the same 88px slot the old TextureRect
-	# held. Hybrids render their dominant parent's plate + a deterministic corruption tint
-	# (PortraitUtil, same face as party/lab/camp); the tint lands on the plate's SPRITE
-	# self_modulate so it still composes with the damage-flash tween on the plate's modulate.
+	# Wave 9 LivingPlate: the portrait breathes/sways in the compact slot. Hybrids render their
+	# dominant parent's plate + a deterministic corruption tint (PortraitUtil, same face as
+	# party/lab/camp); the tint lands on the plate's SPRITE self_modulate so it still composes
+	# with the damage-flash tween on the plate's modulate.
 	var portrait := LivingPlate.new()
 	portrait.name = "Portrait"
-	portrait.set_plate_size(Vector2(88, 88))
-	var portrait_source := creature if not creature.is_empty() else {"species_id": species_id}
-	portrait.set_texture(PortraitUtil.creature_plate(portrait_source))
-	portrait.set_tint(PortraitUtil.creature_tint(portrait_source))
+	portrait.set_plate_size(CARD_PORTRAIT)
+	portrait.set_texture(PortraitUtil.creature_plate(source))
+	portrait.set_tint(PortraitUtil.creature_tint(source))
 	# Per-instance identity: hybrids/party carry their own tag; wild enemies fall back to the
 	# combatant name so two same-species wilds still breathe out of phase.
-	var identity_tag := PortraitUtil.instance_tag_of(portrait_source)
+	var identity_tag := PortraitUtil.instance_tag_of(source)
 	if identity_tag == "":
 		identity_tag = ac.combatant_name()
-	portrait.set_identity(str(portrait_source.get("species_id", "")), identity_tag)
+	portrait.set_identity(str(source.get("species_id", "")), identity_tag)
 	row.add_child(PortraitUtil.framed(portrait))
 	# The one-of-one mark rides the portrait corner (Wave 9 sigils).
-	PortraitUtil.stamp_sigil(portrait, portrait_source, ac.primary_force(), 16, identity_tag)
+	PortraitUtil.stamp_sigil(portrait, source, ac.primary_force(), 16, identity_tag)
 
 	var info := VBoxContainer.new()
 	info.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	info.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	info.add_theme_constant_override("separation", 3)
+	info.add_theme_constant_override("separation", 2)
 	row.add_child(info)
 	var name_row := HBoxContainer.new()
 	name_row.add_theme_constant_override("separation", 5)
 	var name_label := Label.new()
 	name_label.text = ac.combatant_name()
+	name_label.add_theme_font_size_override("font_size", CARD_NAME_FONT)
 	name_row.add_child(name_label)
 	for f: String in [ac.primary_force(), ac.secondary_force()]:
-		var tr := PortraitUtil.force_icon_node(f)
+		var tr := PortraitUtil.force_icon_node(f, 15)
 		if tr != null:
 			name_row.add_child(tr)
 	info.add_child(name_row)
@@ -69,11 +97,12 @@ static func make_card(
 	bar.max_value = ac.max_hp()
 	bar.value = maxi(0, ac.hp())
 	bar.show_percentage = false
-	bar.custom_minimum_size = Vector2(0, 14)
+	bar.custom_minimum_size = Vector2(0, 10)
 	style_hp_bar(bar)
 	info.add_child(bar)
 	var hp_label := Label.new()
 	hp_label.theme_type_variation = "MutedLabel"
+	hp_label.add_theme_font_size_override("font_size", CARD_HP_FONT)
 	hp_label.text = "%d / %d" % [maxi(0, ac.hp()), ac.max_hp()]
 	info.add_child(hp_label)
 	# A status-chip row: shield / buff / defdown, surfaced only when active (skill-battle depth).

@@ -1,0 +1,109 @@
+extends RefCounted
+## BattleImpact (Wave 10) — the battle screen's OUTCOME + IMPACT glue, extracted so
+## battle_screen.gd stays under the 1000-line cap while the stage/impact stack lands.
+##
+## PRESENTATION layer, all STATIC and screen-agnostic (the battle_card_kit pattern): result
+## plumbing (banner text, outcome toast, live-HP payload, capture-target resolution) that reads
+## engine-owned state and computes NO combat number. The Wave 10 impact stack (JuiceDirector
+## routing, force-matchup badges, entropy crescendo) grows here in the follow-up commits.
+
+const BattleCardKitScript := preload("res://presentation/battle/battle_card_kit.gd")
+const CaptureServiceScript := preload("res://application/battle/capture_service.gd")
+
+## Wave 3 honesty: the distinct turn-cap-with-enemies-alive banner (the interim authored line the
+## W16 VoiceBook ingest replaces) + its toast body, VERBATIM from docs/content/voice_library.md
+## §5.5 "A creature that refuses to fight".
+const STALEMATE_BANNER := "THE WILD SLINKS AWAY — STALEMATE"
+const STALEMATE_VOICE_LINE := "No battle today. It's tired, you're tired, the gods are dead — what's the point, really?"
+
+
+## The outcome banner for a finished battle. Wave 3 honesty: the turn cap expiring with enemies
+## still standing is NOT a victory — the distinct stalemate banner replaces the old lying VICTORY.
+static func banner_text_for(result: Dictionary, reason: String) -> String:
+	if bool(result.get("stalemate", false)):
+		return STALEMATE_BANNER
+	match reason:
+		"caught":
+			return "CAUGHT"
+		"fled":
+			return "FLED"
+		_:
+			return "VICTORY" if bool(result.get("player_won", false)) else "DEFEAT"
+
+
+## Fire the end-of-battle toast: the catch carries its one-of-one sigil (Wave 9), the stalemate
+## its verbatim voice line, everything else the banner headline.
+static func toast_outcome(
+	toast: Node, reason: String, result: Dictionary, battle, game: Node
+) -> void:
+	if toast == null:
+		return
+	if reason == "caught" and toast.has_method("event_with"):
+		# Wave 9: the catch toast bears the creature's one-of-one sigil (its mark stamps in the
+		# icon slot — the same geometry party/lab render for this creature forever after).
+		var sigil := BattleCardKitScript.caught_sigil_payload(battle, game)
+		toast.call("event_with", "creature_caught", {"sigil": sigil})
+	elif reason == "caught" and toast.has_method("event"):
+		toast.call("event", "creature_caught")
+	elif bool(result.get("stalemate", false)) and toast.has_method("show"):
+		# The verbatim voice line (§5.5) + the reduced-reward note — the honest stalemate copy.
+		(
+			toast
+			. call(
+				"show",
+				{
+					"title": STALEMATE_BANNER,
+					"body": STALEMATE_VOICE_LINE + "\n(Spoils halved.)",
+					"sound": "chime",
+				}
+			)
+		)
+	elif toast.has_method("show"):
+		toast.call("show", {"title": banner_text_for(result, reason), "body": "", "sound": "chime"})
+
+
+## The live end-of-battle HP of every player combatant, mapped back to its run.party INDEX through
+## the SkillInteractiveBattle's player source map (identity-safe even if the factory skipped an
+## unassemblable entry). Shape: [{ "index": int, "hp": int, "max_hp": int }, ...] — the payload
+## GameController.apply_battle_result folds into run.party (Wave 3 consequence).
+static func live_party_hp(battle, game: Node) -> Array:
+	var out: Array = []
+	if battle == null or game == null or not battle.has_method("player_source"):
+		return out
+	var run: RunContext = game.call("run")
+	if run == null:
+		return out
+	var source: Dictionary = battle.player_source()
+	for ac_v in battle.player_team():
+		var ac := ac_v as AbilityContainer
+		var creature: Variant = source.get(ac, null)
+		if creature == null:
+			continue
+		for i in run.party.size():
+			if run.party[i] is Dictionary and is_same(run.party[i], creature):
+				out.append({"index": i, "hp": maxi(0, ac.hp()), "max_hp": ac.max_hp()})
+				break
+	return out
+
+
+## The capture target: the chosen live foe at `target_index`, else the first alive foe, else null.
+static func resolve_capture_target(foes: Array, target_index: int) -> AbilityContainer:
+	if target_index >= 0 and target_index < foes.size():
+		var chosen := foes[target_index] as AbilityContainer
+		if chosen != null and chosen.is_alive():
+			return chosen
+	for f in foes:
+		var m := f as AbilityContainer
+		if m.is_alive():
+			return m
+	return null
+
+
+## The run's equipped capture-gear ids ([] without a game/run) — CaptureService's own derivation.
+static func gear_ids(game: Node) -> Array:
+	if game == null:
+		return []
+	var run: RunContext = game.call("run")
+	if run == null:
+		return []
+	return CaptureServiceScript.gear_ids(run.gear)

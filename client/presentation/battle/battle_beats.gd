@@ -40,6 +40,7 @@ static func capture(battle, actor: Variant, log_from: int) -> Dictionary:
 ## transcript delta + per-action HP snap + damage floats + stingers, equivalent to the old
 ## synchronous per-step refresh. The screen's drain loop calls this once per beat, in order.
 static func apply_instant(screen: Control, beat: Dictionary) -> void:
+	screen.call("stage_track", beat.get("actor"))  # the stage follows the actor even instant (W10)
 	screen.call("append_transcript_to", int(beat.get("log_to", 0)))
 	for side in 2:
 		var is_enemy := side == 1
@@ -84,6 +85,7 @@ static func _play_one(screen: Control, beat: Dictionary, time_scale: float) -> v
 	var fast := bool(screen.call("confirm_held"))
 	var t_hp := FAST_TOTAL * 0.6 if fast else HP_TWEEN_TIME * time_scale
 	var t_settle := FAST_TOTAL * 0.4 if fast else SETTLE_TIME * time_scale
+	screen.call("stage_track", beat.get("actor"))  # the stage plate swaps to whoever acts (W10)
 	_highlight_actor(screen, beat)
 	screen.call("append_transcript_to", int(beat.get("log_to", 0)))
 	var impact := _animate_hp(screen, beat, t_hp)

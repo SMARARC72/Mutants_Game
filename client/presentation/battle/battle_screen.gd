@@ -20,6 +20,12 @@ extends Control
 ## fast-forwards; Swift Rites persists x1/x2/instant). HEADLESS/instant mode drains the same queue
 ## synchronously with NO awaits, so every suite driving player_use_skill/last_step stays green.
 ##
+## WAVE 10 "BATTLE STAGE": the arena layer (battle_stage.gd) puts the ACTIVE player creature's
+## LivingPlate bottom-left and the targeted/acting enemy's top-right at ~2.6x card scale over the
+## painterly backdrop — the stage is the spectacle; the card lists shrink to compact rows but stay
+## (HAWKING legibility). The staged plates follow the beat actors (stage_track); boss battles get
+## a Cinzel name splash (held-CONFIRM skippable) + a full-width boss HP bar.
+##
 ## FLOW: reads the pending battle (enemy_party + battle_seed [+ is_wild]) GameController stashed before
 ## the swap, builds an interactive session against the run's party, drives it turn-by-turn from player
 ## input, then applies the result back to the run (xp on a win; a caught creature joins the party),
@@ -32,6 +38,8 @@ const CaptureServiceScript := preload("res://application/battle/capture_service.
 const SkillBattleControllerScript := preload("res://application/battle/skill_battle_controller.gd")
 const BattleBeatsScript := preload("res://presentation/battle/battle_beats.gd")
 const BattleCardKitScript := preload("res://presentation/battle/battle_card_kit.gd")
+const BattleImpactScript := preload("res://presentation/battle/battle_impact.gd")
+const BattleStageScript := preload("res://presentation/battle/battle_stage.gd")
 const InputActions := preload("res://infrastructure/input/input_actions.gd")
 const OVERWORLD_SCENE := "res://presentation/overworld/overworld_screen.tscn"
 
@@ -42,11 +50,10 @@ const _STEP_ENDED := "ended"
 ## Wave 8: the Swift Rites battle-pacing cycle (persisted via Settings, battle section).
 const SWIFT_RITES_ORDER: Array = ["x1", "x2", "instant"]
 
-## Wave 3 honesty: the distinct turn-cap-with-enemies-alive banner (the interim authored line the
-## W16 VoiceBook ingest replaces) + its toast body, VERBATIM from docs/content/voice_library.md
-## §5.5 "A creature that refuses to fight".
-const STALEMATE_BANNER := "THE WILD SLINKS AWAY — STALEMATE"
-const STALEMATE_VOICE_LINE := "No battle today. It's tired, you're tired, the gods are dead — what's the point, really?"
+## Wave 3 honesty banner strings (values live in BattleImpact — the Wave 10 extraction home for
+## outcome plumbing; re-exported here because tests/screens read them off BattleScreen).
+const STALEMATE_BANNER := BattleImpactScript.STALEMATE_BANNER
+const STALEMATE_VOICE_LINE := BattleImpactScript.STALEMATE_VOICE_LINE
 
 var _game: Node = null
 var _transition: Node = null
@@ -95,6 +102,7 @@ var _region_force := ""  # pending_battle "force" (the overworld's region climat
 var _swift_button: Button = null
 var _record_button: Button = null
 var _log_panel: PanelContainer = null
+var _stage: BattleStageScript = null  # Wave 10: the arena layer (plates + boss dressing)
 
 
 func _ready() -> void:
@@ -167,6 +175,10 @@ func run_pending_battle() -> Dictionary:
 		return _last_step
 	if _is_boss:
 		play_stinger("boss_swell")  # once, on the climax build (W-SND stinger set)
+		# Wave 10: the name splash (Cinzel, brief; held CONFIRM dismisses — _process polls).
+		var foes := _battle.enemy_team()
+		if not foes.is_empty():
+			_stage.show_boss_splash((foes[0] as AbilityContainer).combatant_name())
 	_pump()
 	return _last_step
 
@@ -232,6 +244,7 @@ func _apply_step(step: Dictionary) -> void:
 	_flush_transcript()
 	if kind == _STEP_AWAIT:
 		_pending_actor = step.get("actor") as AbilityContainer
+		stage_track(_pending_actor)  # the stage shows whoever is about to act (Wave 10)
 		_refresh_turn_label(step)
 		_show_action_menu()
 	elif kind == _STEP_ENDED:
@@ -271,6 +284,7 @@ func player_use_skill(skill: String, target_index: int = -1) -> Dictionary:
 		var target: AbilityContainer = null
 		if target_index >= 0 and target_index < foes.size():
 			target = foes[target_index] as AbilityContainer
+		stage_track(target)  # the enemy stage plate shows the chosen victim (Wave 10)
 		step = _battle.use_skill(skill, target)
 	_pending_skill = ""
 	return _route_player_step(step, actor)
@@ -283,11 +297,11 @@ func player_capture(target_index: int = -1) -> Dictionary:
 	if _battle == null or _battle.is_ended() or not _is_wild or _beats_playing:
 		return _last_step
 	var foes := _battle.enemy_team()
-	var target := _resolve_capture_target(foes, target_index)
+	var target := BattleImpactScript.resolve_capture_target(foes, target_index)
 	if target == null:
 		return _last_step
 	_hide_menus()
-	var gear := _gear_ids()
+	var gear: Array = BattleImpactScript.gear_ids(_game)
 	# attempt_capture internally advances on a failure, so its outcome may ALREADY be the first
 	# enemy response (RESOLVED — a beat), the next player turn (AWAIT) or the catch (ENDED).
 	var outcome := _battle.attempt_capture(target, gear)
@@ -351,14 +365,16 @@ func _finish_battle(step: Dictionary) -> void:
 		)
 	# Wave 3 consequence: carry the live end-of-battle HP home; GameController folds it into
 	# run.party so the next fight starts with the wounds this one left.
-	_result["party_hp"] = _live_party_hp()
+	_result["party_hp"] = BattleImpactScript.live_party_hp(_battle, _game)
 	if _game != null and _game.has_method("apply_battle_result"):
 		_game.call("apply_battle_result", _result)
 	if _game != null and _game.has_method("save_run"):
 		_game.call("save_run")
 	if reason == "caught":
 		play_stinger("capture_sting")  # the catch lands with its own sting (W-SND)
-	_toast_outcome(reason)
+	BattleImpactScript.toast_outcome(
+		get_node_or_null("/root/Toast"), reason, _result, _battle, _game
+	)
 	_show_banner_text(_banner_text_for(reason))
 	_hide_menus()
 	_show_continue()
@@ -410,6 +426,9 @@ func _input_event_confirm() -> void:
 
 
 func _process(_delta: float) -> void:
+	# The boss name splash is a >0.4s reveal — held/pressed CONFIRM dismisses it (tension 10).
+	if _stage != null and _stage.splash_active() and confirm_held():
+		_stage.dismiss_splash()
 	if _input == null or _beats_playing:
 		# While the beat queue narrates, CONFIRM is the fast-forward (held), never the exit.
 		return
@@ -423,91 +442,9 @@ func _process(_delta: float) -> void:
 # === helpers ================================================================================== #
 
 
-func _resolve_capture_target(foes: Array, target_index: int) -> AbilityContainer:
-	if target_index >= 0 and target_index < foes.size():
-		var chosen := foes[target_index] as AbilityContainer
-		if chosen != null and chosen.is_alive():
-			return chosen
-	for f in foes:
-		var m := f as AbilityContainer
-		if m.is_alive():
-			return m
-	return null
-
-
-func _gear_ids() -> Array:
-	if _game == null:
-		return []
-	var run: RunContext = _game.call("run")
-	if run == null:
-		return []
-	return CaptureServiceScript.gear_ids(run.gear)
-
-
-## The live end-of-battle HP of every player combatant, mapped back to its run.party INDEX through
-## the SkillInteractiveBattle's player source map (identity-safe even if the factory skipped an
-## unassemblable entry). Shape: [{ "index": int, "hp": int, "max_hp": int }, ...] — the payload
-## GameController.apply_battle_result folds into run.party (Wave 3 consequence).
-func _live_party_hp() -> Array:
-	var out: Array = []
-	if _battle == null or _game == null or not _battle.has_method("player_source"):
-		return out
-	var run: RunContext = _game.call("run")
-	if run == null:
-		return out
-	var source: Dictionary = _battle.player_source()
-	for ac_v in _battle.player_team():
-		var ac := ac_v as AbilityContainer
-		var creature: Variant = source.get(ac, null)
-		if creature == null:
-			continue
-		for i in run.party.size():
-			if run.party[i] is Dictionary and is_same(run.party[i], creature):
-				out.append({"index": i, "hp": maxi(0, ac.hp()), "max_hp": ac.max_hp()})
-				break
-	return out
-
-
-func _toast_outcome(reason: String) -> void:
-	var toast := get_node_or_null("/root/Toast")
-	if toast == null:
-		return
-	if reason == "caught" and toast.has_method("event_with"):
-		# Wave 9: the catch toast bears the creature's one-of-one sigil (its mark stamps in the
-		# icon slot — the same geometry party/lab render for this creature forever after).
-		var sigil := BattleCardKitScript.caught_sigil_payload(_battle, _game)
-		toast.call("event_with", "creature_caught", {"sigil": sigil})
-	elif reason == "caught" and toast.has_method("event"):
-		toast.call("event", "creature_caught")
-	elif bool(_result.get("stalemate", false)) and toast.has_method("show"):
-		# The verbatim voice line (§5.5) + the reduced-reward note — the honest stalemate copy.
-		(
-			toast
-			. call(
-				"show",
-				{
-					"title": STALEMATE_BANNER,
-					"body": STALEMATE_VOICE_LINE + "\n(Spoils halved.)",
-					"sound": "chime",
-				}
-			)
-		)
-	elif toast.has_method("show"):
-		toast.call("show", {"title": _banner_text_for(reason), "body": "", "sound": "chime"})
-
-
+## Outcome-banner delegate (kept on the screen: tests + the toast path call it here).
 func _banner_text_for(reason: String) -> String:
-	# Wave 3 honesty: the turn cap expiring with enemies still standing is NOT a victory — the
-	# distinct stalemate banner replaces the old lying VICTORY over an undamaged enemy.
-	if bool(_result.get("stalemate", false)):
-		return STALEMATE_BANNER
-	match reason:
-		"caught":
-			return "CAUGHT"
-		"fled":
-			return "FLED"
-		_:
-			return "VICTORY" if bool(_result.get("player_won", false)) else "DEFEAT"
+	return BattleImpactScript.banner_text_for(_result, reason)
 
 
 # === UI (minimal, code-built, themed) ========================================================= #
@@ -524,19 +461,15 @@ func _build_ui() -> void:
 	bg.color = Color(0.07, 0.06, 0.09)
 	bg.set_anchors_preset(Control.PRESET_FULL_RECT)
 	add_child(bg)
-	# Wave 8 backdrop-lite: the region's painterly backdrop (dim battle variant) replaces the flat
-	# void — picked by the encounter's force climate, sitting UNDER the vignette so HUD text keeps
-	# its contrast grade.
-	var backdrop_tex: Texture2D = BattleCardKitScript.pick_backdrop(_region_force, _is_wild)
-	if backdrop_tex != null:
-		var backdrop := TextureRect.new()
-		backdrop.name = "ArenaBackdrop"
-		backdrop.texture = backdrop_tex
-		backdrop.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		backdrop.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
-		backdrop.set_anchors_preset(Control.PRESET_FULL_RECT)
-		backdrop.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		add_child(backdrop)
+	# Wave 10 stage: the arena layer — painterly backdrop (Wave 8 backdrop-lite pick by force
+	# climate), the two staged LivingPlates, and the boss dressing — sits between the flat void
+	# and the vignette, so HUD text keeps its contrast grade.
+	_stage = BattleStageScript.new()
+	_stage.name = "BattleStage"
+	_stage.build(
+		BattleCardKitScript.pick_backdrop(_region_force, _is_wild), _is_boss, _instant_beats
+	)
+	add_child(_stage)
 	# A radial vignette grades the arena toward its dark edges (atmosphere, not gameplay).
 	var vig := TextureRect.new()
 	vig.texture = BattleCardKitScript.make_vignette(256)
@@ -550,6 +483,9 @@ func _build_ui() -> void:
 	margin.set_anchors_preset(Control.PRESET_FULL_RECT)
 	for side in ["left", "right", "top", "bottom"]:
 		margin.add_theme_constant_override("margin_" + side, 24)
+	# Boss battles: the full-width boss bar rides the very top — start the HUD below it.
+	if _is_boss:
+		margin.add_theme_constant_override("margin_top", 56)
 	add_child(margin)
 
 	var box := VBoxContainer.new()
@@ -569,6 +505,7 @@ func _build_ui() -> void:
 	var top_box := VBoxContainer.new()
 	top_box.add_theme_constant_override("separation", 8)
 	top_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	top_box.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	top_scroll.add_child(top_box)
 
 	_banner = Label.new()
@@ -581,23 +518,17 @@ func _build_ui() -> void:
 	_turn_label.theme_type_variation = "MutedLabel"
 	top_box.add_child(_turn_label)
 
+	# Wave 10 composition: COMPACT card columns hug the corners the stage plates do NOT use —
+	# enemy readouts top-LEFT (its plate is top-right), party readouts bottom-RIGHT (its plate is
+	# bottom-left) — so the centre stays open for the spectacle while every readout stays visible.
 	var teams := HBoxContainer.new()
 	teams.add_theme_constant_override("separation", 24)
+	teams.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	top_box.add_child(teams)
 
-	var party_box := VBoxContainer.new()
-	party_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	teams.add_child(party_box)
-	var party_title := Label.new()
-	party_title.text = "Your Coven"
-	party_title.theme_type_variation = "MutedLabel"
-	party_box.add_child(party_title)
-	_party_rows = VBoxContainer.new()
-	_party_rows.name = "PartyRows"
-	party_box.add_child(_party_rows)
-
 	var enemy_box := VBoxContainer.new()
-	enemy_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	enemy_box.custom_minimum_size = Vector2(320, 0)
+	enemy_box.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
 	teams.add_child(enemy_box)
 	var enemy_title := Label.new()
 	enemy_title.text = "The Wild" if _is_wild else "Adversary"
@@ -606,6 +537,25 @@ func _build_ui() -> void:
 	_enemy_rows = VBoxContainer.new()
 	_enemy_rows.name = "EnemyRows"
 	enemy_box.add_child(_enemy_rows)
+
+	var stage_gap := Control.new()
+	stage_gap.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	stage_gap.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	teams.add_child(stage_gap)
+
+	var party_box := VBoxContainer.new()
+	party_box.custom_minimum_size = Vector2(320, 0)
+	party_box.size_flags_horizontal = Control.SIZE_SHRINK_END
+	party_box.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	party_box.alignment = BoxContainer.ALIGNMENT_END
+	teams.add_child(party_box)
+	var party_title := Label.new()
+	party_title.text = "Your Coven"
+	party_title.theme_type_variation = "MutedLabel"
+	party_box.add_child(party_title)
+	_party_rows = VBoxContainer.new()
+	_party_rows.name = "PartyRows"
+	party_box.add_child(_party_rows)
 
 	_action_menu = VBoxContainer.new()
 	_action_menu.name = "ActionMenu"
@@ -669,41 +619,83 @@ func _refresh_combatants() -> void:
 	if _battle == null:
 		return
 	if _party_cards.is_empty():
-		_build_team_cards(_party_rows, _battle.player_team(), false, _party_cards)
+		BattleCardKitScript.build_team_cards(
+			_party_rows,
+			_battle.player_team(),
+			false,
+			_party_cards,
+			_portrait_source_for,
+			status_for
+		)
 	if _enemy_cards.is_empty():
-		_build_team_cards(_enemy_rows, _battle.enemy_team(), true, _enemy_cards)
+		BattleCardKitScript.build_team_cards(
+			_enemy_rows, _battle.enemy_team(), true, _enemy_cards, _portrait_source_for, status_for
+		)
 	BattleCardKitScript.update_team_cards(_party_cards, _battle.player_team(), status_for, self)
 	BattleCardKitScript.update_team_cards(_enemy_cards, _battle.enemy_team(), status_for, self)
+	_stage_sync()
 
 
-## Build a team's portrait cards once into `container`, recording node refs in `cards`.
-func _build_team_cards(container: VBoxContainer, team: Array, is_enemy: bool, cards: Array) -> void:
-	if container == null:
+## Keep the stage honest after any refresh: an empty/dead side re-stages its first living member,
+## and boss battles refresh the full-width threat bar (Wave 10).
+func _stage_sync() -> void:
+	if _stage == null or _battle == null:
 		return
-	for child in container.get_children():
-		child.queue_free()
-	cards.clear()
-	for i in team.size():
-		var ac := team[i] as AbilityContainer
-		var creature := _creature_dict_for(is_enemy, i)
-		cards.append(
-			BattleCardKitScript.make_card(
-				container, ac, _species_id_for(is_enemy, i, ac), is_enemy, status_for(ac), creature
-			)
-		)
+	for is_enemy in [false, true]:
+		var shown: Variant = _stage.shown_actor(is_enemy)
+		if shown != null and (shown as AbilityContainer).is_alive():
+			continue
+		var team: Array = _battle.enemy_team() if is_enemy else _battle.player_team()
+		for ac_v in team:
+			if (ac_v as AbilityContainer).is_alive():
+				stage_track(ac_v)
+				break
+	if _is_boss:
+		_stage.update_boss(_battle.enemy_team())
 
 
-## The run-party creature_instance backing a PLAYER card (by team index), so hybrids (species_id "")
-## can render their dominant-parent plate + corruption tint. {} for enemies / unresolvable indices
-## (the species-id path covers those).
-func _creature_dict_for(is_enemy: bool, index: int) -> Dictionary:
-	if is_enemy or _game == null:
-		return {}
-	var run: RunContext = _game.call("run")
-	if run == null or index < 0 or index >= run.party.size():
-		return {}
-	var entry: Variant = run.party[index]
-	return entry if entry is Dictionary else {}
+## Swap the stage plate on `actor`'s side to show it (Wave 10 — the beat player + the verbs call
+## this so the spectacle follows whoever acts / is targeted). Cheap + idempotent per actor.
+func stage_track(actor: Variant) -> void:
+	if _stage == null or _battle == null or actor == null:
+		return
+	var teams: Array = [_battle.player_team(), _battle.enemy_team()]
+	for side in 2:
+		var team: Array = teams[side]
+		for i in team.size():
+			if team[i] != actor:
+				continue
+			var ac := team[i] as AbilityContainer
+			var source := _portrait_source_for(side == 1, i, ac)
+			var tag := PortraitUtil.instance_tag_of(source)
+			if tag == "":
+				tag = ac.combatant_name()
+			_stage.stage_side(side == 1, ac, source, tag, ac.primary_force())
+			return
+
+
+## The portrait source dict backing a combatant: the run.party creature_instance for player cards
+## (hybrids render their dominant-parent plate + corruption tint), else {"species_id": id} (enemy
+## ids via species_for, player fallbacks via the captured party order).
+func _portrait_source_for(is_enemy: bool, index: int, ac: AbilityContainer) -> Dictionary:
+	if not is_enemy and _game != null:
+		var run: RunContext = _game.call("run")
+		if (
+			run != null
+			and index >= 0
+			and index < run.party.size()
+			and run.party[index] is Dictionary
+		):
+			return run.party[index]
+	var species_id := ""
+	if is_enemy:
+		if _battle != null and _battle.has_method("species_for"):
+			var sd: Variant = _battle.species_for(ac)
+			if sd != null:
+				species_id = str(sd.id)
+	elif index < _player_species.size():
+		species_id = str(_player_species[index])
+	return {"species_id": species_id}
 
 
 ## The StatusContainer fronting `ac` (statuses / corruption), or null when the status layer is
@@ -715,17 +707,6 @@ func status_for(ac: AbilityContainer) -> StatusContainer:
 	if sess == null or not sess.has_method("status_of"):
 		return null
 	return sess.status_of(ac)
-
-
-## The species id backing a card's combatant (enemy via species_for, player via the captured party order).
-func _species_id_for(is_enemy: bool, index: int, ac: AbilityContainer) -> String:
-	if is_enemy:
-		if _battle != null and _battle.has_method("species_for"):
-			var sd: Variant = _battle.species_for(ac)
-			if sd != null:
-				return str(sd.id)
-		return ""
-	return str(_player_species[index]) if index < _player_species.size() else ""
 
 
 ## Flush every transcript line not yet shown (terminal steps: turn headers before an AWAIT, the
