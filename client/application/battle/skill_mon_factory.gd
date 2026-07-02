@@ -113,7 +113,9 @@ static func team_with_source(creatures: Array, catalog: SpeciesCatalog) -> Dicti
 	var team: Array = []
 	var source: Dictionary = {}
 	for entry in creatures:
-		if entry is Dictionary:
+		if entry is Dictionary and not bool((entry as Dictionary).get("is_dead", false)):
+			# W18 permadeath guard: the dead never fight again (they also leave run.party for the
+			# graveyard, so this is belt-and-braces; wild enemies never carry the flag).
 			var ac := from_creature(entry as Dictionary, catalog)
 			if ac != null:
 				team.append(ac)
