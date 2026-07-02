@@ -67,14 +67,54 @@ static func tint_button_icon(button: Button, creature: Dictionary) -> void:
 		button.add_theme_color_override(color_name, tint)
 
 
+## The per-instance identity tag for sigils/phase hashing (Wave 9): a spliced hybrid's
+## lineage.rng_seed_tag (the unique op_id) wins, else the nickname, else "" (species-level mark).
+## LOCAL-hash input only — never a canonical stream seed.
+static func instance_tag_of(creature: Dictionary) -> String:
+	var tag := str(_lineage_of(creature).get("rng_seed_tag", ""))
+	if tag != "":
+		return tag
+	return str(creature.get("nickname", ""))
+
+
+## Stamp (or re-aim) a creature's one-of-one sigil in `host`'s bottom-right corner (Wave 9).
+## `host` must be a NON-container Control (a LivingPlate / TextureRect — containers would
+## stretch the mark). Idempotent per host: refresh paths re-call this and the existing mark is
+## re-identified in place. `force` picks the accent colour; `tag_override` replaces the derived
+## instance tag (battle cards tag wild enemies by combatant name).
+static func stamp_sigil(
+	host: Control, creature: Dictionary, force: String = "", px: int = 18, tag_override: String = ""
+) -> void:
+	if host == null:
+		return
+	var species_id := str(creature.get("species_id", ""))
+	var tag := tag_override if tag_override != "" else instance_tag_of(creature)
+	var existing := host.get_node_or_null("SigilStamp")
+	if existing != null:
+		existing.call("set_identity", species_id, tag, force)
+		return
+	var mark := SigilGen.make_mark(species_id, tag, force, px)
+	mark.name = "SigilStamp"
+	mark.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
+	mark.offset_left = -float(px) - 1.0
+	mark.offset_top = -float(px) - 1.0
+	mark.offset_right = -1.0
+	mark.offset_bottom = -1.0
+	host.add_child(mark)
+
+
 static func _lineage_of(creature: Dictionary) -> Dictionary:
 	var raw: Variant = creature.get("lineage", {})
 	return raw if raw is Dictionary else {}
 
 
-## Wrap a portrait TextureRect in a brass-bordered ink frame so the creature reads as a bestiary
-## plate. Returns the frame (the portrait is its child).
-static func framed(portrait: TextureRect) -> PanelContainer:
+## Wrap a portrait Control (a TextureRect or a LivingPlate) in a brass-bordered ink frame so the
+## creature reads as a bestiary plate. Returns the frame (the portrait is its child). Pass the
+## `creature` dict to also stamp its one-of-one sigil in the portrait corner (Wave 9); refresh
+## paths that re-point the portrait should call stamp_sigil() again themselves.
+static func framed(
+	portrait: Control, creature: Dictionary = {}, force: String = ""
+) -> PanelContainer:
 	var frame := PanelContainer.new()
 	var sb := StyleBoxFlat.new()
 	sb.bg_color = FRAME_BG
@@ -84,6 +124,8 @@ static func framed(portrait: TextureRect) -> PanelContainer:
 	sb.set_content_margin_all(3)
 	frame.add_theme_stylebox_override("panel", sb)
 	frame.add_child(portrait)
+	if not creature.is_empty():
+		stamp_sigil(portrait, creature, force)
 	return frame
 
 
