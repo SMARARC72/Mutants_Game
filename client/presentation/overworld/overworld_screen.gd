@@ -403,14 +403,11 @@ func _on_encounter(roll: Dictionary) -> void:
 	_stash_and_hand_off(roll, extra)
 
 
-## Hand off the LEGENDARY-BOSS climax (Slice 4) through the SAME pending_battle path as a wild fight,
-## tagged is_boss with the boss role brain so the battle screen runs it via BattleSession.run_boss.
+## Hand off the BOSS climax (Slice 4 / E1c) through the SAME pending_battle path as a wild fight —
+## boss_handoff_extra shapes the is_boss tag + role brain + the authored pantheon lines.
 func _on_boss_encounter(roll: Dictionary) -> void:
 	# The boss is not capturable / fleeable like a wild mon.
-	_stash_and_hand_off(
-		roll,
-		{"is_wild": false, "is_boss": true, "boss_brain": str(roll.get("boss_brain", "controller"))}
-	)
+	_stash_and_hand_off(roll, OverworldLoopStateScript.boss_handoff_extra(roll))
 
 
 ## Stash the battle hand-off on the run (`extra` carries the wild/boss tags), arm the Wave 3
@@ -752,6 +749,7 @@ func _layout_pixel_rect() -> Rect2:
 
 ## Place the region's NPCs on walkable cells near the spawn, each as a parchment token ringed in its
 ## colour. No-op if there is no layout. Safe headless (tokens are nodes; nothing renders).
+## E1c: verdant keeps hand-wired NPC_DEFS; other regions draw npc_casts.json (region_npc_defs).
 func _spawn_npcs() -> void:
 	OverworldDepthScript.free_cast(_npcs)  # a rebuild re-spawns the cast; no stale twins
 	_npcs.clear()
@@ -762,11 +760,12 @@ func _spawn_npcs() -> void:
 		_quests.register(_quest_defs())  # all overworld quests (MARSH/MELON/BRAMBLE/...) in one place
 		_restore_quests()
 	_sync_boss_goal_quest()
+	var defs: Array = OverworldContent.region_npc_defs(_region_id())
 	var cells := OverworldSpawnScript.npc_cells(
-		_layout, _home_cell, OverworldContent.NPC_DEFS.size(), _structures.blocked()
+		_layout, _home_cell, defs.size(), _structures.blocked()
 	)
-	for i in mini(cells.size(), OverworldContent.NPC_DEFS.size()):
-		var def: Dictionary = OverworldContent.NPC_DEFS[i]
+	for i in mini(cells.size(), defs.size()):
+		var def: Dictionary = defs[i]
 		var cell: Vector2i = cells[i]
 		var node := Node2D.new()
 		node.name = "NPC_%s" % str(def["name"]).replace(" ", "")
@@ -813,6 +812,9 @@ func speak_to(index: int) -> String:
 	if bool(npc.get("sign", false)):
 		return OverworldBarks.read_signpost(self, npc, _run_ctx(), _game)
 	var timeline := str(npc["timeline"])
+	# E1c: a catalog-cast NPC without its generated timeline bubbles its AUTHORED bark instead.
+	if OverworldBarks.play_cast_bark(self, npc, _run_ctx()):
+		return timeline
 	var choice_conf: Dictionary = npc.get("choice", {})
 	if OverworldBarks.swap_out_of_lines(self, npc, _run_ctx()):
 		_advance_quest_for(npc)

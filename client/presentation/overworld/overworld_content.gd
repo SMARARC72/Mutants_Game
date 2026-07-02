@@ -526,6 +526,21 @@ static func peculiar_def(id: String) -> Dictionary:
 	return {}
 
 
+## The NPC defs the overworld spawns for a region (Batch E1c). VERDANT keeps the hand-wired
+## NPC_DEFS above — canonical (the Act-0 spine + SQ cast ride the shipped region until region
+## travel fully lands). Every OTHER region draws the AUTHORED cast from npc_casts.json via
+## NpcCastCatalog (leaders, Hands, roster, living-world faces — VERBATIM names/barks, stable
+## hashed rings); a region without a catalog cast falls back to NPC_DEFS so no region is ever
+## peopleless (mirrors the no-soft-lock philosophy).
+static func region_npc_defs(region_id: String) -> Array:
+	if region_id == EncounterCatalog.STARTING_REGION:
+		return NPC_DEFS
+	var cast := NpcCastCatalog.defs_for_region(region_id)
+	if cast.is_empty():
+		return NPC_DEFS
+	return cast
+
+
 ## The HUD title for a region id ("The Verdant Glut"), falling back to the id itself.
 static func region_title(region_id: String) -> String:
 	return str(REGION_TITLES.get(region_id, region_id))
