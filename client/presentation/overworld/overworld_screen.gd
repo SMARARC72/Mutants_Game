@@ -351,8 +351,10 @@ func _dispatch_roll(roll: Dictionary) -> void:
 ## static peculiar_hook (screen, roll) when the content wave has wired one.
 func peculiar_encounter(roll: Dictionary) -> void:
 	peculiar_encountered.emit(roll)
-	if peculiar_hook.is_valid():
-		peculiar_hook.call(self, roll)
+	if not peculiar_hook.is_valid():
+		# Default content resolver (W16b). Tests overwrite/clear the seam explicitly.
+		peculiar_hook = OverworldPeculiars.play
+	peculiar_hook.call(self, roll)
 
 
 ## The veil coughs: announce a misbehavior draw (authored copy via VoiceBook —
