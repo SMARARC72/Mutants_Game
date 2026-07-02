@@ -29,8 +29,11 @@ static func spawn_cell(layout: Layout) -> Vector2i:
 
 ## Pick `count` walkable cells near `home` (manhattan radius 2..7), deterministic, skipping the
 ## home cell itself — the NPC placement ring (moved from overworld_screen for the line cap).
-## Anchoring on the CANONICAL spawn keeps the cast put across battles and reloads.
-static func npc_cells(layout: Layout, home: Vector2i, count: int) -> Array:
+## Anchoring on the CANONICAL spawn keeps the cast put across battles and reloads. `blocked`
+## (W-DRESS) is the screen-local structure occupancy set — no soul spawns inside a temple wall.
+static func npc_cells(
+	layout: Layout, home: Vector2i, count: int, blocked: Dictionary = {}
+) -> Array:
 	var found: Array = []
 	# Ring search out to the full region span (W16b: the cast grew to 16 with Act-0) —
 	# early NPCs keep their exact historical cells; only the overflow walks further out.
@@ -40,7 +43,7 @@ static func npc_cells(layout: Layout, home: Vector2i, count: int) -> Array:
 				if abs(dx) + abs(dy) != radius:
 					continue
 				var c := home + Vector2i(dx, dy)
-				if c == home or found.has(c):
+				if c == home or found.has(c) or blocked.has(c):
 					continue
 				if not layout.in_bounds(c.x, c.y):
 					continue

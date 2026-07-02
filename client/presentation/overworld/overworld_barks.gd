@@ -103,6 +103,19 @@ static func read_signpost(screen: Node, npc: Dictionary, run: RunContext, game: 
 	return "signpost"
 
 
+## The veil coughs: announce a misbehavior draw (moved from overworld_screen for the line cap
+## — W-DRESS). world.veil_coughs is the reserved ingest key; weather.rare is the shipped
+## authored fallback per the VoiceBook contract.
+static func toast_misbehavior(screen: Node) -> void:
+	var toast := screen.get_node_or_null("/root/Toast")
+	if toast == null or not toast.has_method("show"):
+		return
+	var line := VoiceBookScript.pick("world.veil_coughs")
+	if line == "":
+		line = VoiceBookScript.pick("weather.rare")
+	toast.call("show", {"title": "The veil coughs.", "body": line, "sound": "hum"})
+
+
 ## The authored out-of-lines beat, bubbled over the exhausted NPC in place of a replayed
 ## scene. Returns the line (always authored; the key ships in voice.json).
 static func play_out_of_lines(screen: Node, npc: Dictionary) -> String:
