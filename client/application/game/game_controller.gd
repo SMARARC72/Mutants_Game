@@ -188,6 +188,9 @@ func save_run() -> bool:
 	_ensure_deps()
 	# Flush the live parts drawer back into the data-only rows so a Lab debit is in the saved snapshot.
 	write_inventory()
+	# A MONOTONIC save ordinal (user://saves/.ordinal): "most recent save" must be decided by
+	# WRITE ORDER, not file mtime — same-second mtime ties across runs picked the wrong file.
+	_run.flags["save_ordinal"] = _next_save_ordinal()
 	# 1) DAL write (conflict-checked). On accept the store bumps save_version; mirror it back. The
 	#    await suspends only for the async Supabase repo; the Fake repo resolves synchronously (no
 	#    suspension), so save_run() returns its bool synchronously offline / in tests.
@@ -603,16 +606,54 @@ func _latest_save_path() -> String:
 	if dir == null:
 		return ""
 	var best_path := ""
-	var best_mtime := -1
+	var best_key: Array = [-1, -1]  # [save_ordinal, mtime] — ordinal wins; mtime breaks legacy ties
 	dir.list_dir_begin()
 	var name := dir.get_next()
 	while name != "":
 		if not dir.current_is_dir() and name.ends_with(".json"):
 			var full := "%s/%s" % [dir_path, name]
-			var mtime := FileAccess.get_modified_time(full)
-			if mtime > best_mtime:
-				best_mtime = mtime
+			var key: Array = [_save_ordinal_of(full), FileAccess.get_modified_time(full)]
+			if key > best_key:
+				best_key = key
 				best_path = full
 		name = dir.get_next()
 	dir.list_dir_end()
 	return best_path
+
+
+## The save_ordinal stamped in an envelope's run flags (-1 for legacy/unreadable saves — they
+## lose ordinal comparisons and fall back to mtime among themselves).
+func _save_ordinal_of(path: String) -> int:
+	var f := FileAccess.open(path, FileAccess.READ)
+	if f == null:
+		return -1
+	var parsed: Variant = JSON.parse_string(f.get_as_text())
+	f.close()
+	if not (parsed is Dictionary):
+		return -1
+	var body: Variant = (parsed as Dictionary).get("body", parsed)
+	if not (body is Dictionary):
+		return -1
+	var flags: Variant = (body as Dictionary).get("flags", {})
+	if flags is Dictionary:
+		return int((flags as Dictionary).get("save_ordinal", -1))
+	return -1
+
+
+## Read+increment the cross-run save counter (user://saves/.ordinal). Deterministic write order,
+## no wall-clock dependence.
+func _next_save_ordinal() -> int:
+	var dir_path := SaveEnvelopeScript.DEFAULT_DIR
+	if not DirAccess.dir_exists_absolute(dir_path):
+		DirAccess.make_dir_recursive_absolute(dir_path)
+	var counter_path := "%s/.ordinal" % dir_path
+	var current := 0
+	var f := FileAccess.open(counter_path, FileAccess.READ)
+	if f != null:
+		current = int(f.get_as_text().strip_edges().to_int())
+		f.close()
+	var w := FileAccess.open(counter_path, FileAccess.WRITE)
+	if w != null:
+		w.store_string(str(current + 1))
+		w.close()
+	return current + 1
