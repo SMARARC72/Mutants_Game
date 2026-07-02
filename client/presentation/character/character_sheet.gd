@@ -73,7 +73,14 @@ func rank_text() -> String:
 # === navigation =============================================================================== #
 
 
+## Back out of the sheet. W17: as a router overlay this POPS one level (back to the camp menu over
+## the LIVE overworld — the descent was never destroyed); the legacy overworld scene swap survives
+## as the no-router fallback only.
 func return_to_overworld() -> void:
+	var router := get_node_or_null("/root/UiRouter")
+	if router != null and bool(router.call("pop_from", self)):
+		return
+	set_process(false)
 	if _transition != null and _transition.has_method("change_scene_ritual"):
 		await _transition.call("change_scene_ritual", OVERWORLD_SCENE)
 	elif is_inside_tree():
@@ -83,8 +90,8 @@ func return_to_overworld() -> void:
 func _process(_delta: float) -> void:
 	if _input == null or not _input.has_method("just_pressed"):
 		return
+	# Esc pops exactly one level (W17): a buried sheet swallows the edge inside pop_from.
 	if bool(_input.call("just_pressed", InputActions.CANCEL)):
-		set_process(false)
 		return_to_overworld()
 
 

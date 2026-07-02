@@ -35,6 +35,7 @@ ThemeService="*res://autoload/theme_service.gd"
 InputService="*res://infrastructure/input/input_service.gd"
 Toast="*res://presentation/ui/toast/toast.gd"
 Transition="*res://presentation/ui/transition/transition.gd"
+UiRouter="*res://presentation/ui/ui_router.gd"
 DevConsole="*res://presentation/devtools/dev_console.gd"
 GameController="*res://application/game/game_controller.gd"
 

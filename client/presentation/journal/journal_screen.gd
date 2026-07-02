@@ -248,8 +248,13 @@ func _make_quest_card(entry: Dictionary) -> PanelContainer:
 	return card
 
 
-## Return to the camp menu (the surface this screen is opened from).
+## Return to the camp menu (the surface this screen is opened from). W17: as a router overlay this
+## POPS one level (the camp beneath was never destroyed); the swap is the no-router fallback only.
 func return_to_camp() -> void:
+	var router := get_node_or_null("/root/UiRouter")
+	if router != null and bool(router.call("pop_from", self)):
+		return
+	set_process(false)
 	if _transition != null and _transition.has_method("change_scene_ritual"):
 		await _transition.call("change_scene_ritual", CAMP_SCENE)
 	elif is_inside_tree():
@@ -259,5 +264,6 @@ func return_to_camp() -> void:
 func _process(_delta: float) -> void:
 	if _input == null or not _input.has_method("just_pressed"):
 		return
+	# Esc pops exactly one level (W17): a buried Ledger swallows the edge inside pop_from.
 	if bool(_input.call("just_pressed", InputActions.CANCEL)):
 		return_to_camp()
