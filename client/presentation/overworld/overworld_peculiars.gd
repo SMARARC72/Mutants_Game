@@ -57,7 +57,10 @@ static func play(screen: Node, roll: Dictionary) -> Dictionary:
 	# scene resolves synchronously, so _in_dialogue is already false again by the return.
 	screen.set("_in_dialogue", true)
 	_facade_for(screen).play_timeline(timeline)
-	if game != null and game.has_method("save_run"):
+	# W18 save trust: the witnessed save path first (SaveSentry surfaces the outcome).
+	if game != null and game.has_method("request_save"):
+		game.call("request_save")
+	elif game != null and game.has_method("save_run"):
 		game.call("save_run")
 	return result
 

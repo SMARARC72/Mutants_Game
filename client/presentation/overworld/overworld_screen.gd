@@ -239,7 +239,10 @@ func _maybe_play_intro() -> void:
 	if run == null or bool(run.flags.get("intro_played", false)):
 		return
 	run.flags["intro_played"] = true
-	if _game.has_method("save_run"):
+	# W18 save trust: the witnessed save path first (SaveSentry surfaces the outcome).
+	if _game.has_method("request_save"):
+		_game.call("request_save")
+	elif _game.has_method("save_run"):
 		_game.call("save_run")
 	if _dialogue == null:
 		_dialogue = DialogicFacade.new()
@@ -439,7 +442,10 @@ func _stash_and_hand_off(roll: Dictionary, extra: Dictionary) -> void:
 			run, _player_cell, _last_dir, EncounterDirectorScript.POST_BATTLE_GRACE_STEPS
 		)
 	# Save on encounter-end boundary (autosave the run before the fight resolves the loop).
-	if _game != null and _game.has_method("save_run"):
+	# W18 save trust: the witnessed save path first (SaveSentry surfaces the outcome).
+	if _game != null and _game.has_method("request_save"):
+		_game.call("request_save")
+	elif _game != null and _game.has_method("save_run"):
 		_game.call("save_run")
 	if _auto_hand_off:
 		_hand_off_to_battle()

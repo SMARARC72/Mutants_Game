@@ -109,7 +109,8 @@ static func _compose_growth(mon: BattleEngine.Mon, creature: Dictionary) -> void
 static func team_from_creatures(creatures: Array, catalog: SpeciesCatalog) -> Array:
 	var team: Array = []
 	for entry in creatures:
-		if entry is Dictionary:
+		if entry is Dictionary and not bool((entry as Dictionary).get("is_dead", false)):
+			# W18 permadeath guard: a dead creature never re-enters a team build.
 			var mon := from_creature(entry as Dictionary, catalog)
 			if mon != null:
 				team.append(mon)
@@ -125,7 +126,8 @@ static func team_with_source(creatures: Array, catalog: SpeciesCatalog) -> Dicti
 	var team: Array = []
 	var source: Dictionary = {}
 	for entry in creatures:
-		if entry is Dictionary:
+		if entry is Dictionary and not bool((entry as Dictionary).get("is_dead", false)):
+			# W18 permadeath guard: a dead creature never re-enters a team build.
 			var mon := from_creature(entry as Dictionary, catalog)
 			if mon != null:
 				team.append(mon)

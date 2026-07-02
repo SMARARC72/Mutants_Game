@@ -168,6 +168,74 @@ static func impact(
 			juice.call("collision_flash", a_ac.primary_force(), t_ac.primary_force())
 
 
+## THE PERMADEATH DIRGE (Wave 18 "Death With Weight"): the mournful beat when a PARTY creature
+## truly dies at battle end (a LOST battle — the mercy rule spares winners' downed). The knell
+## tolls once, the ONE grade pass desaturates for ~0.8s (the battle's atmosphere surface —
+## tension 9 keeps the pass count at one, so the pulse rides `mourn` instead of a new shader),
+## and each memorial gets an authored epitaph toast bearing the creature's one-of-one sigil.
+## Never the word "fainted". Skippable/instant: headless + instant beats skip the tween entirely
+## and the toasts never block input (the Continue affordance is already live).
+static func death_dirge(screen: Control, grade: ColorRect, deaths: Array, instant: bool) -> void:
+	if deaths.is_empty():
+		return
+	var sfx := screen.get_node_or_null("/root/SfxService")
+	if sfx != null and sfx.has_method("play"):
+		sfx.call("play", "death_knell", 0.0)
+	_toast_epitaphs(screen, deaths)
+	if instant or grade == null or not (grade.material is ShaderMaterial):
+		return
+	if not screen.is_inside_tree():
+		return
+	var mat := grade.material as ShaderMaterial
+	var tween := screen.create_tween()
+	tween.tween_method(func(v: float) -> void: mat.set_shader_parameter("mourn", v), 0.0, 0.85, 0.3)
+	tween.tween_method(func(v: float) -> void: mat.set_shader_parameter("mourn", v), 0.85, 0.0, 0.5)
+
+
+## One epitaph toast per memorial: the authored region line when it exists, else the permadeath
+## line, with {creature} interpolated; the memorial's sigil stamps the icon slot (Wave 9 pattern).
+static func _toast_epitaphs(screen: Control, deaths: Array) -> void:
+	var toast := screen.get_node_or_null("/root/Toast")
+	if toast == null or not toast.has_method("show"):
+		return
+	for death_v in deaths:
+		if not (death_v is Dictionary):
+			continue
+		var memorial: Dictionary = death_v
+		var name := str(memorial.get("name", ""))
+		var body := epitaph_for(memorial)
+		(
+			toast
+			. call(
+				"show",
+				{
+					"title": "%s is gone." % name,
+					"body": body,
+					"sound": "chime",
+					"sigil":
+					{
+						"species": str(memorial.get("species_id", "")),
+						"tag": str(memorial.get("sigil", "")),
+						"force": str(memorial.get("force", "")),
+					},
+				}
+			)
+		)
+
+
+## The authored epitaph line for a memorial (region variant first, then the permadeath key,
+## then a hand fallback), deterministic per creature (its sigil tag salts the variant walk).
+static func epitaph_for(memorial: Dictionary) -> String:
+	var name := str(memorial.get("name", ""))
+	var salt := str(memorial.get("sigil", "")).hash() & 0x7FFFFFFF
+	var line := VoiceBookScript.pick("death.region.%s" % str(memorial.get("region", "")), salt)
+	if line == "":
+		line = VoiceBookScript.pick("death.permadeath", salt)
+	if line == "":
+		line = "{creature} is gone. Not down — gone. The grimoire keeps a page where it kept a heartbeat."
+	return line.format({"creature": name})
+
+
 ## The death beat (Wave 10): the dying combatant's staged plate dissolves (0 -> 1, ~0.8s) with
 ## a drifting-parts burst; animated playback adds the kill hitstop + a full-weight shake.
 static func death(screen: Control, target: Variant, instant: bool) -> void:
