@@ -151,7 +151,10 @@ func _spawn(title: String, body: String, icon_path: String, sigil: Dictionary = 
 	tween.tween_property(panel, "modulate:a", 1.0, FADE)
 	tween.tween_interval(TOAST_LIFETIME)
 	tween.tween_property(panel, "modulate:a", 0.0, FADE)
-	tween.tween_callback(func() -> void: _dismiss(panel))
+	# Bound Callable, NOT a capturing lambda: when the stack cap queue_frees this panel early,
+	# a pending lambda logs "Lambda capture ... freed" as it fires — the bound arg instead
+	# reaches _dismiss, whose is_instance_valid guard already handles the freed case silently.
+	tween.tween_callback(_dismiss.bind(panel))
 
 
 func _dismiss(panel: Node) -> void:
