@@ -19,6 +19,39 @@ extends RefCounted
 
 const CASTS_PATH := "res://catalog/npc_casts.json"
 
+## E2a "The Playable Arc" — catalog QUEST STEPS carried by cast NPCs (the verdant NPC_DEFS
+## step-key pattern, kept as a hand-authored overlay so npc_casts.json stays generator-pure).
+## Key = the VERBATIM cast name; value = the step keys merged onto that NPC's def
+## ("<quest_id>_step": step id — QuestCatalog emits one "objective" step per quest). Every
+## giver here is a _NAME_RECONCILIATION.md substitution for a warn-listed story_quests.md
+## name (recorded in tools/INGEST_NOTES.md, E2 section):
+##   Q1.2 Foreman Castor Brail        -> Foundress Magna Ironwright (Iron Guild leader, forgefell)
+##   Q1.4 Archivist Pellos Vane +
+##   Q4.2 "Concord's Aurelian Vox"    -> Archon Velleth Sun-Notary (Concord leader, astral_tier)
+##   Q2.1 Lord Severin Ash            -> The Pale Steward (Pale Court leader, mournmarch)
+##   Q2.2 Doctor Vesh Quillon         -> The Unmaker, Nael (Unbound leader, sunder)
+##   Q2.3 Kestrel Dane (the rival's marker is High Table business; the wanderers cast never
+##        spawns) + Q4.3 "everyone"   -> The Chairwoman, Indra Vael (High Table, storm_vault)
+##   Q3.2 "a surviving Olympian"      -> The Last Automaton "Patience" (Hephaestion's construct)
+const QUEST_STEP_CARRY := {
+	"Foundress Magna Ironwright, the Hand That Improves":
+	{"act1_the_foremans_problem_step": "objective"},
+	"Archon Velleth Sun-Notary, the Last Lawful Voice":
+	{
+		"act1_the_reliquary_of_winners_step": "objective",
+		"act4_the_last_reckoning_of_the_clans_step": "objective",
+	},
+	"The Pale Steward, Wessel Graf von Underhart": {"act2_the_sworn_rite_step": "objective"},
+	"The Unmaker, She-Who-Is-Called Nael (and other things)":
+	{"act2_the_line_you_cant_uncross_step": "objective"},
+	"The Chairwoman, Indra Vael of the Long Marker":
+	{
+		"act2_the_one_who_climbed_beside_you_step": "objective",
+		"act4_what_you_built_step": "objective",
+	},
+	'The Last Automaton, Unit Called "Patience"': {"act3_a_gods_bargain_step": "objective"},
+}
+
 static var _cache: Dictionary = {}  # region_id -> Array[def]
 static var _loaded: bool = false
 
@@ -75,12 +108,14 @@ static func _regions() -> Dictionary:
 
 
 ## One catalog row -> the NPC_DEFS shape the overworld consumes. The ring hex parses into
-## a real Color (Color(String) handles "#rrggbb"); barks land verbatim.
+## a real Color (Color(String) handles "#rrggbb"); barks land verbatim. E2a: the def then
+## takes its QUEST_STEP_CARRY overlay, so a catalog cast NPC drives catalog quest steps
+## through the SAME data-driven dispatch the verdant hand-wired cast rides.
 static func _shape(entry: Dictionary) -> Dictionary:
 	var barks: Array = []
 	for bark in entry.get("barks", []) as Array:
 		barks.append(str(bark))
-	return {
+	var def := {
 		"name": str(entry.get("name", "")),
 		"timeline": str(entry.get("timeline", "")),
 		"ring": Color(str(entry.get("ring", "#8a8a8a"))),
@@ -90,3 +125,5 @@ static func _shape(entry: Dictionary) -> Dictionary:
 		"barks": barks,
 		"cast": true,
 	}
+	def.merge((QUEST_STEP_CARRY.get(def["name"], {}) as Dictionary).duplicate(true))
+	return def
