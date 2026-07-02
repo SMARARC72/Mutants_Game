@@ -24,6 +24,40 @@ const CATALOG_PATH := "res://catalog/quests.json"
 ## spine. The raw catalog chain (acts walked pure) keeps `act1_open` untouched.
 const ACT_GATE_ALIASES := {"act1_open": "registered_aspirant"}
 
+## E2a "The Playable Arc" — main quests that resolve by DEED, not talk. A quest named here
+## completes when its region-boss VICTORY flag (EncounterCatalog.boss_trigger_for — set by
+## GameController._mark_slice_cleared on a played boss win) lands in run.flags; an EMPTY value
+## marks a WITNESS quest (the doc's giver is "the moment/game itself") that resolves on its own
+## the moment its act-chain trigger opens it. OverworldQuestsGlue.sync_catalog_quests drives
+## both on every overworld build. Doc mapping recorded in tools/INGEST_NOTES.md (E2 section).
+const VICTORY_FLAGS := {
+	"act1_the_guardian_at_the_node": "titanfall_boss_victory",
+	"act3_first_blood_on_the_thrones": "sunder_boss_victory",
+	"act4_the_pure_poles": "maw_beneath_boss_victory",
+	"act5_the_first_invader": "hollow_atelier_boss_victory",
+	"act5_the_walls_choice": "",
+	"act5_a_graveyard_of_winners": "",
+}
+
+## E2a — main quests whose authored scene shipped as a generated .dtl (E1a): the def carries the
+## scene as its `timeline`, and the overworld plays it when the quest's step advances
+## (DialogicFacade.timeline_exists probes first, so a missing scene falls back to the toast).
+## Act 0 stays on the hand-wired NPC scenes; acts_s10 covers BOTH Q5.3 and Q5.4 in one authored
+## scene — mapped to Q5.3 only so it never replays.
+const QUEST_SCENES := {
+	"act1_greener_pastures_hungrier_ones": "mvp_s05_greener_pastures_hungrier_ones",
+	"act2_the_sworn_rite": "acts_s01_the_sworn_rite",
+	"act2_the_line_you_cant_uncross": "acts_s02_the_line_you_cant_uncross",
+	"act2_first_light": "acts_s03_first_light",
+	"act3_first_blood_on_the_thrones": "acts_s04_first_blood_on_the_thrones",
+	"act3_the_throne_turned": "acts_s05_the_throne_turned",
+	"act3_holes_in_the_sky": "acts_s06_holes_in_the_sky",
+	"act4_the_pure_poles": "acts_s07_the_pure_poles",
+	"act4_the_empty_seat": "acts_s08_the_empty_seat",
+	"act5_petrification": "acts_s09_petrification",
+	"act5_the_walls_choice": "acts_s10_the_walls_choice_the_graveyard",
+}
+
 static var _entries: Array = []
 static var _loaded := false
 static var _region_defs: Dictionary = {}  # region_id -> Array[def] (built once)
@@ -91,14 +125,20 @@ static func to_def(e: Dictionary, aliased := false) -> Dictionary:
 				}
 			)
 		)
+	var quest_id := str(e.get("id", ""))
 	var def := {
-		"id": str(e.get("id", "")),
+		"id": quest_id,
 		"name": str(e.get("title", "")),
 		"description": _description_for(steps),
 		"step_key": quest_step_key,
 		"steps": steps,
 		"on_complete": (e.get("on_complete", {}) as Dictionary).duplicate(true),
 	}
+	# E2a: deed-resolved quests carry their victory flag; scene-backed quests their .dtl id.
+	if VICTORY_FLAGS.has(quest_id):
+		def["victory_flag"] = str(VICTORY_FLAGS[quest_id])
+	if QUEST_SCENES.has(quest_id):
+		def["timeline"] = str(QUEST_SCENES[quest_id])
 	var prereqs: Array = e.get("prereq_flags", []) as Array
 	if not prereqs.is_empty():
 		var flag: String = str(prereqs[0])

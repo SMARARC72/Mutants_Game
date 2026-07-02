@@ -27,6 +27,9 @@ const NPC_DEFS := [
 		"name": "Matron Sevvy",
 		"timeline": "bloom_matron",
 		"ring": Color("e0658c"),  # Eros rose — the Bloomwarden Greenmother
+		# E2a: Q1.1's giver (doc: Mother Sylva Greenrot) rides the hand-wired Greenmother —
+		# the catalog Bloomwarden leader never spawns in the hand-wired verdant cast.
+		"act1_greener_pastures_hungrier_ones_step": "objective",
 	},
 	{
 		"name": "Pollen-Factor Dree",
@@ -148,6 +151,13 @@ const NPC_DEFS := [
 		"name": "Vael Construct-Nine",
 		"timeline": "vael_mark",
 		"ring": GrimoirePalette.COSMOS,  # a clipboard with no visible soul
+		# E2a: Vael is the authored giver of the main-spine notarizations (Q2.4/Q3.3/Q4.4/Q5.1).
+		# The act-chain triggers keep them ordered; Q4.4 -> Q5.1 cascade in ONE talk is authored-
+		# adjacent (the Choice flows straight into the snapshot rite). See INGEST_NOTES (E2).
+		"act2_first_light_step": "objective",
+		"act3_the_throne_turned_step": "objective",
+		"act4_the_empty_seat_step": "objective",
+		"act5_petrification_step": "objective",
 		# The Act-0 defining tick is a REAL Dialogic choice (scripts_mvp Scene 3B): the brand
 		# can be borne three ways. All three advance the same step (the quest completes either
 		# way); the branches differ in flags — and feeding the mark is the one Act-0 choice
@@ -174,6 +184,8 @@ const NPC_DEFS := [
 		"timeline": "thessaly_rolls",
 		"ring": GrimoirePalette.WARNING,  # velvet, ledgers, a smile like a closing door
 		"rolls_step": "enter_the_rolls",
+		# E2a: Q3.4's authored giver — Thessaly convenes the final Marker (act 4 opens here).
+		"act3_holes_in_the_sky_step": "objective",
 	},
 	# W16b fourth-wall crack #1: a readable SIGN prop on a deterministic cast cell — it uses
 	# the run's actual save name, once per run (FourthWall.seen_cracks registry; tension 11).
@@ -472,9 +484,12 @@ const ACTIVE_REGION := "verdant_glut"
 ## E1a: the hand-wired defs UNION the ingested catalog (QuestCatalog — generated
 ## from story_quests.md + side_quests.md) for the ACTIVE region. Dedupe is by id
 ## and the HAND-WIRED def always wins (Act-0 spine, SQ-04/05/06 and the goals
-## stay canonical); catalog quests gate themselves via their act-chain triggers
-## and carry step_keys no NPC declares, so the NPC dispatch never touches them.
-static func quest_defs() -> Array:
+## stay canonical); catalog quests gate themselves via their act-chain triggers.
+## E2a: `region_id` parameterizes the union (travel re-registers per region);
+## "" keeps the shipped default. Giver NPCs now CARRY main-quest step_keys (the
+## verdant data pattern + NpcCastCatalog.QUEST_STEP_CARRY), so talks drive the
+## spine; deed-resolved quests ride QuestCatalog.VICTORY_FLAGS instead.
+static func quest_defs(region_id: String = "") -> Array:
 	var hand_wired: Array = [
 		MARSH_QUEST,
 		MELON_QUEST,
@@ -490,7 +505,8 @@ static func quest_defs() -> Array:
 		seen[str(def.get("id", ""))] = true
 	seen[str(BOSS_QUEST["id"])] = true
 	var defs: Array = hand_wired.duplicate()
-	for def: Dictionary in QuestCatalog.defs_for_region(ACTIVE_REGION):
+	var region := region_id if region_id != "" else ACTIVE_REGION
+	for def: Dictionary in QuestCatalog.defs_for_region(region):
 		var quest_id := str(def.get("id", ""))
 		if seen.has(quest_id):
 			continue

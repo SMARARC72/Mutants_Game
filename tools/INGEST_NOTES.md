@@ -175,3 +175,97 @@ derivations, region boss assignments, cast counts) is recorded in the GENERATED 
 NPC's authored barks (VERBATIM) until a per-NPC `.dtl` with the convention id lands
 (`DialogicFacade.timeline_exists` probes the [dialogic] directory). The integrator reconciles
 when per-NPC scenes are generated.
+
+---
+
+# E2a — The Playable Arc (Acts 0-5 end to end)
+
+`client/tests/story_arc_test.gd` is the arc's TRUTH: a headless scripted walk from new_run
+through the Act-5 finale flag (`act5_q4_done` — Q5.4's on_complete; the ingest emits no
+`succession_begins`, see decision 3 above). Everything below is what E2a added/changed to make
+that walk close. Data stays generated where it was generated: quests.json/npc_casts.json are
+untouched; the new edges live in the LOADER tables (QuestCatalog), the hand-authored overlay
+(NpcCastCatalog.QUEST_STEP_CARRY), the hand-wired NPC_DEFS, and region_layouts.json (hand-
+authored E1b world data).
+
+## Gate-flag edges added/changed
+
+1. **Region gate corrections (region_layouts.json — the two dead-locks):**
+   - `astral_tier.gate_flag`: `act3_open` -> **`act1_q3_done`** — Q1.4's giver (the Concord
+     archivist) stands in the Astral Tier; behind act3_open the Act-1 climax could never be
+     reached (act2_open is SET by Q1.4 — a chicken-and-egg seal). Gate hint rewritten to match.
+   - `sunder.gate_flag`: `act3_open` -> **`act2_q1_done`** — Q2.2's giver (the Unbound
+     lab-heretic) works out of the Sunder; its doc Gate line ("unlocks the Sunder region
+     access") reads as the quest-completion reward, but the giver must be reachable first.
+     Conservative reading: the region opens the moment its quest does.
+   - All other gates verified closed-chain: mournmarch/forgefell/titanfall =
+     `registered_aspirant` (Act-0 climax), storm_vault/tideless = `act2_open`, maw_beneath =
+     `act4_open`, hollow_atelier = `act5_open`.
+2. **Boss-victory edges (QuestCatalog.VICTORY_FLAGS — deed-resolved quests):** the E1a ingest
+   gave every quest one talk-shaped step; these four DEMAND felling a god per the doc, so their
+   step completes on the region's `<id>_boss_victory` flag (set by
+   GameController._mark_slice_cleared on a played boss win) instead of a talk. They AUTO-START
+   the moment their act-chain trigger opens (the HUD tracker names the kill) via
+   OverworldQuestsGlue.sync_catalog_quests, run on every overworld build:
+   - `act1_the_guardian_at_the_node` -> **`titanfall_boss_victory`** (Q1.3: "track and defeat
+     (or capture) the region's Legendary force-node guardian"; region titanfall).
+   - `act3_first_blood_on_the_thrones` -> **`sunder_boss_victory`** (Q3.1: "defeat a chosen
+     Olympian" — Bakchanyr the Revel-Lord is the canon Order-kills-a-Chaos-god execution
+     (doc: Ares/Dionysus/Hermes); sunder is open by then via the act2_q1_done gate).
+   - `act4_the_pure_poles` -> **`maw_beneath_boss_victory`** (Q4.1: the Primordial trial — no
+     pr_* kit is a region boss; the Maw's descent is the poles'/Unmaking trailhead and
+     gg_devourer its god; maw opens on act4_open, exactly Q4.1's trigger).
+   - `act5_the_first_invader` -> **`hollow_atelier_boss_victory`** (Q5.2: the async-invasion
+     defense — the Atelier is the succession's workshop and gg_architect its wall-fight
+     stand-in; opens on act5_open, exactly the act's gate).
+3. **Witness edges (VICTORY_FLAGS value "")**: `act5_the_walls_choice` (giver "the moment
+   itself") and `act5_a_graveyard_of_winners` (giver "the game itself") have no diegetic giver
+   — they self-start AND self-resolve through the same sync the moment their chain trigger
+   lands (Q5.2's / Q5.3's done-flag). The finale flag `act5_q4_done` therefore lands without
+   an NPC, as authored.
+4. **Q4.4 -> Q5.1 same-talk cascade (accepted, by design):** both are given by Vael
+   Construct-Nine and Q5.1's trigger (`act5_open`) is set by Q4.4's completion, so one talk
+   resolves the Choice AND the petrification rite — authored-adjacent beats (the notarization
+   flows into the snapshot). No other giver carries chain-adjacent quests (verified pairwise).
+
+## Giver placement (warn-list reconciliation — every substitution)
+
+Hand-wired NPC_DEFS (verdant/starting region — the catalog cast never spawns there):
+- Q1.1 Mother Sylva Greenrot -> **Matron Sevvy** (the hand-wired Bloomwarden Greenmother).
+- Q2.4/Q3.3/Q4.4/Q5.1 Vael Construct-Nine -> **Vael Construct-Nine** (hand-wired, verbatim).
+- Q3.4 Madam Thessaly Vance -> **Madam Thessaly Vance** (hand-wired, verbatim).
+
+Catalog casts (NpcCastCatalog.QUEST_STEP_CARRY — merged onto npc_casts.json defs at load):
+- Q1.2 Foreman Castor Brail -> **Foundress Magna Ironwright** (Iron Guild leader, forgefell).
+- Q1.4 Archivist Pellos Vane -> **Archon Velleth Sun-Notary** (Concord leader, astral_tier).
+- Q2.1 Lord Severin Ash -> **The Pale Steward, Wessel Graf von Underhart** (mournmarch).
+- Q2.2 Doctor Vesh Quillon -> **The Unmaker, She-Who-Is-Called Nael** (Unbound leader, sunder).
+- Q2.3 Kestrel Dane -> **The Chairwoman, Indra Vael** (storm_vault) — the rival's marker is
+  High Table business and the "wanderers" cast never spawns (not a region id).
+- Q3.2 "a surviving Olympian (e.g. Hephaestion)" -> **The Last Automaton, Unit Called
+  "Patience"** (forgefell) — the forge-god's own surviving construct speaks the patron offer.
+- Q4.2 "Concord's Aurelian Vox" -> **Archon Velleth Sun-Notary** (Vox re-roles under Velleth
+  per _NAME_RECONCILIATION.md).
+- Q4.3 "everyone" -> **The Chairwoman, Indra Vael** (the Table brokers the convergence; she
+  already holds the rival thread from Q2.3).
+- Boss/witness quests (Q1.3/Q3.1/Q4.1/Q5.2/Q5.3/Q5.4) carry NO NPC step — their givers
+  (Huntmaster Bram Stoneblood, Magister Aurelian Vox, the Primordials, the new nobody, the
+  moment/game itself) resolve as the DEED itself (decision 2/3 above); the quest self-starts
+  and the HUD names the objective.
+
+## Timeline hookup (QuestCatalog.QUEST_SCENES)
+
+Quests whose authored scene shipped as a generated .dtl play it on advance (the def's
+`timeline` field; DialogicFacade.timeline_exists probes first; steps without scenes keep the
+toast): Q1.1 -> mvp_s05, Q2.1 -> acts_s01, Q2.2 -> acts_s02, Q2.4 -> acts_s03, Q3.1 ->
+acts_s04, Q3.3 -> acts_s05, Q3.4 -> acts_s06, Q4.1 -> acts_s07, Q4.4 -> acts_s08, Q5.1 ->
+acts_s09, Q5.3 -> acts_s10 (the combined walls-choice/graveyard scene — mapped to Q5.3 only so
+it never replays for Q5.4). Act 0 keeps its hand-wired NPC scenes; mvp_s06/s07/s08 are the
+side-quest/boss beats whose quests already play hand-wired scenes.
+
+## story_arc_test.gd combat shortcuts (documented per the test contract)
+
+The headless walk force-sets ONLY the four real boss-victory flags where a fight would be
+required — `titanfall_boss_victory`, `sunder_boss_victory`, `maw_beneath_boss_victory`,
+`hollow_atelier_boss_victory` — then drives the same sync the post-battle build runs. Every
+other flag in the walk is earned through the real speak_to / choice / travel wiring.
