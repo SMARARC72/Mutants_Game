@@ -1,0 +1,15 @@
+{
+"@path": "res://addons/dialogic/Resources/character.gd",
+"@subpath": NodePath(""),
+&"_translation_id": "",
+&"color": Color(0.435, 0.722, 0.839, 1),
+&"custom_info": {},
+&"default_portrait": "",
+&"description": "Something the colour of old pennies, with opinions about your posture.",
+&"display_name": "Bog-Wretch",
+&"mirror": false,
+&"nicknames": [],
+&"offset": Vector2(0, 0),
+&"portraits": {},
+&"scale": 1.0
+}

@@ -1,0 +1,15 @@
+{
+"@path": "res://addons/dialogic/Resources/character.gd",
+"@subpath": NodePath(""),
+&"_translation_id": "",
+&"color": Color(0.6039216, 0.6901961, 0.627451, 1),
+&"custom_info": {},
+&"default_portrait": "",
+&"description": "Keeper of the Last-Bloom Hospice, frayed all the way through. Both. Always both.",
+&"display_name": "Sister Wenlow",
+&"mirror": false,
+&"nicknames": [],
+&"offset": Vector2(0, 0),
+&"portraits": {},
+&"scale": 1.0
+}
