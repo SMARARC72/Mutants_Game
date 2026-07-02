@@ -42,11 +42,8 @@ const _STEP_ENDED := "ended"
 ## Wave 8: the Swift Rites battle-pacing cycle (persisted via Settings, battle section).
 const SWIFT_RITES_ORDER: Array = ["x1", "x2", "instant"]
 
-## Wave 3 honesty: the distinct turn-cap-with-enemies-alive banner (the interim authored line the
-## W16 VoiceBook ingest replaces) + its toast body, VERBATIM from docs/content/voice_library.md
-## §5.5 "A creature that refuses to fight".
-const STALEMATE_BANNER := "THE WILD SLINKS AWAY — STALEMATE"
-const STALEMATE_VOICE_LINE := "No battle today. It's tired, you're tired, the gods are dead — what's the point, really?"
+## W17: a fresh catch offers its soul-page on the spot (pushed as a UiRouter overlay).
+const DOSSIER_SCENE := "res://presentation/dossier/dossier_screen.tscn"
 
 var _game: Node = null
 var _transition: Node = null
@@ -358,10 +355,13 @@ func _finish_battle(step: Dictionary) -> void:
 		_game.call("save_run")
 	if reason == "caught":
 		play_stinger("capture_sting")  # the catch lands with its own sting (W-SND)
-	_toast_outcome(reason)
+	BattleCardKitScript.toast_outcome(
+		get_node_or_null("/root/Toast"), _result, reason, _battle, _game
+	)
 	_show_banner_text(_banner_text_for(reason))
 	_hide_menus()
 	_show_continue()
+	_show_dossier_button()
 
 
 # === accessors ================================================================================ #
@@ -412,6 +412,11 @@ func _input_event_confirm() -> void:
 func _process(_delta: float) -> void:
 	if _input == null or _beats_playing:
 		# While the beat queue narrates, CONFIRM is the fast-forward (held), never the exit.
+		return
+	# W17: while a router overlay (the caught dossier) floats above, the battle takes NO input —
+	# Confirm belongs to the page, not to the scene swap underneath it.
+	var router := get_node_or_null("/root/UiRouter")
+	if router != null and int(router.call("depth")) > 0:
 		return
 	# After the battle ends, Confirm returns to the overworld (matches Slice 1).
 	if _battle != null and _battle.is_ended() and _input.has_method("just_pressed"):
@@ -468,46 +473,9 @@ func _live_party_hp() -> Array:
 	return out
 
 
-func _toast_outcome(reason: String) -> void:
-	var toast := get_node_or_null("/root/Toast")
-	if toast == null:
-		return
-	if reason == "caught" and toast.has_method("event_with"):
-		# Wave 9: the catch toast bears the creature's one-of-one sigil (its mark stamps in the
-		# icon slot — the same geometry party/lab render for this creature forever after).
-		var sigil := BattleCardKitScript.caught_sigil_payload(_battle, _game)
-		toast.call("event_with", "creature_caught", {"sigil": sigil})
-	elif reason == "caught" and toast.has_method("event"):
-		toast.call("event", "creature_caught")
-	elif bool(_result.get("stalemate", false)) and toast.has_method("show"):
-		# The verbatim voice line (§5.5) + the reduced-reward note — the honest stalemate copy.
-		(
-			toast
-			. call(
-				"show",
-				{
-					"title": STALEMATE_BANNER,
-					"body": STALEMATE_VOICE_LINE + "\n(Spoils halved.)",
-					"sound": "chime",
-				}
-			)
-		)
-	elif toast.has_method("show"):
-		toast.call("show", {"title": _banner_text_for(reason), "body": "", "sound": "chime"})
-
-
+## The outcome banner copy — single-sourced in BattleCardKit (with the stalemate honesty rule).
 func _banner_text_for(reason: String) -> String:
-	# Wave 3 honesty: the turn cap expiring with enemies still standing is NOT a victory — the
-	# distinct stalemate banner replaces the old lying VICTORY over an undamaged enemy.
-	if bool(_result.get("stalemate", false)):
-		return STALEMATE_BANNER
-	match reason:
-		"caught":
-			return "CAUGHT"
-		"fled":
-			return "FLED"
-		_:
-			return "VICTORY" if bool(_result.get("player_won", false)) else "DEFEAT"
+	return BattleCardKitScript.banner_text_for(_result, reason)
 
 
 # === UI (minimal, code-built, themed) ========================================================= #
@@ -898,6 +866,30 @@ func _show_continue() -> void:
 		_root_box.add_child(_continue_button)
 	else:
 		add_child(_continue_button)
+
+
+## W17: the capture card's soul-page affordance — a fresh catch can be READ on the spot. Pushed as
+## a UiRouter overlay above the ended battle (back pops straight back here). No router, no button.
+func _show_dossier_button() -> void:
+	var caught: Dictionary = _result.get("caught", {})
+	if caught.is_empty() or get_node_or_null("/root/UiRouter") == null:
+		return
+	var btn := Button.new()
+	btn.name = "DossierButton"
+	btn.text = "Read its Dossier"
+	btn.pressed.connect(_open_caught_dossier)
+	if _root_box != null and is_instance_valid(_root_box):
+		_root_box.add_child(btn)
+
+
+func _open_caught_dossier() -> void:
+	var router := get_node_or_null("/root/UiRouter")
+	if router == null:
+		return
+	var page: Node = router.call("push_scene", DOSSIER_SCENE)
+	if page != null:
+		page.call("set_game", _game)
+		page.call("show_creature_dict", _result.get("caught", {}))
 
 
 # === Wave 8 — beat-player surface (duck-typed by battle_beats.gd) + pacing + backdrop ========= #

@@ -9,6 +9,18 @@ extends RefCounted
 ## all live state (teams, card-ref dicts, transcript); this file never reads a session.
 
 const BACKDROP_DIR := "res://assets/backdrops/"
+const STATUS_ICON_DIR := "res://assets/icons/statuses/"
+
+## Wave 3 honesty copy (moved here from battle_screen with toast_outcome — W17 line-cap diet):
+## the distinct turn-cap-with-enemies-alive banner + its VERBATIM voice line
+## (docs/content/voice_library.md §5.5 "A creature that refuses to fight").
+const STALEMATE_BANNER := "THE WILD SLINKS AWAY — STALEMATE"
+const STALEMATE_VOICE_LINE := "No battle today. It's tired, you're tired, the gods are dead — what's the point, really?"
+
+## One-line tooltips for the engine-state chips (W17 scryed legibility — every chip answers on hover).
+const SHIELD_TIP := "Ward — absorbs this much damage before flesh is touched."
+const BUFF_TIP := "Roused — its strikes land this much heavier while the surge holds."
+const DEFDOWN_TIP := "Guard broken — incoming blows bite this much deeper."
 
 
 ## One combatant card: framed bestiary-plate portrait + name + force icon(s) + HP bar (with a
@@ -128,7 +140,9 @@ static func update_team_cards(cards: Array, team: Array, status_of: Callable, fx
 ## Rebuild a card's status chips from the live engine state: shield (◈) / buff (▲) / defdown (▼)
 ## from the AbilityContainer, then the active DOT/control STATUSES (Wither/Petrify/...) from the
 ## parallel StatusContainer — DOTs show a stack count (×N), controls a remaining duration ([N]).
-## Force-coloured. Absent effects show no chip (the row stays clean until depth applies).
+## W17 scryed legibility: each status chip carries its restyled SVG icon + short label + a ONE-LINE
+## tooltip built from the status table (kind/effect — no invented numbers), and every colour is
+## paired with an icon/glyph so the row survives grayscale. Absent effects show no chip.
 static func update_card_chips(
 	ac: AbilityContainer, chips: HBoxContainer, sc: StatusContainer
 ) -> void:
@@ -137,12 +151,16 @@ static func update_card_chips(
 	for child in chips.get_children():
 		child.queue_free()
 	if ac.shield() > 0:
-		chips.add_child(make_chip("◈ %d" % ac.shield(), Color(0.435, 0.722, 0.839)))  # Ouranos blue
+		chips.add_child(make_chip("◈ %d" % ac.shield(), Color(0.435, 0.722, 0.839), SHIELD_TIP))  # Ouranos blue
 	if ac.buff() > 0.0:
-		chips.add_child(make_chip("▲ +%d%%" % int(ac.buff() * 100.0), Color(0.498, 0.682, 0.353)))
+		chips.add_child(
+			make_chip("▲ +%d%%" % int(ac.buff() * 100.0), Color(0.498, 0.682, 0.353), BUFF_TIP)
+		)
 	if ac.defdown() > 0.0:
 		chips.add_child(
-			make_chip("▼ -%d%%" % int(ac.defdown() * 100.0), Color(0.761, 0.251, 0.184))
+			make_chip(
+				"▼ -%d%%" % int(ac.defdown() * 100.0), Color(0.761, 0.251, 0.184), DEFDOWN_TIP
+			)
 		)
 	if sc != null:
 		var table: Dictionary = Constants.BALANCE["status"]["statuses"]
@@ -151,20 +169,53 @@ static func update_card_chips(
 			var force := str(s.get("force", ""))
 			var col := GrimoirePalette.force_color(force) if force != "" else Color(0.82, 0.5, 0.5)
 			var label := str(status_name)
+			var tip: String
 			if str(s.get("kind", "")) == "dot":
 				label += " ×%d" % sc.stacks_of(status_name)
+				tip = (
+					"%s — a %s rot that burns at each turn's end; stacks deepen it."
+					% [status_name, force]
+				)
 			else:
 				label += " [%d]" % sc.duration_of(status_name)
-			chips.add_child(make_chip(label, col))
+				tip = (
+					"%s — %s for %d more turn(s)."
+					% [status_name, str(s.get("effect", "controlled")), sc.duration_of(status_name)]
+				)
+			chips.add_child(make_chip(label, col, tip, status_icon(status_name)))
 
 
-## A small coloured status chip (a bordered Label) for the card's effect row.
-static func make_chip(text: String, color: Color) -> Label:
-	var chip := Label.new()
-	chip.text = text
-	chip.add_theme_font_size_override("font_size", 12)
-	chip.add_theme_color_override("font_color", color)
+## A small coloured status chip: an optional ICON beside a short label, with a one-line tooltip
+## (W17). Colour is always paired with the icon/glyph half, so the chip reads in grayscale.
+static func make_chip(
+	text: String, color: Color, tooltip: String = "", icon: Texture2D = null
+) -> Control:
+	var chip := HBoxContainer.new()
+	chip.add_theme_constant_override("separation", 3)
+	chip.tooltip_text = tooltip
+	chip.mouse_filter = Control.MOUSE_FILTER_STOP  # chips must actually catch the hover
+	if icon != null:
+		var tr := TextureRect.new()
+		tr.texture = icon
+		tr.custom_minimum_size = Vector2(14, 14)
+		tr.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		tr.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		tr.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		tr.modulate = color
+		chip.add_child(tr)
+	var label := Label.new()
+	label.text = text
+	label.add_theme_font_size_override("font_size", 12)
+	label.add_theme_color_override("font_color", color)
+	chip.add_child(label)
 	return chip
+
+
+## The restyled SVG icon for a status name ("Bloom-rot" -> statuses/bloom_rot.svg), or null.
+static func status_icon(status_name: String) -> Texture2D:
+	var file := status_name.to_lower().replace("-", "_").replace(" ", "_")
+	var path := STATUS_ICON_DIR + file + ".svg"
+	return load(path) if ResourceLoader.exists(path) else null
 
 
 ## Float a "-N" damage number up from a card and fade it (impact feedback). Lives on the FX
@@ -198,6 +249,52 @@ static func flash_portrait(portrait: CanvasItem) -> void:
 		return
 	portrait.modulate = Color(1.7, 0.55, 0.5)
 	portrait.create_tween().tween_property(portrait, "modulate", Color(1, 1, 1, 1), 0.35)
+
+
+## The outcome BANNER text for a finished battle result (moved from battle_screen — W17 line-cap
+## diet). Wave 3 honesty: a turn cap expiring with enemies still standing is a STALEMATE, never a
+## lying VICTORY.
+static func banner_text_for(result: Dictionary, reason: String) -> String:
+	if bool(result.get("stalemate", false)):
+		return STALEMATE_BANNER
+	match reason:
+		"caught":
+			return "CAUGHT"
+		"fled":
+			return "FLED"
+		_:
+			return "VICTORY" if bool(result.get("player_won", false)) else "DEFEAT"
+
+
+## Fire the end-of-battle outcome toast (moved from battle_screen — W17 line-cap diet). A catch
+## carries the creature's one-of-one sigil payload; a stalemate carries the verbatim §5.5 voice
+## line + the halved-spoils note; everything else toasts its banner. `battle` is the screen's
+## SkillInteractiveBattle (duck-typed), `game` the GameController.
+static func toast_outcome(
+	toast: Node, result: Dictionary, reason: String, battle, game: Node
+) -> void:
+	if toast == null:
+		return
+	if reason == "caught" and toast.has_method("event_with"):
+		# Wave 9: the catch toast bears the creature's one-of-one sigil (the same geometry
+		# party/lab render for this creature forever after).
+		toast.call("event_with", "creature_caught", {"sigil": caught_sigil_payload(battle, game)})
+	elif reason == "caught" and toast.has_method("event"):
+		toast.call("event", "creature_caught")
+	elif bool(result.get("stalemate", false)) and toast.has_method("show"):
+		(
+			toast
+			. call(
+				"show",
+				{
+					"title": STALEMATE_BANNER,
+					"body": STALEMATE_VOICE_LINE + "\n(Spoils halved.)",
+					"sound": "chime",
+				}
+			)
+		)
+	elif toast.has_method("show"):
+		toast.call("show", {"title": banner_text_for(result, reason), "body": "", "sound": "chime"})
 
 
 ## The caught creature's sigil identity for the capture toast (Wave 9): species + instance tag
