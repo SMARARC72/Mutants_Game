@@ -13,3 +13,12 @@ audit that maps each raw plate to its true content, role, and output asset is
 Earlier files `topdown/eros-bloom.png` + `topdown/worn-path.png` (Phase 7) share the same
 provenance (repo-authored AI art, curated crops of the same plate set); superseded by the Wave 6.5
 set but kept as fallbacks.
+
+## Wave 12 (overworld depth)
+
+`topdown/normal/<name>_n.png`: tangent-space normal maps DERIVED from the shipped
+`topdown/*.png` diffuse tiles by `tools/gen_normalmaps.py` (blurred-luminance height field,
+wrap-edge Sobel, OpenGL packing) — no external sources. `OverworldTileSet.build()` composes them
+into a normal atlas paired with the diffuse atlas in one `CanvasTexture` so the player's
+PointLight2D shades the ground. Regenerate: `python tools/gen_normalmaps.py` (PIL + numpy only).
+Binaries commit via Git LFS.
