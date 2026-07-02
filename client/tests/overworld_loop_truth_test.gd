@@ -58,11 +58,14 @@ func _clear_saves() -> void:
 	dir.list_dir_end()
 
 
-## The first step index (>=1) whose canonical wild roll fires for (seed, REGION), or -1.
-func _first_encounter_step(seed: int) -> int:
+## The first step index (>=1) whose canonical wild roll fires a BATTLE for (seed, REGION) on a
+## cell of `tile_class` (W13: the landing cell's class salts the stream, and only battle kinds
+## arm the hand-off/grace machinery these tests exercise), or -1.
+func _first_encounter_step(seed: int, tile_class: String = "") -> int:
 	var director: EncounterDirector = EncounterDirectorScript.for_region(seed, REGION)
 	for i in range(1, 500):
-		if bool((director.roll_step(i) as Dictionary)["encounter"]):
+		var probe: Dictionary = director.roll_step(i, tile_class)
+		if bool(probe["encounter"]) and str(probe["kind"]) == EncounterDirectorScript.KIND_BATTLE:
 			return i
 	return -1
 
@@ -91,11 +94,13 @@ func test_prebattle_position_round_trips_in_memory_and_from_disk() -> void:
 	var run: RunContext = gc.call("new_run", TEST_SEED)
 	_suppress_boss(run)
 	var ow := _make_overworld(gc)
-	var encounter_step := _first_encounter_step(TEST_SEED)
-	assert_int(encounter_step).is_greater(0)
-	run.world_state["steps"] = encounter_step - 1
 	var dir := _walkable_dir(ow.call("layout"), ow.call("player_cell"))
 	assert_bool(dir != Vector2i.ZERO).is_true()
+	var landing: Vector2i = ow.call("player_cell")
+	var landing_class := str(ow.call("tile_class_at", landing + dir))
+	var encounter_step := _first_encounter_step(TEST_SEED, landing_class)
+	assert_int(encounter_step).is_greater(0)
+	run.world_state["steps"] = encounter_step - 1
 	var roll: Dictionary = ow.call("try_move", dir)
 	assert_bool(bool(roll.get("encounter", false))).is_true()
 	var fight_cell: Vector2i = ow.call("player_cell")
@@ -159,10 +164,13 @@ func test_post_battle_grace_suppresses_five_would_fire_steps_then_expires() -> v
 	var run: RunContext = gc.call("new_run", TEST_SEED)
 	_suppress_boss(run)
 	var ow := _make_overworld(gc)
-	var encounter_step := _first_encounter_step(TEST_SEED)
-	assert_int(encounter_step).is_greater(0)
 	var d := _walkable_dir(ow.call("layout"), ow.call("player_cell"))
 	assert_bool(d != Vector2i.ZERO).is_true()
+	# W13: the first move (and the post-grace re-fire below) lands on the same cell, so ONE
+	# landing class picks the canonical stream both alignments replay.
+	var landing: Vector2i = ow.call("player_cell") + d
+	var encounter_step := _first_encounter_step(TEST_SEED, str(ow.call("tile_class_at", landing)))
+	assert_int(encounter_step).is_greater(0)
 	# Fire the first battle: the hand-off arms the grace window.
 	run.world_state["steps"] = encounter_step - 1
 	var first: Dictionary = ow.call("try_move", d)
@@ -193,10 +201,15 @@ func test_sigil_dash_rolls_exactly_once_at_the_landing_step() -> void:
 	var run: RunContext = gc.call("new_run", TEST_SEED)
 	_suppress_boss(run)
 	var ow := _make_overworld(gc)
-	var encounter_step := _first_encounter_step(TEST_SEED)
-	assert_int(encounter_step).is_greater(0)
 	var d := _walkable_dir(ow.call("layout"), ow.call("player_cell"))
 	assert_bool(d != Vector2i.ZERO).is_true()
+	# W13: the first dashed tile's class picks the alignment stream (a dash meets exactly what
+	# walking would have met, class and all).
+	var first_tile: Vector2i = ow.call("player_cell") + d
+	var encounter_step := _first_encounter_step(
+		TEST_SEED, str(ow.call("tile_class_at", first_tile))
+	)
+	assert_int(encounter_step).is_greater(0)
 	# Align so the FIRST dashed tile lands on a would-fire step: with per-tile rolls this dash would
 	# stop at tile one; with the Wave-3 one-roll-per-dash it only fires if the LANDING step's own
 	# canonical roll does — exactly what walking to that step would have met.
@@ -210,7 +223,16 @@ func test_sigil_dash_rolls_exactly_once_at_the_landing_step() -> void:
 	assert_int(crossed).is_greater(0)
 	var landing := encounter_step - 1 + crossed
 	var director: EncounterDirector = EncounterDirectorScript.for_region(TEST_SEED, REGION)
-	var expected := 1 if bool((director.roll_step(landing) as Dictionary)["encounter"]) else 0
+	# The landing roll folds the LANDING cell's class in; encounter_started counts BATTLE kinds
+	# only (a peculiar landing routes to the W16b seam instead).
+	var landing_roll: Dictionary = director.roll_step(
+		landing, str(ow.call("tile_class_at", ow.call("player_cell")))
+	)
+	var fired := (
+		bool(landing_roll["encounter"])
+		and str(landing_roll["kind"]) == EncounterDirectorScript.KIND_BATTLE
+	)
+	var expected := 1 if fired else 0
 	assert_int(int(seen["count"])).is_equal(expected)
 	# If the dash crossed PAST the would-fire step, its suppression is proven: crossing it fired
 	# nothing unless the landing step itself rolled a hit.

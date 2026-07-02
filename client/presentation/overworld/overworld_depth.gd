@@ -144,40 +144,37 @@ static func attach_player_glow(player: Node2D) -> void:
 	player.add_child(glow)
 
 
-## The region's ambient grade + motes + vignette (moved from overworld_screen for the line cap;
-## W13's AtmosphereLayer supersedes the raw tint here). `vignette` is the baked overlay texture.
-static func setup_atmosphere(screen: Node2D, player: Node2D, vignette: Texture2D) -> void:
-	var tint := CanvasModulate.new()
-	tint.name = "ClimateTint"
-	# Cool verdant marsh grade, pulled a step darker (Wave 12) so the player's brass glow pool
-	# actually reads against the ambient ground instead of washing out.
-	tint.color = Color(0.75, 0.81, 0.74)
-	screen.add_child(tint)
-	# Faint drifting spore-motes, parented to the tamer so they always fill the framed view.
-	if player != null:
-		var motes := CPUParticles2D.new()
-		motes.name = "Motes"
-		motes.z_index = 12
-		motes.amount = 36
-		motes.lifetime = 7.0
-		motes.preprocess = 5.0
-		motes.emission_shape = CPUParticles2D.EMISSION_SHAPE_RECTANGLE
-		motes.emission_rect_extents = Vector2(820, 520)
-		motes.gravity = Vector2(0, -5)
-		motes.initial_velocity_min = 3.0
-		motes.initial_velocity_max = 11.0
-		motes.scale_amount_min = 1.0
-		motes.scale_amount_max = 2.4
-		motes.color = Color(0.88, 0.78, 0.42, 0.5)
-		player.add_child(motes)
-	var layer := CanvasLayer.new()
-	layer.name = "Atmosphere"
-	layer.layer = 1
-	var vig := TextureRect.new()
-	vig.texture = vignette
-	vig.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	vig.stretch_mode = TextureRect.STRETCH_SCALE
-	vig.set_anchors_preset(Control.PRESET_FULL_RECT)
-	vig.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	layer.add_child(vig)
-	screen.add_child(layer)
+## The world CanvasModulate the AtmosphereLayer drives (Wave 13: the layer's set_mood owns the
+## colour; the raw Wave-12 tint + baked vignette TextureRect are superseded). Idempotent — the
+## screen rebuilds on every visit but the tint node is created once. Starts at the Wave-12
+## verdant grade so a frame before the first set_mood still reads correctly.
+static func ensure_world_tint(screen: Node2D) -> CanvasModulate:
+	var tint := screen.get_node_or_null("ClimateTint") as CanvasModulate
+	if tint == null:
+		tint = CanvasModulate.new()
+		tint.name = "ClimateTint"
+		tint.color = Color(0.75, 0.81, 0.74)
+		screen.add_child(tint)
+	return tint
+
+
+## Faint drifting spore-motes, parented to the tamer so they always fill the framed view
+## (kept from the Wave-12 pass; idempotent across rebuilds).
+static func setup_motes(player: Node2D) -> void:
+	if player == null or player.get_node_or_null("Motes") != null:
+		return
+	var motes := CPUParticles2D.new()
+	motes.name = "Motes"
+	motes.z_index = 12
+	motes.amount = 36
+	motes.lifetime = 7.0
+	motes.preprocess = 5.0
+	motes.emission_shape = CPUParticles2D.EMISSION_SHAPE_RECTANGLE
+	motes.emission_rect_extents = Vector2(820, 520)
+	motes.gravity = Vector2(0, -5)
+	motes.initial_velocity_min = 3.0
+	motes.initial_velocity_max = 11.0
+	motes.scale_amount_min = 1.0
+	motes.scale_amount_max = 2.4
+	motes.color = Color(0.88, 0.78, 0.42, 0.5)
+	player.add_child(motes)
