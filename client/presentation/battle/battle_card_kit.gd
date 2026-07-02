@@ -322,14 +322,6 @@ static func make_target_button(ac: AbilityContainer, index: int, badge: Dictiona
 	return btn
 
 
-## A small coloured status chip (a bordered Label) for the card's effect row.
-static func make_chip(text: String, color: Color) -> Label:
-	var chip := Label.new()
-	chip.text = text
-	chip.add_theme_font_size_override("font_size", 12)
-	chip.add_theme_color_override("font_color", color)
-
-
 ## A small coloured status chip: an optional ICON beside a short label, with a one-line tooltip
 ## (W17). Colour is always paired with the icon/glyph half, so the chip reads in grayscale.
 static func make_chip(

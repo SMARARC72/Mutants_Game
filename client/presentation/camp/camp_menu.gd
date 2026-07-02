@@ -336,6 +336,7 @@ func _persist() -> void:
 	elif _game.has_method("save_run"):
 		_game.call("save_run")
 
+
 ## Resume play: emit `resumed` and close the menu (back to the overworld). As an OVERLAY the menu
 ## simply frees itself (the overworld is untouched beneath it) — but when the camp is the ROOT
 ## scene (returned to via a Party/Lab scene swap) freeing would leave a black screen, so it swaps
@@ -343,7 +344,8 @@ func _persist() -> void:
 ## Resume play: emit `resumed` and close the menu — back to the LIVE overworld. W17: as a ROUTER
 ## overlay the menu pops its own level (the router restores the pre-camp input context; the
 ## overworld beneath was never swapped away, so a black screen is structurally unreachable). The
-## legacy fallbacks (root-scene guard / bare queue_free) remain for degraded/standalone contexts.func resume() -> void:
+## legacy fallbacks (root-scene guard / bare queue_free) remain for degraded/standalone contexts.
+func resume() -> void:
 	var router := _router()
 	# Esc pops EXACTLY one level (W17): while another overlay sits ABOVE this menu, the resume verb
 	# is SWALLOWED — the page on top owns the edge, and `resumed` must not fire for a buried camp.
