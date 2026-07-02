@@ -228,8 +228,14 @@ static func matchup_badge(mult: float) -> Dictionary:
 ## Build the player ACTION MENU into `menu` (one button per skill in the acting creature's kit,
 ## Capture + Flee on wilds, the Pass soft-lock guard) — presses duck-call the screen's public
 ## verbs. Wave 3 honesty holds: no "(N AP)" suffix until an oracle-first AP pool ships.
+## `capture_chance` (W11 live odds) is the oracle % the Capture button advertises (< 0 hides it).
 static func build_action_menu(
-	screen: Control, menu: VBoxContainer, actor: AbilityContainer, is_wild: bool, rouse_ok: bool
+	screen: Control,
+	menu: VBoxContainer,
+	actor: AbilityContainer,
+	is_wild: bool,
+	rouse_ok: bool,
+	capture_chance: float = -1.0
 ) -> void:
 	var lib: Dictionary = Constants.BALANCE["skill"]["library"]
 	var kit: Array = actor.abilities() if actor != null else []
@@ -254,7 +260,11 @@ static func build_action_menu(
 	if is_wild:
 		var capture_btn := Button.new()
 		capture_btn.name = "CaptureButton"
+		# W11 live odds: the button reads the LIVE oracle chance ("Capture — 62%"), re-read on
+		# every menu rebuild (each AWAIT), so the % follows the target's HP without a roll.
 		capture_btn.text = "Capture"
+		if capture_chance >= 0.0:
+			capture_btn.text = "Capture — %d%%" % roundi(capture_chance * 100.0)
 		capture_btn.pressed.connect(func() -> void: screen.call("player_capture"))
 		menu.add_child(capture_btn)
 		var flee_btn := Button.new()
