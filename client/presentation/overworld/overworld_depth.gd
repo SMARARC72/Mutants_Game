@@ -117,6 +117,20 @@ static func scatter_props(
 	return props
 
 
+## W-DRESS: free the previous build's NPC nodes before a re-spawn. A rebuilt screen re-spawns
+## the whole cast; without this the stale twins keep drawing AND shadow name lookups (the
+## quest markers would retune a corpse). Safe on empty lists / freed nodes.
+static func free_cast(npcs: Array) -> void:
+	for npc: Dictionary in npcs:
+		var node: Node2D = npc.get("node")
+		if node == null or not is_instance_valid(node):
+			continue
+		var parent := node.get_parent()
+		if parent != null:
+			parent.remove_child(node)  # release the name NOW (the rebuild lands this frame)
+		node.queue_free()
+
+
 ## ONE warm brass PointLight2D riding the player — with the normal-mapped ground atlas
 ## (OverworldTileSet) the tiles shade toward the tamer, and the CanvasModulate dim gives the
 ## pool of light something to read against. Radial-gradient texture, shadows OFF, energy ~0.7:
@@ -178,3 +192,42 @@ static func setup_motes(player: Node2D) -> void:
 	motes.scale_amount_max = 2.4
 	motes.color = Color(0.88, 0.78, 0.42, 0.5)
 	player.add_child(motes)
+
+
+## The lead-creature cameo (the ACTIVE party lead's painterly cutout, feet-origin for the
+## WorldYSort) trailing the tamer HG/SS-style. Returns the Sprite2D (added to `world`) or null
+## when no plate resolves. Moved from overworld_screen (line cap).
+static func spawn_lead_cameo(
+	game: Node, world: Node2D, player_cell: Vector2i, last_dir: Vector2i
+) -> Sprite2D:
+	var species := lead_species_id(game)
+	var tex: Texture2D = SpeciesArt.plate(species)
+	if tex == null:
+		return null
+	var box := int(OverworldTileSet.TILE_SIZE * 1.18)
+	var lead := Sprite2D.new()
+	lead.name = "LeadCreature"
+	lead.texture = OverworldTokens.creature_cameo(tex, box, species)
+	# Feet-level y-origin: the cameo's ground shadow sits at ~0.92 of its box — raise the texture
+	# so that contact line lands on the node position; WorldYSort then occludes it correctly.
+	lead.offset = Vector2(0, -box * 0.42)
+	world.add_child(lead)
+	var s := OverworldTileSet.TILE_SIZE
+	var here := Vector2(player_cell.x * s + s / 2.0, player_cell.y * s + s / 2.0)
+	lead.position = here - Vector2(last_dir) * float(s)
+	return lead
+
+
+## The species id of the run's ACTIVE lead creature (not just party[0]), or "".
+static func lead_species_id(game: Node) -> String:
+	if game == null or not game.has_method("run"):
+		return ""
+	var run: RunContext = game.call("run")
+	if run == null or not (run.party is Array) or (run.party as Array).is_empty():
+		return ""
+	var party: Array = run.party
+	var idx := 0
+	if game.has_method("active_creature_index"):
+		idx = clampi(int(game.call("active_creature_index")), 0, party.size() - 1)
+	var lead: Variant = party[idx]
+	return str((lead as Dictionary).get("species_id", "")) if lead is Dictionary else ""

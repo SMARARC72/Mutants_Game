@@ -98,9 +98,25 @@ static func read_signpost(screen: Node, npc: Dictionary, run: RunContext, game: 
 	if line == "":
 		return ""
 	bubble(screen, npc, line)
-	if game != null and game.has_method("save_run"):
+	# W18 save trust: the witnessed save path first (SaveSentry surfaces the outcome).
+	if game != null and game.has_method("request_save"):
+		game.call("request_save")
+	elif game != null and game.has_method("save_run"):
 		game.call("save_run")
 	return "signpost"
+
+
+## The veil coughs: announce a misbehavior draw (moved from overworld_screen for the line cap
+## — W-DRESS). world.veil_coughs is the reserved ingest key; weather.rare is the shipped
+## authored fallback per the VoiceBook contract.
+static func toast_misbehavior(screen: Node) -> void:
+	var toast := screen.get_node_or_null("/root/Toast")
+	if toast == null or not toast.has_method("show"):
+		return
+	var line := VoiceBookScript.pick("world.veil_coughs")
+	if line == "":
+		line = VoiceBookScript.pick("weather.rare")
+	toast.call("show", {"title": "The veil coughs.", "body": line, "sound": "hum"})
 
 
 ## The authored out-of-lines beat, bubbled over the exhausted NPC in place of a replayed

@@ -157,10 +157,18 @@ func _spawn(title: String, body: String, icon_path: String, sigil: Dictionary = 
 	tween.tween_callback(_dismiss.bind(panel))
 
 
-func _dismiss(panel: Node) -> void:
-	if is_instance_valid(panel) and panel.get_parent() == _stack:
-		_stack.remove_child(panel)
-		panel.queue_free()
+func _dismiss(panel: Variant) -> void:
+	# Variant-typed on purpose: when the stack cap freed the panel early, a typed `Node` arg
+	# fails Callable conversion BEFORE the guard could run (logs a convert error per dismiss).
+	# Validity FIRST — even `is` on a previously freed instance raises a script error.
+	if not is_instance_valid(panel):
+		return
+	if not (panel is Node):
+		return
+	var node := panel as Node
+	if node.get_parent() == _stack:
+		_stack.remove_child(node)
+		node.queue_free()
 
 
 ## How many toasts are currently shown (for the stacking test).

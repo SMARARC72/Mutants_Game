@@ -20,9 +20,9 @@ const InputActions := preload("res://infrastructure/input/input_actions.gd")
 const CreatureSheetScript := preload("res://application/game/creature_sheet.gd")
 const LevelingServiceScript := preload("res://application/game/leveling_service.gd")
 const GearServiceScript := preload("res://application/game/gear_service.gd")
+const StatRowsScript := preload("res://presentation/ui/stat_rows.gd")
 const CAMP_SCENE := "res://presentation/camp/camp_menu.tscn"
-
-const POLE_STATS: Array = ["Bulk", "Celerity", "Ward", "Spike", "Vitality", "Bane"]
+const DOSSIER_SCENE := "res://presentation/dossier/dossier_screen.tscn"
 
 var _game: Node = null
 var _transition: Node = null
@@ -36,6 +36,7 @@ var _selected_row_button: Button = null  # the live selected roster row (focus t
 var _detail_box: VBoxContainer = null
 var _detail_title: Label = null
 var _detail_stats: Label = null
+var _stat_rows_box: VBoxContainer = null  # W17: the icon+bar+number pole-stat rows (StatRows)
 var _detail_desc: Label = null
 var _detail_portrait: LivingPlate = null
 var _detail_forces: HBoxContainer = null
@@ -146,28 +147,37 @@ func overclock() -> Dictionary:
 	return ledger
 
 
-## EQUIP `gear_id` onto the selected creature (the one slot). Persists. Returns the GearService ledger
-## (with the stat/effect delta for the UI).
+## EQUIP `gear_id` onto the selected creature (the one slot). W17 GEAR HONESTY: gated on actual
+## run.inventory OWNERSHIP (an unowned piece fails with "not_owned"; equipping moves the piece out
+## of the drawer). Persists. Returns the GearService ledger (with the stat/effect delta for the UI).
 func equip_gear(gear_id: String) -> Dictionary:
 	var creature := _selected_creature()
 	if creature.is_empty() or _game == null:
 		return {"ok": false, "reason": "no_target"}
 	var gc: GearCatalog = _game.call("gear_catalog")
-	var ledger := GearServiceScript.equip(creature, gear_id, gc)
+	var ledger := GearServiceScript.equip(creature, gear_id, gc, _inventory())
 	if bool(ledger.get("ok", false)):
 		_persist()
 		_show_ledger(_format_gear_ledger(ledger, gc))
 		_refresh_detail()
+	elif str(ledger.get("reason", "")) == "not_owned":
+		_show_ledger(
+			(
+				"You do not own a %s. Battles drop such things; the Trader sells a few."
+				% gc.name_of(gear_id)
+			)
+		)
 	return ledger
 
 
-## UNEQUIP the selected creature's gear slot. Persists. Returns the GearService ledger.
+## UNEQUIP the selected creature's gear slot (the piece returns to the run drawer). Persists.
+## Returns the GearService ledger.
 func unequip_gear() -> Dictionary:
 	var creature := _selected_creature()
 	if creature.is_empty() or _game == null:
 		return {"ok": false, "reason": "no_target"}
 	var gc: GearCatalog = _game.call("gear_catalog")
-	var ledger := GearServiceScript.unequip(creature, gc)
+	var ledger := GearServiceScript.unequip(creature, gc, _inventory())
 	if bool(ledger.get("ok", false)):
 		_persist()
 		_show_ledger(_format_gear_ledger(ledger, gc))
@@ -175,8 +185,27 @@ func unequip_gear() -> Dictionary:
 	return ledger
 
 
-## Return to the camp menu (the surface this screen was opened from).
+## Open the selected creature's DOSSIER (its soul-page) as a router overlay above this screen.
+## Returns the pushed page node, or null when the router/scene is unavailable.
+func open_dossier() -> Node:
+	var router := get_node_or_null("/root/UiRouter")
+	if router == null or not router.has_method("push_scene"):
+		return null
+	var page: Node = router.call("push_scene", DOSSIER_SCENE)
+	if page != null:
+		page.call("set_game", _game)
+		page.call("show_creature", _selected_index)
+	return page
+
+
+## Return to the camp menu (the surface this screen was opened from). W17: as a router overlay this
+## POPS one level (the camp beneath was never destroyed); the scene swap survives as the no-router
+## fallback only.
 func return_to_camp() -> void:
+	var router := get_node_or_null("/root/UiRouter")
+	if router != null and bool(router.call("pop_from", self)):
+		return
+	set_process(false)
 	if _transition != null and _transition.has_method("change_scene_ritual"):
 		await _transition.call("change_scene_ritual", CAMP_SCENE)
 	elif is_inside_tree():
@@ -282,6 +311,13 @@ func _build_detail_panel() -> void:
 	_ink_text(_detail_stats)
 	_detail_box.add_child(_detail_stats)
 
+	# W17 scryed legibility: the six pole stats render as the SHARED icon+bar+number rows (StatRows
+	# — the same kit the Dossier uses), so the detail panel answers "good at what?" at a glance.
+	_stat_rows_box = VBoxContainer.new()
+	_stat_rows_box.name = "StatRowsBox"
+	_stat_rows_box.add_theme_constant_override("separation", 3)
+	_detail_box.add_child(_stat_rows_box)
+
 	# The creature's bestiary description (the funny-grim flavour), in ink on the page.
 	_detail_desc = Label.new()
 	_detail_desc.name = "DetailDescription"
@@ -290,9 +326,10 @@ func _build_detail_panel() -> void:
 	_ink_text(_detail_desc)
 	_detail_box.add_child(_detail_desc)
 
-	# Active/lead + leveling buttons.
+	# Active/lead + soul-page + leveling buttons.
 	var set_active_btn := _make_button("SetActiveButton", "Set as Lead", set_active)
 	_detail_box.add_child(set_active_btn)
+	_detail_box.add_child(_make_button("DossierButton", "Open Dossier", open_dossier))
 
 	var level_label := Label.new()
 	level_label.text = "Leveling"
@@ -402,6 +439,9 @@ func _refresh_detail() -> void:
 		# empty.party); a mere non-selection keeps the plain instruction.
 		var empty_line := VoiceBook.pick("empty.party") if _party().is_empty() else ""
 		_detail_stats.text = empty_line if empty_line != "" else "No creature selected."
+		if _stat_rows_box != null:
+			for child in _stat_rows_box.get_children():
+				child.queue_free()
 		if _detail_desc != null:
 			_detail_desc.text = ""
 		return
@@ -421,6 +461,7 @@ func _refresh_detail() -> void:
 		PortraitUtil.stamp_sigil(_detail_portrait, creature, str(sigil_ident.get("prim", "")), 20)
 	_refresh_detail_forces(creature, catalog)
 	_detail_stats.text = _format_detail(creature, catalog)
+	_refresh_stat_rows(creature, catalog)
 	if _detail_desc != null:
 		var desc := species.description if species != null else ""
 		_detail_desc.text = "“%s”" % desc if desc != "" else ""
@@ -454,27 +495,38 @@ func _format_detail(creature: Dictionary, catalog: SpeciesCatalog) -> String:
 			force = "%s/%s" % [force, str(ident.get("sec", ""))]
 		tier = str(ident.get("tier", "?"))
 	var hp := CreatureSheetScript.hp_of(creature, catalog)
-	var stats := CreatureSheetScript.effective_stats(creature, catalog)
 	var expr := int(round(CreatureSheetScript.expression_of(creature) * 100.0))
 	var entropy := CreatureSheetScript.entropy_of(creature)
 	var awak := CreatureSheetScript.awakenings_of(creature)
 	var lines := PackedStringArray()
 	lines.append("Force %s   Tier %s   HP %d" % [force, tier, hp])
 	lines.append("Expression %d%%   Awakenings %d   Entropy %d" % [expr, awak, entropy])
-	var stat_parts := PackedStringArray()
-	for k in POLE_STATS:
-		stat_parts.append("%s %d" % [k, int(stats.get(k, 0))])
-	lines.append("  ".join(stat_parts))
+	# W17: the pole-stat NUMBERS moved into the icon+bar+number rows below (_refresh_stat_rows).
 	return "\n".join(lines)
 
 
+## Render the six pole stats as StatRows (effective vs oracle ceiling) — scryed legibility (W17).
+func _refresh_stat_rows(creature: Dictionary, catalog: SpeciesCatalog) -> void:
+	if _stat_rows_box == null:
+		return
+	var effective := CreatureSheetScript.effective_stats(creature, catalog)
+	var block := CreatureSheetScript.ceiling_block(creature, catalog)
+	var ceiling_raw: Variant = block.get("stats", {})
+	var ceiling: Dictionary = ceiling_raw if ceiling_raw is Dictionary else {}
+	StatRowsScript.render(_stat_rows_box, effective, ceiling, true)
+
+
 ## Rebuild the gear sub-panel: the equipped slot + an equip button per catalog gear + Unequip.
+## W17 GEAR HONESTY: the list is gated on run.inventory OWNERSHIP — an unowned piece is GREYED
+## (disabled-with-reason, never hidden) with acquisition flavour, so the catalog stops reading as
+## a free wardrobe.
 func _refresh_gear_box(creature: Dictionary) -> void:
 	if _gear_box == null or _game == null:
 		return
 	for child in _gear_box.get_children():
 		child.queue_free()
 	var gc: GearCatalog = _game.call("gear_catalog")
+	var inv := _inventory()
 	var equipped := GearServiceScript.equipped_id(creature)
 	var slot_label := Label.new()
 	slot_label.name = "EquippedLabel"
@@ -483,9 +535,15 @@ func _refresh_gear_box(creature: Dictionary) -> void:
 	_gear_box.add_child(slot_label)
 	for row in gc.all():
 		var gid := str(row["id"])
+		var owned := GearServiceScript.is_owned(gid, inv)
 		var btn := Button.new()
 		btn.name = "EquipButton_%s" % gid
-		btn.text = "Equip %s" % str(row["name"])
+		if owned:
+			btn.text = "Equip %s" % str(row["name"])
+		else:
+			btn.text = "%s — not in your keeping" % str(row["name"])
+			btn.disabled = true
+			btn.tooltip_text = ("Unfound. The wild drops such things after a won fight; the camp Trader shelves a few.")
 		var this_id := gid
 		btn.pressed.connect(func() -> void: equip_gear(this_id))
 		_gear_box.add_child(btn)
@@ -552,8 +610,10 @@ func _format_gear_ledger(ledger: Dictionary, gear_catalog: GearCatalog) -> Strin
 func _process(_delta: float) -> void:
 	if _input == null or not _input.has_method("just_pressed"):
 		return
+	# Esc pops exactly one level (W17): return_to_camp pops when router-owned (and a page buried
+	# under another overlay swallows the edge inside pop_from); the swap fallback disables _process
+	# itself before awaiting.
 	if bool(_input.call("just_pressed", InputActions.CANCEL)):
-		set_process(false)
 		return_to_camp()
 
 
@@ -591,6 +651,13 @@ func _run() -> RunContext:
 	return _game.call("run")
 
 
+## The run's live InventoryAdapter (the W17 gear-ownership gate), or null when unavailable.
+func _inventory() -> InventoryAdapter:
+	if _game == null or not _game.has_method("inventory"):
+		return null
+	return _game.call("inventory")
+
+
 func _party() -> Array:
 	var run := _run()
 	return run.party if run != null else []
@@ -605,7 +672,10 @@ func _selected_creature() -> Dictionary:
 
 
 func _persist() -> void:
-	if _game != null and _game.has_method("save_run"):
+	# W18 save trust: the witnessed save path first (SaveSentry surfaces the outcome).
+	if _game != null and _game.has_method("request_save"):
+		_game.call("request_save")
+	elif _game != null and _game.has_method("save_run"):
 		_game.call("save_run")
 
 

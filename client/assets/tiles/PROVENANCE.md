@@ -22,3 +22,17 @@ wrap-edge Sobel, OpenGL packing) — no external sources. `OverworldTileSet.buil
 into a normal atlas paired with the diffuse atlas in one `CanvasTexture` so the player's
 PointLight2D shades the ground. Regenerate: `python tools/gen_normalmaps.py` (PIL + numpy only).
 Binaries commit via Git LFS.
+
+## W-DRESS (overworld structures)
+
+`structures/*.png` + `structures/structures.json`: landmark STRUCTURE cutouts (temple, ruin,
+market stall, ascension altar, summon portal, forge, bridge, grove) — **repo-authored AI art**,
+sourced from the main repo's gitignored staging area `/assets/tiles/iso/TILE-021..030` (painterly
+512px iso dioramas generated for this project; filenames eye-verified against a rendered contact
+sheet) and processed deterministically by `tools/make_structures.py`. The raw plates flattened
+their transparency to pure black (the shipped alpha channel is junk), so the pipeline
+RECONSTRUCTS each structure body: stroke threshold -> morphological close -> main-cluster keep ->
+border flood hole-fill -> solid grimoire-ink wash behind the painted strokes. TILE-021
+(graveyard plot) was REJECTED on the QA sheet (too sparse to reconstruct). The manifest maps
+semantic id -> texture / height_tiles / blocking footprint; `OverworldStructures` consumes it.
+No third-party assets. Binaries commit via Git LFS.

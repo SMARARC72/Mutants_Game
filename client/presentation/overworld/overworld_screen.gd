@@ -104,6 +104,8 @@ var _pip: CorruptionPip = null
 var _shimmer: Node2D = null
 var _ambience := OverworldAmbience.new()
 var _critters := OverworldCritters.new()
+## W-DRESS: the landmark-structures kit (deterministic plan + footprint blocked-set + holder).
+var _structures := OverworldStructures.new()
 
 
 func _ready() -> void:
@@ -140,34 +142,56 @@ func set_instant_moves(enabled: bool) -> void:
 	_motion.instant_moves = enabled
 
 
-## Open the camp/pause menu as an OVERLAY (a CanvasLayer above the overworld, NOT a scene swap, so
-## the overworld stays live beneath it). Idempotent: a second call while open returns the SAME live
-## camp menu (no duplicate). Returns the camp menu node (or null if the scene is missing). Public so
-## input + a test both drive it.
+## Open the camp/pause menu as an OVERLAY over the LIVE overworld — pushed through the UiRouter
+## (W17: the generalized camp-overlay pattern; back = pop, never a scene swap), falling back to a
+## local CanvasLayer child when the router autoload is absent. Idempotent: a second call while open
+## returns the SAME live camp menu (no duplicate). Returns the camp menu node (or null if the scene
+## is missing). Public so input + a test both drive it.
 func open_camp() -> Node:
 	if _camp_overlay != null and is_instance_valid(_camp_overlay):
 		return _camp_menu
-	var layer := CanvasLayer.new()
-	layer.name = "CampOverlay"
-	layer.layer = 50  # above gameplay, below Transition (100) + Toast (128)
 	var menu := CampMenuScene.instantiate()
-	layer.add_child(menu)
-	add_child(layer)
-	_camp_overlay = layer
+	var router := get_node_or_null("/root/UiRouter")
+	if router != null and router.has_method("push_node"):
+		router.call("push_node", menu, "res://presentation/camp/camp_menu.tscn")
+		_camp_overlay = menu.get_parent()  # the router's CanvasLayer
+	else:
+		var layer := CanvasLayer.new()
+		layer.name = "CampOverlay"
+		layer.layer = 50  # above gameplay, below Transition (100) + Toast (128)
+		layer.add_child(menu)
+		add_child(layer)
+		_camp_overlay = layer
 	_camp_menu = menu
-	# Resume tears the overlay down + restores the overworld input context.
+	# Resume clears our refs; the router pop (or the legacy teardown below) frees the overlay.
 	if menu.has_signal("resumed"):
 		menu.connect("resumed", _on_camp_resumed)
 	return menu
 
 
 func _on_camp_resumed() -> void:
+	# W17: a router-pushed camp pops ITSELF (resume → UiRouter.pop_from restores the input context);
+	# only the legacy local overlay still needs freeing + the manual context restore here.
+	var router := get_node_or_null("/root/UiRouter")
+	var router_owned := (
+		router != null and _camp_menu != null and bool(router.call("owns", _camp_menu))
+	)
+	if not router_owned:
+		if _camp_overlay != null and is_instance_valid(_camp_overlay):
+			_camp_overlay.queue_free()
+		if _input != null and _input.has_method("switch_context"):
+			_input.call("switch_context", InputActions.CTX_OVERWORLD)
+	_camp_overlay = null
+	_camp_menu = null
+
+
+## Leaving the tree (battle hand-off / teardown) closes any open camp overlay with us — the router
+## self-heals its stack when the layer dies, so no orphan page can float over the next scene.
+func _exit_tree() -> void:
 	if _camp_overlay != null and is_instance_valid(_camp_overlay):
 		_camp_overlay.queue_free()
 	_camp_overlay = null
 	_camp_menu = null
-	if _input != null and _input.has_method("switch_context"):
-		_input.call("switch_context", InputActions.CTX_OVERWORLD)
 
 
 ## The live camp overlay CanvasLayer, or null when closed (for tests).
@@ -193,6 +217,7 @@ func build_from_game() -> void:
 	_ensure_world_root()
 	_setup_horizon()
 	_render_layout()
+	_build_structures()
 	_spawn_player()
 	_spawn_lead_creature()
 	_spawn_npcs()
@@ -217,7 +242,10 @@ func _maybe_play_intro() -> void:
 	if run == null or bool(run.flags.get("intro_played", false)):
 		return
 	run.flags["intro_played"] = true
-	if _game.has_method("save_run"):
+	# W18 save trust: the witnessed save path first (SaveSentry surfaces the outcome).
+	if _game.has_method("request_save"):
+		_game.call("request_save")
+	elif _game.has_method("save_run"):
 		_game.call("save_run")
 	if _dialogue == null:
 		_dialogue = DialogicFacade.new()
@@ -247,7 +275,11 @@ func try_move(dir: Vector2i, roll_encounter: bool = true) -> Dictionary:
 		_motion.thunk(dir, _cell_center(_player_cell))
 		_ambience.on_blocked(_lead)  # W13: the follower shivers at the wall with you
 		return {"encounter": false, "moved": false}
-	if not OverworldTileSetScript.is_walkable(_layout.get_cell(target.x, target.y)):
+	# W-DRESS: a structure footprint blocks like a wall — screen-local occupancy, Layout untouched.
+	if (
+		not OverworldTileSetScript.is_walkable(_layout.get_cell(target.x, target.y))
+		or _structures.blocks(target)
+	):
 		_motion.thunk(dir, _cell_center(_player_cell))
 		_ambience.on_blocked(_lead)
 		return {"encounter": false, "moved": false}
@@ -342,7 +374,7 @@ func _dispatch_roll(roll: Dictionary) -> void:
 		peculiar_encounter(roll)
 		return
 	if bool(roll.get("misbehavior", false)):
-		_toast_misbehavior()
+		OverworldBarks.toast_misbehavior(self)
 	_on_encounter(roll)
 
 
@@ -355,19 +387,6 @@ func peculiar_encounter(roll: Dictionary) -> void:
 		# Default content resolver (W16b). Tests overwrite/clear the seam explicitly.
 		peculiar_hook = OverworldPeculiars.play
 	peculiar_hook.call(self, roll)
-
-
-## The veil coughs: announce a misbehavior draw (authored copy via VoiceBook —
-## world.veil_coughs is the reserved ingest key; weather.rare is the shipped authored line
-## about the thin veil, kept as the fallback per the VoiceBook contract).
-func _toast_misbehavior() -> void:
-	var toast := get_node_or_null("/root/Toast")
-	if toast == null or not toast.has_method("show"):
-		return
-	var line := VoiceBook.pick("world.veil_coughs")
-	if line == "":
-		line = VoiceBook.pick("weather.rare")
-	toast.call("show", {"title": "The veil coughs.", "body": line, "sound": "hum"})
 
 
 ## The EncounterDirector tile class of a cell (TILE_CLASS_THIN on the visible ritual-accent
@@ -417,7 +436,10 @@ func _stash_and_hand_off(roll: Dictionary, extra: Dictionary) -> void:
 			run, _player_cell, _last_dir, EncounterDirectorScript.POST_BATTLE_GRACE_STEPS
 		)
 	# Save on encounter-end boundary (autosave the run before the fight resolves the loop).
-	if _game != null and _game.has_method("save_run"):
+	# W18 save trust: the witnessed save path first (SaveSentry surfaces the outcome).
+	if _game != null and _game.has_method("request_save"):
+		_game.call("request_save")
+	elif _game != null and _game.has_method("save_run"):
 		_game.call("save_run")
 	if _auto_hand_off:
 		_hand_off_to_battle()
@@ -478,6 +500,10 @@ func _process(delta: float) -> void:
 	if _lead != null:
 		_lead.position = _lead.position.lerp(_lead_target, clampf(delta * 9.0, 0.0, 1.0))
 	if _busy or _in_dialogue or _input == null or _layout == null:
+		return
+	# W17: while the camp (or anything pushed above it) is open, the overworld takes NO input — the
+	# arrows walk the menu focus, not the tamer under the scrim.
+	if _camp_overlay != null and is_instance_valid(_camp_overlay):
 		return
 	# Talk to an adjacent NPC on the INTERACT action (movement is suspended while a scene plays).
 	if (
@@ -568,12 +594,24 @@ func _scatter_props() -> void:
 	_props = OverworldDepthScript.scatter_props(_world, _props, _layout, _force_climate)
 
 
+## W-DRESS: landmark STRUCTURES (temple / ruin / stall / the boss-lair altar...) on deterministic
+## feature-cell clusters, y-sorted with actors; their footprints join the screen-local blocked
+## set try_move consults. Placement anchors on the CANONICAL spawn — stable across battles.
+func _build_structures() -> void:
+	if _layout == null:
+		return
+	_ensure_world_root()
+	_structures.build(_world, _layout, _force_climate, OverworldSpawnScript.spawn_cell(_layout))
+
+
 func _spawn_player() -> void:
 	_home_cell = OverworldSpawnScript.spawn_cell(_layout)
 	# Wave 3 position persistence: prefer the pre-battle cell + facing stashed by the autosave (when
 	# present + walkable) so a post-battle/reloaded overworld puts the player exactly where the fight
 	# started — never back at spawn. Falls back to the canonical spawn.
 	_player_cell = OverworldLoopStateScript.restore_cell(_run_ctx(), _layout, _home_cell)
+	if _structures.blocks(_player_cell):
+		_player_cell = _home_cell  # a structure claimed the stashed cell: fall back to spawn
 	_last_dir = OverworldLoopStateScript.restore_facing(_run_ctx(), _last_dir)
 	if _player == null:
 		_player = Node2D.new()
@@ -594,45 +632,14 @@ func _spawn_player() -> void:
 	_position_player()
 
 
-## Spawn the lead-creature cameo (the ACTUAL party lead's real bestiary plate, circular-cropped with
-## a brass ring) that trails the tamer HG/SS-style. No-op if no plate resolves.
+## Spawn the lead-creature cameo (glue lives in OverworldDepth — line cap). No-op without art.
 func _spawn_lead_creature() -> void:
 	if _lead != null:
 		return
-	var species := _lead_species_id()
-	var tex: Texture2D = SpeciesArt.plate(species)
-	if tex == null:
-		return
-	var box := int(OverworldTileSetScript.TILE_SIZE * 1.18)
-	_lead = Sprite2D.new()
-	_lead.name = "LeadCreature"
-	_lead.texture = OverworldTokensScript.creature_cameo(tex, box, species)
-	# Wave 12: feet-level y-origin — the cameo's ground shadow sits at ~0.92 of its box, so raise
-	# the texture until that contact line lands on the node position; the WorldYSort parent then
-	# occludes the creature correctly against props and the tamer (no hand-set z).
-	_lead.offset = Vector2(0, -box * 0.42)
 	_ensure_world_root()
-	_world.add_child(_lead)
-	var s := OverworldTileSetScript.TILE_SIZE
-	var here := Vector2(_player_cell.x * s + s / 2.0, _player_cell.y * s + s / 2.0)
-	_lead.position = here - Vector2(_last_dir) * float(s)
-	_lead_target = _lead.position
-
-
-## The species id of the run's ACTIVE lead creature (not just party[0] — the player may have set a
-## non-first member as lead), or "" — used to pick the trailing cameo plate.
-func _lead_species_id() -> String:
-	if _game == null or not _game.has_method("run"):
-		return ""
-	var run: RunContext = _game.call("run")
-	if run == null or not (run.party is Array) or (run.party as Array).is_empty():
-		return ""
-	var party: Array = run.party
-	var idx := 0
-	if _game.has_method("active_creature_index"):
-		idx = clampi(int(_game.call("active_creature_index")), 0, party.size() - 1)
-	var lead: Variant = party[idx]
-	return str((lead as Dictionary).get("species_id", "")) if lead is Dictionary else ""
+	_lead = OverworldDepthScript.spawn_lead_cameo(_game, _world, _player_cell, _last_dir)
+	if _lead != null:
+		_lead_target = _lead.position
 
 
 ## Wave 13: the AtmosphereLayer owns ALL fullscreen atmosphere — ONE grade+vignette pass + ONE
@@ -671,11 +678,22 @@ func _setup_hud() -> void:
 
 ## Update the HUD quest tracker to the active quest's current objective (hidden when no quest is active).
 func _refresh_objective() -> void:
+	_refresh_markers()
 	if _objective_label == null:
 		return
 	var text := OverworldHud.active_objective(_quests)
 	_objective_label.text = text
 	_objective_label.visible = text != ""
+
+
+## W-DRESS: sync the floating NPC quest markers + the boss-lair ember to the LIVE quest state —
+## on build and every quest transition, never mid-dialogue (deferred to dialogue-finished so a
+## playing scene never has markers popping under it).
+func _refresh_markers() -> void:
+	if _in_dialogue:
+		return
+	QuestMarkers.refresh(_npcs, _quests)
+	QuestMarkers.refresh_lair(_structures.lair(), _quests)
 
 
 ## Snap the token to its cell centre (spawn/restore placement; steps GLIDE via OverworldMotion).
@@ -735,6 +753,7 @@ func _layout_pixel_rect() -> Rect2:
 ## Place the region's NPCs on walkable cells near the spawn, each as a parchment token ringed in its
 ## colour. No-op if there is no layout. Safe headless (tokens are nodes; nothing renders).
 func _spawn_npcs() -> void:
+	OverworldDepthScript.free_cast(_npcs)  # a rebuild re-spawns the cast; no stale twins
 	_npcs.clear()
 	if _layout == null:
 		return
@@ -744,30 +763,30 @@ func _spawn_npcs() -> void:
 		_restore_quests()
 	_sync_boss_goal_quest()
 	var cells := OverworldSpawnScript.npc_cells(
-		_layout, _home_cell, OverworldContent.NPC_DEFS.size()
+		_layout, _home_cell, OverworldContent.NPC_DEFS.size(), _structures.blocked()
 	)
 	for i in mini(cells.size(), OverworldContent.NPC_DEFS.size()):
 		var def: Dictionary = OverworldContent.NPC_DEFS[i]
 		var cell: Vector2i = cells[i]
 		var node := Node2D.new()
 		node.name = "NPC_%s" % str(def["name"]).replace(" ", "")
-		# Wave 12: z stays 0 — wax seals lie flat like the player medallion, so the cell-centre
-		# origin is the ground contact and WorldYSort owns the draw order.
+		# W-DRESS: NPCs are CHARACTERS now — hooded figures / creature cutouts / the signpost
+		# (NpcFigures), feet-origined at the cell centre so WorldYSort owns the draw order.
 		var s := OverworldTileSetScript.TILE_SIZE
 		node.position = Vector2(cell.x * s + s / 2.0, cell.y * s + s / 2.0)
-		var token := Sprite2D.new()
-		token.texture = OverworldTokensScript.npc_token(
-			int(s * 0.84), def["ring"] as Color, str(def["name"])
-		)
+		var token := NpcFigures.npc_sprite(def, s)
 		node.add_child(token)
 		_ensure_world_root()
 		_world.add_child(node)
+		if not bool(def.get("sign", false)):
+			NpcFigures.attach_sway(token, str(def["name"]))
 		# Carry ALL of the def's keys (name/timeline/ring + every quest step_key) so the data-driven
 		# quest dispatch sees each NPC's steps — a new quest's step_key needs no change here.
 		var entry: Dictionary = def.duplicate(true)
 		entry["cell"] = cell
 		entry["node"] = node
 		_npcs.append(entry)
+	_refresh_markers()
 
 
 ## If the tamer stands on/next to an NPC, speak to it and return its timeline id; else "". Drives the
@@ -915,6 +934,7 @@ func _restore_quests() -> void:
 
 func _on_dialogue_finished(_timeline_id: String) -> void:
 	_in_dialogue = false
+	_refresh_markers()  # the deferred marker sync (never during the scene itself)
 
 
 ## Intro-quest state accessors (for tests + a future quest-log UI).
@@ -963,6 +983,11 @@ func corruption_pip() -> Control:
 ## The veil-shimmer marker holder (for tests — W13).
 func veil_shimmer() -> Node2D:
 	return _shimmer
+
+
+## The landmark-structures kit: plan / blocked-set / holder / lair (for tests — W-DRESS).
+func structures() -> OverworldStructures:
+	return _structures
 
 
 func player_cell() -> Vector2i:

@@ -183,6 +183,9 @@ func test_full_core_loop_composes_end_to_end() -> void:
 	assert_bool(bool(awaken["ok"])).is_true()
 	assert_int(run.essence).is_less(100)  # essence debited by the resonance cost
 	assert_int(int(run.party[0].get("awakenings", 0))).is_greater(0)
+	# W17 gear honesty: equipping is gated on run.inventory OWNERSHIP — fund the drawer first
+	# (in play the piece arrives as a battle drop or a Trader purchase).
+	(gc.call("inventory") as InventoryAdapter).add("gear", GEAR_ID, 1)
 	var equip: Dictionary = party_screen.call("equip_gear", GEAR_ID)
 	assert_bool(bool(equip["ok"])).is_true()
 	assert_str(str(run.party[0]["equipped_gear"])).is_equal(GEAR_ID)

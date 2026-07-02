@@ -20,6 +20,9 @@ uniform vec4 vignette_color : source_color = vec4(0.02, 0.012, 0.03, 1.0);
 uniform float warmth : hint_range(0.0, 1.0) = 0.0;
 uniform vec4 ember_color : source_color = vec4(0.8, 0.38, 0.14, 1.0);
 uniform float grade_strength : hint_range(0.0, 1.0) = 0.4;
+// W18 "Death With Weight": the mourning pulse — a brief luminance-preserving desaturation the
+// death beat tweens up and back down (~0.8s) when a coven creature truly dies. 0 in normal play.
+uniform float mourn : hint_range(0.0, 1.0) = 0.0;
 
 void fragment() {
 	vec3 col = texture(screen_tex, SCREEN_UV).rgb;
@@ -32,5 +35,8 @@ void fragment() {
 	float d = distance(SCREEN_UV, vec2(0.5));
 	float vig = smoothstep(vignette_radius, 1.0, d * (1.0 + 0.4 * warmth));
 	vec3 graded = mix(warmed, vignette_color.rgb, vig * vignette_intensity * vignette_color.a);
+	// The mourning pulse: drain the colour (sunk slightly toward ink) while a death lands.
+	float mourn_luma = dot(graded, vec3(0.299, 0.587, 0.114));
+	graded = mix(graded, vec3(mourn_luma) * 0.9, mourn);
 	COLOR = vec4(graded, 1.0);
 }

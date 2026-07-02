@@ -13,6 +13,9 @@ const MAIN_MENU_SCENE := "res://presentation/screens/main_menu.tscn"
 
 var _settings: Node
 var _input: Node
+## W17 press-any-key rebinding: the action currently capturing ("" = idle) + its row button.
+var _capture_action := ""
+var _capture_button: Button = null
 
 
 func _ready() -> void:
@@ -75,8 +78,14 @@ func _build() -> void:
 		first_row.grab_focus()
 
 
-## ESC / cancel always exits Options — the screen must never trap the player.
+## ESC / cancel always exits Options — the screen must never trap the player. While a rebind row
+## is CAPTURING, the very next press belongs to the capture instead (Esc there cancels the capture,
+## never the screen — one press, one meaning).
 func _unhandled_input(event: InputEvent) -> void:
+	if _capture_action != "":
+		if feed_capture_event(event):
+			get_viewport().set_input_as_handled()
+		return
 	if event.is_action_pressed("ui_cancel"):
 		get_viewport().set_input_as_handled()
 		_on_back()
@@ -148,27 +157,84 @@ func _add_rebind_row(parent: VBoxContainer, label_text: String, action_id: Strin
 	label.custom_minimum_size = Vector2(140, 0)
 	row.add_child(label)
 	var button := Button.new()
+	button.name = "RebindButton_" + action_id
 	button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	button.text = _binding_text(action_id)
 	row.add_child(button)
-	# Cycle through a couple of demo keys to prove rebinding flows to InputService + Settings.
-	# A full build opens an input-capture dialog; the data path is identical.
-	button.pressed.connect(
-		func() -> void:
-			if _input != null:
-				var next_key := KEY_F if _binding_text(action_id) != "F" else KEY_G
-				_input.call("rebind", action_id, "key", next_key)
-				button.text = _binding_text(action_id)
-	)
+	# W17: press-any-key capture — the click arms the row, the NEXT key/pad/mouse press becomes the
+	# binding through InputService.rebind (persisted via Settings, ADR-012). Esc cancels the capture.
+	button.pressed.connect(func() -> void: begin_rebind_capture(action_id, button))
 
 
+# === press-any-key rebinding (W17 — replaces the F/G demo cycler) ============================= #
+
+
+## Arm the capture for `action_id`: the next physical press binds it. Public for tests; `button`
+## optional (the armed row shows the listening prompt).
+func begin_rebind_capture(action_id: String, button: Button = null) -> void:
+	# Re-arming another row first restores the previous row's label.
+	if _capture_button != null and is_instance_valid(_capture_button) and _capture_action != "":
+		_capture_button.text = _binding_text(_capture_action)
+	_capture_action = action_id
+	_capture_button = button
+	if button != null:
+		button.text = "Press a key… (Esc cancels)"
+
+
+## The action currently capturing, or "" (for tests).
+func capture_action() -> String:
+	return _capture_action
+
+
+## Feed one InputEvent into the armed capture. Returns true when the event was CONSUMED (bound or
+## cancelled). Public so a headless test can drive the exact _unhandled_input path with a crafted
+## event. Esc cancels; key / joypad button / mouse button presses bind through InputService.rebind.
+func feed_capture_event(event: InputEvent) -> bool:
+	if _capture_action == "" or event == null or event.is_echo():
+		return false
+	if event is InputEventKey and (event as InputEventKey).pressed:
+		var key := event as InputEventKey
+		if key.physical_keycode == KEY_ESCAPE or key.keycode == KEY_ESCAPE:
+			_finish_capture()  # cancelled — binding untouched
+			return true
+		_apply_capture("key", int(key.physical_keycode))
+		return true
+	if event is InputEventJoypadButton and (event as InputEventJoypadButton).pressed:
+		_apply_capture("joy", int((event as InputEventJoypadButton).button_index))
+		return true
+	if event is InputEventMouseButton and (event as InputEventMouseButton).pressed:
+		_apply_capture("mouse", int((event as InputEventMouseButton).button_index))
+		return true
+	return false
+
+
+func _apply_capture(device: String, code: int) -> void:
+	if _input != null:
+		_input.call("rebind", _capture_action, device, code)
+	_finish_capture()
+
+
+func _finish_capture() -> void:
+	if _capture_button != null and is_instance_valid(_capture_button):
+		_capture_button.text = _binding_text(_capture_action)
+	_capture_action = ""
+	_capture_button = null
+
+
+## The display text for an action's current binding (key name / pad button / mouse button).
 func _binding_text(action_id: String) -> String:
 	if _input == null:
 		return "?"
 	var binding: Dictionary = _input.call("binding_of", action_id)
-	if binding.has("code"):
-		return OS.get_keycode_string(int(binding["code"]))
-	return "Unbound"
+	if not binding.has("code"):
+		return "Unbound"
+	match str(binding.get("device", "key")):
+		"joy":
+			return "Pad %d" % int(binding["code"])
+		"mouse":
+			return "Mouse %d" % int(binding["code"])
+		_:
+			return OS.get_keycode_string(int(binding["code"]))
 
 
 ## NOTE: deliberately NOT named `_get` — that would override Object's native virtual

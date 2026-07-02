@@ -96,8 +96,11 @@ func _build() -> void:
 
 	var first := _add_button(box, "Begin the Descent (New Run)", _on_new_run)
 	var continue_button := _add_button(box, "Continue", _on_continue)
-	# Disable Continue when there is no readable local save (slice DoD: menu gating).
-	if _game == null or not _game.has_method("has_save") or not bool(_game.call("has_save")):
+	continue_button.name = "ContinueButton"
+	# W18 continue gate: no save at all -> Continue stays disabled; an ILLEGIBLE save (bad JSON /
+	# checksum / empty run) keeps the button LIVE and answers with an in-world dialog instead of a
+	# dead click (the player learns WHY, not just that nothing happens).
+	if _continue_health() == "none":
 		continue_button.disabled = true
 	_add_button(box, "Sample Plate", _on_play)
 	_add_button(box, "Options", _on_options)
@@ -135,13 +138,41 @@ func _on_new_run() -> void:
 	_go_to_overworld()
 
 
-## Continue: load the latest local save via GameController, then swap to the overworld. Falls back
-## to a no-op (stays on the menu) if the load failed.
+## Continue: load the latest local save via GameController, then swap to the overworld. A failed
+## load (illegible envelope) answers with the in-world dialog instead of silently doing nothing.
 func _on_continue() -> void:
 	if _game == null or not _game.has_method("continue_run"):
 		return
 	if bool(_game.call("continue_run")):
 		_go_to_overworld()
+		return
+	_show_illegible_dialog()
+
+
+## The GameController's save health ("none" / "ok" / "illegible"), guarded for stub games.
+func _continue_health() -> String:
+	if _game == null:
+		return "none"
+	if _game.has_method("continue_health"):
+		return str(_game.call("continue_health"))
+	if _game.has_method("has_save") and bool(_game.call("has_save")):
+		return "ok"
+	return "none"
+
+
+## W18: the corrupt-save dialog — a legible in-world error, never a dead button.
+func _show_illegible_dialog() -> void:
+	var dialog := AcceptDialog.new()
+	dialog.name = "IllegibleLedgerDialog"
+	dialog.title = "The Ledger"
+	dialog.dialog_text = (
+		"The ledger is illegible.\n"
+		+ "Its ink has run — the last record cannot be trusted.\n"
+		+ "Begin the descent anew; the marsh keeps no other copy."
+	)
+	dialog.ok_button_text = "So be it"
+	add_child(dialog)
+	dialog.popup_centered()
 
 
 func _go_to_overworld() -> void:

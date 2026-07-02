@@ -18,6 +18,10 @@ var _transition: Node = null
 var _input: Node = null
 var _quests: QuestService = null
 var _entries: Array = []  # [{id, name, status, objective}] for the discovered quests (tests read this)
+## W18: the run's memorial ledger (run.flags["graveyard"]) — the Graveyard tab renders these.
+var _graveyard: Array = []
+## The open ledger page: "quests" (default — the errand log) or "graveyard" (the memorials).
+var _tab: String = "quests"
 ## When false, _ready does NOT auto-build from the autoload (a headless test injects + drives).
 var _auto_build: bool = true
 
@@ -62,6 +66,9 @@ func build_from_game() -> void:
 	if saved is Dictionary and not (saved as Dictionary).is_empty():
 		_quests.deserialize(saved)
 	_entries = _compute_entries()
+	# W18: the memorial ledger rides the same build (the Graveyard tab renders it read-only).
+	var graves: Variant = run.flags.get("graveyard", [])
+	_graveyard = (graves as Array).duplicate(true) if graves is Array else []
 	_build_ui()
 
 
@@ -131,11 +138,36 @@ func quest_count() -> int:
 	return _entries.size()
 
 
+## W18: the memorial ledger the Graveyard tab renders (copy; tests read this).
+func graveyard_entries() -> Array:
+	return _graveyard.duplicate(true)
+
+
+## The open ledger page id ("quests" | "graveyard").
+func current_tab() -> String:
+	return _tab
+
+
+## Open the Graveyard page (rebuilds the UI onto the memorials). Public — tests/tab button drive it.
+func show_graveyard() -> void:
+	_tab = "graveyard"
+	_build_ui()
+
+
+## Open the errand log page (the default).
+func show_quests() -> void:
+	_tab = "quests"
+	_build_ui()
+
+
 # === UI (code-built, themed) ================================================================== #
 
 
 func _build_ui() -> void:
 	for child in get_children():
+		# Detach BEFORE the deferred free: a tab switch rebuilds within the frame, and a stale
+		# (queue_freed but still-attached) subtree would shadow the fresh page for find_child.
+		remove_child(child)
 		child.queue_free()
 	set_anchors_preset(Control.PRESET_FULL_RECT)
 
@@ -184,6 +216,25 @@ func _build_ui() -> void:
 	standing.add_theme_color_override("font_color", GrimoirePalette.TEXT_ON_PARCHMENT)
 	box.add_child(standing)
 
+	# W18: the ledger grows a second page — the Graveyard (memorials). Two tab verbs; the open
+	# page's verb is disabled so the current tab reads at a glance.
+	var tabs := HBoxContainer.new()
+	tabs.name = "LedgerTabs"
+	tabs.add_theme_constant_override("separation", 8)
+	box.add_child(tabs)
+	var quests_tab := Button.new()
+	quests_tab.name = "QuestsTab"
+	quests_tab.text = "Errands"
+	quests_tab.disabled = _tab == "quests"
+	quests_tab.pressed.connect(show_quests)
+	tabs.add_child(quests_tab)
+	var graveyard_tab := Button.new()
+	graveyard_tab.name = "GraveyardTab"
+	graveyard_tab.text = "The Graveyard (%d)" % _graveyard.size()
+	graveyard_tab.disabled = _tab == "graveyard"
+	graveyard_tab.pressed.connect(show_graveyard)
+	tabs.add_child(graveyard_tab)
+
 	var scroll := ScrollContainer.new()
 	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	box.add_child(scroll)
@@ -193,6 +244,23 @@ func _build_ui() -> void:
 	_list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	scroll.add_child(_list)
 
+	if _tab == "graveyard":
+		_build_graveyard_list()
+	else:
+		_build_quest_list()
+
+	var back := Button.new()
+	back.name = "BackButton"
+	back.text = "Back to Camp"
+	back.pressed.connect(return_to_camp)
+	box.add_child(back)
+	# W1 focus pass: the Ledger is read-only, so its one verb (Back) owns focus.
+	if back.is_inside_tree():
+		back.grab_focus()
+
+
+## The errand-log page contents (the pre-W18 body, unchanged).
+func _build_quest_list() -> void:
 	if _entries.is_empty():
 		var empty := Label.new()
 		empty.name = "EmptyNote"
@@ -207,14 +275,83 @@ func _build_ui() -> void:
 		for entry: Dictionary in _entries:
 			_list.add_child(_make_quest_card(entry))
 
-	var back := Button.new()
-	back.name = "BackButton"
-	back.text = "Back to Camp"
-	back.pressed.connect(return_to_camp)
-	box.add_child(back)
-	# W1 focus pass: the Ledger is read-only, so its one verb (Back) owns focus.
-	if back.is_inside_tree():
-		back.grab_focus()
+
+## The Graveyard page (W18): one memorial per fallen coven creature — its plate as an INK
+## SILHOUETTE, its one-of-one sigil, name, cause, and the parts its death funded. Read-only;
+## the memorial dicts were shaped at burial (MortalityService) and never recomputed here.
+func _build_graveyard_list() -> void:
+	if _graveyard.is_empty():
+		var empty := Label.new()
+		empty.name = "EmptyNote"
+		empty.text = VoiceBook.pick("empty.graveyard")
+		if empty.text == "":
+			empty.text = "No headstones. Either you're careful or you're new."
+		empty.theme_type_variation = "MutedLabel"
+		empty.add_theme_color_override("font_color", GrimoirePalette.TEXT_ON_PARCHMENT)
+		_list.add_child(empty)
+		return
+	for i in _graveyard.size():
+		var memorial_v: Variant = _graveyard[i]
+		if memorial_v is Dictionary:
+			_list.add_child(_make_memorial_card(memorial_v as Dictionary, i))
+
+
+## One memorial: ink-silhouette plate + sigil + name / cause / parts-yielded lines.
+func _make_memorial_card(memorial: Dictionary, index: int) -> PanelContainer:
+	var card := PanelContainer.new()
+	card.name = "MemorialCard_%d" % index
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 12)
+	card.add_child(row)
+
+	# The plate as an INK SILHOUETTE: the same bestiary cutout every screen shows this creature,
+	# modulated to ink — a shape you recognize, a colour it no longer has.
+	var creature_v: Variant = memorial.get("creature", {})
+	var creature: Dictionary = creature_v if creature_v is Dictionary else {}
+	var plate_tex := PortraitUtil.creature_plate(creature)
+	if plate_tex != null:
+		var plate := LivingPlate.new()
+		plate.name = "MemorialPlate"
+		plate.set_plate_size(Vector2(72, 72))
+		plate.set_texture(plate_tex)
+		plate.set_identity(str(memorial.get("species_id", "")), str(memorial.get("sigil", "")))
+		plate.modulate = GrimoirePalette.INK
+		row.add_child(plate)
+
+	# Its one-of-one sigil — the mark it carried in life, now its headstone's seal.
+	var mark := SigilGen.make_mark(
+		str(memorial.get("species_id", "")),
+		str(memorial.get("sigil", "")),
+		str(memorial.get("force", "")),
+		26
+	)
+	mark.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
+	row.add_child(mark)
+
+	var column := VBoxContainer.new()
+	column.add_theme_constant_override("separation", 2)
+	column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	row.add_child(column)
+	var name_label := Label.new()
+	name_label.name = "MemorialName"
+	name_label.text = str(memorial.get("name", "The Nameless"))
+	column.add_child(name_label)
+	var cause := Label.new()
+	cause.name = "MemorialCause"
+	cause.text = "%s — turn %d." % [str(memorial.get("cause", "")), int(memorial.get("turn", 0))]
+	cause.theme_type_variation = "MutedLabel"
+	column.add_child(cause)
+	var parts: Array = memorial.get("parts", []) as Array
+	if not parts.is_empty():
+		var yielded := Label.new()
+		yielded.name = "MemorialParts"
+		var names: Array = []
+		for p in parts:
+			names.append(str(p).capitalize())
+		yielded.text = "Its death funded: %s." % ", ".join(PackedStringArray(names))
+		yielded.theme_type_variation = "MutedLabel"
+		column.add_child(yielded)
+	return card
 
 
 ## One quest card: name + a status badge (In Progress / Complete) + the current objective when active.
@@ -248,8 +385,13 @@ func _make_quest_card(entry: Dictionary) -> PanelContainer:
 	return card
 
 
-## Return to the camp menu (the surface this screen is opened from).
+## Return to the camp menu (the surface this screen is opened from). W17: as a router overlay this
+## POPS one level (the camp beneath was never destroyed); the swap is the no-router fallback only.
 func return_to_camp() -> void:
+	var router := get_node_or_null("/root/UiRouter")
+	if router != null and bool(router.call("pop_from", self)):
+		return
+	set_process(false)
 	if _transition != null and _transition.has_method("change_scene_ritual"):
 		await _transition.call("change_scene_ritual", CAMP_SCENE)
 	elif is_inside_tree():
@@ -259,5 +401,6 @@ func return_to_camp() -> void:
 func _process(_delta: float) -> void:
 	if _input == null or not _input.has_method("just_pressed"):
 		return
+	# Esc pops exactly one level (W17): a buried Ledger swallows the edge inside pop_from.
 	if bool(_input.call("just_pressed", InputActions.CANCEL)):
 		return_to_camp()

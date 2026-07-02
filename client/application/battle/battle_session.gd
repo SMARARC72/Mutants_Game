@@ -398,6 +398,12 @@ class InteractiveBattle:
 			_caught = outcome["creature_instance"]
 		return _session.capture(bool(outcome["success"]))
 
+	## The LIVE capture chance for `target` — the SAME oracle number attempt_capture would roll
+	## against right now, computed WITHOUT drawing (W11 live odds). Pure read: the canonical
+	## capture sub-stream is NEVER touched, so surfacing the % cannot perturb any outcome.
+	func chance_for(target: BattleEngine.Mon, gear: Array = []) -> float:
+		return CaptureService.chance_for(target, _species_for(target), gear)
+
 	# --- reads ------------------------------------------------------------------------------------ #
 
 	func session() -> BattleController.InteractiveSession:
@@ -486,6 +492,15 @@ class SkillInteractiveBattle:
 	func flee() -> Dictionary:
 		return _session.flee()
 
+	## The LIVE capture chance for `target` — the SAME oracle number attempt_capture would roll
+	## against right now (identical tier/hp_frac derivation), computed WITHOUT drawing (W11 live
+	## odds). Pure read: the canonical capture sub-stream is NEVER touched, so surfacing the %
+	## in the Capture button cannot perturb any outcome.
+	func chance_for(target: AbilityContainer, gear: Array = []) -> float:
+		var species := _species_for(target)
+		var tier := species.tier if species != null else "T1"
+		return CaptureService.chance_from(tier, _hp_frac_of(target), gear)
+
 	## Attempt to CAPTURE a wild enemy AbilityContainer. Computes the gear-/HP-modified chance via the
 	## oracle (from the container's live hp/maxhp + its species tier), rolls on the canonical capture
 	## sub-stream, and on success shapes + caches the creature_instance. Then drives the session's capture
@@ -493,11 +508,8 @@ class SkillInteractiveBattle:
 	func attempt_capture(target: AbilityContainer, gear: Array = []) -> Dictionary:
 		var species := _species_for(target)
 		var tier := species.tier if species != null else "T1"
-		var hp_frac := 1.0
-		if target != null and target.max_hp() > 0:
-			hp_frac = float(target.hp()) / float(target.max_hp())
 		var name := target.combatant_name() if target != null else ""
-		var outcome := _capture.attempt_from(name, tier, hp_frac, species, gear)
+		var outcome := _capture.attempt_from(name, tier, _hp_frac_of(target), species, gear)
 		_last_capture = outcome
 		if bool(outcome["success"]):
 			_caught = outcome["creature_instance"]
@@ -542,3 +554,10 @@ class SkillInteractiveBattle:
 		if creature == null or not (creature is Dictionary):
 			return null
 		return _catalog.get_by_id(str((creature as Dictionary).get("species_id", "")))
+
+	## The live hp fraction the capture oracle reads (SINGLE derivation for chance_for +
+	## attempt_capture, so the shown odds and the rolled odds can never drift apart).
+	static func _hp_frac_of(target: AbilityContainer) -> float:
+		if target == null or target.max_hp() <= 0:
+			return 1.0
+		return float(target.hp()) / float(target.max_hp())

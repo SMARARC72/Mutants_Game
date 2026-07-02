@@ -12,9 +12,9 @@ extends Node
 const Sfx := preload("res://autoload/sfx_service.gd")
 
 const BED_PATHS := {
-	"menu_bed": "res://assets/audio/ambience/menu_bed_loop.wav",
-	"ambience_marsh": "res://assets/audio/ambience/ambience_marsh_loop.wav",
-	"battle_drone": "res://assets/audio/ambience/battle_drone_loop.wav",
+	"menu_bed": "res://assets/audio/ambience/menu_bed_loop.mp3",
+	"ambience_marsh": "res://assets/audio/ambience/ambience_marsh_loop.mp3",
+	"battle_drone": "res://assets/audio/ambience/battle_drone_loop.mp3",
 }
 const DEFAULT_FADE := 1.5
 const FADE_OUT_DB := -60.0
@@ -139,6 +139,10 @@ func _load_bed(bed_id: String) -> AudioStream:
 	var stream: AudioStream = load(path)
 	if stream is AudioStreamWAV:
 		_make_looping(stream as AudioStreamWAV)
+	elif stream is AudioStreamMP3:
+		(stream as AudioStreamMP3).loop = true
+	elif stream is AudioStreamOggVorbis:
+		(stream as AudioStreamOggVorbis).loop = true
 	return stream
 
 
