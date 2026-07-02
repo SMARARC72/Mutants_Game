@@ -140,34 +140,56 @@ func set_instant_moves(enabled: bool) -> void:
 	_motion.instant_moves = enabled
 
 
-## Open the camp/pause menu as an OVERLAY (a CanvasLayer above the overworld, NOT a scene swap, so
-## the overworld stays live beneath it). Idempotent: a second call while open returns the SAME live
-## camp menu (no duplicate). Returns the camp menu node (or null if the scene is missing). Public so
-## input + a test both drive it.
+## Open the camp/pause menu as an OVERLAY over the LIVE overworld — pushed through the UiRouter
+## (W17: the generalized camp-overlay pattern; back = pop, never a scene swap), falling back to a
+## local CanvasLayer child when the router autoload is absent. Idempotent: a second call while open
+## returns the SAME live camp menu (no duplicate). Returns the camp menu node (or null if the scene
+## is missing). Public so input + a test both drive it.
 func open_camp() -> Node:
 	if _camp_overlay != null and is_instance_valid(_camp_overlay):
 		return _camp_menu
-	var layer := CanvasLayer.new()
-	layer.name = "CampOverlay"
-	layer.layer = 50  # above gameplay, below Transition (100) + Toast (128)
 	var menu := CampMenuScene.instantiate()
-	layer.add_child(menu)
-	add_child(layer)
-	_camp_overlay = layer
+	var router := get_node_or_null("/root/UiRouter")
+	if router != null and router.has_method("push_node"):
+		router.call("push_node", menu, "res://presentation/camp/camp_menu.tscn")
+		_camp_overlay = menu.get_parent()  # the router's CanvasLayer
+	else:
+		var layer := CanvasLayer.new()
+		layer.name = "CampOverlay"
+		layer.layer = 50  # above gameplay, below Transition (100) + Toast (128)
+		layer.add_child(menu)
+		add_child(layer)
+		_camp_overlay = layer
 	_camp_menu = menu
-	# Resume tears the overlay down + restores the overworld input context.
+	# Resume clears our refs; the router pop (or the legacy teardown below) frees the overlay.
 	if menu.has_signal("resumed"):
 		menu.connect("resumed", _on_camp_resumed)
 	return menu
 
 
 func _on_camp_resumed() -> void:
+	# W17: a router-pushed camp pops ITSELF (resume → UiRouter.pop_from restores the input context);
+	# only the legacy local overlay still needs freeing + the manual context restore here.
+	var router := get_node_or_null("/root/UiRouter")
+	var router_owned := (
+		router != null and _camp_menu != null and bool(router.call("owns", _camp_menu))
+	)
+	if not router_owned:
+		if _camp_overlay != null and is_instance_valid(_camp_overlay):
+			_camp_overlay.queue_free()
+		if _input != null and _input.has_method("switch_context"):
+			_input.call("switch_context", InputActions.CTX_OVERWORLD)
+	_camp_overlay = null
+	_camp_menu = null
+
+
+## Leaving the tree (battle hand-off / teardown) closes any open camp overlay with us — the router
+## self-heals its stack when the layer dies, so no orphan page can float over the next scene.
+func _exit_tree() -> void:
 	if _camp_overlay != null and is_instance_valid(_camp_overlay):
 		_camp_overlay.queue_free()
 	_camp_overlay = null
 	_camp_menu = null
-	if _input != null and _input.has_method("switch_context"):
-		_input.call("switch_context", InputActions.CTX_OVERWORLD)
 
 
 ## The live camp overlay CanvasLayer, or null when closed (for tests).
@@ -478,6 +500,10 @@ func _process(delta: float) -> void:
 	if _lead != null:
 		_lead.position = _lead.position.lerp(_lead_target, clampf(delta * 9.0, 0.0, 1.0))
 	if _busy or _in_dialogue or _input == null or _layout == null:
+		return
+	# W17: while the camp (or anything pushed above it) is open, the overworld takes NO input — the
+	# arrows walk the menu focus, not the tamer under the scrim.
+	if _camp_overlay != null and is_instance_valid(_camp_overlay):
 		return
 	# Talk to an adjacent NPC on the INTERACT action (movement is suspended while a scene plays).
 	if (

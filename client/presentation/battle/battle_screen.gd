@@ -56,6 +56,8 @@ const SWIFT_RITES_ORDER: Array = ["x1", "x2", "instant"]
 ## outcome plumbing; re-exported here because tests/screens read them off BattleScreen).
 const STALEMATE_BANNER := BattleImpactScript.STALEMATE_BANNER
 const STALEMATE_VOICE_LINE := BattleImpactScript.STALEMATE_VOICE_LINE
+## W17: a fresh catch offers its soul-page on the spot (pushed as a UiRouter overlay).
+const DOSSIER_SCENE := "res://presentation/dossier/dossier_screen.tscn"
 
 var _game: Node = null
 var _transition: Node = null
@@ -389,6 +391,7 @@ func _finish_battle(step: Dictionary) -> void:
 	_show_banner_text(_banner_text_for(reason))
 	_hide_menus()
 	_show_continue()
+	_show_dossier_button()
 
 
 # === accessors ================================================================================ #
@@ -443,6 +446,11 @@ func _process(_delta: float) -> void:
 	if _input == null or _beats_playing:
 		# While the beat queue narrates, CONFIRM is the fast-forward (held), never the exit.
 		return
+	# W17: while a router overlay (the caught dossier) floats above, the battle takes NO input —
+	# Confirm belongs to the page, not to the scene swap underneath it.
+	var router := get_node_or_null("/root/UiRouter")
+	if router != null and int(router.call("depth")) > 0:
+		return
 	# After the battle ends, Confirm returns to the overworld (matches Slice 1).
 	if _battle != null and _battle.is_ended() and _input.has_method("just_pressed"):
 		if bool(_input.call("just_pressed", InputActions.CONFIRM)):
@@ -456,6 +464,56 @@ func _process(_delta: float) -> void:
 ## Outcome-banner delegate (kept on the screen: tests + the toast path call it here).
 func _banner_text_for(reason: String) -> String:
 	return BattleImpactScript.banner_text_for(_result, reason)
+
+
+func _resolve_capture_target(foes: Array, target_index: int) -> AbilityContainer:
+	if target_index >= 0 and target_index < foes.size():
+		var chosen := foes[target_index] as AbilityContainer
+		if chosen != null and chosen.is_alive():
+			return chosen
+	for f in foes:
+		var m := f as AbilityContainer
+		if m.is_alive():
+			return m
+	return null
+
+
+func _gear_ids() -> Array:
+	if _game == null:
+		return []
+	var run: RunContext = _game.call("run")
+	if run == null:
+		return []
+	return CaptureServiceScript.gear_ids(run.gear)
+
+
+## The live end-of-battle HP of every player combatant, mapped back to its run.party INDEX through
+## the SkillInteractiveBattle's player source map (identity-safe even if the factory skipped an
+## unassemblable entry). Shape: [{ "index": int, "hp": int, "max_hp": int }, ...] — the payload
+## GameController.apply_battle_result folds into run.party (Wave 3 consequence).
+func _live_party_hp() -> Array:
+	var out: Array = []
+	if _battle == null or _game == null or not _battle.has_method("player_source"):
+		return out
+	var run: RunContext = _game.call("run")
+	if run == null:
+		return out
+	var source: Dictionary = _battle.player_source()
+	for ac_v in _battle.player_team():
+		var ac := ac_v as AbilityContainer
+		var creature: Variant = source.get(ac, null)
+		if creature == null:
+			continue
+		for i in run.party.size():
+			if run.party[i] is Dictionary and is_same(run.party[i], creature):
+				out.append({"index": i, "hp": maxi(0, ac.hp()), "max_hp": ac.max_hp()})
+				break
+	return out
+
+
+## The outcome banner copy — single-sourced in BattleCardKit (with the stalemate honesty rule).
+func _banner_text_for(reason: String) -> String:
+	return BattleCardKitScript.banner_text_for(_result, reason)
 
 
 # === UI (minimal, code-built, themed) ========================================================= #
@@ -849,6 +907,30 @@ func _show_continue() -> void:
 		_root_box.add_child(_continue_button)
 	else:
 		add_child(_continue_button)
+
+
+## W17: the capture card's soul-page affordance — a fresh catch can be READ on the spot. Pushed as
+## a UiRouter overlay above the ended battle (back pops straight back here). No router, no button.
+func _show_dossier_button() -> void:
+	var caught: Dictionary = _result.get("caught", {})
+	if caught.is_empty() or get_node_or_null("/root/UiRouter") == null:
+		return
+	var btn := Button.new()
+	btn.name = "DossierButton"
+	btn.text = "Read its Dossier"
+	btn.pressed.connect(_open_caught_dossier)
+	if _root_box != null and is_instance_valid(_root_box):
+		_root_box.add_child(btn)
+
+
+func _open_caught_dossier() -> void:
+	var router := get_node_or_null("/root/UiRouter")
+	if router == null:
+		return
+	var page: Node = router.call("push_scene", DOSSIER_SCENE)
+	if page != null:
+		page.call("set_game", _game)
+		page.call("show_creature_dict", _result.get("caught", {}))
 
 
 # === Wave 8 — beat-player surface (duck-typed by battle_beats.gd) + pacing + backdrop ========= #

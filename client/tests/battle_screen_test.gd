@@ -11,6 +11,7 @@ extends GdUnitTestSuite
 const GameControllerScript := preload("res://application/game/game_controller.gd")
 const FakeDalScript := preload("res://infrastructure/dal/fake_dal.gd")
 const BattleScreenScript := preload("res://presentation/battle/battle_screen.gd")
+const BattleCardKitScript := preload("res://presentation/battle/battle_card_kit.gd")
 const SkillBattleControllerScript := preload("res://application/battle/skill_battle_controller.gd")
 
 const TEST_SEED := 0xBA771E5
@@ -243,6 +244,7 @@ func test_stalemate_result_shows_the_distinct_banner() -> void:
 	screen.call("run_pending_battle")
 	screen.set("_result", {"stalemate": true, "player_won": true})
 	var text := str(screen.call("_banner_text_for", "enemy_defeated"))
+	# Outcome copy is single-sourced in BattleImpact; the screen re-exports it.
 	assert_str(text).is_equal(BattleScreenScript.STALEMATE_BANNER)
 	assert_bool(text.contains("STALEMATE")).is_true()
 	screen.queue_free()

@@ -185,12 +185,18 @@ func test_overclock_is_canonical_and_costs_corruption_entropy() -> void:
 	gc_b.queue_free()
 
 
-# === gear: equip / unequip (catalog effects) ================================================== #
+# === gear: equip / unequip (catalog effects; W17 ownership-gated) ============================= #
+
+
+## Fund the run drawer with one unit of GEAR_ID (W17: equipping requires actual ownership).
+func _own_gear(gc: Node) -> void:
+	(gc.call("inventory") as InventoryAdapter).add("gear", GEAR_ID, 1)
 
 
 func test_equip_gear_changes_effective_effects_and_persists() -> void:
 	var gc := _make_game()
 	var run: RunContext = gc.call("run")
+	_own_gear(gc)
 	var screen := _make_screen(gc)
 	screen.call("select_creature", 0)
 	var gear_catalog: GearCatalog = gc.call("gear_catalog")
@@ -221,19 +227,24 @@ func test_equip_gear_changes_effective_effects_and_persists() -> void:
 func test_unequip_reverts_gear() -> void:
 	var gc := _make_game()
 	var run: RunContext = gc.call("run")
+	_own_gear(gc)
 	var screen := _make_screen(gc)
 	screen.call("select_creature", 0)
 	var gear_catalog: GearCatalog = gc.call("gear_catalog")
 
 	screen.call("equip_gear", GEAR_ID)
 	assert_str(str(run.party[0]["equipped_gear"])).is_equal(GEAR_ID)
+	# W17: equipping MOVED the piece out of the drawer (one owned charm, one wearer).
+	var inv: InventoryAdapter = gc.call("inventory")
+	assert_int(inv.count("gear", GEAR_ID)).is_equal(0)
 
 	var ledger: Dictionary = screen.call("unequip_gear")
 	assert_bool(bool(ledger["ok"])).is_true()
 	assert_str(str(run.party[0]["equipped_gear"])).is_equal("")
-	# Effects reverted to empty.
+	# Effects reverted to empty; the piece is back in the drawer.
 	var after := CreatureSheetScript.gear_effect_totals(run.party[0], gear_catalog)
 	assert_bool(after.is_empty()).is_true()
+	assert_int(inv.count("gear", GEAR_ID)).is_equal(1)
 	screen.queue_free()
 	gc.queue_free()
 
@@ -246,5 +257,50 @@ func test_equip_unknown_gear_is_a_no_op() -> void:
 	var ledger: Dictionary = screen.call("equip_gear", "not_a_real_gear")
 	assert_bool(bool(ledger["ok"])).is_false()
 	assert_str(str(run.party[0].get("equipped_gear", ""))).is_equal("")
+	screen.queue_free()
+	gc.queue_free()
+
+
+func test_equip_unowned_gear_is_gated_and_greyed() -> void:
+	# W17 gear honesty: a catalog piece the run does not OWN cannot be equipped, and its row is
+	# rendered disabled (greyed with acquisition flavour), never hidden.
+	var gc := _make_game()
+	var run: RunContext = gc.call("run")
+	var screen := _make_screen(gc)
+	screen.call("select_creature", 0)
+	var ledger: Dictionary = screen.call("equip_gear", GEAR_ID)  # never funded
+	assert_bool(bool(ledger["ok"])).is_false()
+	assert_str(str(ledger["reason"])).is_equal("not_owned")
+	assert_str(str(run.party[0].get("equipped_gear", ""))).is_equal("")
+	var row := screen.find_child("EquipButton_%s" % GEAR_ID, true, false) as Button
+	assert_object(row).is_not_null()
+	assert_bool(row.disabled).is_true()
+	screen.queue_free()
+	gc.queue_free()
+
+
+func test_owned_gear_row_is_enabled() -> void:
+	var gc := _make_game()
+	_own_gear(gc)
+	var screen := _make_screen(gc)
+	screen.call("select_creature", 0)
+	var row := screen.find_child("EquipButton_%s" % GEAR_ID, true, false) as Button
+	assert_object(row).is_not_null()
+	assert_bool(row.disabled).is_false()
+	screen.queue_free()
+	gc.queue_free()
+
+
+func test_detail_panel_renders_stat_rows() -> void:
+	# W17 scryed legibility: the six pole stats render as icon+bar+NUMBER rows (StatRows).
+	var gc := _make_game()
+	var screen := _make_screen(gc)
+	screen.call("select_creature", 0)
+	for stat: String in ["Bulk", "Celerity", "Ward", "Spike", "Vitality", "Bane"]:
+		var row := screen.find_child("StatRow_%s" % stat, true, false)
+		assert_object(row).is_not_null()
+		# The bar AUGMENTS the number — both live in the row.
+		assert_object(row.find_child("StatBar", true, false)).is_not_null()
+		assert_object(row.find_child("StatNumber", true, false)).is_not_null()
 	screen.queue_free()
 	gc.queue_free()

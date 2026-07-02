@@ -24,6 +24,7 @@ const FakeDalScript := preload("res://infrastructure/dal/fake_dal.gd")
 const WorldGeneratorScript := preload("res://infrastructure/worldgen/world_generator.gd")
 const EncounterCatalogScript := preload("res://application/overworld/encounter_catalog.gd")
 const GearCatalogScript := preload("res://infrastructure/catalog/gear_catalog.gd")
+const LootDropServiceScript := preload("res://application/game/loot_drop_service.gd")
 
 ## The run.flags key holding the active/lead party member index (Slice 3b). 0 by default.
 const ACTIVE_CREATURE_FLAG := "active_creature"
@@ -219,6 +220,15 @@ func apply_battle_result(result: Dictionary) -> RunContext:
 	# Slice 4: a won boss fight clears the slice climax + marks victory (idempotent flag set).
 	if bool(result.get("boss_win", false)):
 		_mark_slice_cleared()
+	# W17 (C16) battle SPOILS: a win pays drachma per defeated enemy (the Trader's coin source) and
+	# occasionally drops GEAR into the run drawer — deterministic per (run.seed, step) through the
+	# LootDropService's canonical sub-stream. The drop id lands in run.flags for the UI to surface.
+	_run.drachma += LootDropServiceScript.drachma_for(result)
+	if bool(result.get("player_won", false)) and int(result.get("enemy_defeated", 0)) > 0:
+		var drop := LootDropServiceScript.roll_drop(_run.seed, current_step(), gear_catalog())
+		if drop != "":
+			inventory().add(GearService.GEAR_ITEM_TYPE, drop, 1)
+			_run.flags["last_gear_drop"] = drop
 	return _run
 
 

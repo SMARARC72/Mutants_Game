@@ -23,6 +23,7 @@ const PARTY_SCENE := "res://presentation/party/party_screen.tscn"
 const LAB_SCENE := "res://presentation/lab/lab_screen.tscn"
 const CHARACTER_SCENE := "res://presentation/character/character_sheet.tscn"
 const JOURNAL_SCENE := "res://presentation/journal/journal_screen.tscn"
+const TRADER_SCENE := "res://presentation/camp/trader_shop.tscn"
 const OVERWORLD_SCENE := "res://presentation/overworld/overworld_screen.tscn"
 
 var _transition: Node = null
@@ -94,6 +95,7 @@ func _build() -> void:
 	var party_button := _add_button(box, "PartyButton", "Party & Grimoire", open_party)
 	_add_button(box, "SelfButton", "The Self", open_self)
 	_add_button(box, "JournalButton", "The Ledger", open_journal)
+	_add_button(box, "TraderButton", "The Trader", open_trader)
 	_add_button(box, "LabButton", "Lab", open_lab)
 	_add_button(box, "ResumeButton", "Resume", resume)
 	# W1 focus pass: the first camp verb owns focus (arrow keys walk the column natively).
@@ -164,7 +166,7 @@ func _add_button(
 
 
 ## Open the party / grimoire screen. Returns the target scene path (so a test can assert it without
-## the swap). Skips the real swap when auto-navigate is off.
+## the swap). Skips the real push/swap when auto-navigate is off.
 func open_party() -> String:
 	_navigate(PARTY_SCENE)
 	return PARTY_SCENE
@@ -182,6 +184,12 @@ func open_journal() -> String:
 	return JOURNAL_SCENE
 
 
+## Open the Trader (W17/C16 — the minimal drachma shop, a pushed overlay). Returns the target path.
+func open_trader() -> String:
+	_navigate(TRADER_SCENE)
+	return TRADER_SCENE
+
+
 ## The scene path the Lab button targets (a SIBLING track owns the screen). Always returns the path
 ## so a test can assert the wiring even before the sibling screen exists.
 func lab_scene_path() -> String:
@@ -194,25 +202,43 @@ func lab_available() -> bool:
 
 
 ## Open the Lab (sibling track's screen). GUARDED: if the scene is absent, toast a gentle notice and
-## stay in camp instead of erroring. Returns the target path on success, "" when guarded off.
+## stay in camp instead of erroring. The Lab STAYS a full-screen SCENE SWAP (Geneticist veto — never
+## a router overlay), so every router overlay is unwound first (nothing may float over the Lab).
+## Returns the target path on success, "" when guarded off.
 func open_lab() -> String:
 	if not lab_available():
 		_notify("The Lab is not yet raised.")
 		return ""
-	_navigate(LAB_SCENE)
+	if _auto_navigate:
+		# Fire the swap on the TRANSITION autoload directly (never awaited through this menu — the
+		# pop_all below frees it, and a coroutine must not resume on a freed screen), then unwind.
+		if _transition != null and _transition.has_method("change_scene_ritual"):
+			_transition.call("change_scene_ritual", LAB_SCENE)
+		elif is_inside_tree():
+			get_tree().change_scene_to_file(LAB_SCENE)
+		var router := _router()
+		if router != null and router.has_method("pop_all"):
+			router.call("pop_all")
 	return LAB_SCENE
 
 
-## Resume play: emit `resumed` and close the menu (back to the overworld). As an OVERLAY the menu
-## simply frees itself (the overworld is untouched beneath it) — but when the camp is the ROOT
-## scene (returned to via a Party/Lab scene swap) freeing would leave a black screen, so it swaps
-## back to the overworld instead. Interim soft-lock guard; the screen router (W17) replaces it.
+## Resume play: emit `resumed` and close the menu — back to the LIVE overworld. W17: as a ROUTER
+## overlay the menu pops its own level (the router restores the pre-camp input context; the
+## overworld beneath was never swapped away, so a black screen is structurally unreachable). The
+## legacy fallbacks (root-scene guard / bare queue_free) remain for degraded/standalone contexts.
 func resume() -> void:
+	var router := _router()
+	# Esc pops EXACTLY one level (W17): while another overlay sits ABOVE this menu, the resume verb
+	# is SWALLOWED — the page on top owns the edge, and `resumed` must not fire for a buried camp.
+	if router != null and bool(router.call("owns", self)) and not bool(router.call("is_top", self)):
+		return
 	resumed.emit()
+	if router != null and bool(router.call("pop_from", self)):
+		return
 	if _input != null and _input.has_method("switch_context"):
 		_input.call("switch_context", InputActions.CTX_OVERWORLD)
 	if is_inside_tree() and get_tree().current_scene == self:
-		_navigate(OVERWORLD_SCENE)
+		_swap_scene(OVERWORLD_SCENE)
 		return
 	queue_free()
 
@@ -223,7 +249,8 @@ func resume() -> void:
 func _process(_delta: float) -> void:
 	if _input == null or not _input.has_method("just_pressed"):
 		return
-	# Cancel/pause closes the camp menu (matches the overworld toggle).
+	# Cancel/pause closes the camp menu (matches the overworld toggle); a buried menu swallows the
+	# edge inside resume().
 	if bool(_input.call("just_pressed", InputActions.CANCEL)):
 		resume()
 
@@ -231,7 +258,25 @@ func _process(_delta: float) -> void:
 # === internals ================================================================================ #
 
 
+## The screen-router autoload, or null (degraded/standalone contexts fall back to scene swaps).
+func _router() -> Node:
+	return get_node_or_null("/root/UiRouter")
+
+
+## Navigate to a sibling MENU page. W17: pushed as a router overlay over the persistent overworld
+## (back = pop); the scene-swap path survives only as the no-router fallback.
 func _navigate(scene_path: String) -> void:
+	if not _auto_navigate:
+		return
+	var router := _router()
+	if router != null and router.has_method("push_scene"):
+		router.call("push_scene", scene_path)
+		return
+	_swap_scene(scene_path)
+
+
+## A REAL scene swap (the Lab + legacy fallbacks) through the ritual Transition when available.
+func _swap_scene(scene_path: String) -> void:
 	if not _auto_navigate:
 		return
 	if _transition != null and _transition.has_method("change_scene_ritual"):
