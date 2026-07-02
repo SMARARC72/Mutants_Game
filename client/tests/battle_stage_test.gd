@@ -5,12 +5,17 @@ extends GdUnitTestSuite
 ##   * plates TRACK actors: the awaiting player actor is staged; targeting stages the victim;
 ##     the instant drain routes every beat's actor through stage_track;
 ##   * BOSS dressing: a full-width threat bar tracking the boss side's HP + a name splash that
-##     never animates (built, text set, hidden) under the instant contract.
+##     never animates (built, text set, hidden) under the instant contract;
+##   * FORCE LEGIBILITY (Wave 10 commit 2): matchup badges come from the controller's THIN
+##     SkillEngine read (never UI math) and land on the target picker exactly when non-neutral;
+##   * JUICE: the JuiceDirector autoload records every routed call headless while performing
+##     NO visual work (no labels, no timescale dips) — the no-op-but-recorded contract.
 
 const GameControllerScript := preload("res://application/game/game_controller.gd")
 const FakeDalScript := preload("res://infrastructure/dal/fake_dal.gd")
 const BattleScreenScript := preload("res://presentation/battle/battle_screen.gd")
 const BattleStageScript := preload("res://presentation/battle/battle_stage.gd")
+const BattleCardKitScript := preload("res://presentation/battle/battle_card_kit.gd")
 const SkillBattleControllerScript := preload("res://application/battle/skill_battle_controller.gd")
 
 const TEST_SEED := 0xBA771E5
@@ -155,5 +160,98 @@ func test_wild_battle_has_no_boss_dressing() -> void:
 	var stage := _stage_of(screen)
 	assert_object(stage.find_child("BossBar", true, false)).is_null()
 	assert_object(stage.find_child("BossSplash", true, false)).is_null()
+	screen.queue_free()
+	gc.queue_free()
+
+
+func test_matchup_badges_read_the_engine_table() -> void:
+	# A Thanatos foe (SB10) against the Eros starters — a KNOWN opposed pair. The badge chain is
+	# controller (thin SkillEngine read) -> BattleCardKit.matchup_badge -> target-picker chips.
+	var gc := _make_game({"enemy_party": [{"species_id": "SB10"}, {"species_id": "SB14"}]})
+	var screen := _make_screen(gc)
+	var step: Dictionary = screen.call("run_pending_battle")
+	var battle: Variant = screen.call("battle")
+	var foes: Array = battle.call("enemy_team")
+	var eros: AbilityContainer = null
+	for ac_v in battle.call("player_team"):
+		if (ac_v as AbilityContainer).primary_force() == "Eros":
+			eros = ac_v
+	assert_object(eros).is_not_null()
+	# The thin accessor surfaces the ENGINE multiplier: Eros overwhelms Thanatos at 1.5.
+	assert_float(SkillBattleControllerScript.matchup_mult(eros, foes[0])).is_equal(1.5)
+	# The badge dictionary is glyph + WORD + colour (grayscale-safe), {} when neutral.
+	assert_str(str(BattleCardKitScript.matchup_badge(1.5)["text"])).is_equal("▲ OVERWHELMS")
+	assert_str(str(BattleCardKitScript.matchup_badge(0.7)["text"])).is_equal("▼ resisted")
+	assert_bool(BattleCardKitScript.matchup_badge(1.0).is_empty()).is_true()
+	# UI wiring: each target button carries the chip exactly when the engine says non-neutral.
+	var actor := step.get("actor") as AbilityContainer
+	var skill := _first_damage_skill(actor)
+	assert_str(skill).is_not_empty()
+	screen.call("show_target_picker", skill)
+	var picker: Control = screen.find_child("TargetPicker", true, false)
+	var checked := 0
+	for btn in picker.get_children():
+		if not (btn is Button):
+			continue
+		var idx := int(str(btn.name).trim_prefix("Target"))
+		var mult: float = SkillBattleControllerScript.matchup_mult(actor, foes[idx])
+		var chip := (btn as Button).find_child("MatchupBadge", false, false) as Label
+		if mult == 1.0:
+			assert_object(chip).is_null()
+		else:
+			assert_object(chip).is_not_null()
+			var badge: Dictionary = BattleCardKitScript.matchup_badge(mult)
+			assert_str(chip.text).is_equal(str(badge["text"]))
+		checked += 1
+	assert_int(checked).is_greater(0)
+	screen.queue_free()
+	gc.queue_free()
+
+
+func test_juice_director_headless_noops_are_recorded() -> void:
+	var juice := get_node_or_null("/root/Juice")
+	assert_object(juice).is_not_null()
+	juice.call("clear_recorded")
+	var gc := _make_game()
+	var screen := _make_screen(gc)
+	var step: Dictionary = screen.call("run_pending_battle")
+	# Drive damaging actions until something lands (deterministic fixed-seed walk).
+	var guard := 0
+	while str(step.get("kind", "")) == "await_player" and guard < 60:
+		guard += 1
+		var skill := _first_damage_skill(step.get("actor"))
+		if skill == "":
+			break
+		step = screen.call("player_use_skill", skill, 0)
+		if int(juice.call("recorded", "pop_number")) > 0:
+			break
+	# The drain routed the impact stack through the director: the pop + the plate hit flash
+	# were RECORDED... (the headless bookkeeping suites hang assertions on)
+	assert_int(int(juice.call("recorded", "pop_number"))).is_greater(0)
+	assert_int(int(juice.call("recorded", "hit"))).is_greater(0)
+	# ...but NO-OPPED visually: no floating labels, no timescale dip, no pacing juice on the
+	# instant path (hitstop/shake/lunge stay un-routed entirely while instant).
+	assert_float(Engine.time_scale).is_equal(1.0)
+	assert_int((screen.call("fx_layer") as Control).get_child_count()).is_equal(0)
+	assert_int(int(juice.call("recorded", "hitstop"))).is_equal(0)
+	assert_int(int(juice.call("recorded", "shake"))).is_equal(0)
+	screen.queue_free()
+	gc.queue_free()
+
+
+func test_acting_outline_rides_the_staged_plate() -> void:
+	var gc := _make_game()
+	var screen := _make_screen(gc)
+	var step: Dictionary = screen.call("run_pending_battle")
+	var stage := _stage_of(screen)
+	# The awaiting player actor is outlined in brass on its stage plate; the enemy side is not.
+	var actor: Variant = step.get("actor")
+	assert_object(stage.plate_of(actor)).is_not_null()
+	var mat := stage.plate_of(actor).plate_material()
+	assert_float(float(mat.get_shader_parameter("outline_width"))).is_equal(
+		BattleStageScript.ACTING_OUTLINE
+	)
+	var other := stage.plate(true)
+	assert_float(float(other.plate_material().get_shader_parameter("outline_width"))).is_equal(0.0)
 	screen.queue_free()
 	gc.queue_free()

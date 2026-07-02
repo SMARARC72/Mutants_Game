@@ -244,7 +244,8 @@ func _apply_step(step: Dictionary) -> void:
 	_flush_transcript()
 	if kind == _STEP_AWAIT:
 		_pending_actor = step.get("actor") as AbilityContainer
-		stage_track(_pending_actor)  # the stage shows whoever is about to act (Wave 10)
+		# The stage shows whoever is about to act, outlined in brass (Wave 10; no lunge on AWAIT).
+		stage_beat(_pending_actor, false)
 		_refresh_turn_label(step)
 		_show_action_menu()
 	elif kind == _STEP_ENDED:
@@ -749,11 +750,8 @@ func _refresh_turn_label(step: Dictionary) -> void:
 
 
 ## Show the player action menu: ONE button per skill in the acting creature's kit (verb · name),
-## plus Capture + Flee (wild only). A SUPPORT skill resolves at once; a DAMAGE/Hex skill opens
-## the foe target picker. One skill = the actor's single action this turn (mirrors the engine's loop).
-## Wave 3 (plan tension 5): the "(N AP)" suffix is DELETED — no AP pool exists in the engine, and
-## the surface never advertises unbuilt mechanics. No AP chip returns until an oracle-first AP
-## phase ships.
+## plus Capture + Flee (wild only) and the Pass soft-lock guard — built by BattleCardKit (Wave 10
+## extraction; the Wave 3 "(N AP)" honesty deletion holds there).
 func _show_action_menu() -> void:
 	_hide_target_picker()
 	if _action_menu == null:
@@ -761,72 +759,27 @@ func _show_action_menu() -> void:
 	for child in _action_menu.get_children():
 		child.queue_free()
 	_action_menu.visible = true
-	var lib: Dictionary = Constants.BALANCE["skill"]["library"]
-	var kit: Array = _pending_actor.abilities() if _pending_actor != null else []
-	var actionable := 0
-	for i in kit.size():
-		var skill := str(kit[i])
-		var sk: Dictionary = lib.get(skill, {})
-		var verb := str(sk.get("verb", ""))
-		# A Rouse with no eligible ally (a last-survivor / solo actor) can't resolve — its engine target
-		# excludes the user + the dead — so omit the button rather than offer a turn-wasting no-op.
-		if verb == "Rouse" and not _rouse_has_target():
-			continue
-		var btn := Button.new()
-		btn.name = "SkillButton%d" % i
-		btn.text = "%s · %s" % [verb, skill]
-		var chosen := skill
-		if SkillBattleControllerScript.is_support_verb(verb):
-			btn.pressed.connect(func() -> void: player_use_skill(chosen))
-		else:
-			btn.pressed.connect(func() -> void: _show_target_picker(chosen))
-		_action_menu.add_child(btn)
-		actionable += 1
-	if _is_wild:
-		var capture_btn := Button.new()
-		capture_btn.name = "CaptureButton"
-		capture_btn.text = "Capture"
-		capture_btn.pressed.connect(func() -> void: player_capture())
-		_action_menu.add_child(capture_btn)
-		var flee_btn := Button.new()
-		flee_btn.name = "FleeButton"
-		flee_btn.text = "Flee"
-		flee_btn.pressed.connect(func() -> void: player_flee())
-		_action_menu.add_child(flee_btn)
-		actionable += 2
-	# Soft-lock guard: if the actor has NO usable action (degenerate empty kit in a non-wild fight),
-	# offer a Pass so the interactive pump can never stall waiting on an impossible player turn.
-	if actionable == 0:
-		var pass_btn := Button.new()
-		pass_btn.name = "PassButton"
-		pass_btn.text = "Pass"
-		pass_btn.pressed.connect(func() -> void: player_pass())
-		_action_menu.add_child(pass_btn)
+	BattleCardKitScript.build_action_menu(
+		self, _action_menu, _pending_actor, _is_wild, _rouse_has_target()
+	)
 	# W1 focus pass: the first action owns focus EVERY time the menu shows, so each new turn is
 	# immediately keyboard/gamepad-drivable (the rebuilt buttons wiped any prior focus).
 	_focus_first_button(_action_menu)
 
 
-## Show one button per alive enemy — the target picker for the damage `skill` the player chose.
-func _show_target_picker(skill: String) -> void:
+## Show one button per alive enemy — the target picker for the damage `skill` the player chose,
+## each button carrying the ENGINE-read force-matchup badge (Wave 10 legibility: the odds are
+## visible before the strike commits). Public: the kit's skill buttons duck-call it.
+func show_target_picker(skill: String) -> void:
 	if _target_picker == null or _battle == null:
 		return
 	for child in _target_picker.get_children():
 		child.queue_free()
 	_pending_skill = skill
 	_target_picker.visible = true
-	var foes := _battle.enemy_team()
-	for i in foes.size():
-		var ac := foes[i] as AbilityContainer
-		if not ac.is_alive():
-			continue
-		var btn := Button.new()
-		btn.name = "Target%d" % i
-		btn.text = "→ %s  (%d/%d)" % [ac.combatant_name(), maxi(0, ac.hp()), ac.max_hp()]
-		var idx := i
-		var chosen := skill
-		btn.pressed.connect(func() -> void: player_use_skill(chosen, idx))
-		_target_picker.add_child(btn)
+	BattleCardKitScript.build_target_picker(
+		self, _target_picker, _battle.enemy_team(), _pending_actor, skill
+	)
 	# Focus follows the decision: the first target owns focus while the picker is up.
 	_focus_first_button(_target_picker)
 
@@ -911,14 +864,50 @@ func side_cards(is_enemy: bool) -> Array:
 	return _enemy_cards if is_enemy else _party_cards
 
 
-## Re-style an HP bar's colour band after a glide lands (green -> amber -> red by fraction).
-func restyle_bar(bar: ProgressBar) -> void:
-	BattleCardKitScript.style_hp_bar(bar)
+## One side's live team array, index-aligned with side_cards (beat playback resolves victims).
+func side_team(is_enemy: bool) -> Array:
+	if _battle == null:
+		return []
+	return _battle.enemy_team() if is_enemy else _battle.player_team()
 
 
-## Float a damage number off a card (the beat player's + card kit's impact feedback hook).
-func fx_damage(card: Variant, amount: int) -> void:
-	BattleCardKitScript.spawn_damage_number(_fx_layer, card as Control, amount)
+## The floating-number overlay (BattleImpact routes damage pops here).
+func fx_layer() -> Control:
+	return _fx_layer
+
+
+## The arena stage layer (BattleImpact drives plate flash/dissolve/shake through it).
+func stage() -> BattleStageScript:
+	return _stage
+
+
+## Route one damaging hit through the Wave 10 impact stack (force-coloured arcing pop + badge
+## glyph + plate flash + damage-scaled shake/hitstop on animated beats) — JuiceDirector-backed.
+func fx_damage(
+	card: Variant, amount: int, target: Variant = null, attacker: Variant = null
+) -> void:
+	BattleImpactScript.impact(self, card as Control, amount, target, attacker, _instant_beats)
+
+
+## The death beat: dissolve + drift on the dying combatant's staged plate (Wave 10).
+func fx_death(target: Variant) -> void:
+	BattleImpactScript.death(self, target, _instant_beats)
+
+
+## Stage one beat's ACTOR (Wave 10 impact stack): swap its side's plate to it, outline it in
+## brass (clearing the other side), and — animated playback only — lunge it toward its victim
+## with a recoil (JuiceDirector). The beat player + the AWAIT step call this.
+func stage_beat(actor: Variant, lunge: bool) -> void:
+	stage_track(actor)
+	if _stage == null:
+		return
+	_stage.set_acting(actor)
+	if not lunge:
+		return
+	var l := _stage.lunge_of(actor)
+	var juice := get_node_or_null("/root/Juice")
+	if juice != null and not l.is_empty():
+		juice.call("lunge", l["plate"], l["dir"])
 
 
 ## Fire a one-shot through the SfxService autoload (headless-safe: play() records + returns).

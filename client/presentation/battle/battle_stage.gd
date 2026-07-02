@@ -19,6 +19,7 @@ const PLATE_SIDE_MARGIN := 56.0
 const PLAYER_BOTTOM_MARGIN := 200.0  # clears the bottom action verbs (menu + utility rows)
 const ENEMY_TOP_MARGIN := 88.0  # clears the banner/turn strip (and the boss bar above it)
 const SIGIL_PX := 26  # the one-of-one mark scales up with the plate (cards carry 16px)
+const ACTING_OUTLINE := 2.5  # texels of brass outline on the acting creature (Wave 10 impact)
 const SPLASH_FADE_IN := 0.25
 const SPLASH_HOLD := 1.1
 const SPLASH_FADE_OUT := 0.45
@@ -98,6 +99,32 @@ func plate_of(actor: Variant) -> LivingPlate:
 		if _actors.get(is_enemy) == actor:
 			return _plates.get(is_enemy) as LivingPlate
 	return null
+
+
+## Outline the plate showing `actor` in lit brass (the who-acts read, Wave 10 impact stack) and
+## clear the other side. `null` clears both. A pure shader-uniform write — headless-safe.
+func set_acting(actor: Variant) -> void:
+	for is_enemy in [false, true]:
+		var plate := _plates.get(is_enemy) as LivingPlate
+		if plate == null:
+			continue
+		var on: bool = actor != null and _actors.get(is_enemy) == actor
+		plate.set_outline(ACTING_OUTLINE if on else 0.0)
+
+
+## The lunge for `actor`'s staged plate: {"plate": LivingPlate, "dir": Vector2 toward the OTHER
+## side's plate} — {} when the actor is not staged. JuiceDirector consumes this (attack beat).
+func lunge_of(actor: Variant) -> Dictionary:
+	for is_enemy in [false, true]:
+		if actor == null or _actors.get(is_enemy) != actor:
+			continue
+		var plate := _plates.get(is_enemy) as LivingPlate
+		var other := _plates.get(not is_enemy) as LivingPlate
+		if plate == null or other == null:
+			return {}
+		var dir: Vector2 = (other.position + other.size * 0.5) - (plate.position + plate.size * 0.5)
+		return {"plate": plate, "dir": dir}
+	return {}
 
 
 # === boss dressing ============================================================================= #

@@ -8,6 +8,8 @@ extends RefCounted
 ## off the nodes they animate, so no screen back-reference is held. The screen keeps ownership of
 ## all live state (teams, card-ref dicts, transcript); this file never reads a session.
 
+const SkillBattleControllerScript := preload("res://application/battle/skill_battle_controller.gd")
+
 const BACKDROP_DIR := "res://assets/backdrops/"
 
 ## Wave 10 compact rows: the stage plates are the spectacle now, so the card lists shrink to
@@ -146,7 +148,7 @@ static func update_team_cards(cards: Array, team: Array, status_of: Callable, fx
 		var last := int(c.get("last_hp", ac.hp()))
 		if ac.hp() < last:
 			flash_portrait(c["portrait"] as CanvasItem)
-			fx.call("fx_damage", c["card"], last - ac.hp())
+			fx.call("fx_damage", c["card"], last - ac.hp(), ac, null)
 			# Instant/drain path stingers (the animated path fires these from battle_beats).
 			fx.call("play_stinger", "hit_crunch", 0.15)
 			if ac.hp() <= 0:
@@ -185,6 +187,103 @@ static func update_card_chips(
 			else:
 				label += " [%d]" % sc.duration_of(status_name)
 			chips.add_child(make_chip(label, col))
+
+
+## The grayscale-safe force-matchup badge for an ENGINE multiplier (HAWKING: glyph + WORD +
+## colour, never colour alone). {} when neutral — the surface stays clean where nothing reads.
+static func matchup_badge(mult: float) -> Dictionary:
+	if mult > 1.0:
+		return {"text": "▲ OVERWHELMS", "glyph": "▲", "color": GrimoirePalette.SUCCESS}
+	if mult < 1.0:
+		return {"text": "▼ resisted", "glyph": "▼", "color": GrimoirePalette.TEXT_MUTED}
+	return {}
+
+
+## Build the player ACTION MENU into `menu` (one button per skill in the acting creature's kit,
+## Capture + Flee on wilds, the Pass soft-lock guard) — presses duck-call the screen's public
+## verbs. Wave 3 honesty holds: no "(N AP)" suffix until an oracle-first AP pool ships.
+static func build_action_menu(
+	screen: Control, menu: VBoxContainer, actor: AbilityContainer, is_wild: bool, rouse_ok: bool
+) -> void:
+	var lib: Dictionary = Constants.BALANCE["skill"]["library"]
+	var kit: Array = actor.abilities() if actor != null else []
+	var actionable := 0
+	for i in kit.size():
+		var skill := str(kit[i])
+		var verb := str((lib.get(skill, {}) as Dictionary).get("verb", ""))
+		# A Rouse with no eligible ally (a last-survivor / solo actor) can't resolve — its engine
+		# target excludes the user + the dead — so omit the turn-wasting no-op button.
+		if verb == "Rouse" and not rouse_ok:
+			continue
+		var btn := Button.new()
+		btn.name = "SkillButton%d" % i
+		btn.text = "%s · %s" % [verb, skill]
+		var chosen := skill
+		if SkillBattleControllerScript.is_support_verb(verb):
+			btn.pressed.connect(func() -> void: screen.call("player_use_skill", chosen))
+		else:
+			btn.pressed.connect(func() -> void: screen.call("show_target_picker", chosen))
+		menu.add_child(btn)
+		actionable += 1
+	if is_wild:
+		var capture_btn := Button.new()
+		capture_btn.name = "CaptureButton"
+		capture_btn.text = "Capture"
+		capture_btn.pressed.connect(func() -> void: screen.call("player_capture"))
+		menu.add_child(capture_btn)
+		var flee_btn := Button.new()
+		flee_btn.name = "FleeButton"
+		flee_btn.text = "Flee"
+		flee_btn.pressed.connect(func() -> void: screen.call("player_flee"))
+		menu.add_child(flee_btn)
+		actionable += 2
+	# Soft-lock guard: an actor with NO usable action (degenerate empty kit, non-wild fight)
+	# still gets a Pass so the interactive pump can never stall on an impossible player turn.
+	if actionable == 0:
+		var pass_btn := Button.new()
+		pass_btn.name = "PassButton"
+		pass_btn.text = "Pass"
+		pass_btn.pressed.connect(func() -> void: screen.call("player_pass"))
+		menu.add_child(pass_btn)
+
+
+## Build the foe TARGET PICKER into `picker`: one button per alive foe, each carrying the
+## engine-read matchup badge for `attacker` (Wave 10 force legibility — the odds are visible
+## BEFORE the strike commits). Presses duck-call player_use_skill(skill, index).
+static func build_target_picker(
+	screen: Control, picker: VBoxContainer, foes: Array, attacker: AbilityContainer, skill: String
+) -> void:
+	for i in foes.size():
+		var ac := foes[i] as AbilityContainer
+		if not ac.is_alive():
+			continue
+		var mult: float = SkillBattleControllerScript.matchup_mult(attacker, ac)
+		var btn := make_target_button(ac, i, matchup_badge(mult))
+		var idx := i
+		var chosen := skill
+		btn.pressed.connect(func() -> void: screen.call("player_use_skill", chosen, idx))
+		picker.add_child(btn)
+
+
+## One target-picker button: arrow + name + HP readout, with the matchup chip (when non-neutral)
+## anchored at the right edge. The caller wires pressed.
+static func make_target_button(ac: AbilityContainer, index: int, badge: Dictionary) -> Button:
+	var btn := Button.new()
+	btn.name = "Target%d" % index
+	btn.text = "→ %s  (%d/%d)" % [ac.combatant_name(), maxi(0, ac.hp()), ac.max_hp()]
+	if not badge.is_empty():
+		var chip := Label.new()
+		chip.name = "MatchupBadge"
+		chip.text = str(badge.get("text", ""))
+		chip.add_theme_font_size_override("font_size", 13)
+		chip.add_theme_color_override("font_color", badge.get("color", GrimoirePalette.TEXT_MUTED))
+		chip.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		chip.set_anchors_and_offsets_preset(
+			Control.PRESET_CENTER_RIGHT, Control.PRESET_MODE_MINSIZE, 12
+		)
+		chip.grow_horizontal = Control.GROW_DIRECTION_BEGIN
+		btn.add_child(chip)
+	return btn
 
 
 ## A small coloured status chip (a bordered Label) for the card's effect row.

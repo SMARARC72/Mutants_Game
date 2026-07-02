@@ -9,6 +9,13 @@ extends RefCounted
 
 const BattleCardKitScript := preload("res://presentation/battle/battle_card_kit.gd")
 const CaptureServiceScript := preload("res://application/battle/capture_service.gd")
+const SkillBattleControllerScript := preload("res://application/battle/skill_battle_controller.gd")
+
+## Impact-stack thresholds (Wave 10 commit 2): an engine 1.5x matchup or a kill earns the
+## heavy read (hitstop + clash flash); everything else keeps the light one (flash/pop/shake).
+const BIG_HIT_MULT := 1.5
+const HITSTOP_BIG_MS := 60
+const HITSTOP_KILL_MS := 90
 
 ## Wave 3 honesty: the distinct turn-cap-with-enemies-alive banner (the interim authored line the
 ## W16 VoiceBook ingest replaces) + its toast body, VERBATIM from docs/content/voice_library.md
@@ -84,6 +91,65 @@ static func live_party_hp(battle, game: Node) -> Array:
 				out.append({"index": i, "hp": maxi(0, ac.hp()), "max_hp": ac.max_hp()})
 				break
 	return out
+
+
+## Route one damaging hit's FULL impact stack (the screen's fx_damage body, Wave 10): the
+## force-coloured arcing damage pop (badge glyph repeated — grayscale-safe), the struck stage
+## plate's hit flash, then — ANIMATED beats only, never the instant/drain path — damage-scaled
+## shake plus hitstop + two-colour clash flash on engine-1.5x hits. The matchup multiplier is
+## the controller's THIN SkillEngine read; no combat number is computed here.
+static func impact(
+	screen: Control, card: Control, amount: int, target: Variant, attacker: Variant, instant: bool
+) -> void:
+	var juice := screen.get_node_or_null("/root/Juice")
+	if juice == null:
+		# Bare test screens (no autoload): keep the classic float so impact still reads.
+		BattleCardKitScript.spawn_damage_number(screen.call("fx_layer"), card, amount)
+		return
+	var t_ac := target as AbilityContainer
+	var a_ac := attacker as AbilityContainer
+	var mult: float = SkillBattleControllerScript.matchup_mult(a_ac, t_ac)
+	var frac := 0.0
+	if t_ac != null and t_ac.max_hp() > 0:
+		frac = clampf(float(amount) / float(t_ac.max_hp()), 0.0, 1.0)
+	var color := GrimoirePalette.DANGER
+	if a_ac != null:
+		color = GrimoirePalette.force_color(a_ac.primary_force())
+	var text := "-%d" % amount
+	var badge: Dictionary = BattleCardKitScript.matchup_badge(mult)
+	if not badge.is_empty():
+		text += " " + str(badge["glyph"])  # the badge repeats in the float (HAWKING)
+	var at := Vector2.ZERO
+	if card != null:
+		at = card.global_position + Vector2(card.size.x * 0.5, 8.0)
+	juice.call("pop_number", screen.call("fx_layer"), at, text, color, frac)
+	var stage: Variant = screen.call("stage")
+	if stage != null and t_ac != null:
+		var plate: Variant = stage.call("plate_of", t_ac)
+		if plate != null:
+			juice.call("hit", plate)
+	if instant:
+		return  # pacing juice never runs on the instant/drain path (headless / Swift Rites)
+	juice.call("shake", 0.3 + 0.9 * frac, stage as CanvasItem)
+	if mult >= BIG_HIT_MULT:
+		juice.call("hitstop", HITSTOP_BIG_MS)
+		if a_ac != null and t_ac != null:
+			juice.call("collision_flash", a_ac.primary_force(), t_ac.primary_force())
+
+
+## The death beat (Wave 10): the dying combatant's staged plate dissolves (0 -> 1, ~0.8s) with
+## a drifting-parts burst; animated playback adds the kill hitstop + a full-weight shake.
+static func death(screen: Control, target: Variant, instant: bool) -> void:
+	var juice := screen.get_node_or_null("/root/Juice")
+	var stage: Variant = screen.call("stage")
+	if juice == null or stage == null or target == null:
+		return
+	var plate: Variant = stage.call("plate_of", target)
+	if plate != null:
+		juice.call("dissolve_out", plate)
+	if not instant:
+		juice.call("hitstop", HITSTOP_KILL_MS)
+		juice.call("shake", 1.0, stage as CanvasItem)
 
 
 ## The capture target: the chosen live foe at `target_index`, else the first alive foe, else null.

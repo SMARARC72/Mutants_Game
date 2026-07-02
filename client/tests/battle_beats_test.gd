@@ -217,6 +217,28 @@ func test_backdrop_resolves_from_force_with_wild_fallback() -> void:
 	gc2.queue_free()
 
 
+func test_instant_drain_keeps_the_stage_on_living_actors() -> void:
+	# Wave 10: apply_instant routes every beat's actor through stage_track/stage_acting, and the
+	# terminal refresh re-stages any dead side — after a full drained battle both stage plates
+	# show a member of their own team (the last living one when the side was wiped).
+	var gc := _make_game()
+	var screen := _make_screen(gc)
+	_play_collecting_beats(screen)
+	var battle: Variant = screen.call("battle")
+	assert_bool(bool(battle.call("is_ended"))).is_true()
+	var stage: Variant = screen.call("stage")
+	assert_object(stage).is_not_null()
+	for is_enemy in [false, true]:
+		var shown: Variant = stage.call("shown_actor", bool(is_enemy))
+		assert_object(shown).is_not_null()
+		var team: Array = (
+			battle.call("enemy_team") if bool(is_enemy) else battle.call("player_team")
+		)
+		assert_bool(team.has(shown)).is_true()
+	screen.queue_free()
+	gc.queue_free()
+
+
 func test_verbs_are_latched_while_beats_play() -> void:
 	var gc := _make_game()
 	var screen := _make_screen(gc)
