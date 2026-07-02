@@ -39,6 +39,7 @@ const SkillBattleControllerScript := preload("res://application/battle/skill_bat
 const BattleBeatsScript := preload("res://presentation/battle/battle_beats.gd")
 const BattleCardKitScript := preload("res://presentation/battle/battle_card_kit.gd")
 const BattleImpactScript := preload("res://presentation/battle/battle_impact.gd")
+const CaptureCardScript := preload("res://presentation/battle/capture_card.gd")
 const BattleScreenBuildScript := preload("res://presentation/battle/battle_screen_build.gd")
 const BattleStageScript := preload("res://presentation/battle/battle_stage.gd")
 const CaptureMomentScript := preload("res://presentation/battle/capture_moment.gd")
@@ -586,11 +587,6 @@ func _live_party_hp() -> Array:
 				out.append({"index": i, "hp": maxi(0, ac.hp()), "max_hp": ac.max_hp()})
 				break
 	return out
-
-
-## The outcome banner copy — single-sourced in BattleCardKit (with the stalemate honesty rule).
-func _banner_text_for(reason: String) -> String:
-	return BattleCardKitScript.banner_text_for(_result, reason)
 
 
 # === UI (minimal, code-built, themed) ========================================================= #
