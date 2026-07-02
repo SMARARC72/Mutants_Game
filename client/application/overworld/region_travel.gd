@@ -49,6 +49,12 @@ static func travel(run: RunContext, region_id: String) -> bool:
 		return false
 	if str(run.world_state.get(ACTIVE_KEY, "")) == region_id:
 		return false
+	# Codex #59 P2: seed the legacy ledger BEFORE switching — a pre-E1b save's global step
+	# count belongs to the region the run has been standing in (the only one it ever walked),
+	# never to the travel destination (which would inherit instant boss-climax progress).
+	if not (run.world_state.get(LEDGER_KEY, null) is Dictionary):
+		var origin := str(run.world_state.get(ACTIVE_KEY, "verdant_glut"))
+		run.world_state[LEDGER_KEY] = {origin: int(run.world_state.get(STEPS_KEY, 0))}
 	run.world_state[ACTIVE_KEY] = region_id
 	run.unlocked_regions[region_id] = true
 	return true

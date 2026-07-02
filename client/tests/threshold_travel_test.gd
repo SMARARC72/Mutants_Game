@@ -162,3 +162,18 @@ func test_arrival_starts_the_boss_ledger_at_zero() -> void:
 	assert_int(RegionTravelScript.explored_steps(run, "threshold")).is_equal(global_steps + 1)
 	ow.queue_free()
 	gc.queue_free()
+
+
+func test_legacy_saves_seed_the_ledger_on_the_origin_not_the_destination() -> void:
+	# Codex #59 P2: a pre-E1b save (global steps, no ledger) travels — the legacy count
+	# must land on the ORIGIN region's ledger, never the destination's (which would
+	# inherit instant boss-climax progress).
+	var gc := _make_game()
+	var run: RunContext = gc.call("run")
+	run.world_state["steps"] = 40
+	run.world_state.erase("region_steps")
+	RegionTravelScript.unlock(run, "mournmarch")
+	assert_bool(RegionTravelScript.travel(run, "mournmarch")).is_true()
+	assert_int(RegionTravelScript.explored_steps(run, "verdant_glut")).is_equal(40)
+	assert_int(RegionTravelScript.explored_steps(run, "mournmarch")).is_equal(0)
+	gc.queue_free()
