@@ -456,6 +456,11 @@ const REGION_CLIMATES := {
 ## OverworldPeculiars falls the rare pick back to the omen beat once her crack has latched.
 const PECULIAR_RARE_DIE := 8
 
+## The single shipped region whose catalog quests ride the overworld (E1a: region
+## travel will parameterize this; until then the Threshold spine + the Verdant
+## slice ride the one shipped region, the W16b pattern).
+const ACTIVE_REGION := "verdant_glut"
+
 
 ## Every overworld quest, in one place — the screen registers + dispatches over this list, so a new
 ## quest is a const above + an entry here (plus its NPC_DEFS step entries). No screen-logic change.
@@ -463,8 +468,14 @@ const PECULIAR_RARE_DIE := 8
 ## is active (the boss goal is the always-on floor, not a squatter). The Act-0 spine (W16b/C14)
 ## rides between the side quests and the floor: none of it auto-starts, so a fresh run's tracker
 ## still opens on the boss goal until Maddox is heard.
+##
+## E1a: the hand-wired defs UNION the ingested catalog (QuestCatalog — generated
+## from story_quests.md + side_quests.md) for the ACTIVE region. Dedupe is by id
+## and the HAND-WIRED def always wins (Act-0 spine, SQ-04/05/06 and the goals
+## stay canonical); catalog quests gate themselves via their act-chain triggers
+## and carry step_keys no NPC declares, so the NPC dispatch never touches them.
 static func quest_defs() -> Array:
-	return [
+	var hand_wired: Array = [
 		MARSH_QUEST,
 		MELON_QUEST,
 		BRAMBLE_QUEST,
@@ -473,8 +484,20 @@ static func quest_defs() -> Array:
 		ALTAR_QUEST,
 		MARK_QUEST,
 		REGISTERED_QUEST,
-		BOSS_QUEST,
 	]
+	var seen: Dictionary = {}
+	for def: Dictionary in hand_wired:
+		seen[str(def.get("id", ""))] = true
+	seen[str(BOSS_QUEST["id"])] = true
+	var defs: Array = hand_wired.duplicate()
+	for def: Dictionary in QuestCatalog.defs_for_region(ACTIVE_REGION):
+		var quest_id := str(def.get("id", ""))
+		if seen.has(quest_id):
+			continue
+		seen[quest_id] = true
+		defs.append(def)
+	defs.append(BOSS_QUEST)
+	return defs
 
 
 ## The peculiar def a triggered roll resolves to — a PURE function of the roll's canonical
