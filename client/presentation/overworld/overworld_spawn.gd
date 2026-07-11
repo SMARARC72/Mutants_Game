@@ -47,11 +47,22 @@ static func npc_cells(
 					continue
 				if not layout.in_bounds(c.x, c.y):
 					continue
-				if OverworldTileSet.is_walkable(layout.get_cell(c.x, c.y)):
+				if (
+					OverworldTileSet.is_walkable(layout.get_cell(c.x, c.y))
+					and _far_enough_from_cast(c, found)
+				):
 					found.append(c)
 					if found.size() >= count:
 						return found
 	return found
+
+
+## Keep cast silhouettes from merging into one wall of robes at the shipped camera zoom.
+static func _far_enough_from_cast(candidate: Vector2i, found: Array) -> bool:
+	for occupied: Vector2i in found:
+		if (candidate - occupied).length_squared() < 5:
+			return false
+	return true
 
 
 ## The first walkable cell scanning row-major; falls back to (0,0) if the layout is somehow all

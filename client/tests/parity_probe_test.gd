@@ -35,6 +35,21 @@ func test_probe_handles_unknown_seed_cleanly() -> void:
 	assert_bool(joined.contains("PARITY_OK")).is_false()
 
 
+func test_lab_probe_reports_ok_for_golden_fuse_vectors() -> void:
+	for seed in [0, 1, 2, 3]:
+		var report := ParityProbeScript.lab_fuse("Ruinmaw", "Ruinmaw", "precise", seed)
+		var joined := "\n".join(PackedStringArray(report))
+		assert_bool(joined.contains("PARITY_OK")).is_true()
+		assert_bool(joined.contains("PARITY_DRIFT")).is_false()
+
+
+func test_lab_probe_handles_unknown_vector_cleanly() -> void:
+	var report := ParityProbeScript.lab_fuse("missing", "parents", "precise", 999999)
+	var joined := "\n".join(PackedStringArray(report))
+	assert_bool(joined.contains("no golden")).is_true()
+	assert_bool(joined.contains("PARITY_OK")).is_false()
+
+
 func test_transcript_hash_is_stable_and_sensitive() -> void:
 	var a := ParityProbeScript.transcript_hash(["line one", "line two"])
 	var b := ParityProbeScript.transcript_hash(["line one", "line two"])

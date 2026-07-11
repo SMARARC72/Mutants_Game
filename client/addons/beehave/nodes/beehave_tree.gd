@@ -77,12 +77,16 @@ signal tree_disabled
 			Performance.add_custom_monitor(
 				_process_time_metric_name, _get_process_time_metric_value
 			)
-			_get_global_metrics().register_tree(self)
+			var metrics := _get_global_metrics()
+			if metrics != null:
+				metrics.register_tree(self)
 		else:
 			if _process_time_metric_name != "":
 				# Remove tree metric from the engine
 				Performance.remove_custom_monitor(_process_time_metric_name)
-				_get_global_metrics().unregister_tree(self)
+				var metrics := _get_global_metrics()
+				if metrics != null:
+					metrics.unregister_tree(self)
 
 			BeehaveDebuggerMessages.unregister_tree(get_instance_id())
 
@@ -134,13 +138,17 @@ func _ready() -> void:
 	# Register custom metric to the engine
 	if custom_monitor and not Engine.is_editor_hint():
 		Performance.add_custom_monitor(_process_time_metric_name, _get_process_time_metric_value)
-		_get_global_metrics().register_tree(self)
+		var metrics := _get_global_metrics()
+		if metrics != null:
+			metrics.register_tree(self)
 
 	if Engine.is_editor_hint():
 		update_configuration_warnings.call_deferred()
 	else:
 		# Ensure the local debugger knows about the tree *before* telling the editor.
-		_get_global_debugger().register_tree(self)
+		var debugger := _get_global_debugger()
+		if debugger != null:
+			debugger.register_tree(self)
 		BeehaveDebuggerMessages.register_tree(_get_debugger_data(self))
 
 
@@ -278,7 +286,9 @@ func _exit_tree() -> void:
 		if _process_time_metric_name != "":
 			# Remove tree metric from the engine
 			Performance.remove_custom_monitor(_process_time_metric_name)
-		_get_global_metrics().unregister_tree(self)
+		var metrics := _get_global_metrics()
+		if metrics != null:
+			metrics.unregister_tree(self)
 		BeehaveDebuggerMessages.unregister_tree(get_instance_id())
 
 
@@ -313,10 +323,12 @@ func get_class_name() -> Array[StringName]:
 # required to avoid lifecycle issues on initial load
 # due to loading order problems with autoloads
 func _get_global_metrics() -> Node:
-	return get_tree().root.get_node("BeehaveGlobalMetrics")
+	var tree := get_tree()
+	return tree.root.get_node_or_null("BeehaveGlobalMetrics") if tree != null else null
 
 
 # required to avoid lifecycle issues on initial load
 # due to loading order problems with autoloads
 func _get_global_debugger() -> Node:
-	return get_tree().root.get_node("BeehaveGlobalDebugger")
+	var tree := get_tree()
+	return tree.root.get_node_or_null("BeehaveGlobalDebugger") if tree != null else null

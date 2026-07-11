@@ -49,6 +49,9 @@ func test_toast_fires_and_stacks() -> void:
 	toast.event(ToastMicrocopy.HARVEST)
 	await await_idle_frame()
 	assert_int(toast.visible_count()).is_equal(2)
+	toast.dismiss_all()
+	await await_idle_frame()
+	assert_int(toast.visible_count()).is_equal(0)
 	toast.queue_free()
 
 

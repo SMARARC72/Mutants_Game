@@ -72,12 +72,18 @@ const NPC_DEFS := [
 			{
 				"refuse":
 				{
-					"effect": {"set_flag": "refused_the_shortcut"},
+					"effect":
+					{"set_flag": "refused_the_shortcut", "character_event": "refuse power"},
 					"voice_key": "quest.refused_garran",
 				},
 				"accept":
 				{
-					"effect": {"set_flag": "took_the_shortcut", "add_corruption": 1},
+					"effect":
+					{
+						"set_flag": "took_the_shortcut",
+						"add_corruption": 1,
+						"character_event": "break a taboo",
+					},
 					"voice_key": "quest.accepted_garran",
 				},
 			},
@@ -125,17 +131,22 @@ const NPC_DEFS := [
 			{
 				"offer_hand":
 				{
-					"effect": {"set_flag": "first_catch_clean"},
+					"effect": {"set_flag": "first_catch_clean", "character_event": "spare / heal"},
 					"voice_key": "capture.befriend.success",
 				},
 				"bind_fast":
 				{
-					"effect": {"set_flag": "first_catch_harsh", "add_corruption": 1},
+					"effect":
+					{
+						"set_flag": "first_catch_harsh",
+						"add_corruption": 1,
+						"character_event": "break a taboo",
+					},
 					"voice_key": "capture.trap.success",
 				},
 				"let_them_fight":
 				{
-					"effect": {"set_flag": "first_catch_wild"},
+					"effect": {"set_flag": "first_catch_wild", "character_event": "incite chaos"},
 					"voice_key": "capture.trap.success",
 				},
 			},
@@ -169,13 +180,26 @@ const NPC_DEFS := [
 			"headless_branch": "seal",
 			"branches":
 			{
-				"seal": {"effect": {"set_flag": "mark_sealed"}, "voice_key": ""},
+				"seal":
+				{
+					"effect": {"set_flag": "mark_sealed", "character_event": "uphold a law"},
+					"voice_key": "",
+				},
 				"feed":
 				{
-					"effect": {"set_flag": "mark_fed", "add_corruption": 2},
+					"effect":
+					{
+						"set_flag": "mark_fed",
+						"add_corruption": 2,
+						"character_event": "break a taboo",
+					},
 					"voice_key": "toast.corruption",
 				},
-				"bargain": {"effect": {"set_flag": "mark_appraised"}, "voice_key": ""},
+				"bargain":
+				{
+					"effect": {"set_flag": "mark_appraised", "character_event": "ally a faction"},
+					"voice_key": "",
+				},
 			},
 		},
 	},
