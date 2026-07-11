@@ -116,6 +116,7 @@ func test_refuse_branch_is_the_headless_canon_and_completes_the_quest() -> void:
 	assert_bool(bool(run.flags.get("refused_the_shortcut", false))).is_true()
 	assert_bool(run.flags.has("took_the_shortcut")).is_false()
 	assert_int(run.corruption).is_equal(before_corruption)  # the creed path costs nothing
+	assert_int(run.purity_corrupt).is_equal(-11)  # authored "refuse power" morality movement
 	ow.queue_free()
 	gc.queue_free()
 
@@ -132,9 +133,11 @@ func test_accept_branch_also_completes_but_wrong_bright() -> void:
 	assert_bool(bool(run.flags.get("took_the_shortcut", false))).is_true()
 	assert_bool(run.flags.has("refused_the_shortcut")).is_false()
 	assert_int(run.corruption).is_equal(before_corruption + 1)
+	assert_int(run.order_chaos).is_equal(12)  # authored "break a taboo" morality movement
 	# Re-firing the branch after completion must not re-apply corruption (idempotence).
 	ow.call("_on_dialogue_choice", "old_garran", "accept")
 	assert_int(run.corruption).is_equal(before_corruption + 1)
+	assert_int(run.order_chaos).is_equal(12)  # idempotent: the event is not applied twice
 	ow.queue_free()
 	gc.queue_free()
 

@@ -58,12 +58,12 @@ func test_creature_npcs_use_their_actual_cutouts() -> void:
 	assert_str(str(melon.get("species", ""))).is_equal("SB09")
 	var sprite: Sprite2D = NpcFiguresScript.npc_sprite(melon, s)
 	# The creature cameo is a square box at NPC scale (the cutout + baked ground shadow).
-	assert_int(sprite.texture.get_width()).is_equal(int(s * 1.15))
-	assert_int(sprite.texture.get_height()).is_equal(int(s * 1.15))
+	assert_int(sprite.texture.get_width()).is_equal(int(s * 0.95))
+	assert_int(sprite.texture.get_height()).is_equal(int(s * 0.95))
 	assert_float(sprite.offset.y).is_less(0.0)
 	# A plain soul gets the tall hooded figure instead.
 	var marrow: Sprite2D = NpcFiguresScript.npc_sprite(_def_named("Old Marrow"), s)
-	assert_int(marrow.texture.get_height()).is_equal(int(s * 1.4))
+	assert_int(marrow.texture.get_height()).is_equal(int(s * 1.0))
 	assert_float(marrow.offset.y).is_less(0.0)
 	# And the Weathered Signpost is a signpost, not a person (distinct from the figure).
 	var sign_sprite: Sprite2D = NpcFiguresScript.npc_sprite(_def_named("Weathered Signpost"), s)

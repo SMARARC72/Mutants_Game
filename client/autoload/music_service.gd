@@ -32,6 +32,8 @@ var _fade_tween: Tween
 var _last_scene: Node = null
 var _intensity := 0.0
 var _intensity_player: AudioStreamPlayer = null
+var _scene_tree: SceneTree = null
+var _exiting := false
 
 
 func _ready() -> void:
@@ -45,7 +47,18 @@ func _ready() -> void:
 		_players.append(player)
 	# Scene-aware auto-bed: tree_changed fires often, but the handler is two compares
 	# unless the current scene actually changed.
-	get_tree().tree_changed.connect(_on_tree_changed)
+	_scene_tree = get_tree()
+	if _scene_tree != null and not _scene_tree.tree_changed.is_connected(_on_tree_changed):
+		_scene_tree.tree_changed.connect(_on_tree_changed)
+
+
+func _exit_tree() -> void:
+	# SceneTree can emit tree_changed while this autoload itself is being detached. Disconnect
+	# before child teardown so the callback never calls get_tree() after leaving the tree.
+	_exiting = true
+	if _scene_tree != null and _scene_tree.tree_changed.is_connected(_on_tree_changed):
+		_scene_tree.tree_changed.disconnect(_on_tree_changed)
+	_scene_tree = null
 
 
 ## The bed the service currently considers active (tracked even headless, for tests).
@@ -162,7 +175,9 @@ static func _frame_count(wav: AudioStreamWAV) -> int:
 
 
 func _on_tree_changed() -> void:
-	var tree := get_tree()
+	if _exiting or not is_inside_tree():
+		return
+	var tree := _scene_tree
 	if tree == null:
 		return
 	var scene := tree.current_scene

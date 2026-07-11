@@ -6,10 +6,8 @@ extends Node
 ## feature tag); in a release export this autoload registers NOTHING and the backtick toggle is
 ## inert. LimboConsole types never leak past this file.
 ##
-## Registers the state-poke commands now (they route through `DevState` until the ported engines
-## land) and STUBS the parity-probe commands with a clear TODO (TDD §11.2): when the GDScript
-## engines exist (Phase 1-2) these run them and dump a result hash to diff vs the Python golden
-## vectors.
+## Registers state-poke commands and live parity probes that run the ported GDScript engines and
+## diff stable result hashes against the Python oracle's committed golden vectors (TDD §11.2).
 
 const DevState := preload("res://presentation/devtools/dev_state.gd")
 const DEV_FEATURE := "dev_tools"
@@ -62,9 +60,8 @@ func _register_commands() -> void:
 	_cmd(_state.unlock_region, "unlock_region", "unlock_region <id> — unlock an overworld region")
 
 	# --- parity probes (TDD §11.2) ---
-	# parity_battle is WIRED (Cluster 4 / D6): runs the GDScript battle_engine on a golden seed and
-	# diffs a transcript hash vs the committed Python golden vectors. parity_splice stays a stub here
-	# (it is the Lab/D3 sibling track's probe; wired there).
+	# Both probes run their GDScript engine on a committed Python-oracle vector and report a stable
+	# hash plus an unambiguous PARITY_OK / PARITY_DRIFT marker.
 	_cmd(
 		_parity_battle,
 		"parity_battle",
@@ -73,7 +70,7 @@ func _register_commands() -> void:
 	_cmd(
 		_parity_splice,
 		"parity_splice",
-		"parity_splice <a> <b> <method> <seed> — [STUB] run lab_engine + dump hash"
+		"parity_splice <a> <b> <method> <seed> — run lab_engine + diff hash vs golden vectors"
 	)
 
 
@@ -96,13 +93,9 @@ func _parity_battle(seed: int = 0) -> void:
 func _parity_splice(
 	parent_a: String = "", parent_b: String = "", method: String = "precise", seed: int = 0
 ) -> void:
-	# TODO: wire when the ported engines land (Phase 1-2). Runs domain/lab_engine.gd with the
-	# given parents/method/seed and dumps a result hash to diff vs client/tests/golden/lab_engine.jsonl.
-	var msg := (
-		"[parity_splice] STUB — a=%s b=%s method=%s seed=%d. Wire to domain/lab_engine.gd in Phase 1-2 (TDD §11.2)."
-		% [parent_a, parent_b, method, seed]
-	)
-	_console_out(msg)
+	var report := ParityProbe.lab_fuse(parent_a, parent_b, method, seed)
+	for line in report:
+		_console_out(line)
 
 
 func _console_out(line: String) -> void:

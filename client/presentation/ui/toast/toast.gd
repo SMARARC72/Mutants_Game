@@ -176,6 +176,17 @@ func visible_count() -> int:
 	return _stack.get_child_count() if _stack != null else 0
 
 
+## Immediately clear every visible toast. Used by deterministic capture/transition tooling and is
+## also safe for hard state changes such as returning to title. Pending dismiss callbacks tolerate
+## the freed panels through _dismiss's validity guard.
+func dismiss_all() -> void:
+	if _stack == null:
+		return
+	for child in _stack.get_children():
+		_stack.remove_child(child)
+		child.queue_free()
+
+
 func _theme_panel(panel: PanelContainer) -> void:
 	var sb := StyleBoxFlat.new()
 	sb.bg_color = Palette.INK_PANEL

@@ -53,7 +53,9 @@ const PALETTES := {
 			[_T + "bloom-tapestry.png", _W],
 		],
 		1: [_T + "tidewater.png", _W],
-		2: [_T + "mossy-cobble-path.png", _W],
+		# Pale cobble read as isolated beige squares at the shipped camera zoom. Forest floor
+		# stays distinct by value and leaf density without breaking the biome.
+		2: [_T + "forest-floor.png", Color(1.06, 0.98, 0.86)],
 		3: [_T + "cliff-wall.png", Color(0.86, 0.92, 0.86)],
 		4: [_T + "ritual-circle.png", _W],
 	},

@@ -6,11 +6,17 @@ This repo holds the **complete, validated design + the reference engines + the p
 
 ## Start here (canonical order)
 
-1. **`docs/Mutants_Game_TechnicalDesign.md`** — the **normative** Technical Design Document (architecture, the determinism/parity oracle, data + RLS, services, save/sync, testing, CI/CD, the phased runway, risks). Where it says MUST, it's a gate.
-2. **`docs/Claude_Code_Phase0_Kickoff.md`** — the Phase 0 execution prompt (foundations & guardrails).
-3. **`docs/Mutants_Game_INDEX.md`** — the map of every design doc and engine.
-4. **`docs/Mutants_Game_Design_Bible.md`** — the master design.
-5. **`PHASE0_REPORT.md`** — what Phase 0 delivered + how to run every part locally.
+1. **`Project_Architecture_Blueprint.md`** — the implementation-ready map of the current system,
+   runtime flows, extension rules, release gates, and remaining production risks.
+2. **`docs/Mutants_Game_TechnicalDesign.md`** — the **normative** Technical Design Document
+   (determinism/parity, data + RLS, services, save/sync, testing, CI/CD). Where it says MUST, it is a gate.
+3. **`docs/Realization_Master_Plan.md`** — the visual/game-feel remediation program and its binding
+   red-team corrections.
+4. **`docs/Mutants_Game_INDEX.md`** — the map of every design doc and engine.
+5. **`docs/Mutants_Game_Design_Bible.md`** — the master product/design canon.
+
+The root `PHASE*_REPORT.md` files are historical delivery records. They are useful evidence, but they
+do not describe the current feature level of `main`.
 
 ## Repo map (monorepo — TDD §12.1)
 
@@ -67,4 +73,9 @@ git push                            # GitHub LFS must be enabled for the repo
 
 ## License / status
 
-Private project. Design complete and red-teamed. **Phase 0 (foundations & guardrails) delivered** — see `PHASE0_REPORT.md`.
+Private project. Design complete and red-teamed. The current `main` includes the playable Act 0–5
+arc, endings, battle/capture, lab, party/dossier, quests/journal, multi-region overworld, persistence,
+audio, world dressing, service contracts, and deterministic parity infrastructure. The 2026-07-11
+enterprise-hardening baseline passed **100 Godot suites / 609 cases**, all oracle/catalog/lint/balance
+gates, and **37 TypeScript service tests**. See `Project_Architecture_Blueprint.md` for candid remaining
+production gaps, including full creature-art promotion and Godot shutdown-retention diagnostics.

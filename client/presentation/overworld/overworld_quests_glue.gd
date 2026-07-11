@@ -128,6 +128,44 @@ static func apply_effect_to_run(game: Node, effect: Dictionary) -> bool:
 	if effect.has("add_corruption"):
 		run.corruption += int(effect["add_corruption"])
 		corruption_moved = true
+	if effect.has("character_event"):
+		var event_ids: Array = (
+			effect["character_event"]
+			if effect["character_event"] is Array
+			else [effect["character_event"]]
+		)
+		for event_id in event_ids:
+			var before_corruption := run.corruption
+			var result := (
+				CharacterEngine
+				. apply_event(
+					{
+						"order_chaos": run.order_chaos,
+						"purity_corrupt": run.purity_corrupt,
+						"deeds": run.deeds,
+						"corruption": run.corruption,
+						"notoriety": run.notoriety,
+					},
+					str(event_id),
+					run.flags.get("notoriety_thresholds", []) as Array
+				)
+			)
+			if not bool(result.get("ok", false)):
+				push_warning("Unknown character event '%s'" % event_id)
+				continue
+			var state: Dictionary = result["state"]
+			run.order_chaos = int(state["order_chaos"])
+			run.purity_corrupt = int(state["purity_corrupt"])
+			run.deeds = int(state["deeds"])
+			run.corruption = int(state["corruption"])
+			run.notoriety = int(state["notoriety"])
+			run.rank = str(state["rank"])
+			run.flags["notoriety_thresholds"] = result["fired_thresholds"]
+			if not (result["triggered"] as Array).is_empty():
+				run.flags["notoriety_events"] = (
+					(run.flags.get("notoriety_events", []) as Array) + result["triggered"]
+				)
+			corruption_moved = corruption_moved or run.corruption != before_corruption
 	if effect.has("nudge_standing"):
 		var pair: Array = effect["nudge_standing"]
 		if (

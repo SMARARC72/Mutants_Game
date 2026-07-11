@@ -57,11 +57,11 @@ static func npc_sprite(def: Dictionary, tile_size: int) -> Sprite2D:
 	if species != "":
 		var plate: Texture2D = SpeciesArt.plate(species)
 		if plate != null:
-			var box := int(tile_size * 1.15)
+			var box := int(tile_size * 0.95)
 			sprite.texture = OverworldTokens.creature_cameo(plate, box, species)
 			sprite.offset = Vector2(0, -box * 0.42)
 			return sprite
-	var h := int(tile_size * 1.4)
+	var h := int(tile_size * 1.0)
 	if bool(def.get("sign", false)):
 		sprite.texture = signpost(h)
 	else:
