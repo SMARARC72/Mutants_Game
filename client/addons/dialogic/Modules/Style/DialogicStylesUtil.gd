@@ -4,6 +4,10 @@ extends Node
 
 static var style_directory := {}
 
+
+static func clear_runtime_cache() -> void:
+	style_directory.clear()
+
 #region STYLES
 ################################################################################
 

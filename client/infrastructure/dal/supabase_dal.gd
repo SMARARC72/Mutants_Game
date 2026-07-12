@@ -9,20 +9,11 @@ extends RefCounted
 ## locally (catalog is bundled JSON, not networked — see CatalogRepository: we reuse the fake's
 ## file reader since it IS the production reader, ADR-006).
 ##
-## save_version conflict (TDD §10.3): `save_run` enforces the SOLE conflict key. The robust
-## path is an atomic compare-and-swap in Postgres (an RPC: update ... where save_version =
-## base returning save_version). Until that RPC ships we do a read-check-write here and DOCUMENT
-## the race window below. This implementation is exercised by `dal_contract_test.gd` against a
-## SCRIPTED FAKE GATEWAY (emulating PostgREST return=representation) under the same shared
+## save_version conflict (TDD §10.3): `save_run` uses the database `save_run_cas` RPC so create,
+## compare, version bump, and write occur in one transaction under RLS. This implementation is
+## exercised by `dal_contract_test.gd` against a SCRIPTED FAKE GATEWAY under the same shared
 ## save/sequential/stale-conflict/list_shareable assertions as the FakeDal — so both conflict
 ## implementations are actually tested, not just one.
-##
-## KNOWN DIVERGENCE (P3, pending the atomic CAS RPC): on the UPDATE path a concurrent writer that
-## advanced save_version between our read and write is caught (the optimistic `where save_version =
-## server_version` guard returns no rows -> CONFLICT). On the INSERT path (a brand-new run) two
-## concurrent creates race; the loser hits the PK/unique constraint and the gateway surfaces an
-## empty result, which we report as ERROR (not CONFLICT). The fix is the same atomic RPC; a lost
-## concurrent create is vanishingly rare for client-generated run ids.
 
 const RepositoriesScript := preload("res://infrastructure/dal/repositories.gd")
 const SaveResultScript := preload("res://infrastructure/dal/save_result.gd")
@@ -61,41 +52,29 @@ class SupabaseRunRepository:
 		var row: Dictionary = rows[0]
 		return int(row.get("save_version", 0))
 
-	## Compare-and-swap on save_version (TDD §10.3). Reads the current version; if it differs
-	## from `base_save_version` the store moved on -> CONFLICT (no overwrite). Otherwise writes
-	## with save_version = base + 1. NOTE: the read-check-write below has a race window between
-	## clients; the production hardening is an atomic Postgres RPC (see class doc) — swap the
-	## body for `_gateway.rpc("save_run_cas", ...)` when it lands, no caller change.
+	## Atomic compare-and-swap on save_version. The RPC returns plain data and never silently
+	## overwrites a stale or concurrently-created run.
 	func save_run(aggregate: Dictionary, base_save_version: int) -> SaveResult:
 		var run_id := str(aggregate.get("run_id", ""))
 		if run_id == "":
 			return SaveResultScript.error("save_run: aggregate has no run_id.")
-		var existing: Array = await _gateway.select(
-			"runs", {"id": run_id}, PackedStringArray(["save_version"])
-		)
-		var is_new := existing.is_empty()
-		var server_version := 0
-		if not is_new:
-			server_version = int((existing[0] as Dictionary).get("save_version", 0))
-			if base_save_version != server_version:
-				return SaveResultScript.conflict(server_version, base_save_version)
-		var new_version := server_version + 1
 		var row := _to_runs_row(aggregate)
-		row["save_version"] = new_version
-		if is_new:
-			var inserted: Array = await _gateway.insert("runs", row)
-			if inserted.is_empty():
-				return SaveResultScript.error("save_run: insert returned no row.")
-		else:
-			var updated: Array = await _gateway.update(
-				"runs", {"id": run_id, "save_version": server_version}, row
+		var response: Variant = await _gateway.rpc(
+			"save_run_cas", {"p_run": row, "p_base_save_version": base_save_version}
+		)
+		if response is Array and not (response as Array).is_empty():
+			response = (response as Array)[0]
+		if not (response is Dictionary):
+			return SaveResultScript.error("save_run: atomic RPC returned no result.")
+		var result := response as Dictionary
+		var status := str(result.get("status", "ERROR")).to_upper()
+		if status == "OK":
+			return SaveResultScript.ok(int(result.get("save_version", 0)))
+		if status == "CONFLICT":
+			return SaveResultScript.conflict(
+				int(result.get("server_version", 0)), base_save_version
 			)
-			# An empty update result means the WHERE (incl. save_version) matched nothing — a
-			# concurrent writer advanced the version between our read and write: CONFLICT.
-			if updated.is_empty():
-				var now: int = await current_save_version(run_id)
-				return SaveResultScript.conflict(now, base_save_version)
-		return SaveResultScript.ok(new_version)
+		return SaveResultScript.error(str(result.get("message", "save failed")))
 
 	## Projects the aggregate dict onto the `runs` table columns (drops embedded children,
 	## which live in their own tables / the local snapshot). Data only.

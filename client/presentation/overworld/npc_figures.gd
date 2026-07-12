@@ -29,6 +29,10 @@ const POSE_PACK := 3
 static var _cache: Dictionary = {}
 
 
+static func clear_runtime_cache() -> void:
+	_cache.clear()
+
+
 ## The one-of-one figure texture for an NPC (deterministic per name; cached).
 static func figure(figure_name: String, ring: Color, height: int) -> ImageTexture:
 	var key := "fig|%s|%d" % [figure_name, height]

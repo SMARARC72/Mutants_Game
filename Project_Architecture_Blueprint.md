@@ -134,9 +134,9 @@ client catalog JSON + Godot Resources
 supabase seed.sql
 ```
 
-Current catalog count is 406 seedable species. Every species has an `art_ref`, but only 54 species
-currently have promoted flat/cutout plates in `client/assets/creatures/manifest.json`; the remaining
-352 resolve through fallback presentation and remain a production-art gap.
+Current catalog count is 406 seedable species plus one intentional non-seedable void row. Every
+seedable species has a promoted, decoded and dimension-checked flat/cutout pair in
+`client/assets/creatures/manifest.json`; registry, manifest and tracked-file parity are release gates.
 
 ## 6. Narrative and content architecture
 
@@ -192,20 +192,21 @@ reduce-motion.
 
 ## 9. Testing architecture
 
-The verified 2026-07-11 baseline contains 100 GdUnit suites and 609 test cases. The complete test stack is:
+The verified 2026-07-11 baseline contains 101 GdUnit suites and 612 test cases. The complete test stack is:
 
 - GDScript format/lint and domain/AI purity gates;
-- 609 Godot unit, integration, parity, screen, and end-to-end tests;
+- 612 Godot unit, integration, parity, screen, and end-to-end tests;
 - Python constants/RNG/golden/splice/balance checks;
 - JS catalog parity and asset-contract checks;
 - TypeScript typecheck and 37 service contract tests;
 - SQLFluff plus conditional Supabase reset/pgTAP/anon-isolation tests;
-- windowed OpenGL capture of menu, overworld, party, lab, and battle.
+- windowed Vulkan capture of menu, overworld, party, lab, and battle at 1280×720 and 1920×1080.
 
 Expected negative-path tests currently emit some Godot error lines (corrupt save, missing route). Test
 success must be read from the XML report, not by treating every `ERROR:` string as a failed assertion.
-Godot/GdUnit shutdown still reports ObjectDB/resource retention after broad suites; this is a known
-diagnostic debt and should be isolated by suite/addon before calling the build leak-clean.
+Headless smoke, the complete GdUnit suite, and windowed capture exit without ObjectDB/resource
+retention. Vendored Dialogic, Questify, Supabase and inkgd ownership fixes are documented in
+`client/addons/THIRD_PARTY.md`.
 
 ## 10. Deployment architecture
 
@@ -219,7 +220,7 @@ Release gates should run in this order:
 2. lint and purity checks;
 3. oracle/parity/balance checks;
 4. service typecheck/tests;
-5. full Godot import and 609-case suite;
+5. full Godot import and 612-case suite;
 6. database/RLS tests when Supabase changed;
 7. windowed capture and visual review at 1600×900 and 1280×720;
 8. Windows release export and smoke launch.
@@ -267,18 +268,21 @@ composition—not evidence of gameplay correctness—so both visual and behavior
 
 ## 13. Current risk register and next execution order
 
-1. **Creature art completeness:** promote/QA the remaining 352 catalog plates before promising unique
-   art for every encounter.
-2. **Overworld cohesion:** the cast is now smaller and more dispersed and Verdant paths are biome-
-   coherent, but terrain plates still show hard square boundaries and need an autotile/blend pass.
-3. **Lab presentation:** legality is robust; composition still reads as a long form and needs a staged
-   ritual layout with stronger reagent affordances and compact information hierarchy.
-4. **Shutdown retention:** isolate ObjectDB/resource retention by running addon groups separately,
-   then fix ownership/disconnect/free paths until windowed capture exits cleanly.
-5. **Cloud productionization:** the DAL exists, but atomic insert conflict semantics and live cloud-save
-   product behavior need an explicit release phase.
-6. **README/status drift:** phase reports are historical evidence, not current status; ongoing releases
-   should maintain one current verification ledger.
+The repository-owned closeout risks are resolved: all seedable creatures have promoted art; terrain
+uses a continuous macro field; the lab uses responsive ritual cards/chips; shutdown is retention-clean;
+and cloud saves use authenticated anonymous bootstrap plus an RLS-authoritative atomic CAS RPC.
+
+The remaining release gates require external runtime state rather than repository changes:
+
+1. **Live database proof:** start Docker/Supabase, then run reset, 61-assertion pgTAP, and anonymous
+   isolation smoke tests. SQL lint and test source are green; this workstation has no running daemon or
+   Supabase CLI.
+2. **Windows package:** install the official Godot 4.7 export templates, export `Windows Desktop`, and
+   smoke-launch the executable. Project initialization/import is clean; only the templates are absent.
+3. **Production rollout:** inject real environment configuration, deploy Supabase/Vercel, and execute
+   the operational rollback/observability checklist. No production credentials belong in this repo.
+
+`VERIFICATION.md` is the canonical current ledger; phase reports remain historical evidence.
 
 This blueprint should be updated whenever a layer boundary, canonical data source, integration seam,
 or release gate changes.

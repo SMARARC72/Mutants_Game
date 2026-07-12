@@ -8,7 +8,7 @@
 -- so auth.uid() resolves to the acting user and RLS is actually enforced.
 
 begin;
-select plan(55);
+select plan(61);
 
 -- ---- fixtures (as superuser) ---------------------------------------------
 \set uA '00000000-0000-0000-0000-00000000000a'
@@ -87,7 +87,58 @@ select set_config('request.jwt.claims', NULL, true);
 reset role;
 select is((select notoriety from runs where id = '00000000-0000-0000-0000-0000000000b1'), 0, 'runs: A''s update did not touch B''s row');
 
--- ==========================================================================
+-- Atomic save RPC: update, stale conflict, create, and cross-owner denial all remain under RLS.
+set local role authenticated;
+select set_config('request.jwt.claims', :'claimsA', true);
+select ok(
+  (result ->> 'status' = 'OK' and (result ->> 'save_version')::int = 2),
+  'save_run_cas: owner atomically advances v1 to v2'
+) from (select save_run_cas(
+  jsonb_build_object(
+    'id', '00000000-0000-0000-0000-0000000000a1', 'player_id', :'uA', 'notoriety', 21
+  ),
+  1
+) as result) s;
+select ok(
+  (result ->> 'status' = 'CONFLICT' and (result ->> 'server_version')::int = 2),
+  'save_run_cas: stale base returns conflict with server version'
+) from (select save_run_cas(
+  jsonb_build_object(
+    'id', '00000000-0000-0000-0000-0000000000a1', 'player_id', :'uA', 'notoriety', 999
+  ),
+  1
+) as result) s;
+select is(
+  (select notoriety from runs where id = '00000000-0000-0000-0000-0000000000a1'),
+  21,
+  'save_run_cas: stale write does not overwrite data'
+);
+select ok(
+  (result ->> 'status' = 'OK' and (result ->> 'save_version')::int = 1),
+  'save_run_cas: owner atomically creates a run at v1'
+) from (select save_run_cas(
+  jsonb_build_object(
+    'id', '00000000-0000-0000-0000-0000000000a8', 'player_id', :'uA', 'seed', 88
+  ),
+  0
+) as result) s;
+select is(
+  (select save_version from runs where id = '00000000-0000-0000-0000-0000000000a8'),
+  1,
+  'save_run_cas: created row is owned and versioned'
+);
+select is(
+  (select save_run_cas(
+    jsonb_build_object(
+      'id', '00000000-0000-0000-0000-0000000000b1', 'player_id', :'uA', 'notoriety', 777
+    ),
+    0
+  ) ->> 'status'),
+  'ERROR',
+  'save_run_cas: another player''s run is not writable or disclosed'
+);
+
+-- ===========================================================================
 -- CREATURE_INSTANCES (run-child, single hop)
 -- ==========================================================================
 set local role authenticated;

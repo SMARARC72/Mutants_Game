@@ -1,0 +1,4 @@
+{
+  "_note": "source images Pillow could decode only in truncated-image recovery mode; all recovered plates require explicit visual QA before release.",
+  "recoveries": {}
+}

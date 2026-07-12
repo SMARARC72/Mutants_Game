@@ -175,6 +175,17 @@ expressobits https://github.com/expressobits/inventory-system · OctoD https://g
   `Layer_VN_Textbox/vn_textbox_layer.gd` ("Failed to compile depended scripts" — it types a var as
   `DialogicNode_NameLabel`) and would kill the grimoire dialogue style's textbox layer at runtime.
   `false` = property not handled, the documented `_set` semantic; upstream-safe.
+- **Dialogic** runtime cache teardown — `DialogicGameHandler._exit_tree()` now clears the static
+  event/style caches and the `SceneTree` indexer metadata. Its generated subsystem accessors now
+  preload scripts for static typing without constructing hidden, unparented nodes. Upstream retained
+  26 resources plus 60 objects on every clean exit; the ownership-safe accessors release them all.
+- **Supabase Auth** `Auth/auth.gd` + `auth_task.gd` — anonymous sign-in now performs the real GoTrue
+  `POST /auth/v1/signup` request and installs its JWT instead of fabricating a user from the public
+  anon key. An unused, unparented `Timer` initializer was also removed, eliminating the last clean-
+  exit ObjectDB leak.
+- **Questify** `quest_manager.gd` — the autoload clears runtime quest-instance roots during tree
+  teardown. Quest resources contain cyclic graph references, so retaining the manager array until
+  script shutdown kept the complete six-script model graph alive in windowed runs.
 - **Maaack's Game Template** — removed the demo `media/` (~4.5 MB) and `docs/` directories; neither is
   referenced at runtime by the `base/` components we use. No GDScript was modified.
 - **sentry-godot** — only the addon's GDScript layer + descriptor template are vendored; native
@@ -186,6 +197,8 @@ expressobits https://github.com/expressobits/inventory-system · OctoD https://g
   makes the importer attempt EVERY `.json` in the project (`catalog/*.json`, `tests/*.json`) and flag
   the non-ink ones as failed imports. Restricting it to a dedicated `.inkjson` extension leaves plain
   data `.json` files untouched. Compiled stories are therefore named `<name>.inkjson` (ADR-017).
+  The editor story panel also stops its delayed recompile callback when its `SceneTree` has already
+  begun teardown, preventing a null-tree coroutine error after failed or cancelled exports.
 
 - **CSV Data Importer** `addons/csv-data-importer/import_plugin.gd` — `_get_recognized_extensions()`
   now returns `["csvdata"]` (not the generic `["csv", "tsv"]`) and `_get_priority()` is lowered to
@@ -215,7 +228,7 @@ in `application/` and *selects* actions; resolution stays in the deterministic `
 
 `godot --headless --path client --import` runs the project with all enabled addons and ZERO
 `SCRIPT ERROR` / `Parse Error` / addon-load errors (Integration Cluster 1, D9). The GdUnit4 CLI
-suite passes **45/45** test cases across 14 suites, including the Cluster 1 facade + runtime
+complete suite passes **612/612** test cases across 101 suites, including the Cluster 1 facade + runtime
 integration suites (`cluster1_ux_shell_test.gd`, `cluster1_devtools_input_test.gd`). gdUnit4
 self-skips its *editor* plugin in a test environment (expected). `.uid`/`.import` files are committed
 so UIDs resolve on a clean clone.

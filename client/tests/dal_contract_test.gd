@@ -87,6 +87,34 @@ class ScriptedGateway:
 				updated.append((row as Dictionary).duplicate(true))
 		return updated
 
+	func rpc(function_name: String, args: Dictionary = {}) -> Variant:
+		if function_name != "save_run_cas":
+			return {"status": "ERROR", "message": "unknown RPC"}
+		var incoming: Dictionary = args.get("p_run", {}).duplicate(true)
+		var base_version := int(args.get("p_base_save_version", -1))
+		var run_id := str(incoming.get("id", ""))
+		if run_id == "":
+			return {"status": "ERROR", "message": "run id required"}
+		var existing: Dictionary = {}
+		for candidate in _rows("runs"):
+			if str((candidate as Dictionary).get("id", "")) == run_id:
+				existing = candidate as Dictionary
+				break
+		if existing.is_empty():
+			if base_version != 0:
+				return {"status": "CONFLICT", "server_version": 0}
+			incoming["save_version"] = 1
+			_rows("runs").append(incoming)
+			return {"status": "OK", "save_version": 1, "server_version": 1}
+		var server_version := int(existing.get("save_version", 0))
+		if base_version != server_version:
+			return {"status": "CONFLICT", "server_version": server_version}
+		for key in incoming:
+			existing[key] = incoming[key]
+		server_version += 1
+		existing["save_version"] = server_version
+		return {"status": "OK", "save_version": server_version, "server_version": server_version}
+
 
 ## Returns the two DAL sets to test: the fake, and the Supabase DAL over a scripted gateway.
 func _both_dals() -> Array:

@@ -8,6 +8,10 @@
     "flat": "flat/AD02.png",
     "cutout": "cutout/AD02.png"
   },
+  "AD03": {
+    "flat": "flat/AD03.png",
+    "cutout": "cutout/AD03.png"
+  },
   "AD04": {
     "flat": "flat/AD04.png",
     "cutout": "cutout/AD04.png"
@@ -36,9 +40,45 @@
     "flat": "flat/AD10.png",
     "cutout": "cutout/AD10.png"
   },
+  "DM01": {
+    "flat": "flat/DM01.png",
+    "cutout": "cutout/DM01.png"
+  },
+  "DM02": {
+    "flat": "flat/DM02.png",
+    "cutout": "cutout/DM02.png"
+  },
+  "DM03": {
+    "flat": "flat/DM03.png",
+    "cutout": "cutout/DM03.png"
+  },
+  "DM04": {
+    "flat": "flat/DM04.png",
+    "cutout": "cutout/DM04.png"
+  },
+  "DM05": {
+    "flat": "flat/DM05.png",
+    "cutout": "cutout/DM05.png"
+  },
   "DM06": {
     "flat": "flat/DM06.png",
     "cutout": "cutout/DM06.png"
+  },
+  "DM07": {
+    "flat": "flat/DM07.png",
+    "cutout": "cutout/DM07.png"
+  },
+  "DM08": {
+    "flat": "flat/DM08.png",
+    "cutout": "cutout/DM08.png"
+  },
+  "DM09": {
+    "flat": "flat/DM09.png",
+    "cutout": "cutout/DM09.png"
+  },
+  "DM10": {
+    "flat": "flat/DM10.png",
+    "cutout": "cutout/DM10.png"
   },
   "S2-01": {
     "flat": "flat/S2-01.png",
@@ -48,6 +88,10 @@
     "flat": "flat/S2-02.png",
     "cutout": "cutout/S2-02.png"
   },
+  "S2-03": {
+    "flat": "flat/S2-03.png",
+    "cutout": "cutout/S2-03.png"
+  },
   "S2-04": {
     "flat": "flat/S2-04.png",
     "cutout": "cutout/S2-04.png"
@@ -56,6 +100,10 @@
     "flat": "flat/S2-05.png",
     "cutout": "cutout/S2-05.png"
   },
+  "S2-06": {
+    "flat": "flat/S2-06.png",
+    "cutout": "cutout/S2-06.png"
+  },
   "S2-07": {
     "flat": "flat/S2-07.png",
     "cutout": "cutout/S2-07.png"
@@ -63,6 +111,94 @@
   "S2-08": {
     "flat": "flat/S2-08.png",
     "cutout": "cutout/S2-08.png"
+  },
+  "S2-09": {
+    "flat": "flat/S2-09.png",
+    "cutout": "cutout/S2-09.png"
+  },
+  "S2-10": {
+    "flat": "flat/S2-10.png",
+    "cutout": "cutout/S2-10.png"
+  },
+  "S2-11": {
+    "flat": "flat/S2-11.png",
+    "cutout": "cutout/S2-11.png"
+  },
+  "S2-12": {
+    "flat": "flat/S2-12.png",
+    "cutout": "cutout/S2-12.png"
+  },
+  "S2-13": {
+    "flat": "flat/S2-13.png",
+    "cutout": "cutout/S2-13.png"
+  },
+  "S2-14": {
+    "flat": "flat/S2-14.png",
+    "cutout": "cutout/S2-14.png"
+  },
+  "S2-15": {
+    "flat": "flat/S2-15.png",
+    "cutout": "cutout/S2-15.png"
+  },
+  "S2-16": {
+    "flat": "flat/S2-16.png",
+    "cutout": "cutout/S2-16.png"
+  },
+  "S2-17": {
+    "flat": "flat/S2-17.png",
+    "cutout": "cutout/S2-17.png"
+  },
+  "S2-18": {
+    "flat": "flat/S2-18.png",
+    "cutout": "cutout/S2-18.png"
+  },
+  "S2-19": {
+    "flat": "flat/S2-19.png",
+    "cutout": "cutout/S2-19.png"
+  },
+  "S2-20": {
+    "flat": "flat/S2-20.png",
+    "cutout": "cutout/S2-20.png"
+  },
+  "S2-21": {
+    "flat": "flat/S2-21.png",
+    "cutout": "cutout/S2-21.png"
+  },
+  "S2-22": {
+    "flat": "flat/S2-22.png",
+    "cutout": "cutout/S2-22.png"
+  },
+  "S2-23": {
+    "flat": "flat/S2-23.png",
+    "cutout": "cutout/S2-23.png"
+  },
+  "S2-24": {
+    "flat": "flat/S2-24.png",
+    "cutout": "cutout/S2-24.png"
+  },
+  "S2-25": {
+    "flat": "flat/S2-25.png",
+    "cutout": "cutout/S2-25.png"
+  },
+  "S2-26": {
+    "flat": "flat/S2-26.png",
+    "cutout": "cutout/S2-26.png"
+  },
+  "S2-27": {
+    "flat": "flat/S2-27.png",
+    "cutout": "cutout/S2-27.png"
+  },
+  "S2-28": {
+    "flat": "flat/S2-28.png",
+    "cutout": "cutout/S2-28.png"
+  },
+  "S2-29": {
+    "flat": "flat/S2-29.png",
+    "cutout": "cutout/S2-29.png"
+  },
+  "S2-30": {
+    "flat": "flat/S2-30.png",
+    "cutout": "cutout/S2-30.png"
   },
   "S2-31": {
     "flat": "flat/S2-31.png",
@@ -84,33 +220,105 @@
     "flat": "flat/S2-35.png",
     "cutout": "cutout/S2-35.png"
   },
+  "S2-36": {
+    "flat": "flat/S2-36.png",
+    "cutout": "cutout/S2-36.png"
+  },
+  "S2-37": {
+    "flat": "flat/S2-37.png",
+    "cutout": "cutout/S2-37.png"
+  },
   "S2-38": {
     "flat": "flat/S2-38.png",
     "cutout": "cutout/S2-38.png"
+  },
+  "S2-39": {
+    "flat": "flat/S2-39.png",
+    "cutout": "cutout/S2-39.png"
   },
   "S2-40": {
     "flat": "flat/S2-40.png",
     "cutout": "cutout/S2-40.png"
   },
+  "S2-41": {
+    "flat": "flat/S2-41.png",
+    "cutout": "cutout/S2-41.png"
+  },
+  "S2-42": {
+    "flat": "flat/S2-42.png",
+    "cutout": "cutout/S2-42.png"
+  },
+  "S2-43": {
+    "flat": "flat/S2-43.png",
+    "cutout": "cutout/S2-43.png"
+  },
+  "S2-44": {
+    "flat": "flat/S2-44.png",
+    "cutout": "cutout/S2-44.png"
+  },
   "S2-45": {
     "flat": "flat/S2-45.png",
     "cutout": "cutout/S2-45.png"
+  },
+  "S2-46": {
+    "flat": "flat/S2-46.png",
+    "cutout": "cutout/S2-46.png"
+  },
+  "S2-47": {
+    "flat": "flat/S2-47.png",
+    "cutout": "cutout/S2-47.png"
+  },
+  "S2-48": {
+    "flat": "flat/S2-48.png",
+    "cutout": "cutout/S2-48.png"
   },
   "S2-49": {
     "flat": "flat/S2-49.png",
     "cutout": "cutout/S2-49.png"
   },
+  "S2-50": {
+    "flat": "flat/S2-50.png",
+    "cutout": "cutout/S2-50.png"
+  },
+  "S2-51": {
+    "flat": "flat/S2-51.png",
+    "cutout": "cutout/S2-51.png"
+  },
   "S2-52": {
     "flat": "flat/S2-52.png",
     "cutout": "cutout/S2-52.png"
+  },
+  "S2-53": {
+    "flat": "flat/S2-53.png",
+    "cutout": "cutout/S2-53.png"
   },
   "S2-54": {
     "flat": "flat/S2-54.png",
     "cutout": "cutout/S2-54.png"
   },
+  "S2-55": {
+    "flat": "flat/S2-55.png",
+    "cutout": "cutout/S2-55.png"
+  },
   "S2-56": {
     "flat": "flat/S2-56.png",
     "cutout": "cutout/S2-56.png"
+  },
+  "S2-57": {
+    "flat": "flat/S2-57.png",
+    "cutout": "cutout/S2-57.png"
+  },
+  "S2-58": {
+    "flat": "flat/S2-58.png",
+    "cutout": "cutout/S2-58.png"
+  },
+  "S2-59": {
+    "flat": "flat/S2-59.png",
+    "cutout": "cutout/S2-59.png"
+  },
+  "S2-60": {
+    "flat": "flat/S2-60.png",
+    "cutout": "cutout/S2-60.png"
   },
   "SB04": {
     "flat": "flat/SB04.png",
@@ -148,6 +356,10 @@
     "flat": "flat/SB12.png",
     "cutout": "cutout/SB12.png"
   },
+  "SB13": {
+    "flat": "flat/SB13.png",
+    "cutout": "cutout/SB13.png"
+  },
   "SB14": {
     "flat": "flat/SB14.png",
     "cutout": "cutout/SB14.png"
@@ -172,6 +384,10 @@
     "flat": "flat/SB19.png",
     "cutout": "cutout/SB19.png"
   },
+  "SB20": {
+    "flat": "flat/SB20.png",
+    "cutout": "cutout/SB20.png"
+  },
   "SB21": {
     "flat": "flat/SB21.png",
     "cutout": "cutout/SB21.png"
@@ -179,6 +395,18 @@
   "SB22": {
     "flat": "flat/SB22.png",
     "cutout": "cutout/SB22.png"
+  },
+  "SB23": {
+    "flat": "flat/SB23.png",
+    "cutout": "cutout/SB23.png"
+  },
+  "SB24": {
+    "flat": "flat/SB24.png",
+    "cutout": "cutout/SB24.png"
+  },
+  "SB25": {
+    "flat": "flat/SB25.png",
+    "cutout": "cutout/SB25.png"
   },
   "SB26": {
     "flat": "flat/SB26.png",
@@ -192,9 +420,17 @@
     "flat": "flat/SB28.png",
     "cutout": "cutout/SB28.png"
   },
+  "SB29": {
+    "flat": "flat/SB29.png",
+    "cutout": "cutout/SB29.png"
+  },
   "SB30": {
     "flat": "flat/SB30.png",
     "cutout": "cutout/SB30.png"
+  },
+  "SB31": {
+    "flat": "flat/SB31.png",
+    "cutout": "cutout/SB31.png"
   },
   "SB32": {
     "flat": "flat/SB32.png",
@@ -204,16 +440,1188 @@
     "flat": "flat/SB33.png",
     "cutout": "cutout/SB33.png"
   },
+  "batch3-001": {
+    "flat": "flat/batch3-001.png",
+    "cutout": "cutout/batch3-001.png"
+  },
+  "batch3-002": {
+    "flat": "flat/batch3-002.png",
+    "cutout": "cutout/batch3-002.png"
+  },
+  "batch3-003": {
+    "flat": "flat/batch3-003.png",
+    "cutout": "cutout/batch3-003.png"
+  },
+  "batch3-004": {
+    "flat": "flat/batch3-004.png",
+    "cutout": "cutout/batch3-004.png"
+  },
   "batch3-005": {
     "flat": "flat/batch3-005.png",
     "cutout": "cutout/batch3-005.png"
+  },
+  "batch3-006": {
+    "flat": "flat/batch3-006.png",
+    "cutout": "cutout/batch3-006.png"
+  },
+  "batch3-007": {
+    "flat": "flat/batch3-007.png",
+    "cutout": "cutout/batch3-007.png"
+  },
+  "batch3-008": {
+    "flat": "flat/batch3-008.png",
+    "cutout": "cutout/batch3-008.png"
+  },
+  "batch3-009": {
+    "flat": "flat/batch3-009.png",
+    "cutout": "cutout/batch3-009.png"
+  },
+  "batch3-010": {
+    "flat": "flat/batch3-010.png",
+    "cutout": "cutout/batch3-010.png"
+  },
+  "batch3-011": {
+    "flat": "flat/batch3-011.png",
+    "cutout": "cutout/batch3-011.png"
+  },
+  "batch3-012": {
+    "flat": "flat/batch3-012.png",
+    "cutout": "cutout/batch3-012.png"
+  },
+  "batch3-013": {
+    "flat": "flat/batch3-013.png",
+    "cutout": "cutout/batch3-013.png"
+  },
+  "batch3-014": {
+    "flat": "flat/batch3-014.png",
+    "cutout": "cutout/batch3-014.png"
+  },
+  "batch3-015": {
+    "flat": "flat/batch3-015.png",
+    "cutout": "cutout/batch3-015.png"
+  },
+  "batch3-016": {
+    "flat": "flat/batch3-016.png",
+    "cutout": "cutout/batch3-016.png"
+  },
+  "batch3-017": {
+    "flat": "flat/batch3-017.png",
+    "cutout": "cutout/batch3-017.png"
+  },
+  "batch3-018": {
+    "flat": "flat/batch3-018.png",
+    "cutout": "cutout/batch3-018.png"
+  },
+  "batch3-019": {
+    "flat": "flat/batch3-019.png",
+    "cutout": "cutout/batch3-019.png"
+  },
+  "batch3-020": {
+    "flat": "flat/batch3-020.png",
+    "cutout": "cutout/batch3-020.png"
+  },
+  "batch3-021": {
+    "flat": "flat/batch3-021.png",
+    "cutout": "cutout/batch3-021.png"
+  },
+  "batch3-022": {
+    "flat": "flat/batch3-022.png",
+    "cutout": "cutout/batch3-022.png"
+  },
+  "batch3-023": {
+    "flat": "flat/batch3-023.png",
+    "cutout": "cutout/batch3-023.png"
+  },
+  "batch3-024": {
+    "flat": "flat/batch3-024.png",
+    "cutout": "cutout/batch3-024.png"
+  },
+  "batch3-025": {
+    "flat": "flat/batch3-025.png",
+    "cutout": "cutout/batch3-025.png"
+  },
+  "batch3-026": {
+    "flat": "flat/batch3-026.png",
+    "cutout": "cutout/batch3-026.png"
   },
   "batch3-027": {
     "flat": "flat/batch3-027.png",
     "cutout": "cutout/batch3-027.png"
   },
+  "batch3-028": {
+    "flat": "flat/batch3-028.png",
+    "cutout": "cutout/batch3-028.png"
+  },
   "batch3-029": {
     "flat": "flat/batch3-029.png",
     "cutout": "cutout/batch3-029.png"
+  },
+  "batch3-030": {
+    "flat": "flat/batch3-030.png",
+    "cutout": "cutout/batch3-030.png"
+  },
+  "batch3-031": {
+    "flat": "flat/batch3-031.png",
+    "cutout": "cutout/batch3-031.png"
+  },
+  "batch3-032": {
+    "flat": "flat/batch3-032.png",
+    "cutout": "cutout/batch3-032.png"
+  },
+  "batch3-033": {
+    "flat": "flat/batch3-033.png",
+    "cutout": "cutout/batch3-033.png"
+  },
+  "batch3-034": {
+    "flat": "flat/batch3-034.png",
+    "cutout": "cutout/batch3-034.png"
+  },
+  "batch3-035": {
+    "flat": "flat/batch3-035.png",
+    "cutout": "cutout/batch3-035.png"
+  },
+  "batch3-036": {
+    "flat": "flat/batch3-036.png",
+    "cutout": "cutout/batch3-036.png"
+  },
+  "batch3-037": {
+    "flat": "flat/batch3-037.png",
+    "cutout": "cutout/batch3-037.png"
+  },
+  "batch3-038": {
+    "flat": "flat/batch3-038.png",
+    "cutout": "cutout/batch3-038.png"
+  },
+  "batch3-039": {
+    "flat": "flat/batch3-039.png",
+    "cutout": "cutout/batch3-039.png"
+  },
+  "batch3-040": {
+    "flat": "flat/batch3-040.png",
+    "cutout": "cutout/batch3-040.png"
+  },
+  "batch3-041": {
+    "flat": "flat/batch3-041.png",
+    "cutout": "cutout/batch3-041.png"
+  },
+  "batch3-042": {
+    "flat": "flat/batch3-042.png",
+    "cutout": "cutout/batch3-042.png"
+  },
+  "batch3-043": {
+    "flat": "flat/batch3-043.png",
+    "cutout": "cutout/batch3-043.png"
+  },
+  "batch3-044": {
+    "flat": "flat/batch3-044.png",
+    "cutout": "cutout/batch3-044.png"
+  },
+  "batch3-045": {
+    "flat": "flat/batch3-045.png",
+    "cutout": "cutout/batch3-045.png"
+  },
+  "batch3-046": {
+    "flat": "flat/batch3-046.png",
+    "cutout": "cutout/batch3-046.png"
+  },
+  "batch3-047": {
+    "flat": "flat/batch3-047.png",
+    "cutout": "cutout/batch3-047.png"
+  },
+  "batch3-048": {
+    "flat": "flat/batch3-048.png",
+    "cutout": "cutout/batch3-048.png"
+  },
+  "batch3-049": {
+    "flat": "flat/batch3-049.png",
+    "cutout": "cutout/batch3-049.png"
+  },
+  "batch3-050": {
+    "flat": "flat/batch3-050.png",
+    "cutout": "cutout/batch3-050.png"
+  },
+  "batch3-051": {
+    "flat": "flat/batch3-051.png",
+    "cutout": "cutout/batch3-051.png"
+  },
+  "batch3-052": {
+    "flat": "flat/batch3-052.png",
+    "cutout": "cutout/batch3-052.png"
+  },
+  "batch3-053": {
+    "flat": "flat/batch3-053.png",
+    "cutout": "cutout/batch3-053.png"
+  },
+  "batch3-054": {
+    "flat": "flat/batch3-054.png",
+    "cutout": "cutout/batch3-054.png"
+  },
+  "batch3-055": {
+    "flat": "flat/batch3-055.png",
+    "cutout": "cutout/batch3-055.png"
+  },
+  "batch3-056": {
+    "flat": "flat/batch3-056.png",
+    "cutout": "cutout/batch3-056.png"
+  },
+  "batch3-057": {
+    "flat": "flat/batch3-057.png",
+    "cutout": "cutout/batch3-057.png"
+  },
+  "batch3-058": {
+    "flat": "flat/batch3-058.png",
+    "cutout": "cutout/batch3-058.png"
+  },
+  "batch3-059": {
+    "flat": "flat/batch3-059.png",
+    "cutout": "cutout/batch3-059.png"
+  },
+  "batch3-060": {
+    "flat": "flat/batch3-060.png",
+    "cutout": "cutout/batch3-060.png"
+  },
+  "batch3-061": {
+    "flat": "flat/batch3-061.png",
+    "cutout": "cutout/batch3-061.png"
+  },
+  "batch3-062": {
+    "flat": "flat/batch3-062.png",
+    "cutout": "cutout/batch3-062.png"
+  },
+  "batch3-063": {
+    "flat": "flat/batch3-063.png",
+    "cutout": "cutout/batch3-063.png"
+  },
+  "batch3-064": {
+    "flat": "flat/batch3-064.png",
+    "cutout": "cutout/batch3-064.png"
+  },
+  "batch3-065": {
+    "flat": "flat/batch3-065.png",
+    "cutout": "cutout/batch3-065.png"
+  },
+  "batch3-066": {
+    "flat": "flat/batch3-066.png",
+    "cutout": "cutout/batch3-066.png"
+  },
+  "batch3-067": {
+    "flat": "flat/batch3-067.png",
+    "cutout": "cutout/batch3-067.png"
+  },
+  "batch3-068": {
+    "flat": "flat/batch3-068.png",
+    "cutout": "cutout/batch3-068.png"
+  },
+  "batch3-069": {
+    "flat": "flat/batch3-069.png",
+    "cutout": "cutout/batch3-069.png"
+  },
+  "batch3-070": {
+    "flat": "flat/batch3-070.png",
+    "cutout": "cutout/batch3-070.png"
+  },
+  "batch3-071": {
+    "flat": "flat/batch3-071.png",
+    "cutout": "cutout/batch3-071.png"
+  },
+  "batch3-072": {
+    "flat": "flat/batch3-072.png",
+    "cutout": "cutout/batch3-072.png"
+  },
+  "batch3-073": {
+    "flat": "flat/batch3-073.png",
+    "cutout": "cutout/batch3-073.png"
+  },
+  "batch3-074": {
+    "flat": "flat/batch3-074.png",
+    "cutout": "cutout/batch3-074.png"
+  },
+  "batch3-075": {
+    "flat": "flat/batch3-075.png",
+    "cutout": "cutout/batch3-075.png"
+  },
+  "batch3-076": {
+    "flat": "flat/batch3-076.png",
+    "cutout": "cutout/batch3-076.png"
+  },
+  "batch3-077": {
+    "flat": "flat/batch3-077.png",
+    "cutout": "cutout/batch3-077.png"
+  },
+  "batch4-001": {
+    "flat": "flat/batch4-001.png",
+    "cutout": "cutout/batch4-001.png"
+  },
+  "batch4-002": {
+    "flat": "flat/batch4-002.png",
+    "cutout": "cutout/batch4-002.png"
+  },
+  "batch4-003": {
+    "flat": "flat/batch4-003.png",
+    "cutout": "cutout/batch4-003.png"
+  },
+  "batch4-004": {
+    "flat": "flat/batch4-004.png",
+    "cutout": "cutout/batch4-004.png"
+  },
+  "batch4-005": {
+    "flat": "flat/batch4-005.png",
+    "cutout": "cutout/batch4-005.png"
+  },
+  "batch4-006": {
+    "flat": "flat/batch4-006.png",
+    "cutout": "cutout/batch4-006.png"
+  },
+  "batch4-007": {
+    "flat": "flat/batch4-007.png",
+    "cutout": "cutout/batch4-007.png"
+  },
+  "batch4-008": {
+    "flat": "flat/batch4-008.png",
+    "cutout": "cutout/batch4-008.png"
+  },
+  "batch4-009": {
+    "flat": "flat/batch4-009.png",
+    "cutout": "cutout/batch4-009.png"
+  },
+  "batch4-010": {
+    "flat": "flat/batch4-010.png",
+    "cutout": "cutout/batch4-010.png"
+  },
+  "batch4-011": {
+    "flat": "flat/batch4-011.png",
+    "cutout": "cutout/batch4-011.png"
+  },
+  "batch4-012": {
+    "flat": "flat/batch4-012.png",
+    "cutout": "cutout/batch4-012.png"
+  },
+  "batch4-013": {
+    "flat": "flat/batch4-013.png",
+    "cutout": "cutout/batch4-013.png"
+  },
+  "batch4-014": {
+    "flat": "flat/batch4-014.png",
+    "cutout": "cutout/batch4-014.png"
+  },
+  "batch4-015": {
+    "flat": "flat/batch4-015.png",
+    "cutout": "cutout/batch4-015.png"
+  },
+  "batch4-016": {
+    "flat": "flat/batch4-016.png",
+    "cutout": "cutout/batch4-016.png"
+  },
+  "batch4-017": {
+    "flat": "flat/batch4-017.png",
+    "cutout": "cutout/batch4-017.png"
+  },
+  "batch4-018": {
+    "flat": "flat/batch4-018.png",
+    "cutout": "cutout/batch4-018.png"
+  },
+  "batch4-019": {
+    "flat": "flat/batch4-019.png",
+    "cutout": "cutout/batch4-019.png"
+  },
+  "batch4-020": {
+    "flat": "flat/batch4-020.png",
+    "cutout": "cutout/batch4-020.png"
+  },
+  "batch4-021": {
+    "flat": "flat/batch4-021.png",
+    "cutout": "cutout/batch4-021.png"
+  },
+  "batch4-022": {
+    "flat": "flat/batch4-022.png",
+    "cutout": "cutout/batch4-022.png"
+  },
+  "batch4-023": {
+    "flat": "flat/batch4-023.png",
+    "cutout": "cutout/batch4-023.png"
+  },
+  "batch4-024": {
+    "flat": "flat/batch4-024.png",
+    "cutout": "cutout/batch4-024.png"
+  },
+  "batch4-025": {
+    "flat": "flat/batch4-025.png",
+    "cutout": "cutout/batch4-025.png"
+  },
+  "batch4-026": {
+    "flat": "flat/batch4-026.png",
+    "cutout": "cutout/batch4-026.png"
+  },
+  "batch4-027": {
+    "flat": "flat/batch4-027.png",
+    "cutout": "cutout/batch4-027.png"
+  },
+  "batch4-028": {
+    "flat": "flat/batch4-028.png",
+    "cutout": "cutout/batch4-028.png"
+  },
+  "batch4-029": {
+    "flat": "flat/batch4-029.png",
+    "cutout": "cutout/batch4-029.png"
+  },
+  "batch4-030": {
+    "flat": "flat/batch4-030.png",
+    "cutout": "cutout/batch4-030.png"
+  },
+  "batch4-031": {
+    "flat": "flat/batch4-031.png",
+    "cutout": "cutout/batch4-031.png"
+  },
+  "batch4-032": {
+    "flat": "flat/batch4-032.png",
+    "cutout": "cutout/batch4-032.png"
+  },
+  "batch4-033": {
+    "flat": "flat/batch4-033.png",
+    "cutout": "cutout/batch4-033.png"
+  },
+  "batch4-034": {
+    "flat": "flat/batch4-034.png",
+    "cutout": "cutout/batch4-034.png"
+  },
+  "batch4-035": {
+    "flat": "flat/batch4-035.png",
+    "cutout": "cutout/batch4-035.png"
+  },
+  "batch4-036": {
+    "flat": "flat/batch4-036.png",
+    "cutout": "cutout/batch4-036.png"
+  },
+  "batch4-037": {
+    "flat": "flat/batch4-037.png",
+    "cutout": "cutout/batch4-037.png"
+  },
+  "batch4-038": {
+    "flat": "flat/batch4-038.png",
+    "cutout": "cutout/batch4-038.png"
+  },
+  "batch4-039": {
+    "flat": "flat/batch4-039.png",
+    "cutout": "cutout/batch4-039.png"
+  },
+  "batch4-040": {
+    "flat": "flat/batch4-040.png",
+    "cutout": "cutout/batch4-040.png"
+  },
+  "batch4-041": {
+    "flat": "flat/batch4-041.png",
+    "cutout": "cutout/batch4-041.png"
+  },
+  "batch4-042": {
+    "flat": "flat/batch4-042.png",
+    "cutout": "cutout/batch4-042.png"
+  },
+  "batch4-043": {
+    "flat": "flat/batch4-043.png",
+    "cutout": "cutout/batch4-043.png"
+  },
+  "batch4-044": {
+    "flat": "flat/batch4-044.png",
+    "cutout": "cutout/batch4-044.png"
+  },
+  "batch4-045": {
+    "flat": "flat/batch4-045.png",
+    "cutout": "cutout/batch4-045.png"
+  },
+  "batch4-046": {
+    "flat": "flat/batch4-046.png",
+    "cutout": "cutout/batch4-046.png"
+  },
+  "batch4-047": {
+    "flat": "flat/batch4-047.png",
+    "cutout": "cutout/batch4-047.png"
+  },
+  "batch4-048": {
+    "flat": "flat/batch4-048.png",
+    "cutout": "cutout/batch4-048.png"
+  },
+  "batch4-049": {
+    "flat": "flat/batch4-049.png",
+    "cutout": "cutout/batch4-049.png"
+  },
+  "batch4-050": {
+    "flat": "flat/batch4-050.png",
+    "cutout": "cutout/batch4-050.png"
+  },
+  "batch4-051": {
+    "flat": "flat/batch4-051.png",
+    "cutout": "cutout/batch4-051.png"
+  },
+  "batch4-052": {
+    "flat": "flat/batch4-052.png",
+    "cutout": "cutout/batch4-052.png"
+  },
+  "batch4-053": {
+    "flat": "flat/batch4-053.png",
+    "cutout": "cutout/batch4-053.png"
+  },
+  "batch4-054": {
+    "flat": "flat/batch4-054.png",
+    "cutout": "cutout/batch4-054.png"
+  },
+  "batch4-055": {
+    "flat": "flat/batch4-055.png",
+    "cutout": "cutout/batch4-055.png"
+  },
+  "batch4-056": {
+    "flat": "flat/batch4-056.png",
+    "cutout": "cutout/batch4-056.png"
+  },
+  "batch4-057": {
+    "flat": "flat/batch4-057.png",
+    "cutout": "cutout/batch4-057.png"
+  },
+  "batch4-058": {
+    "flat": "flat/batch4-058.png",
+    "cutout": "cutout/batch4-058.png"
+  },
+  "batch4-059": {
+    "flat": "flat/batch4-059.png",
+    "cutout": "cutout/batch4-059.png"
+  },
+  "batch4-060": {
+    "flat": "flat/batch4-060.png",
+    "cutout": "cutout/batch4-060.png"
+  },
+  "batch4-061": {
+    "flat": "flat/batch4-061.png",
+    "cutout": "cutout/batch4-061.png"
+  },
+  "batch4-062": {
+    "flat": "flat/batch4-062.png",
+    "cutout": "cutout/batch4-062.png"
+  },
+  "batch4-063": {
+    "flat": "flat/batch4-063.png",
+    "cutout": "cutout/batch4-063.png"
+  },
+  "batch4-064": {
+    "flat": "flat/batch4-064.png",
+    "cutout": "cutout/batch4-064.png"
+  },
+  "batch4-065": {
+    "flat": "flat/batch4-065.png",
+    "cutout": "cutout/batch4-065.png"
+  },
+  "batch4-066": {
+    "flat": "flat/batch4-066.png",
+    "cutout": "cutout/batch4-066.png"
+  },
+  "batch4-067": {
+    "flat": "flat/batch4-067.png",
+    "cutout": "cutout/batch4-067.png"
+  },
+  "batch4-068": {
+    "flat": "flat/batch4-068.png",
+    "cutout": "cutout/batch4-068.png"
+  },
+  "batch4-069": {
+    "flat": "flat/batch4-069.png",
+    "cutout": "cutout/batch4-069.png"
+  },
+  "batch4-070": {
+    "flat": "flat/batch4-070.png",
+    "cutout": "cutout/batch4-070.png"
+  },
+  "batch4-071": {
+    "flat": "flat/batch4-071.png",
+    "cutout": "cutout/batch4-071.png"
+  },
+  "batch4-072": {
+    "flat": "flat/batch4-072.png",
+    "cutout": "cutout/batch4-072.png"
+  },
+  "batch4-073": {
+    "flat": "flat/batch4-073.png",
+    "cutout": "cutout/batch4-073.png"
+  },
+  "batch4-074": {
+    "flat": "flat/batch4-074.png",
+    "cutout": "cutout/batch4-074.png"
+  },
+  "batch4-075": {
+    "flat": "flat/batch4-075.png",
+    "cutout": "cutout/batch4-075.png"
+  },
+  "batch4-076": {
+    "flat": "flat/batch4-076.png",
+    "cutout": "cutout/batch4-076.png"
+  },
+  "batch4-077": {
+    "flat": "flat/batch4-077.png",
+    "cutout": "cutout/batch4-077.png"
+  },
+  "batch4-078": {
+    "flat": "flat/batch4-078.png",
+    "cutout": "cutout/batch4-078.png"
+  },
+  "batch4-079": {
+    "flat": "flat/batch4-079.png",
+    "cutout": "cutout/batch4-079.png"
+  },
+  "batch4-080": {
+    "flat": "flat/batch4-080.png",
+    "cutout": "cutout/batch4-080.png"
+  },
+  "batch4-081": {
+    "flat": "flat/batch4-081.png",
+    "cutout": "cutout/batch4-081.png"
+  },
+  "batch4-082": {
+    "flat": "flat/batch4-082.png",
+    "cutout": "cutout/batch4-082.png"
+  },
+  "batch4-083": {
+    "flat": "flat/batch4-083.png",
+    "cutout": "cutout/batch4-083.png"
+  },
+  "batch4-084": {
+    "flat": "flat/batch4-084.png",
+    "cutout": "cutout/batch4-084.png"
+  },
+  "batch4-085": {
+    "flat": "flat/batch4-085.png",
+    "cutout": "cutout/batch4-085.png"
+  },
+  "batch4-086": {
+    "flat": "flat/batch4-086.png",
+    "cutout": "cutout/batch4-086.png"
+  },
+  "batch4-087": {
+    "flat": "flat/batch4-087.png",
+    "cutout": "cutout/batch4-087.png"
+  },
+  "batch4-088": {
+    "flat": "flat/batch4-088.png",
+    "cutout": "cutout/batch4-088.png"
+  },
+  "batch4-089": {
+    "flat": "flat/batch4-089.png",
+    "cutout": "cutout/batch4-089.png"
+  },
+  "batch4-090": {
+    "flat": "flat/batch4-090.png",
+    "cutout": "cutout/batch4-090.png"
+  },
+  "batch4-091": {
+    "flat": "flat/batch4-091.png",
+    "cutout": "cutout/batch4-091.png"
+  },
+  "batch4-092": {
+    "flat": "flat/batch4-092.png",
+    "cutout": "cutout/batch4-092.png"
+  },
+  "batch4-093": {
+    "flat": "flat/batch4-093.png",
+    "cutout": "cutout/batch4-093.png"
+  },
+  "batch4-094": {
+    "flat": "flat/batch4-094.png",
+    "cutout": "cutout/batch4-094.png"
+  },
+  "batch4-095": {
+    "flat": "flat/batch4-095.png",
+    "cutout": "cutout/batch4-095.png"
+  },
+  "batch4-096": {
+    "flat": "flat/batch4-096.png",
+    "cutout": "cutout/batch4-096.png"
+  },
+  "batch4-097": {
+    "flat": "flat/batch4-097.png",
+    "cutout": "cutout/batch4-097.png"
+  },
+  "batch4-098": {
+    "flat": "flat/batch4-098.png",
+    "cutout": "cutout/batch4-098.png"
+  },
+  "batch4-099": {
+    "flat": "flat/batch4-099.png",
+    "cutout": "cutout/batch4-099.png"
+  },
+  "batch4-100": {
+    "flat": "flat/batch4-100.png",
+    "cutout": "cutout/batch4-100.png"
+  },
+  "batch5-001": {
+    "flat": "flat/batch5-001.png",
+    "cutout": "cutout/batch5-001.png"
+  },
+  "batch5-002": {
+    "flat": "flat/batch5-002.png",
+    "cutout": "cutout/batch5-002.png"
+  },
+  "batch5-003": {
+    "flat": "flat/batch5-003.png",
+    "cutout": "cutout/batch5-003.png"
+  },
+  "batch5-004": {
+    "flat": "flat/batch5-004.png",
+    "cutout": "cutout/batch5-004.png"
+  },
+  "batch5-005": {
+    "flat": "flat/batch5-005.png",
+    "cutout": "cutout/batch5-005.png"
+  },
+  "batch5-006": {
+    "flat": "flat/batch5-006.png",
+    "cutout": "cutout/batch5-006.png"
+  },
+  "batch5-007": {
+    "flat": "flat/batch5-007.png",
+    "cutout": "cutout/batch5-007.png"
+  },
+  "batch5-008": {
+    "flat": "flat/batch5-008.png",
+    "cutout": "cutout/batch5-008.png"
+  },
+  "batch5-009": {
+    "flat": "flat/batch5-009.png",
+    "cutout": "cutout/batch5-009.png"
+  },
+  "batch5-010": {
+    "flat": "flat/batch5-010.png",
+    "cutout": "cutout/batch5-010.png"
+  },
+  "batch5-011": {
+    "flat": "flat/batch5-011.png",
+    "cutout": "cutout/batch5-011.png"
+  },
+  "batch5-012": {
+    "flat": "flat/batch5-012.png",
+    "cutout": "cutout/batch5-012.png"
+  },
+  "batch5-013": {
+    "flat": "flat/batch5-013.png",
+    "cutout": "cutout/batch5-013.png"
+  },
+  "batch5-014": {
+    "flat": "flat/batch5-014.png",
+    "cutout": "cutout/batch5-014.png"
+  },
+  "batch5-015": {
+    "flat": "flat/batch5-015.png",
+    "cutout": "cutout/batch5-015.png"
+  },
+  "batch5-016": {
+    "flat": "flat/batch5-016.png",
+    "cutout": "cutout/batch5-016.png"
+  },
+  "batch5-017": {
+    "flat": "flat/batch5-017.png",
+    "cutout": "cutout/batch5-017.png"
+  },
+  "batch5-018": {
+    "flat": "flat/batch5-018.png",
+    "cutout": "cutout/batch5-018.png"
+  },
+  "batch5-019": {
+    "flat": "flat/batch5-019.png",
+    "cutout": "cutout/batch5-019.png"
+  },
+  "batch5-020": {
+    "flat": "flat/batch5-020.png",
+    "cutout": "cutout/batch5-020.png"
+  },
+  "batch5-021": {
+    "flat": "flat/batch5-021.png",
+    "cutout": "cutout/batch5-021.png"
+  },
+  "batch5-022": {
+    "flat": "flat/batch5-022.png",
+    "cutout": "cutout/batch5-022.png"
+  },
+  "batch5-023": {
+    "flat": "flat/batch5-023.png",
+    "cutout": "cutout/batch5-023.png"
+  },
+  "batch5-024": {
+    "flat": "flat/batch5-024.png",
+    "cutout": "cutout/batch5-024.png"
+  },
+  "batch5-025": {
+    "flat": "flat/batch5-025.png",
+    "cutout": "cutout/batch5-025.png"
+  },
+  "batch5-026": {
+    "flat": "flat/batch5-026.png",
+    "cutout": "cutout/batch5-026.png"
+  },
+  "batch5-027": {
+    "flat": "flat/batch5-027.png",
+    "cutout": "cutout/batch5-027.png"
+  },
+  "batch5-028": {
+    "flat": "flat/batch5-028.png",
+    "cutout": "cutout/batch5-028.png"
+  },
+  "batch5-029": {
+    "flat": "flat/batch5-029.png",
+    "cutout": "cutout/batch5-029.png"
+  },
+  "batch5-030": {
+    "flat": "flat/batch5-030.png",
+    "cutout": "cutout/batch5-030.png"
+  },
+  "batch5-031": {
+    "flat": "flat/batch5-031.png",
+    "cutout": "cutout/batch5-031.png"
+  },
+  "batch5-032": {
+    "flat": "flat/batch5-032.png",
+    "cutout": "cutout/batch5-032.png"
+  },
+  "batch5-033": {
+    "flat": "flat/batch5-033.png",
+    "cutout": "cutout/batch5-033.png"
+  },
+  "batch5-034": {
+    "flat": "flat/batch5-034.png",
+    "cutout": "cutout/batch5-034.png"
+  },
+  "batch5-035": {
+    "flat": "flat/batch5-035.png",
+    "cutout": "cutout/batch5-035.png"
+  },
+  "batch5-036": {
+    "flat": "flat/batch5-036.png",
+    "cutout": "cutout/batch5-036.png"
+  },
+  "batch5-037": {
+    "flat": "flat/batch5-037.png",
+    "cutout": "cutout/batch5-037.png"
+  },
+  "batch5-038": {
+    "flat": "flat/batch5-038.png",
+    "cutout": "cutout/batch5-038.png"
+  },
+  "batch5-039": {
+    "flat": "flat/batch5-039.png",
+    "cutout": "cutout/batch5-039.png"
+  },
+  "batch5-040": {
+    "flat": "flat/batch5-040.png",
+    "cutout": "cutout/batch5-040.png"
+  },
+  "batch5-041": {
+    "flat": "flat/batch5-041.png",
+    "cutout": "cutout/batch5-041.png"
+  },
+  "batch5-042": {
+    "flat": "flat/batch5-042.png",
+    "cutout": "cutout/batch5-042.png"
+  },
+  "batch5-043": {
+    "flat": "flat/batch5-043.png",
+    "cutout": "cutout/batch5-043.png"
+  },
+  "batch5-044": {
+    "flat": "flat/batch5-044.png",
+    "cutout": "cutout/batch5-044.png"
+  },
+  "batch5-045": {
+    "flat": "flat/batch5-045.png",
+    "cutout": "cutout/batch5-045.png"
+  },
+  "batch5-046": {
+    "flat": "flat/batch5-046.png",
+    "cutout": "cutout/batch5-046.png"
+  },
+  "batch5-047": {
+    "flat": "flat/batch5-047.png",
+    "cutout": "cutout/batch5-047.png"
+  },
+  "batch5-048": {
+    "flat": "flat/batch5-048.png",
+    "cutout": "cutout/batch5-048.png"
+  },
+  "batch5-049": {
+    "flat": "flat/batch5-049.png",
+    "cutout": "cutout/batch5-049.png"
+  },
+  "batch5-050": {
+    "flat": "flat/batch5-050.png",
+    "cutout": "cutout/batch5-050.png"
+  },
+  "batch5-051": {
+    "flat": "flat/batch5-051.png",
+    "cutout": "cutout/batch5-051.png"
+  },
+  "batch5-052": {
+    "flat": "flat/batch5-052.png",
+    "cutout": "cutout/batch5-052.png"
+  },
+  "batch5-053": {
+    "flat": "flat/batch5-053.png",
+    "cutout": "cutout/batch5-053.png"
+  },
+  "batch5-054": {
+    "flat": "flat/batch5-054.png",
+    "cutout": "cutout/batch5-054.png"
+  },
+  "batch5-055": {
+    "flat": "flat/batch5-055.png",
+    "cutout": "cutout/batch5-055.png"
+  },
+  "batch5-056": {
+    "flat": "flat/batch5-056.png",
+    "cutout": "cutout/batch5-056.png"
+  },
+  "batch5-057": {
+    "flat": "flat/batch5-057.png",
+    "cutout": "cutout/batch5-057.png"
+  },
+  "batch5-058": {
+    "flat": "flat/batch5-058.png",
+    "cutout": "cutout/batch5-058.png"
+  },
+  "batch5-059": {
+    "flat": "flat/batch5-059.png",
+    "cutout": "cutout/batch5-059.png"
+  },
+  "batch5-060": {
+    "flat": "flat/batch5-060.png",
+    "cutout": "cutout/batch5-060.png"
+  },
+  "batch5-061": {
+    "flat": "flat/batch5-061.png",
+    "cutout": "cutout/batch5-061.png"
+  },
+  "batch5-062": {
+    "flat": "flat/batch5-062.png",
+    "cutout": "cutout/batch5-062.png"
+  },
+  "batch5-063": {
+    "flat": "flat/batch5-063.png",
+    "cutout": "cutout/batch5-063.png"
+  },
+  "batch5-064": {
+    "flat": "flat/batch5-064.png",
+    "cutout": "cutout/batch5-064.png"
+  },
+  "batch5-065": {
+    "flat": "flat/batch5-065.png",
+    "cutout": "cutout/batch5-065.png"
+  },
+  "batch5-066": {
+    "flat": "flat/batch5-066.png",
+    "cutout": "cutout/batch5-066.png"
+  },
+  "batch5-067": {
+    "flat": "flat/batch5-067.png",
+    "cutout": "cutout/batch5-067.png"
+  },
+  "batch5-068": {
+    "flat": "flat/batch5-068.png",
+    "cutout": "cutout/batch5-068.png"
+  },
+  "batch5-069": {
+    "flat": "flat/batch5-069.png",
+    "cutout": "cutout/batch5-069.png"
+  },
+  "batch5-070": {
+    "flat": "flat/batch5-070.png",
+    "cutout": "cutout/batch5-070.png"
+  },
+  "batch5-071": {
+    "flat": "flat/batch5-071.png",
+    "cutout": "cutout/batch5-071.png"
+  },
+  "batch5-072": {
+    "flat": "flat/batch5-072.png",
+    "cutout": "cutout/batch5-072.png"
+  },
+  "batch5-073": {
+    "flat": "flat/batch5-073.png",
+    "cutout": "cutout/batch5-073.png"
+  },
+  "batch5-074": {
+    "flat": "flat/batch5-074.png",
+    "cutout": "cutout/batch5-074.png"
+  },
+  "batch5-075": {
+    "flat": "flat/batch5-075.png",
+    "cutout": "cutout/batch5-075.png"
+  },
+  "batch5-076": {
+    "flat": "flat/batch5-076.png",
+    "cutout": "cutout/batch5-076.png"
+  },
+  "batch5-077": {
+    "flat": "flat/batch5-077.png",
+    "cutout": "cutout/batch5-077.png"
+  },
+  "batch5-078": {
+    "flat": "flat/batch5-078.png",
+    "cutout": "cutout/batch5-078.png"
+  },
+  "batch5-079": {
+    "flat": "flat/batch5-079.png",
+    "cutout": "cutout/batch5-079.png"
+  },
+  "batch5-080": {
+    "flat": "flat/batch5-080.png",
+    "cutout": "cutout/batch5-080.png"
+  },
+  "batch5-081": {
+    "flat": "flat/batch5-081.png",
+    "cutout": "cutout/batch5-081.png"
+  },
+  "batch5-082": {
+    "flat": "flat/batch5-082.png",
+    "cutout": "cutout/batch5-082.png"
+  },
+  "batch5-083": {
+    "flat": "flat/batch5-083.png",
+    "cutout": "cutout/batch5-083.png"
+  },
+  "batch5-084": {
+    "flat": "flat/batch5-084.png",
+    "cutout": "cutout/batch5-084.png"
+  },
+  "batch5-085": {
+    "flat": "flat/batch5-085.png",
+    "cutout": "cutout/batch5-085.png"
+  },
+  "batch5-086": {
+    "flat": "flat/batch5-086.png",
+    "cutout": "cutout/batch5-086.png"
+  },
+  "batch5-087": {
+    "flat": "flat/batch5-087.png",
+    "cutout": "cutout/batch5-087.png"
+  },
+  "batch5-088": {
+    "flat": "flat/batch5-088.png",
+    "cutout": "cutout/batch5-088.png"
+  },
+  "batch5-089": {
+    "flat": "flat/batch5-089.png",
+    "cutout": "cutout/batch5-089.png"
+  },
+  "batch5-090": {
+    "flat": "flat/batch5-090.png",
+    "cutout": "cutout/batch5-090.png"
+  },
+  "batch5-091": {
+    "flat": "flat/batch5-091.png",
+    "cutout": "cutout/batch5-091.png"
+  },
+  "batch5-092": {
+    "flat": "flat/batch5-092.png",
+    "cutout": "cutout/batch5-092.png"
+  },
+  "batch5-093": {
+    "flat": "flat/batch5-093.png",
+    "cutout": "cutout/batch5-093.png"
+  },
+  "batch5-094": {
+    "flat": "flat/batch5-094.png",
+    "cutout": "cutout/batch5-094.png"
+  },
+  "batch5-095": {
+    "flat": "flat/batch5-095.png",
+    "cutout": "cutout/batch5-095.png"
+  },
+  "batch5-096": {
+    "flat": "flat/batch5-096.png",
+    "cutout": "cutout/batch5-096.png"
+  },
+  "batch5-097": {
+    "flat": "flat/batch5-097.png",
+    "cutout": "cutout/batch5-097.png"
+  },
+  "batch5-098": {
+    "flat": "flat/batch5-098.png",
+    "cutout": "cutout/batch5-098.png"
+  },
+  "batch5-099": {
+    "flat": "flat/batch5-099.png",
+    "cutout": "cutout/batch5-099.png"
+  },
+  "batch5-100": {
+    "flat": "flat/batch5-100.png",
+    "cutout": "cutout/batch5-100.png"
+  },
+  "batch5-101": {
+    "flat": "flat/batch5-101.png",
+    "cutout": "cutout/batch5-101.png"
+  },
+  "batch5-102": {
+    "flat": "flat/batch5-102.png",
+    "cutout": "cutout/batch5-102.png"
+  },
+  "batch5-103": {
+    "flat": "flat/batch5-103.png",
+    "cutout": "cutout/batch5-103.png"
+  },
+  "batch5-104": {
+    "flat": "flat/batch5-104.png",
+    "cutout": "cutout/batch5-104.png"
+  },
+  "batch5-105": {
+    "flat": "flat/batch5-105.png",
+    "cutout": "cutout/batch5-105.png"
+  },
+  "batch5-106": {
+    "flat": "flat/batch5-106.png",
+    "cutout": "cutout/batch5-106.png"
+  },
+  "batch5-107": {
+    "flat": "flat/batch5-107.png",
+    "cutout": "cutout/batch5-107.png"
+  },
+  "batch5-108": {
+    "flat": "flat/batch5-108.png",
+    "cutout": "cutout/batch5-108.png"
+  },
+  "batch5-109": {
+    "flat": "flat/batch5-109.png",
+    "cutout": "cutout/batch5-109.png"
+  },
+  "batch5-110": {
+    "flat": "flat/batch5-110.png",
+    "cutout": "cutout/batch5-110.png"
+  },
+  "batch5-111": {
+    "flat": "flat/batch5-111.png",
+    "cutout": "cutout/batch5-111.png"
+  },
+  "batch5-112": {
+    "flat": "flat/batch5-112.png",
+    "cutout": "cutout/batch5-112.png"
+  },
+  "batch5-113": {
+    "flat": "flat/batch5-113.png",
+    "cutout": "cutout/batch5-113.png"
+  },
+  "batch5-114": {
+    "flat": "flat/batch5-114.png",
+    "cutout": "cutout/batch5-114.png"
+  },
+  "batch5-115": {
+    "flat": "flat/batch5-115.png",
+    "cutout": "cutout/batch5-115.png"
+  },
+  "batch5-116": {
+    "flat": "flat/batch5-116.png",
+    "cutout": "cutout/batch5-116.png"
+  },
+  "batch5-117": {
+    "flat": "flat/batch5-117.png",
+    "cutout": "cutout/batch5-117.png"
+  },
+  "batch5-118": {
+    "flat": "flat/batch5-118.png",
+    "cutout": "cutout/batch5-118.png"
+  },
+  "batch5-119": {
+    "flat": "flat/batch5-119.png",
+    "cutout": "cutout/batch5-119.png"
   }
 }

@@ -65,6 +65,11 @@ var _blocked: Dictionary = {}
 var _holder: Node2D = null
 
 
+static func clear_runtime_cache() -> void:
+	_textures.clear()
+	_manifest.clear()
+
+
 ## The parsed structures manifest (id -> {texture, height_tiles, footprint:[w,h]}), cached.
 static func manifest() -> Dictionary:
 	if not _manifest.is_empty():

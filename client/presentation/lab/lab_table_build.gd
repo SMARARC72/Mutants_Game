@@ -79,8 +79,10 @@ static func build_shell(screen: Control) -> Dictionary:
 	a_title.text = "Subject"
 	a_title.theme_type_variation = "MutedLabel"
 	bench_box.add_child(a_title)
-	var a_picker := VBoxContainer.new()
+	var a_picker := HFlowContainer.new()
 	a_picker.name = "CreatureAPicker"
+	a_picker.add_theme_constant_override("h_separation", 8)
+	a_picker.add_theme_constant_override("v_separation", 8)
 	bench_box.add_child(a_picker)
 
 	# Creature B section (fuse only — the screen toggles visibility per op).
@@ -91,16 +93,20 @@ static func build_shell(screen: Control) -> Dictionary:
 	b_title.text = "Donor"
 	b_title.theme_type_variation = "MutedLabel"
 	b_section.add_child(b_title)
-	var b_picker := VBoxContainer.new()
+	var b_picker := HFlowContainer.new()
 	b_picker.name = "CreatureBPicker"
+	b_picker.add_theme_constant_override("h_separation", 8)
+	b_picker.add_theme_constant_override("v_separation", 8)
 	b_section.add_child(b_picker)
 
 	var ing_title := Label.new()
 	ing_title.text = "Reagents"
 	ing_title.theme_type_variation = "MutedLabel"
 	bench_box.add_child(ing_title)
-	var ingredient_picker := VBoxContainer.new()
+	var ingredient_picker := HFlowContainer.new()
 	ingredient_picker.name = "IngredientPicker"
+	ingredient_picker.add_theme_constant_override("h_separation", 8)
+	ingredient_picker.add_theme_constant_override("v_separation", 8)
 	bench_box.add_child(ingredient_picker)
 
 	# The Forbidden Ladder (read-only flavor: the three gated rites vs the run's corruption).
@@ -304,7 +310,7 @@ static func fill_op_row(
 ## party/battle/camp render). Picks route back through `pick_method` on the screen.
 static func fill_creature_picker(
 	screen: Control,
-	container: VBoxContainer,
+	container: Container,
 	party: Array,
 	catalog: SpeciesCatalog,
 	selected_index: int,
@@ -331,7 +337,8 @@ static func fill_creature_picker(
 			btn.expand_icon = true
 			btn.add_theme_constant_override("icon_max_width", 36)
 			PortraitUtil.tint_button_icon(btn, entry as Dictionary)
-		btn.custom_minimum_size = Vector2(0, 44)
+		btn.custom_minimum_size = Vector2(280, 52)
+		btn.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
 		btn.pressed.connect(Callable(screen, pick_method).bind(i))
 		container.add_child(btn)
 
@@ -341,7 +348,7 @@ static func fill_creature_picker(
 ## VoiceBook empty-state.
 static func fill_reagent_chips(
 	screen: Control,
-	container: VBoxContainer,
+	container: Container,
 	stacks: Array,
 	rules: SpliceRules,
 	chosen: Array,
@@ -369,6 +376,8 @@ static func fill_reagent_chips(
 		btn.button_pressed = chosen.has(item.item_key)
 		var mark := "• " if chosen.has(item.item_key) else "  "
 		btn.text = "%s%s ×%d  (%s)" % [mark, item.item_key, item.qty, item.item_type]
+		btn.custom_minimum_size = Vector2(220, 42)
+		btn.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
 		var spec := rules.ingredient_spec(item.item_key)
 		if spec.is_empty():
 			spec = rules.gene_spec(item.item_key)

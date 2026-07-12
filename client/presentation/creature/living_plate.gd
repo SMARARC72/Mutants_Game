@@ -37,6 +37,10 @@ var _time := 0.0
 var _base_scale := 1.0
 
 
+static func clear_runtime_cache() -> void:
+	_shadow_gradient = null
+
+
 func _init() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_material = ShaderMaterial.new()

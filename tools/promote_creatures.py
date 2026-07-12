@@ -9,7 +9,7 @@ feathers the alpha 1px. Built for all 407 registry rows; promotion runs scoped (
 --only) until the asset-contract gate has proven itself.
 
 Source resolution per registry row:
-  * art_ref 'art/...'  -> file under the main-repo art root (batch3/4/5 plates).
+  * art_ref 'art/...' or 'docs/art_sources/...' -> repository-relative source plate.
   * any other art_ref  -> tools/art_origins.json (full-res original, optionally a cell 'box').
   * unresolved         -> recorded in tools/creature_art_gaps.json.
 
@@ -35,15 +35,17 @@ import csv
 import json
 import os
 import sys
+from contextlib import contextmanager
 
 import numpy as np
-from PIL import Image, ImageFilter
+from PIL import Image, ImageFile, ImageFilter
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 REGISTRY = os.path.join(REPO, "docs", "creature_registry.csv")
 ORIGINS = os.path.join(REPO, "tools", "art_origins.json")
 GAPS = os.path.join(REPO, "tools", "creature_art_gaps.json")
 REJECTS = os.path.join(REPO, "tools", "creature_art_rejects.json")
+RECOVERIES = os.path.join(REPO, "tools", "creature_art_recoveries.json")
 SLICE = os.path.join(REPO, "client", "catalog", "slice_verdant.json")
 OUT_DIR = os.path.join(REPO, "client", "assets", "creatures")
 DEFAULT_ART_ROOT = "c:/Users/arahi/Documents/Claude/Projects/Mutants_Game/art"
@@ -276,7 +278,7 @@ def resolve_source(row: dict, origins: dict, art_root: str):
     if not ref:
         return None, "empty art_ref"
     base = os.path.dirname(art_root)
-    if ref.startswith("art/"):
+    if ref.startswith(("art/", "docs/art_sources/")):
         path = os.path.join(base, ref)
         return (path, None) if os.path.exists(path) else (None, f"missing file {ref}")
     origin = origins.get(ref)
@@ -286,6 +288,54 @@ def resolve_source(row: dict, origins: dict, art_root: str):
     if not os.path.exists(path):
         return None, f"missing origin file {origin['file']}"
     return path, origin.get("box")
+
+
+@contextmanager
+def allow_truncated_images():
+    """Temporarily allow Pillow to recover a partially written image.
+
+    The setting is process-global, so it must always be restored. Promotion is single-threaded;
+    callers still record every recovery in RECOVERIES so source corruption is never hidden.
+    """
+    previous = ImageFile.LOAD_TRUNCATED_IMAGES
+    ImageFile.LOAD_TRUNCATED_IMAGES = True
+    try:
+        yield
+    finally:
+        ImageFile.LOAD_TRUNCATED_IMAGES = previous
+
+
+def load_source_image(path: str) -> tuple[Image.Image, str]:
+    """Load a source completely, recovering truncated PNGs when Pillow can do so safely.
+
+    Returns a detached image and an empty recovery note for a clean source. A non-empty note
+    means Pillow had to synthesize the missing tail; the caller persists that fact for QA.
+    """
+    try:
+        with Image.open(path) as opened:
+            opened.load()
+            return opened.copy(), ""
+    except OSError as first_error:
+        with allow_truncated_images():
+            with Image.open(path) as opened:
+                opened.load()
+                if opened.width < 1 or opened.height < 1:
+                    raise OSError(f"recovered image has invalid dimensions: {opened.size}")
+                return opened.copy(), str(first_error)
+
+
+def save_png_atomic(image: Image.Image, path: str) -> None:
+    temp_path = f"{path}.tmp"
+    image.save(temp_path, format="PNG")
+    os.replace(temp_path, path)
+
+
+def write_json_atomic(path: str, payload: dict) -> None:
+    temp_path = f"{path}.tmp"
+    with open(temp_path, "w", encoding="utf-8", newline="\n") as f:
+        json.dump(payload, f, indent=2)
+        f.write("\n")
+    os.replace(temp_path, path)
 
 
 def main() -> int:
@@ -300,7 +350,7 @@ def main() -> int:
     registry = load_registry()
     by_id = {r["id"]: r for r in registry}
     if a.all:
-        ids = [r["id"] for r in registry]
+        ids = [r["id"] for r in registry if r.get("status", "").strip().lower() != "void"]
     elif a.only:
         ids = [s.strip() for s in a.only.split(",") if s.strip()]
     else:
@@ -320,6 +370,7 @@ def main() -> int:
 
     manifest: dict[str, dict] = {}
     gaps: dict[str, str] = {}
+    recoveries: dict[str, dict[str, str]] = {}
     for sid in ids:
         row = by_id.get(sid)
         if row is None:
@@ -328,30 +379,44 @@ def main() -> int:
         src, box = resolve_source(row, origins, a.art_root)
         if src is None:
             gaps[sid] = box  # box carries the reason string here
-            print(f"  GAP {sid}: {box}")
+            print(f"  GAP {sid}: {box}", flush=True)
             continue
-        img = Image.open(src)
+        try:
+            img, recovery_note = load_source_image(src)
+        except (OSError, ValueError) as error:
+            gaps[sid] = f"unreadable source {os.path.basename(src)}: {error}"
+            print(f"  GAP {sid}: {gaps[sid]}", flush=True)
+            continue
+        if recovery_note:
+            recoveries[sid] = {
+                "source": os.path.relpath(src, REPO).replace("\\", "/"),
+                "reason": recovery_note,
+            }
+            print(f"  RECOVERED {sid}: {recovery_note}", flush=True)
         cell_mode = isinstance(box, list)
         if cell_mode:
             img = img.crop(tuple(box))
         flat = downscale(img.convert("RGB"))
         flat_name = f"{sid}.png"
-        flat.save(os.path.join(flat_dir, flat_name))
+        save_png_atomic(flat, os.path.join(flat_dir, flat_name))
         entry = {"flat": f"flat/{flat_name}"}
         if sid in rejects:
-            print(f"  {sid}: cutout REJECTED -> flat only")
+            print(f"  {sid}: cutout REJECTED -> flat only", flush=True)
         else:
             cut = downscale(crop_to_alpha(knockout(img, cell_mode=cell_mode)))
             cut_name = f"{sid}.png"
-            cut.save(os.path.join(cut_dir, cut_name))
+            save_png_atomic(cut, os.path.join(cut_dir, cut_name))
             entry["cutout"] = f"cutout/{cut_name}"
         manifest[sid] = entry
-        print(f"  ok {sid}: {os.path.basename(src)}" + (" [cell]" if cell_mode else ""))
+        print(
+            f"  ok {sid}: {os.path.basename(src)}" + (" [cell]" if cell_mode else ""),
+            flush=True,
+        )
 
     # merge into any existing manifest so scoped runs stay additive
     manifest_path = os.path.join(OUT_DIR, "manifest.json")
     merged: dict[str, dict] = {}
-    if os.path.exists(manifest_path):
+    if not a.all and os.path.exists(manifest_path):
         with open(manifest_path, encoding="utf-8") as f:
             merged = json.load(f)
             merged.pop("_note", None)
@@ -365,23 +430,27 @@ def main() -> int:
         )
     }
     payload.update({k: merged[k] for k in sorted(merged)})
-    with open(manifest_path, "w", encoding="utf-8", newline="\n") as f:
-        json.dump(payload, f, indent=2)
-        f.write("\n")
-    with open(GAPS, "w", encoding="utf-8", newline="\n") as f:
-        json.dump(
-            {
-                "_note": "species ids whose art_ref could not be resolved to a source file; "
-                "fill via tools/gen_art.py --only or by extending tools/art_origins.json.",
-                "gaps": gaps,
-            },
-            f,
-            indent=2,
-        )
-        f.write("\n")
+    write_json_atomic(manifest_path, payload)
+    write_json_atomic(
+        GAPS,
+        {
+            "_note": "species ids whose art_ref could not be resolved or decoded; fill via "
+            "tools/gen_art.py --only, repair the source, or extend tools/art_origins.json.",
+            "gaps": gaps,
+        },
+    )
+    write_json_atomic(
+        RECOVERIES,
+        {
+            "_note": "source images Pillow could decode only in truncated-image recovery mode; "
+            "all recovered plates require explicit visual QA before release.",
+            "recoveries": recoveries,
+        },
+    )
     print(
         f"promoted {len(manifest)} species ({len(rejects)} reject(s) flat-only), "
-        f"{len(gaps)} gap(s) -> manifest {len(merged)} entries"
+        f"{len(gaps)} gap(s), {len(recoveries)} recovered source(s) -> "
+        f"manifest {len(merged)} entries"
     )
     return 0 if not gaps else 1
 

@@ -22,6 +22,11 @@ const LAIR_NODE_NAME := "LairEmber"
 
 static var _texture_cache: Dictionary = {}
 
+
+static func clear_runtime_cache() -> void:
+	_texture_cache.clear()
+
+
 # === state -> marker kind (pure; unit-tested directly) ======================================== #
 
 

@@ -8,6 +8,15 @@ static var channel_cache := {}
 static var special_resources := {}
 
 
+## Release runtime-only cached Resource instances before the Dialogic autoload leaves the tree.
+## Without this, headless runs retain one instance for every event class until ResourceServer exit.
+static func clear_runtime_caches() -> void:
+	label_cache.clear()
+	event_cache.clear()
+	channel_cache.clear()
+	special_resources.clear()
+
+
 static func update() -> void:
 	update_directory('.dch')
 	update_directory('.dtl')

@@ -18,6 +18,10 @@ const BRASS_BRIGHT := Color(0.878431, 0.72549, 0.352941)
 static var _texture_cache: Dictionary = {}
 
 
+static func clear_runtime_cache() -> void:
+	_texture_cache.clear()
+
+
 ## The tamer: ink disc, brass rim, and an eight-point sigil star (long cardinal rays, short
 ## diagonal rays) — the player piece reads as the crest, not a flat ring.
 static func player_token(diameter: int) -> ImageTexture:

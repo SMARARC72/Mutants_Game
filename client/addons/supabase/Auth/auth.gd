@@ -41,7 +41,6 @@ const _invite_endpoint : String = _auth_endpoint+"/invite"
 const _reset_password_endpoint : String = _auth_endpoint+"/recover"
 
 var tcp_server : TCPServer = TCPServer.new()
-var tcp_timer : Timer = Timer.new()
 
 var _config : Dictionary = {}
 var _header : PackedStringArray = []
@@ -162,9 +161,12 @@ func verify_otp_email(email : String, token : String, type : String) -> AuthTask
 # Sign in as an anonymous user
 func sign_in_anonymous() -> AuthTask:
     if _auth != "": return _check_auth()
-    var auth_task : AuthTask = AuthTask.new()._setup(AuthTask.Task.SIGNINANONYM, "", [])
-    auth_task.user = SupabaseUser.new({user = {}, access_token = _config.supabaseKey})
-    _process_task(auth_task, true)
+    var auth_task : AuthTask = AuthTask.new()._setup(
+        AuthTask.Task.SIGNINANONYM,
+        _config.supabaseUrl + _signup_endpoint,
+        _header,
+        "{}")
+    _process_task(auth_task)
     return auth_task
 
 

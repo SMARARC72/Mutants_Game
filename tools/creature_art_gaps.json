@@ -1,4 +1,4 @@
 {
-  "_note": "species ids whose art_ref could not be resolved to a source file; fill via tools/gen_art.py --only or by extending tools/art_origins.json.",
+  "_note": "species ids whose art_ref could not be resolved or decoded; fill via tools/gen_art.py --only, repair the source, or extend tools/art_origins.json.",
   "gaps": {}
 }

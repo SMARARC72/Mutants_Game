@@ -15,6 +15,7 @@ const TILE_SIZE := 64
 const WALL_TILE := 3
 const VOID_TILE := -1
 const FEATURE_TILE := 1
+const PATH_TILE := 2
 ## Extra atlas column for the ritual/thin-place accent. Layouts never emit it; paint() promotes a
 ## deterministic minority of feature cells to it, so thin places visibly manifest on the map.
 const RITUAL_TILE := 4
@@ -29,11 +30,13 @@ const TILE_COLORS := {
 }
 const VOID_COLOR := Color(0.05, 0.045, 0.06)
 
-## The ground tile id and how many texture-variant rows its atlas column carries. Ground cells pick
-## a hashed row (hero-weighted, see _atlas_coord) × a per-cell flip, so one region reads as varied
-## terrain instead of a repeated square.
+## The ground tile id and the 4x4 macro-tile grid carried by its atlas column. One authored 512px
+## plate becomes a periodic 256px field, then is sliced into sixteen 64px cells. Painting those
+## cells by world position preserves natural detail across cell boundaries and pushes repetition
+## from every tile to every four tiles.
 const GROUND_TILE := 0
-const GROUND_VARIANTS := 3
+const GROUND_PATCH_GRID := 4
+const GROUND_VARIANTS := GROUND_PATCH_GRID * GROUND_PATCH_GRID
 
 const _T := "res://assets/tiles/topdown/"
 const _P := "res://assets/tiles/props/"
@@ -235,6 +238,11 @@ static var _region_forces: Dictionary = {}
 static var _built_sets: Dictionary = {}
 
 
+static func clear_runtime_cache() -> void:
+	_built_sets.clear()
+	_region_forces.clear()
+
+
 ## True if a tile id can be walked onto (everything but the wall id and the void sentinel).
 static func is_walkable(tile_id: int) -> bool:
 	return tile_id != WALL_TILE and tile_id != VOID_TILE
@@ -332,21 +340,48 @@ static func build(force_climate: String = _DEFAULT_FORCE) -> TileSet:
 	normals.fill(_FLAT_NORMAL)
 	var normal_found := false
 	var full := Rect2i(0, 0, TILE_SIZE, TILE_SIZE)
+	var ground_entries: Array = palette[GROUND_TILE]
+	var hero_entry: Array = ground_entries[0]
+	var macro_size := GROUND_PATCH_GRID * TILE_SIZE
+	var hero_macro := _make_periodic(
+		_tile_image(str(hero_entry[0]), hero_entry[1] as Color, GROUND_TILE, macro_size)
+	)
+	var hero_normal_macro := _normal_image(str(hero_entry[0]), macro_size)
+	if hero_normal_macro != null:
+		hero_normal_macro = _make_periodic(hero_normal_macro)
+	var hero_cell := hero_macro.get_region(Rect2i(0, 0, TILE_SIZE, TILE_SIZE))
+	var hero_normal_cell: Image = null
+	if hero_normal_macro != null:
+		hero_normal_cell = hero_normal_macro.get_region(Rect2i(0, 0, TILE_SIZE, TILE_SIZE))
 	for id in ids:
 		if int(id) == GROUND_TILE:
-			var variants: Array = palette[id]
 			for v in GROUND_VARIANTS:
-				var entry: Array = variants[v % variants.size()]
-				var gimg := _tile_image(str(entry[0]), entry[1] as Color, int(id))
+				var patch_x := (v % GROUND_PATCH_GRID) * TILE_SIZE
+				var patch_y := int(v / GROUND_PATCH_GRID) * TILE_SIZE
+				var patch_rect := Rect2i(patch_x, patch_y, TILE_SIZE, TILE_SIZE)
+				var gimg := hero_macro.get_region(patch_rect)
 				var gat := Vector2i(int(id) * TILE_SIZE, v * TILE_SIZE)
 				atlas.blit_rect(gimg, full, gat)
-				normal_found = _blit_normal(normals, str(entry[0]), gat) or normal_found
+				if hero_normal_macro != null:
+					var gnormal := hero_normal_macro.get_region(patch_rect)
+					normals.blit_rect(gnormal, full, gat)
+					normal_found = true
 		else:
 			var entry: Array = palette[id]
-			var tile_img := _tile_image(str(entry[0]), entry[1] as Color, int(id))
+			var tile_img := _blend_edges(
+				_make_periodic(_tile_image(str(entry[0]), entry[1] as Color, int(id))),
+				hero_cell,
+				24
+			)
 			var at := Vector2i(int(id) * TILE_SIZE, 0)
 			atlas.blit_rect(tile_img, full, at)
-			normal_found = _blit_normal(normals, str(entry[0]), at) or normal_found
+			var tile_normal := _normal_image(str(entry[0]))
+			if tile_normal != null:
+				tile_normal = _make_periodic(tile_normal)
+				if hero_normal_cell != null:
+					tile_normal = _blend_edges(tile_normal, hero_normal_cell, 24)
+				normals.blit_rect(tile_normal, full, at)
+				normal_found = true
 	var texture: Texture2D = ImageTexture.create_from_image(atlas)
 	if normal_found:
 		# The diffuse+normal pair rides a CanvasTexture (a Texture2D, so the atlas source takes
@@ -376,35 +411,82 @@ static func build(force_climate: String = _DEFAULT_FORCE) -> TileSet:
 ## Blit `path`'s generated normal map (…/normal/<stem>_n.png, from tools/gen_normalmaps.py) into
 ## the normal atlas at `at`. Returns true when a real normal map landed; on a miss the flat-normal
 ## fill stays for that cell (correct, just unshaded).
-static func _blit_normal(normals: Image, path: String, at: Vector2i) -> bool:
+static func _normal_image(path: String, size: int = TILE_SIZE) -> Image:
 	var npath := path.get_base_dir() + "/normal/" + path.get_file().get_basename() + "_n.png"
 	if not ResourceLoader.exists(npath):
-		return false
+		return null
 	var tex := load(npath) as Texture2D
 	if tex == null:
-		return false
+		return null
 	var img := tex.get_image()
 	img.convert(Image.FORMAT_RGBA8)
-	img.resize(TILE_SIZE, TILE_SIZE, Image.INTERPOLATE_LANCZOS)
-	normals.blit_rect(img, Rect2i(0, 0, TILE_SIZE, TILE_SIZE), at)
-	return true
+	img.resize(size, size, Image.INTERPOLATE_LANCZOS)
+	return img
+
+
+## Turn an authored plate into a mathematically periodic tile while preserving its full composition.
+## Opposite edge pairs converge through a smooth band; exact boundary pixels match, and the inner
+## 75% remains the authored material instead of collapsing into a small mirrored kaleidoscope.
+static func _make_periodic(img: Image) -> Image:
+	var out := img.duplicate()
+	var size := mini(img.get_width(), img.get_height())
+	var band := maxi(9, size / 14)
+	for py in size:
+		for offset in band:
+			var opposite := size - 1 - offset
+			var weight := clampf(float(offset) / float(band - 1), 0.0, 1.0)
+			weight = weight * weight * (3.0 - 2.0 * weight)
+			var left: Color = img.get_pixel(offset, py)
+			var right: Color = img.get_pixel(opposite, py)
+			var shared: Color = left.lerp(right, 0.5)
+			out.set_pixel(offset, py, shared.lerp(left, weight))
+			out.set_pixel(opposite, py, shared.lerp(right, weight))
+	var horizontal: Image = out.duplicate()
+	for px in size:
+		for offset in band:
+			var opposite := size - 1 - offset
+			var weight := clampf(float(offset) / float(band - 1), 0.0, 1.0)
+			weight = weight * weight * (3.0 - 2.0 * weight)
+			var top: Color = horizontal.get_pixel(px, offset)
+			var bottom: Color = horizontal.get_pixel(px, opposite)
+			var shared: Color = top.lerp(bottom, 0.5)
+			out.set_pixel(px, offset, shared.lerp(top, weight))
+			out.set_pixel(px, opposite, shared.lerp(bottom, weight))
+	return out
+
+
+## Feather a terrain variant into the force palette's hero ground at cell edges. Every atlas tile
+## therefore shares the same periodic boundary while its authored material remains visible within.
+static func _blend_edges(foreground: Image, background: Image, band: int = 11) -> Image:
+	var out := foreground.duplicate()
+	for py in TILE_SIZE:
+		for px in TILE_SIZE:
+			var edge_distance := mini(mini(px, TILE_SIZE - 1 - px), mini(py, TILE_SIZE - 1 - py))
+			var weight := clampf(float(edge_distance) / float(band), 0.0, 1.0)
+			weight = weight * weight * (3.0 - 2.0 * weight)
+			out.set_pixel(
+				px, py, background.get_pixel(px, py).lerp(foreground.get_pixel(px, py), weight)
+			)
+	return out
 
 
 ## One cell texture: load the (pre-cropped, seamless) plate, downscale to the cell, tint. Falls
 ## back to the flat swatch if the texture is absent so the overworld still renders.
-static func _tile_image(path: String, modulate: Color, tile_id: int) -> Image:
+static func _tile_image(
+	path: String, modulate: Color, tile_id: int, size: int = TILE_SIZE
+) -> Image:
 	var tex: Texture2D = load(path) if ResourceLoader.exists(path) else null
 	if tex == null:
-		var flat := Image.create(TILE_SIZE, TILE_SIZE, false, Image.FORMAT_RGBA8)
+		var flat := Image.create(size, size, false, Image.FORMAT_RGBA8)
 		flat.fill(TILE_COLORS.get(tile_id, VOID_COLOR))
 		return flat
 	var img := tex.get_image()
 	img.convert(Image.FORMAT_RGBA8)
-	img.resize(TILE_SIZE, TILE_SIZE, Image.INTERPOLATE_LANCZOS)
+	img.resize(size, size, Image.INTERPOLATE_LANCZOS)
 	if modulate == _W:
 		return img
-	for py in TILE_SIZE:
-		for px in TILE_SIZE:
+	for py in size:
+		for px in size:
 			var c := img.get_pixel(px, py)
 			c.r = clampf(c.r * modulate.r, 0.0, 1.0)
 			c.g = clampf(c.g * modulate.g, 0.0, 1.0)
@@ -414,10 +496,10 @@ static func _tile_image(path: String, modulate: Color, tile_id: int) -> Image:
 	return img
 
 
-## Paint a Layout onto a TileMapLayer (source 0; atlas coords == tile id). Skips void cells. Each
-## cell gets a DETERMINISTIC flip/transpose so the source textures read as organic terrain
-## (8 orientations) instead of a visibly repeating grid, and a deterministic minority of feature
-## cells promote to the RITUAL_TILE accent (thin places). Validity is checked against the tiles
+## Paint a Layout onto a TileMapLayer (source 0; atlas coords == tile id). Skips void cells. Accent
+## cells get deterministic transforms, while ground remains one continuous periodic plane; a
+## deterministic minority of feature cells promote to the RITUAL_TILE accent (thin places).
+## Validity is checked against the tiles
 ## the layer's OWN TileSet actually has (whatever force palette built it), so no region's tiles
 ## are wrongly skipped. The layer must already have a TileSet from build(). Returns it.
 static func paint(layer: TileMapLayer, layout: Layout) -> TileMapLayer:
@@ -440,28 +522,28 @@ static func paint(layer: TileMapLayer, layout: Layout) -> TileMapLayer:
 					# the accent): full-tile feature textures peppered the map as a
 					# salt-and-pepper checkerboard.
 					coord = _atlas_coord(GROUND_TILE, x, y)
+			elif tile_id == PATH_TILE:
+				# WFC path ids describe traversal affinity, not a connected authored road. Painting
+				# those scattered cells as full squares exposed the solver grid, so the continuous
+				# macro ground carries them while structures and props communicate navigation.
+				coord = _atlas_coord(GROUND_TILE, x, y)
 			if source == null or not source.has_tile(coord):
 				continue
-			var flip_x := x / 3 if coord.x == GROUND_TILE else x
-			var flip_y := y / 3 if coord.x == GROUND_TILE else y
+			# The force hero is one continuous base plane. Per-cell transforms reintroduced visible
+			# block boundaries even on periodic textures; props and structures supply organic variety.
+			var flip_x := 0 if coord.x == GROUND_TILE else x
+			var flip_y := 0 if coord.x == GROUND_TILE else y
 			layer.set_cell(Vector2i(x, y), 0, coord, _cell_orientation(flip_x, flip_y))
 	return layer
 
 
-## Atlas coord for a cell: ground picks one of its texture-variant rows with a hero-weighted hash
-## sampled per 3x3 BLOB (72% hero / 22% common / 6% rare) so variant terrain arrives as coherent
-## patches, not per-cell salt-and-pepper; everything else uses its row-0 tile.
+## Atlas coord for a cell. Ground uses the matching slice from the force hero's 4x4 macro field;
+## authored cross-material variants made square biome patches at gameplay zoom.
 static func _atlas_coord(tile_id: int, x: int, y: int) -> Vector2i:
 	if tile_id == GROUND_TILE:
-		var bx := x / 3
-		var by := y / 3
-		var pct := absi((bx * 2654435761) ^ (by * 40503)) % 100
-		var row := 0
-		if pct >= 94:
-			row = 2
-		elif pct >= 72:
-			row = 1
-		return Vector2i(GROUND_TILE, row)
+		var patch := posmod(y, GROUND_PATCH_GRID) * GROUND_PATCH_GRID
+		patch += posmod(x, GROUND_PATCH_GRID)
+		return Vector2i(GROUND_TILE, patch)
 	return Vector2i(tile_id, 0)
 
 

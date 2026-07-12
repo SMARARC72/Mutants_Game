@@ -19,6 +19,8 @@ Run: PYTHONUTF8=1 python -B tools/check_asset_contract.py
 Exits non-zero listing every violation; prints a one-line summary when clean.
 """
 
+import csv
+import json
 import os
 import struct
 import subprocess
@@ -36,6 +38,8 @@ MAX_BYTES = 3 * 1024 * 1024
 LFS_EXTS = {".png", ".jpg", ".jpeg", ".webp", ".wav", ".ogg", ".mp3", ".mp4"}
 LFS_POINTER_PREFIX = b"version https://git-lfs.github.com/spec/v1"
 PNG_SIGNATURE = b"\x89PNG\r\n\x1a\n"
+CREATURE_REGISTRY = "docs/creature_registry.csv"
+CREATURE_MANIFEST = "client/assets/creatures/manifest.json"
 
 
 def git(*args: str, data: bytes = b"") -> bytes:
@@ -86,6 +90,48 @@ def png_dimensions(abs_path: str) -> tuple[int, int] | None:
     return width, height
 
 
+def validate_creature_manifest(tracked: set[str]) -> list[str]:
+    """Enforce exact registry -> manifest -> tracked plate coverage."""
+    errors: list[str] = []
+    registry_path = os.path.join(REPO_ROOT, CREATURE_REGISTRY)
+    manifest_path = os.path.join(REPO_ROOT, CREATURE_MANIFEST)
+    if not os.path.isfile(registry_path) or not os.path.isfile(manifest_path):
+        return ["CREATURE ART CONTRACT: registry or manifest is missing"]
+    with open(registry_path, newline="", encoding="utf-8-sig") as fh:
+        registry_ids = {
+            row["id"].strip()
+            for row in csv.DictReader(fh)
+            if row.get("id", "").strip() and row.get("status", "").strip().lower() != "void"
+        }
+    with open(manifest_path, encoding="utf-8") as fh:
+        raw = json.load(fh)
+    manifest = {key: value for key, value in raw.items() if not key.startswith("_")}
+    manifest_ids = set(manifest)
+    for species_id in sorted(registry_ids - manifest_ids):
+        errors.append(f"CREATURE MANIFEST MISSING ID: {species_id}")
+    for species_id in sorted(manifest_ids - registry_ids):
+        errors.append(f"CREATURE MANIFEST UNKNOWN ID: {species_id}")
+    used_paths: dict[str, str] = {}
+    for species_id, entry in sorted(manifest.items()):
+        if not isinstance(entry, dict) or not entry.get("flat"):
+            errors.append(f"CREATURE MANIFEST INVALID ENTRY: {species_id} requires a flat plate")
+            continue
+        for variant in ("flat", "cutout"):
+            relative = entry.get(variant)
+            if not relative:
+                continue
+            asset_path = f"client/assets/creatures/{relative}".replace("\\", "/")
+            if asset_path not in tracked:
+                errors.append(f"CREATURE PLATE NOT TRACKED: {species_id}.{variant} -> {asset_path}")
+            previous = used_paths.get(asset_path)
+            if previous is not None:
+                errors.append(
+                    f"CREATURE PLATE REUSED: {species_id}.{variant} and {previous} -> {asset_path}"
+                )
+            used_paths[asset_path] = f"{species_id}.{variant}"
+    return errors
+
+
 def main() -> int:
     files = tracked_asset_files()
     if not files:
@@ -94,6 +140,7 @@ def main() -> int:
     tracked = set(files)
     filters = lfs_filter_map(files)
     errors: list[str] = []
+    errors.extend(validate_creature_manifest(tracked))
 
     for path in files:
         ext = os.path.splitext(path)[1].lower()

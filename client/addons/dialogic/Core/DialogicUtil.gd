@@ -120,6 +120,14 @@ static func get_indexers(include_custom := true, force_reload := false) -> Array
 	return indexers
 
 
+## Indexers are RefCounted instances cached on the SceneTree. Remove the cache before shutdown
+## so the scripts and every event resource they describe can be released deterministically.
+static func clear_indexer_cache() -> void:
+	var loop := Engine.get_main_loop()
+	if loop != null and loop.has_meta('dialogic_indexers'):
+		loop.remove_meta('dialogic_indexers')
+
+
 
 ## Turns a [param file_path] from `some_file.png` to `Some File`.
 static func pretty_name(file_path: String) -> String:

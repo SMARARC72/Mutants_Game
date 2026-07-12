@@ -102,58 +102,77 @@ signal text_signal(argument: String)
 # Careful, this section is repopulated automatically at certain moments.
 #region SUBSYSTEMS
 
-var Animations := preload("res://addons/dialogic/Modules/Core/subsystem_animation.gd").new():
+const AnimationsSubsystem := preload("res://addons/dialogic/Modules/Core/subsystem_animation.gd")
+const AudioSubsystem := preload("res://addons/dialogic/Modules/Audio/subsystem_audio.gd")
+const BackgroundsSubsystem := preload("res://addons/dialogic/Modules/Background/subsystem_backgrounds.gd")
+const ChoicesSubsystem := preload("res://addons/dialogic/Modules/Choice/subsystem_choices.gd")
+const ExpressionsSubsystem := preload("res://addons/dialogic/Modules/Core/subsystem_expression.gd")
+const GlossarySubsystem := preload("res://addons/dialogic/Modules/Glossary/subsystem_glossary.gd")
+const HistorySubsystem := preload("res://addons/dialogic/Modules/History/subsystem_history.gd")
+const InputsSubsystem := preload("res://addons/dialogic/Modules/Core/subsystem_input.gd")
+const JumpSubsystem := preload("res://addons/dialogic/Modules/Jump/subsystem_jump.gd")
+const PortraitContainersSubsystem := preload("res://addons/dialogic/Modules/Character/subsystem_containers.gd")
+const PortraitsSubsystem := preload("res://addons/dialogic/Modules/Character/subsystem_portraits.gd")
+const SaveSubsystem := preload("res://addons/dialogic/Modules/Save/subsystem_save.gd")
+const SettingsSubsystem := preload("res://addons/dialogic/Modules/Settings/subsystem_settings.gd")
+const StylesSubsystem := preload("res://addons/dialogic/Modules/Style/subsystem_styles.gd")
+const TextSubsystem := preload("res://addons/dialogic/Modules/Text/subsystem_text.gd")
+const TextInputSubsystem := preload("res://addons/dialogic/Modules/TextInput/subsystem_text_input.gd")
+const VariablesSubsystem := preload("res://addons/dialogic/Modules/Variable/subsystem_variables.gd")
+const VoiceSubsystem := preload("res://addons/dialogic/Modules/Voice/subsystem_voice.gd")
+
+var Animations: AnimationsSubsystem:
 	get: return get_subsystem("Animations")
 
-var Audio := preload("res://addons/dialogic/Modules/Audio/subsystem_audio.gd").new():
+var Audio: AudioSubsystem:
 	get: return get_subsystem("Audio")
 
-var Backgrounds := preload("res://addons/dialogic/Modules/Background/subsystem_backgrounds.gd").new():
+var Backgrounds: BackgroundsSubsystem:
 	get: return get_subsystem("Backgrounds")
 
-var Choices := preload("res://addons/dialogic/Modules/Choice/subsystem_choices.gd").new():
+var Choices: ChoicesSubsystem:
 	get: return get_subsystem("Choices")
 
-var Expressions := preload("res://addons/dialogic/Modules/Core/subsystem_expression.gd").new():
+var Expressions: ExpressionsSubsystem:
 	get: return get_subsystem("Expressions")
 
-var Glossary := preload("res://addons/dialogic/Modules/Glossary/subsystem_glossary.gd").new():
+var Glossary: GlossarySubsystem:
 	get: return get_subsystem("Glossary")
 
-var History := preload("res://addons/dialogic/Modules/History/subsystem_history.gd").new():
+var History: HistorySubsystem:
 	get: return get_subsystem("History")
 
-var Inputs := preload("res://addons/dialogic/Modules/Core/subsystem_input.gd").new():
+var Inputs: InputsSubsystem:
 	get: return get_subsystem("Inputs")
 
-var Jump := preload("res://addons/dialogic/Modules/Jump/subsystem_jump.gd").new():
+var Jump: JumpSubsystem:
 	get: return get_subsystem("Jump")
 
-var PortraitContainers := preload("res://addons/dialogic/Modules/Character/subsystem_containers.gd").new():
+var PortraitContainers: PortraitContainersSubsystem:
 	get: return get_subsystem("PortraitContainers")
 
-var Portraits := preload("res://addons/dialogic/Modules/Character/subsystem_portraits.gd").new():
+var Portraits: PortraitsSubsystem:
 	get: return get_subsystem("Portraits")
 
-var Save := preload("res://addons/dialogic/Modules/Save/subsystem_save.gd").new():
+var Save: SaveSubsystem:
 	get: return get_subsystem("Save")
 
-var Settings := preload("res://addons/dialogic/Modules/Settings/subsystem_settings.gd").new():
+var Settings: SettingsSubsystem:
 	get: return get_subsystem("Settings")
 
-var Styles := preload("res://addons/dialogic/Modules/Style/subsystem_styles.gd").new():
+var Styles: StylesSubsystem:
 	get: return get_subsystem("Styles")
 
-var Text := preload("res://addons/dialogic/Modules/Text/subsystem_text.gd").new():
+var Text: TextSubsystem:
 	get: return get_subsystem("Text")
 
-var TextInput := preload("res://addons/dialogic/Modules/TextInput/subsystem_text_input.gd").new():
+var TextInput: TextInputSubsystem:
 	get: return get_subsystem("TextInput")
 
-var VAR := preload("res://addons/dialogic/Modules/Variable/subsystem_variables.gd").new():
+var VAR: VariablesSubsystem:
 	get: return get_subsystem("VAR")
 
-var Voice := preload("res://addons/dialogic/Modules/Voice/subsystem_voice.gd").new():
+var Voice: VoiceSubsystem:
 	get: return get_subsystem("Voice")
 
 #endregion
@@ -169,6 +188,17 @@ func _ready() -> void:
 
 	dialog_ending_timeline = DialogicTimeline.new()
 	dialog_ending_timeline.from_text("[clear]")
+
+
+func _exit_tree() -> void:
+	_cleanup_previous_event()
+	current_timeline = null
+	current_timeline_events.clear()
+	current_state_info.clear()
+	dialog_ending_timeline = null
+	DialogicResourceUtil.clear_runtime_caches()
+	DialogicStylesUtil.clear_runtime_cache()
+	DialogicUtil.clear_indexer_cache()
 
 
 #region TIMELINE & EVENT HANDLING

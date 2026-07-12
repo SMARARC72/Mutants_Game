@@ -32,6 +32,11 @@ var _last_whisper_ms := -WHISPER_COOLDOWN_MS
 var _was_near_thin := false
 
 
+static func clear_runtime_cache() -> void:
+	_shimmer_cache = null
+	_joy_played.clear()
+
+
 ## The EncounterDirector tile class for a cell: TILE_CLASS_THIN on the VISIBLE ritual-accent
 ## cells (feature cells promoted by OverworldTileSet.is_thin_place — the same pure function that
 ## paints them), "" everywhere else. The encounter surface and the shimmering tiles never disagree.

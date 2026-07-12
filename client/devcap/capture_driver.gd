@@ -24,6 +24,13 @@ func _ready() -> void:
 	# sibling scenes immediately trips Node's "parent is busy" guard in windowed builds.
 	await get_tree().process_frame
 	await _run()
+	# Drain deferred queue_free/resource-release work before asking SceneTree to terminate. Windowed
+	# Vulkan builds can otherwise outrun render-thread teardown and report false-positive capture
+	# leaks. The short wall-clock grace period lets queued GPU releases complete on slower drivers.
+	for _i in 8:
+		await get_tree().process_frame
+	await get_tree().create_timer(0.75).timeout
+	await RenderingServer.frame_post_draw
 	get_tree().quit()
 
 

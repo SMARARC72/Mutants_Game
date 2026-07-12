@@ -53,6 +53,10 @@ var _surge := 0.0  # reveal-time conduit/bubble swell, decays in _process
 var _time := 0.0
 
 
+static func clear_runtime_cache() -> void:
+	Vessel._bubble_gradient = null
+
+
 func _init() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	custom_minimum_size = Vector2(0, STAGE_HEIGHT)

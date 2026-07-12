@@ -17,31 +17,31 @@ extends Control
 
 var InkConfiguration = load("res://addons/inkgd/editor/common/ink_configuration.gd")
 
-var InkCompilationConfiguration = load("res://addons/inkgd/editor/common/executors/structures/ink_compilation_configuration.gd")
+var InkCompilationConfiguration = load(
+	"res://addons/inkgd/editor/common/executors/structures/ink_compilation_configuration.gd"
+)
 var InkCompiler = load("res://addons/inkgd/editor/common/executors/ink_compiler.gd")
 
 var InkRichDialog = load("res://addons/inkgd/editor/panel/common/ink_rich_dialog.tscn")
 var InkProgressDialog = load("res://addons/inkgd/editor/panel/common/ink_progress_dialog.tscn")
-var InkStoryConfigurationScene = load("res://addons/inkgd/editor/panel/stories/ink_story_configuration.tscn")
-var EmptyStateContainerScene = load("res://addons/inkgd/editor/panel/stories/empty_state_container.tscn")
+var InkStoryConfigurationScene = load(
+	"res://addons/inkgd/editor/panel/stories/ink_story_configuration.tscn"
+)
+var EmptyStateContainerScene = load(
+	"res://addons/inkgd/editor/panel/stories/empty_state_container.tscn"
+)
 
 # ############################################################################ #
 # Signals
 # ############################################################################ #
 
-signal _compiled()
+signal _compiled
 
 # ############################################################################ #
 # Enums
 # ############################################################################ #
 
-enum FileDialogSelection {
-	UNKNOWN,
-	SOURCE_FILE,
-	TARGET_FILE,
-	WATCHED_FOLDER
-}
-
+enum FileDialogSelection { UNKNOWN, SOURCE_FILE, TARGET_FILE, WATCHED_FOLDER }
 
 # ############################################################################ #
 # Properties
@@ -50,7 +50,6 @@ enum FileDialogSelection {
 var editor_interface: InkEditorInterface
 var configuration: InkConfiguration
 var progress_texture: AnimatedTexture
-
 
 # ############################################################################ #
 # Private Properties
@@ -89,10 +88,10 @@ var _progress_dialog = null
 @onready var _story_configuration_container = find_child("StoryConfigurationVBoxContainer")
 @onready var _scroll_container = find_child("ScrollContainer")
 
-
 # ############################################################################ #
 # Overrides
 # ############################################################################ #
+
 
 func _ready():
 	# FIXME: This needs investigating.
@@ -105,7 +104,9 @@ func _ready():
 
 	configuration.connect("compilation_mode_changed", Callable(self, "_compilation_mode_changed"))
 
-	editor_interface.editor_filesystem.connect("resources_reimported", Callable(self, "_resources_reimported"))
+	editor_interface.editor_filesystem.connect(
+		"resources_reimported", Callable(self, "_resources_reimported")
+	)
 
 	_story_configuration_container.add_child(_empty_state_container)
 	add_child(_file_dialog)
@@ -123,14 +124,17 @@ func _ready():
 # Signal Receivers
 # ############################################################################ #
 
+
 func _resources_reimported(resources):
 	call_deferred("_recompile_if_necessary", resources)
 
+
 func _compilation_mode_changed(compilation_mode: int):
-	var show_folder = (compilation_mode == InkConfiguration.BuildMode.AFTER_CHANGE)
+	var show_folder = compilation_mode == InkConfiguration.BuildMode.AFTER_CHANGE
 
 	for child in _story_configuration_container.get_children():
 		child.show_watched_folder(show_folder)
+
 
 func _source_file_button_pressed(node):
 	_reset_file_dialog()
@@ -172,6 +176,7 @@ func _target_file_button_pressed(node):
 	_file_dialog.access = FileDialog.ACCESS_FILESYSTEM
 	_file_dialog.add_filter("*.json;Compiled Ink story")
 	_file_dialog.popup_centered(Vector2(1280, 800) * editor_interface.scale)
+
 
 func _watched_folder_button_pressed(node):
 	_reset_file_dialog()
@@ -269,6 +274,7 @@ func _compile_all_stories():
 	_progress_dialog = null
 	_disable_all_buttons(false)
 
+
 func _compile_story(story_configuration, node = null):
 	var source_file_path = configuration.get_source_file_path(story_configuration)
 	var target_file_path = configuration.get_target_file_path(story_configuration)
@@ -280,11 +286,7 @@ func _compile_story(story_configuration, node = null):
 		_disable_all_buttons(true)
 
 	var compiler_configuration = InkCompilationConfiguration.new(
-			configuration,
-			true,
-			node != null,
-			source_file_path,
-			target_file_path
+		configuration, true, node != null, source_file_path, target_file_path
 	)
 	var compiler = InkCompiler.new(compiler_configuration)
 
@@ -412,6 +414,7 @@ func _scrollbar_changed():
 # Private helpers
 # ############################################################################ #
 
+
 func _reset_file_dialog():
 	_file_dialog.current_path = "res://"
 	_file_dialog.current_dir = "res://"
@@ -433,9 +436,9 @@ func _persist_configuration():
 				continue
 
 			configuration.append_new_story_configuration(
-					node.source_file_line_edit.text,
-					node.target_file_line_edit.text,
-					node.watched_folder_line_edit.text
+				node.source_file_line_edit.text,
+				node.target_file_line_edit.text,
+				node.watched_folder_line_edit.text
 			)
 
 	configuration.persist()
@@ -447,7 +450,9 @@ func _load_story_configurations():
 
 		node.source_file_line_edit.text = configuration.get_source_file_path(story_configuration)
 		node.target_file_line_edit.text = configuration.get_target_file_path(story_configuration)
-		node.watched_folder_line_edit.text = configuration.get_watched_folder_path(story_configuration)
+		node.watched_folder_line_edit.text = configuration.get_watched_folder_path(
+			story_configuration
+		)
 
 
 func _add_new_story_configuration():
@@ -458,9 +463,15 @@ func _add_new_story_configuration():
 	story_configuration.connect("configuration_changed", Callable(self, "_configuration_changed"))
 	story_configuration.connect("remove_button_pressed", Callable(self, "_remove_button_pressed"))
 	story_configuration.connect("build_button_pressed", Callable(self, "_build_button_pressed"))
-	story_configuration.connect("source_file_button_pressed", Callable(self, "_source_file_button_pressed"))
-	story_configuration.connect("target_file_button_pressed", Callable(self, "_target_file_button_pressed"))
-	story_configuration.connect("watched_folder_button_pressed", Callable(self, "_watched_folder_button_pressed"))
+	story_configuration.connect(
+		"source_file_button_pressed", Callable(self, "_source_file_button_pressed")
+	)
+	story_configuration.connect(
+		"target_file_button_pressed", Callable(self, "_target_file_button_pressed")
+	)
+	story_configuration.connect(
+		"watched_folder_button_pressed", Callable(self, "_watched_folder_button_pressed")
+	)
 
 	if _empty_state_container.get_parent() != null:
 		_story_configuration_container.remove_child(_empty_state_container)
@@ -470,7 +481,7 @@ func _add_new_story_configuration():
 	var count = _story_configuration_container.get_child_count()
 	story_configuration.story_label.text = "Story %d" % count
 
-	var show_folder = (configuration.compilation_mode == InkConfiguration.BuildMode.AFTER_CHANGE)
+	var show_folder = configuration.compilation_mode == InkConfiguration.BuildMode.AFTER_CHANGE
 	story_configuration.show_watched_folder(show_folder)
 
 	return story_configuration
@@ -493,7 +504,12 @@ func _get_story_configuration_at_index(index: int):
 
 func _recompile_if_necessary(resources: PackedStringArray):
 	# Making sure the resources have been imported before recompiling.
-	await get_tree().create_timer(0.5).timeout
+	var tree := get_tree()
+	if tree == null:
+		return
+	await tree.create_timer(0.5).timeout
+	if not is_inside_tree():
+		return
 
 	for story_configuration in configuration.stories:
 		var watched_folder_path: String = configuration.get_watched_folder_path(story_configuration)

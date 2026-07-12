@@ -2,21 +2,22 @@
 @icon("res://addons/questify/assets/icon.svg")
 class_name QuestResource extends Resource
 
-
 @export var nodes: Array[QuestNode] = []
 @export var edges: Array[QuestEdge] = []
 
-
 var name: String:
-	get: return start_node.name
+	get:
+		return start_node.name
 
 var description: String:
-	get: return start_node.description
+	get:
+		return start_node.description
 
 var start_node: QuestStart
 
 var started: bool:
-	get: return start_node.active
+	get:
+		return start_node.active
 
 var completed: bool = false
 var is_instance := false
@@ -81,27 +82,33 @@ func get_active_objectives() -> Array[QuestObjective]:
 	return objectives
 
 
-func get_next_nodes(node: QuestNode, edge_type: QuestEdge.EdgeType = QuestEdge.EdgeType.NORMAL) -> Array[QuestNode]:
+func get_next_nodes(
+	node: QuestNode, edge_type: QuestEdge.EdgeType = QuestEdge.EdgeType.NORMAL
+) -> Array[QuestNode]:
 	var result: Array[QuestNode] = []
-	result.assign(edges.filter(
-		func(edge: QuestEdge):
-			return edge.from == node and edge.edge_type == edge_type
-	).map(
-		func(edge: QuestEdge):
-			return edge.to
-	))
+	result.assign(
+		(
+			edges
+			. filter(
+				func(edge: QuestEdge): return edge.from == node and edge.edge_type == edge_type
+			)
+			. map(func(edge: QuestEdge): return edge.to)
+		)
+	)
 	return result
 
 
-func get_previous_nodes(node: QuestNode, edge_type: QuestEdge.EdgeType = QuestEdge.EdgeType.NORMAL) -> Array[QuestNode]:
+func get_previous_nodes(
+	node: QuestNode, edge_type: QuestEdge.EdgeType = QuestEdge.EdgeType.NORMAL
+) -> Array[QuestNode]:
 	var result: Array[QuestNode] = []
-	result.assign(edges.filter(
-		func(edge: QuestEdge):
-			return edge.to == node and edge.edge_type == edge_type
-	).map(
-		func(edge: QuestEdge):
-			return edge.from
-	))
+	result.assign(
+		(
+			edges
+			. filter(func(edge: QuestEdge): return edge.to == node and edge.edge_type == edge_type)
+			. map(func(edge: QuestEdge): return edge.from)
+		)
+	)
 	return result
 
 
@@ -127,8 +134,7 @@ func notify_active_objectives() -> void:
 
 func serialize() -> Dictionary:
 	return {
-		completed = completed,
-		nodes = nodes.map(func(node: QuestNode): return node.serialize())
+		completed = completed, nodes = nodes.map(func(node: QuestNode): return node.serialize())
 	}
 
 
@@ -143,6 +149,21 @@ func deserialize(data: Dictionary) -> void:
 	for node in data.nodes:
 		if node_map.has(node.id):
 			node_map[node.id].deserialize(node)
+
+
+## Breaks the bidirectional runtime graph so RefCounted resources can be released deterministically.
+## Authored quest assets are never disposed; only instances registered with Questify reach this path.
+func dispose_runtime_instance() -> void:
+	if not is_instance:
+		return
+	for edge in edges:
+		edge.from = null
+		edge.to = null
+	for node in nodes:
+		node.set_graph(null)
+	edges.clear()
+	nodes.clear()
+	start_node = null
 
 
 func _initialize() -> void:
